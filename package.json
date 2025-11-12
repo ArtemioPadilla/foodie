@@ -18,6 +18,7 @@
     "test:e2e:debug": "playwright test --debug",
     "test:all": "npm run test:run && npm run test:e2e",
     "validate:json": "node scripts/validateJSON.js",
+    "validate:translations": "node scripts/validateTranslationSync.js",
     "generate:sitemap": "node scripts/generateSitemap.js"
   },
   "dependencies": {

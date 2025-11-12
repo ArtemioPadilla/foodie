@@ -34,6 +34,9 @@ jobs:
       - name: Run linter
         run: npm run lint
 
+      - name: Validate translation files
+        run: node scripts/validateTranslationSync.js
+
       - name: Run unit tests
         run: npm run test:run
 

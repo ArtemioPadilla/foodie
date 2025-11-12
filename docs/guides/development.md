@@ -484,6 +484,166 @@ function RecipeName({ recipe }: { recipe: Recipe }) {
 }
 ```
 
+### i18n Best Practices
+
+#### ⚠️ Always Use BASE_URL for Public Assets
+
+When loading assets from the `public/` folder (including translation files), **always use `import.meta.env.BASE_URL`** to ensure compatibility with different deployment configurations.
+
+**❌ Wrong:**
+```typescript
+const response = await fetch(`/locales/${lang}/translation.json`);
+```
+
+**✅ Correct:**
+```typescript
+const response = await fetch(`${import.meta.env.BASE_URL}locales/${lang}/translation.json`);
+```
+
+**Why?**
+- Development: `BASE_URL = '/'`
+- GitHub Pages: `BASE_URL = '/foodie/'`
+- Custom deployments: `BASE_URL = '/your-path/'`
+
+The hardcoded `/` path only works when deployed at the domain root and will fail on subdirectory deployments.
+
+#### Test Translations with Production Build
+
+Always test translations with a production build before deploying:
+
+```bash
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
+
+# Visit http://localhost:4173
+# Verify translations load correctly (no translation keys visible)
+```
+
+#### Validate Translation Files
+
+Run validation before committing changes:
+
+```bash
+# Validate translation schema
+npm run validate:translations
+
+# Run i18n unit tests
+npm test i18n.test.ts
+
+# Run schema validation tests
+npm test translationSchema.test.ts
+```
+
+#### Translation File Requirements
+
+All translation files must:
+
+1. ✅ Have identical key structures across EN/ES/FR
+2. ✅ Contain no duplicate keys
+3. ✅ Have no empty string values
+4. ✅ Be valid JSON format
+5. ✅ Use only string values for leaf nodes
+
+#### Adding New Translation Keys
+
+**Step 1:** Add to all three language files simultaneously:
+
+```json
+// public/locales/en/translation.json
+{
+  "recipe": {
+    "timer": {
+      "start": "Start Timer"
+    }
+  }
+}
+
+// public/locales/es/translation.json
+{
+  "recipe": {
+    "timer": {
+      "start": "Iniciar Temporizador"
+    }
+  }
+}
+
+// public/locales/fr/translation.json
+{
+  "recipe": {
+    "timer": {
+      "start": "Démarrer le Minuteur"
+    }
+  }
+}
+```
+
+**Step 2:** Validate immediately:
+
+```bash
+npm run validate:translations
+```
+
+**Step 3:** Use in component:
+
+```typescript
+const { t } = useTranslation();
+return <button>{t('recipe.timer.start')}</button>;
+```
+
+#### Common Pitfalls
+
+**1. Translation Keys Showing in Production**
+
+**Cause:** Translation files not loading due to incorrect path.
+
+**Solution:** Check that all fetch calls use `import.meta.env.BASE_URL`:
+```typescript
+fetch(`${import.meta.env.BASE_URL}locales/${lang}/translation.json`)
+```
+
+**2. Missing Keys in One Language**
+
+**Cause:** Added key to English but forgot Spanish/French.
+
+**Solution:** Run `npm run validate:translations` to catch this before commit.
+
+**3. Translation Keys Not Updating**
+
+**Cause:** Browser caching old translation files.
+
+**Solution:** Hard refresh (Ctrl+Shift+R or Cmd+Shift+R) or clear cache.
+
+#### Debugging Translation Issues
+
+**Check if translations loaded:**
+```typescript
+import i18n from '@/i18n';
+
+// Check loaded languages
+console.log('Loaded languages:', Object.keys(i18n.store.data));
+
+// Check specific translation
+console.log('App name:', i18n.t('app.name'));
+
+// Check current language
+console.log('Current language:', i18n.language);
+```
+
+**Check network requests:**
+1. Open DevTools > Network tab
+2. Filter by "locales"
+3. Verify translation files are requested from correct path
+4. Should be: `/foodie/locales/en/translation.json` (not `/locales/...`)
+
+**Check for console errors:**
+```javascript
+// Translation loading errors will appear in console
+// Look for: "Failed to load translations for..."
+```
+
 ---
 
 ## API Integration
