@@ -7,7 +7,9 @@ describe('cn utility', () => {
   });
 
   it('handles conditional classes', () => {
-    expect(cn('base', true && 'conditional', false && 'hidden')).toBe('base conditional');
+    const isActive = true;
+    const isHidden = false;
+    expect(cn('base', isActive && 'conditional', isHidden && 'hidden')).toBe('base conditional');
   });
 
   it('merges Tailwind classes correctly', () => {
@@ -42,9 +44,10 @@ describe('cn utility', () => {
   });
 
   it('combines multiple utility patterns', () => {
+    const isVisible = true;
     const result = cn(
       'base-class',
-      true && 'conditional',
+      isVisible && 'conditional',
       { active: true, disabled: false },
       ['array1', 'array2'],
       'final-class'

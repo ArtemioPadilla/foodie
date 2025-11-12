@@ -3,13 +3,12 @@ import {
   getIngredientCategory,
   convertToBaseUnit,
   consolidateIngredients,
-  generateShoppingListFromPlan,
   groupByCategory,
   exportAsText,
   exportAsCSV,
   exportForWhatsApp,
 } from '@services/shoppingService';
-import { mockRecipe, mockMealPlan, mockShoppingListItem } from '../../mocks/mockData';
+import { mockShoppingListItem } from '../../mocks/mockData';
 import type { ShoppingListItem } from '@types';
 
 describe('shoppingService', () => {

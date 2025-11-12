@@ -135,7 +135,7 @@ export const Modal: React.FC<ModalProps> = ({
 
 Modal.displayName = 'Modal';
 
-export interface ModalFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type ModalFooterProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const ModalFooter: React.FC<ModalFooterProps> = ({
   className,
