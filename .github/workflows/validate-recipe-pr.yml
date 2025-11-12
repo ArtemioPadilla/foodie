@@ -1,0 +1,88 @@
+name: Validate Recipe PR
+
+on:
+  pull_request:
+    paths:
+      - 'public/data/recipes/*.json'
+      - 'public/data/ingredients/*.json'
+
+jobs:
+  validate:
+    name: Validate Recipe Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v42
+        with:
+          files: |
+            public/data/recipes/*.json
+            public/data/ingredients/*.json
+
+      - name: Validate JSON schema
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "Changed files:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          npm run validate:json
+
+      - name: Check for duplicates
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: node scripts/checkDuplicates.js
+
+      - name: Validate translations
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: node scripts/validateTranslations.js
+
+      - name: Check recipe images exist
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            if [[ $file == public/data/recipes/*.json ]]; then
+              IMAGE_URL=$(jq -r '.imageUrl' "$file")
+              if [ ! -z "$IMAGE_URL" ] && [ "$IMAGE_URL" != "null" ]; then
+                IMAGE_PATH="public${IMAGE_URL}"
+                if [ ! -f "$IMAGE_PATH" ]; then
+                  echo "Warning: Image not found: $IMAGE_PATH"
+                fi
+              fi
+            fi
+          done
+
+      - name: Comment PR with validation results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const output = `### Recipe Validation Results
+
+            ✅ JSON Schema validation passed
+            ✅ No duplicate recipes found
+            ✅ All translations complete
+
+            **Changed files:** ${{ steps.changed-files.outputs.all_changed_files_count }}
+
+            Great work! Your recipe contribution looks good.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });

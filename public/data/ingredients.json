@@ -1,0 +1,3266 @@
+{
+  "ingredients": [
+    {
+      "id": "ing_001",
+      "name": {
+        "en": "Egg",
+        "es": "Huevo",
+        "fr": "Œuf"
+      },
+      "category": "protein",
+      "unit": "piece",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "tofu",
+        "aquafaba"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 3-5 weeks",
+        "es": "Refrigerar, usar dentro de 3-5 semanas",
+        "fr": "Réfrigérer, utiliser dans les 3-5 semaines"
+      }
+    },
+    {
+      "id": "ing_002",
+      "name": {
+        "en": "Spinach",
+        "es": "Espinaca",
+        "fr": "Épinard"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "kale",
+        "chard"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper drawer",
+        "es": "Refrigerar en el cajón para verduras",
+        "fr": "Réfrigérer dans le bac à légumes"
+      }
+    },
+    {
+      "id": "ing_003",
+      "name": {
+        "en": "Olive Oil",
+        "es": "Aceite de Oliva",
+        "fr": "Huile d'Olive"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.3,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "avocado oil",
+        "coconut oil"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark place",
+        "es": "Guardar en lugar fresco y oscuro",
+        "fr": "Conserver dans un endroit frais et sombre"
+      }
+    },
+    {
+      "id": "ing_004",
+      "name": {
+        "en": "Chicken Breast",
+        "es": "Pechuga de Pollo",
+        "fr": "Poitrine de Poulet"
+      },
+      "category": "protein",
+      "unit": "lb",
+      "avgPrice": 5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "tofu",
+        "turkey breast"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate and use within 2 days or freeze",
+        "es": "Refrigerar y usar dentro de 2 días o congelar",
+        "fr": "Réfrigérer et utiliser dans les 2 jours ou congeler"
+      }
+    },
+    {
+      "id": "ing_005",
+      "name": {
+        "en": "Tomato",
+        "es": "Tomate",
+        "fr": "Tomate"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "summer",
+        "fall"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature until ripe",
+        "es": "Guardar a temperatura ambiente hasta madurar",
+        "fr": "Conserver à température ambiante jusqu'à maturité"
+      }
+    },
+    {
+      "id": "ing_006",
+      "name": {
+        "en": "Garlic",
+        "es": "Ajo",
+        "fr": "Ail"
+      },
+      "category": "spices",
+      "unit": "clove",
+      "avgPrice": 0.1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "garlic powder"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place",
+        "es": "Guardar en lugar fresco y seco",
+        "fr": "Conserver dans un endroit frais et sec"
+      }
+    },
+    {
+      "id": "ing_007",
+      "name": {
+        "en": "Rice",
+        "es": "Arroz",
+        "fr": "Riz"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 0.8,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "quinoa",
+        "cauliflower rice"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans un récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_008",
+      "name": {
+        "en": "Onion",
+        "es": "Cebolla",
+        "fr": "Oignon"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 0.75,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "shallots"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry, well-ventilated place",
+        "es": "Guardar en lugar fresco, seco y ventilado",
+        "fr": "Conserver dans un endroit frais, sec et ventilé"
+      }
+    },
+    {
+      "id": "ing_009",
+      "name": {
+        "en": "Bell Pepper",
+        "es": "Pimiento",
+        "fr": "Poivron"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "summer",
+        "fall"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper drawer",
+        "es": "Refrigerar en el cajón para verduras",
+        "fr": "Réfrigérer dans le bac à légumes"
+      }
+    },
+    {
+      "id": "ing_010",
+      "name": {
+        "en": "Lemon",
+        "es": "Limón",
+        "fr": "Citron"
+      },
+      "category": "fruits",
+      "unit": "piece",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "lime"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature or refrigerate",
+        "es": "Guardar a temperatura ambiente o refrigerar",
+        "fr": "Conserver à température ambiante ou réfrigérer"
+      }
+    },
+    {
+      "id": "ing_011",
+      "name": {
+        "en": "Feta Cheese",
+        "es": "Queso Feta",
+        "fr": "Fromage Feta"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 3.5,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "vegan feta"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in brine",
+        "es": "Refrigerar en salmuera",
+        "fr": "Réfrigérer dans la saumure"
+      }
+    },
+    {
+      "id": "ing_012",
+      "name": {
+        "en": "Pasta",
+        "es": "Pasta",
+        "fr": "Pâtes"
+      },
+      "category": "grains",
+      "unit": "oz",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "gluten-free pasta",
+        "zucchini noodles"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans un récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_013",
+      "name": {
+        "en": "Black Beans",
+        "es": "Frijoles Negros",
+        "fr": "Haricots Noirs"
+      },
+      "category": "protein",
+      "unit": "cup",
+      "avgPrice": 1,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "pinto beans"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store dried beans in airtight container",
+        "es": "Guardar frijoles secos en recipiente hermético",
+        "fr": "Conserver les haricots secs dans un récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_014",
+      "name": {
+        "en": "Avocado",
+        "es": "Aguacate",
+        "fr": "Avocat"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Ripen at room temperature, then refrigerate",
+        "es": "Madurar a temperatura ambiente, luego refrigerar",
+        "fr": "Faire mûrir à température ambiante, puis réfrigérer"
+      }
+    },
+    {
+      "id": "ing_015",
+      "name": {
+        "en": "Cumin",
+        "es": "Comino",
+        "fr": "Cumin"
+      },
+      "category": "spices",
+      "unit": "tsp",
+      "avgPrice": 0.15,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark, dry place",
+        "es": "Guardar en lugar fresco, oscuro y seco",
+        "fr": "Conserver dans un endroit frais, sombre et sec"
+      }
+    },
+    {
+      "id": "ing_016",
+      "name": {
+        "en": "Greek Yogurt",
+        "es": "Yogur Griego",
+        "fr": "Yaourt Grec"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": true,
+        "halal": false
+      },
+      "alternatives": [
+        "coconut yogurt",
+        "soy yogurt"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 7 days after opening",
+        "es": "Refrigerar, usar dentro de 7 días después de abrir",
+        "fr": "Réfrigérer, utiliser dans les 7 jours après ouverture"
+      }
+    },
+    {
+      "id": "ing_017",
+      "name": {
+        "en": "Granola",
+        "es": "Granola",
+        "fr": "Granola"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 4,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": false,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "muesli"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans un récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_018",
+      "name": {
+        "en": "Mixed Berries",
+        "es": "Bayas Mixtas",
+        "fr": "Baies Mélangées"
+      },
+      "category": "fruits",
+      "unit": "cup",
+      "avgPrice": 4.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "spring",
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 3-5 days",
+        "es": "Refrigerar, usar dentro de 3-5 días",
+        "fr": "Réfrigérer, utiliser dans les 3-5 jours"
+      }
+    },
+    {
+      "id": "ing_019",
+      "name": {
+        "en": "Honey",
+        "es": "Miel",
+        "fr": "Miel"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "maple syrup",
+        "agave nectar"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature",
+        "es": "Guardar a temperatura ambiente",
+        "fr": "Conserver à température ambiante"
+      }
+    },
+    {
+      "id": "ing_020",
+      "name": {
+        "en": "Whole Wheat Bread",
+        "es": "Pan Integral",
+        "fr": "Pain Complet"
+      },
+      "category": "grains",
+      "unit": "slice",
+      "avgPrice": 0.3,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "sourdough",
+        "gluten-free bread"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place or freeze",
+        "es": "Guardar en lugar fresco y seco o congelar",
+        "fr": "Conserver dans un endroit frais et sec ou congeler"
+      }
+    },
+    {
+      "id": "ing_021",
+      "name": {
+        "en": "Red Pepper Flakes",
+        "es": "Hojuelas de Pimiento Rojo",
+        "fr": "Flocons de Piment Rouge"
+      },
+      "category": "spices",
+      "unit": "tsp",
+      "avgPrice": 0.1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "cayenne pepper"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark, dry place",
+        "es": "Guardar en lugar fresco, oscuro y seco",
+        "fr": "Conserver dans un endroit frais, sombre et sec"
+      }
+    },
+    {
+      "id": "ing_022",
+      "name": {
+        "en": "Rolled Oats",
+        "es": "Avena en Hojuelas",
+        "fr": "Flocons d'Avoine"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "steel-cut oats"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans un récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_023",
+      "name": {
+        "en": "Almond Milk",
+        "es": "Leche de Almendra",
+        "fr": "Lait d'Amande"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 0.75,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": false,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "oat milk",
+        "soy milk"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening, use within 7-10 days",
+        "es": "Refrigerar después de abrir, usar dentro de 7-10 días",
+        "fr": "Réfrigérer après ouverture, utiliser dans les 7-10 jours"
+      }
+    },
+    {
+      "id": "ing_024",
+      "name": {
+        "en": "Chia Seeds",
+        "es": "Semillas de Chía",
+        "fr": "Graines de Chia"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.4,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "flax seeds"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container in cool place",
+        "es": "Guardar en recipiente hermético en lugar fresco",
+        "fr": "Conserver dans un récipient hermétique dans un endroit frais"
+      }
+    },
+    {
+      "id": "ing_025",
+      "name": {
+        "en": "Banana",
+        "es": "Plátano",
+        "fr": "Banane"
+      },
+      "category": "fruits",
+      "unit": "piece",
+      "avgPrice": 0.25,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature, refrigerate when ripe",
+        "es": "Guardar a temperatura ambiente, refrigerar cuando esté maduro",
+        "fr": "Conserver à température ambiante, réfrigérer lorsque mûr"
+      }
+    },
+    {
+      "id": "ing_026",
+      "name": {
+        "en": "All-Purpose Flour",
+        "es": "Harina Común",
+        "fr": "Farine Tout Usage"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 0.4,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "whole wheat flour"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans un récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_027",
+      "name": {
+        "en": "Sugar",
+        "es": "Azúcar",
+        "fr": "Sucre"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 0.6,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "honey"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_028",
+      "name": {
+        "en": "Flour Tortilla",
+        "es": "Tortilla de Harina",
+        "fr": "Tortilla de Farine"
+      },
+      "category": "grains",
+      "unit": "piece",
+      "avgPrice": 0.35,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "corn tortilla"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature",
+        "es": "Guardar a temperatura ambiente",
+        "fr": "Conserver à température ambiante"
+      }
+    },
+    {
+      "id": "ing_029",
+      "name": {
+        "en": "Cheddar Cheese",
+        "es": "Queso Cheddar",
+        "fr": "Fromage Cheddar"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 2.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "vegan cheese"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening",
+        "es": "Refrigerar después de abrir",
+        "fr": "Réfrigérer après ouverture"
+      }
+    },
+    {
+      "id": "ing_030",
+      "name": {
+        "en": "Salsa",
+        "es": "Salsa",
+        "fr": "Salsa"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.25,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "pico de gallo"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening",
+        "es": "Refrigerar después de abrir",
+        "fr": "Réfrigérer après ouverture"
+      }
+    },
+    {
+      "id": "ing_031",
+      "name": {
+        "en": "Ground Beef",
+        "es": "Carne Molida",
+        "fr": "Bœuf Haché"
+      },
+      "category": "protein",
+      "unit": "lb",
+      "avgPrice": 5.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "ground turkey"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 2 days",
+        "es": "Refrigerar, usar dentro de 2 días",
+        "fr": "Réfrigérer, utiliser dans les 2 jours"
+      }
+    },
+    {
+      "id": "ing_032",
+      "name": {
+        "en": "Spaghetti",
+        "es": "Espagueti",
+        "fr": "Spaghetti"
+      },
+      "category": "grains",
+      "unit": "oz",
+      "avgPrice": 1.2,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "gluten-free pasta"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_033",
+      "name": {
+        "en": "Marinara Sauce",
+        "es": "Salsa Marinara",
+        "fr": "Sauce Marinara"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 1.8,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening",
+        "es": "Refrigerar después de abrir",
+        "fr": "Réfrigérer après ouverture"
+      }
+    },
+    {
+      "id": "ing_034",
+      "name": {
+        "en": "Parmesan Cheese",
+        "es": "Queso Parmesano",
+        "fr": "Fromage Parmesan"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 4,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "nutritional yeast"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_035",
+      "name": {
+        "en": "Lettuce",
+        "es": "Lechuga",
+        "fr": "Laitue"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper drawer",
+        "es": "Refrigerar en cajón para verduras",
+        "fr": "Réfrigérer dans bac à légumes"
+      }
+    },
+    {
+      "id": "ing_036",
+      "name": {
+        "en": "Salmon Fillet",
+        "es": "Filete de Salmón",
+        "fr": "Filet de Saumon"
+      },
+      "category": "protein",
+      "unit": "oz",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "trout"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 2 days",
+        "es": "Refrigerar, usar dentro de 2 días",
+        "fr": "Réfrigérer, utiliser dans 2 jours"
+      }
+    },
+    {
+      "id": "ing_037",
+      "name": {
+        "en": "Shrimp",
+        "es": "Camarones",
+        "fr": "Crevettes"
+      },
+      "category": "protein",
+      "unit": "lb",
+      "avgPrice": 8,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Keep frozen until ready to use",
+        "es": "Mantener congelado hasta usar",
+        "fr": "Garder congelé jusqu'à utilisation"
+      }
+    },
+    {
+      "id": "ing_038",
+      "name": {
+        "en": "Bacon",
+        "es": "Tocino",
+        "fr": "Bacon"
+      },
+      "category": "protein",
+      "unit": "slice",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "turkey bacon"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 7 days",
+        "es": "Refrigerar, usar dentro de 7 días",
+        "fr": "Réfrigérer, utiliser dans 7 jours"
+      }
+    },
+    {
+      "id": "ing_039",
+      "name": {
+        "en": "Ground Turkey",
+        "es": "Pavo Molido",
+        "fr": "Dinde Hachée"
+      },
+      "category": "protein",
+      "unit": "lb",
+      "avgPrice": 4.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "ground chicken"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 2 days",
+        "es": "Refrigerar, usar dentro de 2 días",
+        "fr": "Réfrigérer, utiliser dans 2 jours"
+      }
+    },
+    {
+      "id": "ing_040",
+      "name": {
+        "en": "Tofu",
+        "es": "Tofu",
+        "fr": "Tofu"
+      },
+      "category": "protein",
+      "unit": "oz",
+      "avgPrice": 0.3,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "tempeh"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in water",
+        "es": "Refrigerar en agua",
+        "fr": "Réfrigérer dans l'eau"
+      }
+    },
+    {
+      "id": "ing_041",
+      "name": {
+        "en": "Broccoli",
+        "es": "Brócoli",
+        "fr": "Brocoli"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "cauliflower"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper",
+        "es": "Refrigerar en cajón verduras",
+        "fr": "Réfrigérer dans bac légumes"
+      }
+    },
+    {
+      "id": "ing_042",
+      "name": {
+        "en": "Carrot",
+        "es": "Zanahoria",
+        "fr": "Carotte"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_043",
+      "name": {
+        "en": "Cucumber",
+        "es": "Pepino",
+        "fr": "Concombre"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 0.75,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_044",
+      "name": {
+        "en": "Zucchini",
+        "es": "Calabacín",
+        "fr": "Courgette"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_045",
+      "name": {
+        "en": "Mushrooms",
+        "es": "Champiñones",
+        "fr": "Champignons"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in paper bag",
+        "es": "Refrigerar en bolsa de papel",
+        "fr": "Réfrigérer dans sac papier"
+      }
+    },
+    {
+      "id": "ing_046",
+      "name": {
+        "en": "Butter",
+        "es": "Mantequilla",
+        "fr": "Beurre"
+      },
+      "category": "dairy",
+      "unit": "tbsp",
+      "avgPrice": 0.2,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": true,
+        "halal": false
+      },
+      "alternatives": [
+        "vegan butter"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_047",
+      "name": {
+        "en": "Milk",
+        "es": "Leche",
+        "fr": "Lait"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 0.75,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": true,
+        "halal": false
+      },
+      "alternatives": [
+        "oat milk"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_048",
+      "name": {
+        "en": "Cream Cheese",
+        "es": "Queso Crema",
+        "fr": "Fromage à la Crème"
+      },
+      "category": "dairy",
+      "unit": "oz",
+      "avgPrice": 0.4,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": true,
+        "halal": false
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_049",
+      "name": {
+        "en": "Sour Cream",
+        "es": "Crema Agria",
+        "fr": "Crème Aigre"
+      },
+      "category": "dairy",
+      "unit": "cup",
+      "avgPrice": 1.2,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": true,
+        "halal": false
+      },
+      "alternatives": [
+        "Greek yogurt"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_050",
+      "name": {
+        "en": "Mozzarella",
+        "es": "Mozzarella",
+        "fr": "Mozzarella"
+      },
+      "category": "dairy",
+      "unit": "oz",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate",
+        "es": "Refrigerar",
+        "fr": "Réfrigérer"
+      }
+    },
+    {
+      "id": "ing_051",
+      "name": {
+        "en": "Soy Sauce",
+        "es": "Salsa de Soja",
+        "fr": "Sauce Soja"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.15,
+      "currency": "USD",
+      "region": "Asian",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "tamari"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_052",
+      "name": {
+        "en": "Brown Sugar",
+        "es": "Azúcar Morena",
+        "fr": "Cassonade"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 0.7,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "coconut sugar"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_053",
+      "name": {
+        "en": "Baking Powder",
+        "es": "Polvo de Hornear",
+        "fr": "Levure Chimique"
+      },
+      "category": "pantry",
+      "unit": "tsp",
+      "avgPrice": 0.1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place",
+        "es": "Guardar en lugar fresco y seco",
+        "fr": "Conserver au sec"
+      }
+    },
+    {
+      "id": "ing_054",
+      "name": {
+        "en": "Vanilla Extract",
+        "es": "Extracto de Vainilla",
+        "fr": "Extrait de Vanille"
+      },
+      "category": "pantry",
+      "unit": "tsp",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_055",
+      "name": {
+        "en": "Paprika",
+        "es": "Pimentón",
+        "fr": "Paprika"
+      },
+      "category": "spices",
+      "unit": "tsp",
+      "avgPrice": 0.15,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark place",
+        "es": "Guardar en lugar fresco y oscuro",
+        "fr": "Conserver au frais et à l'ombre"
+      }
+    },
+    {
+      "id": "ing_056",
+      "name": {
+        "en": "Oregano",
+        "es": "Orégano",
+        "fr": "Origan"
+      },
+      "category": "spices",
+      "unit": "tsp",
+      "avgPrice": 0.1,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark place",
+        "es": "Guardar en lugar fresco y oscuro",
+        "fr": "Conserver au frais et à l'ombre"
+      }
+    },
+    {
+      "id": "ing_057",
+      "name": {
+        "en": "Basil",
+        "es": "Albahaca",
+        "fr": "Basilic"
+      },
+      "category": "spices",
+      "unit": "tbsp",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in damp towel",
+        "es": "Refrigerar en toalla húmeda",
+        "fr": "Réfrigérer dans serviette humide"
+      }
+    },
+    {
+      "id": "ing_058",
+      "name": {
+        "en": "Ginger",
+        "es": "Jengibre",
+        "fr": "Gingembre"
+      },
+      "category": "spices",
+      "unit": "tbsp",
+      "avgPrice": 0.3,
+      "currency": "USD",
+      "region": "Asian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "ginger powder"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place",
+        "es": "Guardar en lugar fresco y seco",
+        "fr": "Conserver au sec"
+      }
+    },
+    {
+      "id": "ing_059",
+      "name": {
+        "en": "Chili Powder",
+        "es": "Chile en Polvo",
+        "fr": "Poudre de Piment"
+      },
+      "category": "spices",
+      "unit": "tsp",
+      "avgPrice": 0.15,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "cayenne"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark place",
+        "es": "Guardar en lugar fresco y oscuro",
+        "fr": "Conserver au frais et à l'ombre"
+      }
+    },
+    {
+      "id": "ing_060",
+      "name": {
+        "en": "Cinnamon",
+        "es": "Canela",
+        "fr": "Cannelle"
+      },
+      "category": "spices",
+      "unit": "tsp",
+      "avgPrice": 0.1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark place",
+        "es": "Guardar en lugar fresco y oscuro",
+        "fr": "Conserver au frais et à l'ombre"
+      }
+    },
+    {
+      "id": "ing_061",
+      "name": {
+        "en": "Quinoa",
+        "es": "Quinoa",
+        "fr": "Quinoa"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "South American",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "rice"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_062",
+      "name": {
+        "en": "Couscous",
+        "es": "Cuscús",
+        "fr": "Couscous"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 0.9,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "quinoa"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_063",
+      "name": {
+        "en": "Corn Tortilla",
+        "es": "Tortilla de Maíz",
+        "fr": "Tortilla de Maïs"
+      },
+      "category": "grains",
+      "unit": "piece",
+      "avgPrice": 0.25,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature",
+        "es": "Guardar a temperatura ambiente",
+        "fr": "Conserver à température ambiante"
+      }
+    },
+    {
+      "id": "ing_064",
+      "name": {
+        "en": "Pita Bread",
+        "es": "Pan Pita",
+        "fr": "Pain Pita"
+      },
+      "category": "grains",
+      "unit": "piece",
+      "avgPrice": 0.6,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature",
+        "es": "Guardar a temperatura ambiente",
+        "fr": "Conserver à température ambiante"
+      }
+    },
+    {
+      "id": "ing_065",
+      "name": {
+        "en": "Chickpeas",
+        "es": "Garbanzos",
+        "fr": "Pois Chiches"
+      },
+      "category": "protein",
+      "unit": "cup",
+      "avgPrice": 0.8,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store dried in pantry",
+        "es": "Guardar secos en despensa",
+        "fr": "Conserver secs au garde-manger"
+      }
+    },
+    {
+      "id": "ing_066",
+      "name": {
+        "en": "Pork Chop",
+        "es": "Chuleta de Cerdo",
+        "fr": "Côtelette de Porc"
+      },
+      "category": "protein",
+      "unit": "piece",
+      "avgPrice": 3.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "chicken breast"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 3 days",
+        "es": "Refrigerar, usar en 3 días",
+        "fr": "Réfrigérer, utiliser sous 3 jours"
+      }
+    },
+    {
+      "id": "ing_067",
+      "name": {
+        "en": "Lamb Chop",
+        "es": "Chuleta de Cordero",
+        "fr": "Côtelette d'Agneau"
+      },
+      "category": "protein",
+      "unit": "piece",
+      "avgPrice": 6,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "beef steak"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 3 days",
+        "es": "Refrigerar, usar en 3 días",
+        "fr": "Réfrigérer, utiliser sous 3 jours"
+      }
+    },
+    {
+      "id": "ing_068",
+      "name": {
+        "en": "Duck Breast",
+        "es": "Pechuga de Pato",
+        "fr": "Magret de Canard"
+      },
+      "category": "protein",
+      "unit": "piece",
+      "avgPrice": 8,
+      "currency": "USD",
+      "region": "French",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "chicken breast"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, use within 2 days",
+        "es": "Refrigerar, usar en 2 días",
+        "fr": "Réfrigérer, utiliser sous 2 jours"
+      }
+    },
+    {
+      "id": "ing_069",
+      "name": {
+        "en": "Scallops",
+        "es": "Vieiras",
+        "fr": "Coquilles Saint-Jacques"
+      },
+      "category": "protein",
+      "unit": "lb",
+      "avgPrice": 18,
+      "currency": "USD",
+      "region": "Coastal",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "shrimp"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Keep refrigerated, use within 1 day",
+        "es": "Mantener refrigerado, usar en 1 día",
+        "fr": "Garder réfrigéré, utiliser sous 1 jour"
+      }
+    },
+    {
+      "id": "ing_070",
+      "name": {
+        "en": "Tuna Steak",
+        "es": "Filete de Atún",
+        "fr": "Steak de Thon"
+      },
+      "category": "protein",
+      "unit": "piece",
+      "avgPrice": 12,
+      "currency": "USD",
+      "region": "Coastal",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": false,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": true
+      },
+      "alternatives": [
+        "salmon"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Keep refrigerated, use within 2 days",
+        "es": "Mantener refrigerado, usar en 2 días",
+        "fr": "Garder réfrigéré, utiliser sous 2 jours"
+      }
+    },
+    {
+      "id": "ing_071",
+      "name": {
+        "en": "Eggplant",
+        "es": "Berenjena",
+        "fr": "Aubergine"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "zucchini"
+      ],
+      "seasonality": [
+        "summer",
+        "fall"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature",
+        "es": "Guardar a temperatura ambiente",
+        "fr": "Conserver à température ambiante"
+      }
+    },
+    {
+      "id": "ing_072",
+      "name": {
+        "en": "Cauliflower",
+        "es": "Coliflor",
+        "fr": "Chou-fleur"
+      },
+      "category": "vegetables",
+      "unit": "head",
+      "avgPrice": 3,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "broccoli"
+      ],
+      "seasonality": [
+        "fall",
+        "winter"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper",
+        "es": "Refrigerar en cajón",
+        "fr": "Réfrigérer dans bac"
+      }
+    },
+    {
+      "id": "ing_073",
+      "name": {
+        "en": "Kale",
+        "es": "Col Rizada",
+        "fr": "Chou Frisé"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 2.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "spinach"
+      ],
+      "seasonality": [
+        "fall",
+        "winter"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper",
+        "es": "Refrigerar en cajón",
+        "fr": "Réfrigérer dans bac"
+      }
+    },
+    {
+      "id": "ing_074",
+      "name": {
+        "en": "Asparagus",
+        "es": "Espárragos",
+        "fr": "Asperges"
+      },
+      "category": "vegetables",
+      "unit": "bunch",
+      "avgPrice": 4,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "green beans"
+      ],
+      "seasonality": [
+        "spring"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate upright in water",
+        "es": "Refrigerar vertical en agua",
+        "fr": "Réfrigérer debout dans l'eau"
+      }
+    },
+    {
+      "id": "ing_075",
+      "name": {
+        "en": "Brussels Sprouts",
+        "es": "Coles de Bruselas",
+        "fr": "Choux de Bruxelles"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 3.5,
+      "currency": "USD",
+      "region": "European",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "cabbage"
+      ],
+      "seasonality": [
+        "fall",
+        "winter"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper",
+        "es": "Refrigerar en cajón",
+        "fr": "Réfrigérer dans bac"
+      }
+    },
+    {
+      "id": "ing_076",
+      "name": {
+        "en": "Sweet Potato",
+        "es": "Batata",
+        "fr": "Patate Douce"
+      },
+      "category": "vegetables",
+      "unit": "piece",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "regular potato"
+      ],
+      "seasonality": [
+        "fall",
+        "winter"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dark place",
+        "es": "Guardar en lugar fresco y oscuro",
+        "fr": "Conserver au frais et à l'abri"
+      }
+    },
+    {
+      "id": "ing_077",
+      "name": {
+        "en": "Corn",
+        "es": "Maíz",
+        "fr": "Maïs"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "American",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in husk",
+        "es": "Refrigerar con hoja",
+        "fr": "Réfrigérer dans feuille"
+      }
+    },
+    {
+      "id": "ing_078",
+      "name": {
+        "en": "Green Beans",
+        "es": "Judías Verdes",
+        "fr": "Haricots Verts"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 2.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "asparagus"
+      ],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper",
+        "es": "Refrigerar en cajón",
+        "fr": "Réfrigérer dans bac"
+      }
+    },
+    {
+      "id": "ing_079",
+      "name": {
+        "en": "Cabbage",
+        "es": "Repollo",
+        "fr": "Chou"
+      },
+      "category": "vegetables",
+      "unit": "cup",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "lettuce"
+      ],
+      "seasonality": [
+        "fall",
+        "winter"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate whole",
+        "es": "Refrigerar entero",
+        "fr": "Réfrigérer entier"
+      }
+    },
+    {
+      "id": "ing_080",
+      "name": {
+        "en": "Celery",
+        "es": "Apio",
+        "fr": "Céleri"
+      },
+      "category": "vegetables",
+      "unit": "stalk",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate in crisper",
+        "es": "Refrigerar en cajón",
+        "fr": "Réfrigérer dans bac"
+      }
+    },
+    {
+      "id": "ing_081",
+      "name": {
+        "en": "Strawberry",
+        "es": "Fresa",
+        "fr": "Fraise"
+      },
+      "category": "fruits",
+      "unit": "cup",
+      "avgPrice": 4,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "blueberries"
+      ],
+      "seasonality": [
+        "spring",
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, wash before eating",
+        "es": "Refrigerar, lavar antes de comer",
+        "fr": "Réfrigérer, laver avant de manger"
+      }
+    },
+    {
+      "id": "ing_082",
+      "name": {
+        "en": "Blueberry",
+        "es": "Arándano",
+        "fr": "Myrtille"
+      },
+      "category": "fruits",
+      "unit": "cup",
+      "avgPrice": 5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "strawberries"
+      ],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate, don't wash until ready",
+        "es": "Refrigerar, no lavar hasta usar",
+        "fr": "Réfrigérer, ne pas laver avant usage"
+      }
+    },
+    {
+      "id": "ing_083",
+      "name": {
+        "en": "Apple",
+        "es": "Manzana",
+        "fr": "Pomme"
+      },
+      "category": "fruits",
+      "unit": "piece",
+      "avgPrice": 1,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "pear"
+      ],
+      "seasonality": [
+        "fall",
+        "winter"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate for longer storage",
+        "es": "Refrigerar para más tiempo",
+        "fr": "Réfrigérer pour conservation"
+      }
+    },
+    {
+      "id": "ing_084",
+      "name": {
+        "en": "Pineapple",
+        "es": "Piña",
+        "fr": "Ananas"
+      },
+      "category": "fruits",
+      "unit": "cup",
+      "avgPrice": 3.5,
+      "currency": "USD",
+      "region": "Tropical",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "mango"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temp until ripe",
+        "es": "Guardar a temp ambiente hasta madurar",
+        "fr": "Conserver à temp ambiante"
+      }
+    },
+    {
+      "id": "ing_085",
+      "name": {
+        "en": "Mango",
+        "es": "Mango",
+        "fr": "Mangue"
+      },
+      "category": "fruits",
+      "unit": "piece",
+      "avgPrice": 2.5,
+      "currency": "USD",
+      "region": "Tropical",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "peach"
+      ],
+      "seasonality": [
+        "spring",
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temp until ripe",
+        "es": "Guardar a temp ambiente hasta madurar",
+        "fr": "Conserver à temp ambiante"
+      }
+    },
+    {
+      "id": "ing_086",
+      "name": {
+        "en": "Brown Rice",
+        "es": "Arroz Integral",
+        "fr": "Riz Complet"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Asian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "white rice"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_087",
+      "name": {
+        "en": "Jasmine Rice",
+        "es": "Arroz Jazmín",
+        "fr": "Riz Jasmin"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "Asian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "basmati rice"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_088",
+      "name": {
+        "en": "Penne Pasta",
+        "es": "Pasta Penne",
+        "fr": "Pâtes Penne"
+      },
+      "category": "grains",
+      "unit": "oz",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "rigatoni"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_089",
+      "name": {
+        "en": "Fettuccine",
+        "es": "Fettuccine",
+        "fr": "Fettuccine"
+      },
+      "category": "grains",
+      "unit": "oz",
+      "avgPrice": 1.8,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": false,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "linguine"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_090",
+      "name": {
+        "en": "Oats",
+        "es": "Avena",
+        "fr": "Flocons d'Avoine"
+      },
+      "category": "grains",
+      "unit": "cup",
+      "avgPrice": 0.8,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_091",
+      "name": {
+        "en": "Almond",
+        "es": "Almendra",
+        "fr": "Amande"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 6,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": false,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "cashews"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place",
+        "es": "Guardar en lugar fresco y seco",
+        "fr": "Conserver au sec et au frais"
+      }
+    },
+    {
+      "id": "ing_092",
+      "name": {
+        "en": "Walnut",
+        "es": "Nuez",
+        "fr": "Noix"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 7,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": false,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "pecans"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place",
+        "es": "Guardar en lugar fresco y seco",
+        "fr": "Conserver au sec et au frais"
+      }
+    },
+    {
+      "id": "ing_093",
+      "name": {
+        "en": "Cashew",
+        "es": "Anacardo",
+        "fr": "Noix de Cajou"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 8,
+      "currency": "USD",
+      "region": "Asian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": false,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "almonds"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in airtight container",
+        "es": "Guardar en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      }
+    },
+    {
+      "id": "ing_094",
+      "name": {
+        "en": "Sesame Seeds",
+        "es": "Semillas de Sésamo",
+        "fr": "Graines de Sésame"
+      },
+      "category": "spices",
+      "unit": "tbsp",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Asian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_095",
+      "name": {
+        "en": "Chia Seeds",
+        "es": "Semillas de Chía",
+        "fr": "Graines de Chia"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.75,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "flax seeds"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in cool, dry place",
+        "es": "Guardar en lugar fresco y seco",
+        "fr": "Conserver au sec et au frais"
+      }
+    },
+    {
+      "id": "ing_096",
+      "name": {
+        "en": "Mayonnaise",
+        "es": "Mayonesa",
+        "fr": "Mayonnaise"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.3,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "vegan mayo"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening",
+        "es": "Refrigerar después de abrir",
+        "fr": "Réfrigérer après ouverture"
+      }
+    },
+    {
+      "id": "ing_097",
+      "name": {
+        "en": "Mustard",
+        "es": "Mostaza",
+        "fr": "Moutarde"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.2,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening",
+        "es": "Refrigerar después de abrir",
+        "fr": "Réfrigérer après ouverture"
+      }
+    },
+    {
+      "id": "ing_098",
+      "name": {
+        "en": "Ketchup",
+        "es": "Kétchup",
+        "fr": "Ketchup"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.15,
+      "currency": "USD",
+      "region": "American",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening",
+        "es": "Refrigerar después de abrir",
+        "fr": "Réfrigérer après ouverture"
+      }
+    },
+    {
+      "id": "ing_099",
+      "name": {
+        "en": "Balsamic Vinegar",
+        "es": "Vinagre Balsámico",
+        "fr": "Vinaigre Balsamique"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 1,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "red wine vinegar"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store in pantry",
+        "es": "Guardar en despensa",
+        "fr": "Conserver au garde-manger"
+      }
+    },
+    {
+      "id": "ing_100",
+      "name": {
+        "en": "Honey",
+        "es": "Miel",
+        "fr": "Miel"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.5,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "maple syrup"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Store at room temperature",
+        "es": "Guardar a temperatura ambiente",
+        "fr": "Conserver à température ambiante"
+      }
+    }
+  ]
+}

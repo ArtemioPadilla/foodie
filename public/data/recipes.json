@@ -1,0 +1,5720 @@
+{
+  "recipes": [
+    {
+      "id": "rec_001",
+      "name": {
+        "en": "Scrambled Eggs with Spinach",
+        "es": "Huevos Revueltos con Espinacas",
+        "fr": "Œufs Brouillés aux Épinards"
+      },
+      "description": {
+        "en": "Quick and nutritious breakfast packed with protein",
+        "es": "Desayuno rápido y nutritivo rico en proteína",
+        "fr": "Petit-déjeuner rapide et nutritif riche en protéines"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "mediterranean",
+        "international"
+      ],
+      "prepTime": 5,
+      "cookTime": 10,
+      "totalTime": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "gluten-free",
+        "vegetarian",
+        "low-carb",
+        "high-protein",
+        "quick"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1 plate",
+        "calories": 280,
+        "protein": 18,
+        "carbs": 6,
+        "fat": 20,
+        "fiber": 3,
+        "sugar": 2,
+        "sodium": 450,
+        "cholesterol": 370
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_001",
+          "quantity": 4,
+          "unit": "piece",
+          "preparation": "beaten",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_002",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "chopped",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 1,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_011",
+          "quantity": 0.25,
+          "unit": "cup",
+          "preparation": "crumbled",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Wash and chop the spinach",
+            "es": "Lava y pica las espinacas",
+            "fr": "Laver et hacher les épinards"
+          },
+          "time": 3
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Beat eggs with salt and pepper",
+            "es": "Bate los huevos con sal y pimienta",
+            "fr": "Battre les œufs avec du sel et du poivre"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Heat olive oil in a pan over medium heat",
+            "es": "Calienta el aceite de oliva en una sartén a fuego medio",
+            "fr": "Chauffer l'huile d'olive dans une poêle à feu moyen"
+          },
+          "time": 2
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Add spinach and cook until wilted",
+            "es": "Agrega las espinacas y cocina hasta que se marchiten",
+            "fr": "Ajouter les épinards et cuire jusqu'à ce qu'ils soient flétris"
+          },
+          "time": 3
+        },
+        {
+          "step": 5,
+          "text": {
+            "en": "Pour beaten eggs and scramble gently",
+            "es": "Vierte los huevos batidos y revuelve suavemente",
+            "fr": "Verser les œufs battus et brouiller doucement"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add feta cheese at the end for extra flavor",
+        "es": "Agrega queso feta al final para más sabor",
+        "fr": "Ajouter du fromage feta à la fin pour plus de saveur"
+      },
+      "equipment": [
+        "frying-pan",
+        "whisk",
+        "cutting-board"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-15",
+      "rating": 4.8,
+      "reviewCount": 234
+    },
+    {
+      "id": "rec_002",
+      "name": {
+        "en": "Mediterranean Grilled Chicken",
+        "es": "Pollo a la Parrilla Mediterráneo",
+        "fr": "Poulet Grillé Méditerranéen"
+      },
+      "description": {
+        "en": "Juicy chicken marinated in Mediterranean herbs and spices",
+        "es": "Pollo jugoso marinado en hierbas y especias mediterráneas",
+        "fr": "Poulet juteux mariné aux herbes et épices méditerranéennes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "mediterranean"
+      ],
+      "prepTime": 15,
+      "cookTime": 20,
+      "totalTime": 35,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "gluten-free",
+        "high-protein",
+        "low-carb"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1 breast",
+        "calories": 320,
+        "protein": 45,
+        "carbs": 3,
+        "fat": 14,
+        "fiber": 1,
+        "sugar": 1,
+        "sodium": 520,
+        "cholesterol": 125
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 2,
+          "unit": "lb",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 3,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_006",
+          "quantity": 4,
+          "unit": "clove",
+          "preparation": "minced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "juiced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mix olive oil, garlic, lemon juice in a bowl",
+            "es": "Mezcla aceite de oliva, ajo y jugo de limón en un tazón",
+            "fr": "Mélanger l'huile d'olive, l'ail et le jus de citron dans un bol"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add chicken breasts and marinate for 30 minutes",
+            "es": "Agrega las pechugas de pollo y marina por 30 minutos",
+            "fr": "Ajouter les poitrines de poulet et mariner pendant 30 minutes"
+          },
+          "time": 30
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Preheat grill to medium-high heat",
+            "es": "Precalienta la parrilla a fuego medio-alto",
+            "fr": "Préchauffer le gril à feu moyen-vif"
+          },
+          "time": 5
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Grill chicken for 6-7 minutes per side",
+            "es": "Asa el pollo por 6-7 minutos por lado",
+            "fr": "Griller le poulet pendant 6-7 minutes de chaque côté"
+          },
+          "time": 14
+        },
+        {
+          "step": 5,
+          "text": {
+            "en": "Let rest for 5 minutes before serving",
+            "es": "Deja reposar 5 minutos antes de servir",
+            "fr": "Laisser reposer 5 minutes avant de servir"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Serve with a Greek salad and tzatziki sauce",
+        "es": "Sirve con ensalada griega y salsa tzatziki",
+        "fr": "Servir avec une salade grecque et une sauce tzatziki"
+      },
+      "equipment": [
+        "grill",
+        "bowl",
+        "tongs"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-10",
+      "rating": 4.9,
+      "reviewCount": 567
+    },
+    {
+      "id": "rec_003",
+      "name": {
+        "en": "Black Bean Tacos",
+        "es": "Tacos de Frijoles Negros",
+        "fr": "Tacos aux Haricots Noirs"
+      },
+      "description": {
+        "en": "Delicious vegetarian tacos with seasoned black beans",
+        "es": "Deliciosos tacos vegetarianos con frijoles negros sazonados",
+        "fr": "Délicieux tacos végétariens aux haricots noirs assaisonnés"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "mexican"
+      ],
+      "prepTime": 10,
+      "cookTime": 15,
+      "totalTime": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "quick",
+        "budget-friendly"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 tacos",
+        "calories": 380,
+        "protein": 15,
+        "carbs": 58,
+        "fat": 10,
+        "fiber": 12,
+        "sugar": 4,
+        "sodium": 580,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_013",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_015",
+          "quantity": 2,
+          "unit": "tsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_014",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Sauté diced onion until translucent",
+            "es": "Saltea la cebolla picada hasta que esté transparente",
+            "fr": "Faire revenir l'oignon émincé jusqu'à ce qu'il soit translucide"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add black beans and cumin, cook for 10 minutes",
+            "es": "Agrega los frijoles negros y el comino, cocina por 10 minutos",
+            "fr": "Ajouter les haricots noirs et le cumin, cuire pendant 10 minutes"
+          },
+          "time": 10
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Warm tortillas",
+            "es": "Calienta las tortillas",
+            "fr": "Réchauffer les tortillas"
+          },
+          "time": 2
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Assemble tacos with beans and toppings",
+            "es": "Arma los tacos con frijoles y aderezos",
+            "fr": "Assembler les tacos avec les haricots et les garnitures"
+          },
+          "time": 3
+        }
+      ],
+      "tips": {
+        "en": "Top with avocado, salsa, and cilantro",
+        "es": "Cubre con aguacate, salsa y cilantro",
+        "fr": "Garnir d'avocat, de salsa et de coriandre"
+      },
+      "equipment": [
+        "pan",
+        "cutting-board",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-12",
+      "rating": 4.6,
+      "reviewCount": 189
+    },
+    {
+      "id": "rec_004",
+      "name": {
+        "en": "Greek Yogurt Parfait",
+        "es": "Parfait de Yogur Griego",
+        "fr": "Parfait au Yaourt Grec"
+      },
+      "description": {
+        "en": "Layered breakfast parfait with Greek yogurt, granola, and fresh berries",
+        "es": "Parfait de desayuno en capas con yogur griego, granola y bayas frescas",
+        "fr": "Parfait de petit-déjeuner en couches avec yaourt grec, granola et baies fraîches"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "international"
+      ],
+      "prepTime": 5,
+      "cookTime": 0,
+      "totalTime": 5,
+      "servings": 1,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "no-cook",
+        "quick",
+        "high-protein"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 bowl",
+        "calories": 320,
+        "protein": 20,
+        "carbs": 45,
+        "fat": 8,
+        "fiber": 6,
+        "sugar": 22,
+        "sodium": 85,
+        "cholesterol": 15
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_016",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_017",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_018",
+          "quantity": 0.5,
+          "unit": "cup",
+          "preparation": "mixed",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_019",
+          "quantity": 1,
+          "unit": "tbsp",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Layer half the yogurt in a glass",
+            "es": "Coloca la mitad del yogur en un vaso",
+            "fr": "Déposer la moitié du yaourt dans un verre"
+          },
+          "time": 1
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add a layer of granola",
+            "es": "Agrega una capa de granola",
+            "fr": "Ajouter une couche de granola"
+          },
+          "time": 1
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Add berries on top",
+            "es": "Agrega bayas encima",
+            "fr": "Ajouter des baies sur le dessus"
+          },
+          "time": 1
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Repeat layers and drizzle with honey",
+            "es": "Repite las capas y rocía con miel",
+            "fr": "Répéter les couches et arroser de miel"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Prepare the night before for a quick breakfast",
+        "es": "Prepara la noche anterior para un desayuno rápido",
+        "fr": "Préparer la veille pour un petit-déjeuner rapide"
+      },
+      "equipment": [
+        "glass",
+        "spoon"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-16",
+      "rating": 4.7,
+      "reviewCount": 342
+    },
+    {
+      "id": "rec_005",
+      "name": {
+        "en": "Avocado Toast",
+        "es": "Tostada de Aguacate",
+        "fr": "Toast à l'Avocat"
+      },
+      "description": {
+        "en": "Classic avocado toast with perfectly seasoned mashed avocado",
+        "es": "Tostada clásica de aguacate con aguacate machacado perfectamente sazonado",
+        "fr": "Toast à l'avocat classique avec avocat écrasé parfaitement assaisonné"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "international"
+      ],
+      "prepTime": 5,
+      "cookTime": 3,
+      "totalTime": 8,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "quick",
+        "trendy"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 slices",
+        "calories": 285,
+        "protein": 7,
+        "carbs": 32,
+        "fat": 15,
+        "fiber": 9,
+        "sugar": 3,
+        "sodium": 280,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_014",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "ripe",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_020",
+          "quantity": 4,
+          "unit": "slice",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 0.5,
+          "unit": "piece",
+          "preparation": "juiced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_021",
+          "quantity": 0.25,
+          "unit": "tsp",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Toast bread until golden",
+            "es": "Tuesta el pan hasta que esté dorado",
+            "fr": "Griller le pain jusqu'à ce qu'il soit doré"
+          },
+          "time": 3
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Mash avocado with lemon juice, salt, and pepper",
+            "es": "Machaca el aguacate con jugo de limón, sal y pimienta",
+            "fr": "Écraser l'avocat avec du jus de citron, du sel et du poivre"
+          },
+          "time": 3
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Spread avocado mixture on toast",
+            "es": "Unta la mezcla de aguacate en la tostada",
+            "fr": "Étaler le mélange d'avocat sur le toast"
+          },
+          "time": 2
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Top with red pepper flakes if desired",
+            "es": "Cubre con hojuelas de pimiento rojo si lo deseas",
+            "fr": "Garnir de flocons de piment rouge si désiré"
+          },
+          "time": 1
+        }
+      ],
+      "tips": {
+        "en": "Add a poached egg on top for extra protein",
+        "es": "Agrega un huevo escalfado encima para más proteína",
+        "fr": "Ajouter un œuf poché sur le dessus pour plus de protéines"
+      },
+      "equipment": [
+        "toaster",
+        "fork",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-17",
+      "rating": 4.8,
+      "reviewCount": 512
+    },
+    {
+      "id": "rec_006",
+      "name": {
+        "en": "Overnight Oats",
+        "es": "Avena Nocturna",
+        "fr": "Flocons d'Avoine du Nuit"
+      },
+      "description": {
+        "en": "Creamy overnight oats with chia seeds and your favorite toppings",
+        "es": "Avena nocturna cremosa con semillas de chía y tus ingredientes favoritos",
+        "fr": "Flocons d'avoine crémeux avec graines de chia et vos garnitures préférées"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "international"
+      ],
+      "prepTime": 5,
+      "cookTime": 0,
+      "totalTime": 5,
+      "servings": 1,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "make-ahead",
+        "no-cook",
+        "high-fiber"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 jar",
+        "calories": 295,
+        "protein": 9,
+        "carbs": 48,
+        "fat": 8,
+        "fiber": 11,
+        "sugar": 12,
+        "sodium": 45,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_022",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_023",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_024",
+          "quantity": 1,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_025",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mix oats, milk, and chia seeds in a jar",
+            "es": "Mezcla avena, leche y semillas de chía en un frasco",
+            "fr": "Mélanger flocons d'avoine, lait et graines de chia dans un bocal"
+          },
+          "time": 2
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Stir well and refrigerate overnight",
+            "es": "Revuelve bien y refrigera durante la noche",
+            "fr": "Bien mélanger et réfrigérer toute la nuit"
+          },
+          "time": 1
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "In the morning, stir and add toppings",
+            "es": "Por la mañana, revuelve y agrega ingredientes",
+            "fr": "Le matin, remuer et ajouter les garnitures"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add maple syrup or honey for sweetness",
+        "es": "Agrega jarabe de arce o miel para dulzura",
+        "fr": "Ajouter du sirop d'érable ou du miel pour la douceur"
+      },
+      "equipment": [
+        "jar",
+        "spoon"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-18",
+      "rating": 4.9,
+      "reviewCount": 678
+    },
+    {
+      "id": "rec_007",
+      "name": {
+        "en": "Banana Pancakes",
+        "es": "Panqueques de Plátano",
+        "fr": "Crêpes à la Banane"
+      },
+      "description": {
+        "en": "Fluffy pancakes with mashed banana",
+        "es": "Panqueques esponjosos con plátano",
+        "fr": "Crêpes moelleuses avec banane"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 10,
+      "cookTime": 15,
+      "totalTime": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "kid-friendly"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "3 pancakes",
+        "calories": 340,
+        "protein": 11,
+        "carbs": 52,
+        "fat": 10,
+        "fiber": 3,
+        "sugar": 15,
+        "sodium": 420,
+        "cholesterol": 75
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_026",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_025",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "mashed",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mix ingredients",
+            "es": "Mezcla ingredientes",
+            "fr": "Mélanger ingrédients"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Cook on griddle",
+            "es": "Cocina en plancha",
+            "fr": "Cuire sur plaque"
+          },
+          "time": 10
+        }
+      ],
+      "tips": {
+        "en": "Serve with syrup",
+        "es": "Sirve con jarabe",
+        "fr": "Servir avec sirop"
+      },
+      "equipment": [
+        "griddle"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-19",
+      "rating": 4.7,
+      "reviewCount": 425
+    },
+    {
+      "id": "rec_008",
+      "name": {
+        "en": "Caesar Salad",
+        "es": "Ensalada César",
+        "fr": "Salade César"
+      },
+      "description": {
+        "en": "Classic Caesar with romaine and parmesan",
+        "es": "César clásica con romana y parmesano",
+        "fr": "César classique avec romaine et parmesan"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 10,
+      "cookTime": 0,
+      "totalTime": 10,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "quick",
+        "salad"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": true,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 salad",
+        "calories": 320,
+        "protein": 12,
+        "carbs": 15,
+        "fat": 24,
+        "fiber": 3,
+        "sugar": 2,
+        "sodium": 680,
+        "cholesterol": 45
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_035",
+          "quantity": 4,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_034",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Chop lettuce",
+            "es": "Pica lechuga",
+            "fr": "Hacher laitue"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add dressing",
+            "es": "Agrega aderezo",
+            "fr": "Ajouter vinaigrette"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add grilled chicken",
+        "es": "Agrega pollo asado",
+        "fr": "Ajouter poulet grillé"
+      },
+      "equipment": [
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-21",
+      "rating": 4.5,
+      "reviewCount": 312
+    },
+    {
+      "id": "rec_009",
+      "name": {
+        "en": "Spaghetti Bolognese",
+        "es": "Espagueti a la Boloñesa",
+        "fr": "Spaghetti Bolognaise"
+      },
+      "description": {
+        "en": "Italian pasta with rich meat sauce",
+        "es": "Pasta italiana con salsa de carne",
+        "fr": "Pâtes italiennes avec sauce à la viande"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "italian"
+      ],
+      "prepTime": 10,
+      "cookTime": 30,
+      "totalTime": 40,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "comfort-food",
+        "family-friendly"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 cups",
+        "calories": 520,
+        "protein": 28,
+        "carbs": 65,
+        "fat": 16,
+        "fiber": 5,
+        "sugar": 8,
+        "sodium": 780,
+        "cholesterol": 65
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_032",
+          "quantity": 1,
+          "unit": "lb",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_031",
+          "quantity": 1,
+          "unit": "lb",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_033",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook pasta",
+            "es": "Cocina pasta",
+            "fr": "Cuire pâtes"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Brown meat",
+            "es": "Dora carne",
+            "fr": "Dorer viande"
+          },
+          "time": 8
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Add sauce and simmer",
+            "es": "Agrega salsa y hierve",
+            "fr": "Ajouter sauce et mijoter"
+          },
+          "time": 15
+        }
+      ],
+      "tips": {
+        "en": "Top with parmesan",
+        "es": "Cubre con parmesano",
+        "fr": "Garnir de parmesan"
+      },
+      "equipment": [
+        "pot",
+        "pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-22",
+      "rating": 4.8,
+      "reviewCount": 645
+    },
+    {
+      "id": "rec_010",
+      "name": {
+        "en": "Veggie Omelette",
+        "es": "Omelette de Verduras",
+        "fr": "Omelette aux Légumes"
+      },
+      "description": {
+        "en": "Fluffy omelette with vegetables and cheese",
+        "es": "Omelette esponjoso con verduras y queso",
+        "fr": "Omelette moelleuse aux légumes et fromage"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "international"
+      ],
+      "prepTime": 5,
+      "cookTime": 8,
+      "totalTime": 13,
+      "servings": 1,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "high-protein",
+        "quick"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 omelette",
+        "calories": 320,
+        "protein": 22,
+        "carbs": 8,
+        "fat": 23,
+        "fiber": 2,
+        "sugar": 4,
+        "sodium": 520,
+        "cholesterol": 395
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_001",
+          "quantity": 3,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_009",
+          "quantity": 0.25,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_045",
+          "quantity": 0.25,
+          "unit": "cup",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_029",
+          "quantity": 0.25,
+          "unit": "cup",
+          "preparation": "shredded",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Beat eggs with salt and pepper",
+            "es": "Bate huevos con sal y pimienta",
+            "fr": "Battre œufs avec sel et poivre"
+          },
+          "time": 2
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Sauté vegetables in butter",
+            "es": "Saltea verduras en mantequilla",
+            "fr": "Faire revenir légumes au beurre"
+          },
+          "time": 3
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Pour eggs over vegetables",
+            "es": "Vierte huevos sobre verduras",
+            "fr": "Verser œufs sur légumes"
+          },
+          "time": 1
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Add cheese and fold",
+            "es": "Agrega queso y dobla",
+            "fr": "Ajouter fromage et plier"
+          },
+          "time": 4
+        }
+      ],
+      "tips": {
+        "en": "Don't overcook - keep it slightly runny",
+        "es": "No cocines demás - mantén ligeramente líquido",
+        "fr": "Ne pas trop cuire - garder légèrement coulant"
+      },
+      "equipment": [
+        "pan",
+        "whisk"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-23",
+      "rating": 4.7,
+      "reviewCount": 398
+    },
+    {
+      "id": "rec_011",
+      "name": {
+        "en": "Breakfast Quesadilla",
+        "es": "Quesadilla de Desayuno",
+        "fr": "Quesadilla du Matin"
+      },
+      "description": {
+        "en": "Crispy tortilla with eggs, cheese, and bacon",
+        "es": "Tortilla crujiente con huevos, queso y tocino",
+        "fr": "Tortilla croustillante avec œufs, fromage et bacon"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "mexican"
+      ],
+      "prepTime": 5,
+      "cookTime": 10,
+      "totalTime": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "quick",
+        "hearty"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 quesadilla",
+        "calories": 485,
+        "protein": 28,
+        "carbs": 32,
+        "fat": 27,
+        "fiber": 2,
+        "sugar": 2,
+        "sodium": 890,
+        "cholesterol": 425
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_028",
+          "quantity": 4,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_001",
+          "quantity": 4,
+          "unit": "piece",
+          "preparation": "scrambled",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_038",
+          "quantity": 4,
+          "unit": "slice",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_029",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "shredded",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook bacon until crispy",
+            "es": "Cocina tocino hasta crujiente",
+            "fr": "Cuire bacon jusqu'à croustillant"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Scramble eggs",
+            "es": "Revuelve huevos",
+            "fr": "Brouiller œufs"
+          },
+          "time": 3
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Layer tortilla with eggs, bacon, cheese",
+            "es": "Coloca capas de huevo, tocino, queso en tortilla",
+            "fr": "Disposer œufs, bacon, fromage sur tortilla"
+          },
+          "time": 1
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Fold and cook until crispy",
+            "es": "Dobla y cocina hasta crujiente",
+            "fr": "Plier et cuire jusqu'à croustillant"
+          },
+          "time": 4
+        }
+      ],
+      "tips": {
+        "en": "Serve with salsa and sour cream",
+        "es": "Sirve con salsa y crema agria",
+        "fr": "Servir avec salsa et crème aigre"
+      },
+      "equipment": [
+        "pan",
+        "spatula"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-24",
+      "rating": 4.8,
+      "reviewCount": 456
+    },
+    {
+      "id": "rec_012",
+      "name": {
+        "en": "Grilled Chicken Wrap",
+        "es": "Wrap de Pollo a la Parrilla",
+        "fr": "Wrap au Poulet Grillé"
+      },
+      "description": {
+        "en": "Healthy wrap with grilled chicken and vegetables",
+        "es": "Wrap saludable con pollo a la parrilla y verduras",
+        "fr": "Wrap sain avec poulet grillé et légumes"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 10,
+      "cookTime": 12,
+      "totalTime": 22,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "high-protein",
+        "healthy"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 wrap",
+        "calories": 420,
+        "protein": 38,
+        "carbs": 42,
+        "fat": 12,
+        "fiber": 5,
+        "sugar": 4,
+        "sodium": 720,
+        "cholesterol": 85
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 8,
+          "unit": "oz",
+          "preparation": "grilled and sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_028",
+          "quantity": 2,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_035",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "chopped",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Grill chicken breast until cooked",
+            "es": "Asa pechuga de pollo hasta cocinar",
+            "fr": "Griller poitrine de poulet jusqu'à cuisson"
+          },
+          "time": 12
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Slice chicken",
+            "es": "Rebana pollo",
+            "fr": "Trancher poulet"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Layer tortilla with lettuce, tomato, chicken",
+            "es": "Coloca lechuga, tomate, pollo en tortilla",
+            "fr": "Disposer laitue, tomate, poulet sur tortilla"
+          },
+          "time": 3
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Roll tightly and cut in half",
+            "es": "Enrolla firmemente y corta por mitad",
+            "fr": "Rouler fermement et couper en deux"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add ranch dressing for extra flavor",
+        "es": "Agrega aderezo ranch para más sabor",
+        "fr": "Ajouter vinaigrette ranch pour plus de saveur"
+      },
+      "equipment": [
+        "grill",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-25",
+      "rating": 4.6,
+      "reviewCount": 289
+    },
+    {
+      "id": "rec_013",
+      "name": {
+        "en": "BLT Sandwich",
+        "es": "Sándwich BLT",
+        "fr": "Sandwich BLT"
+      },
+      "description": {
+        "en": "Classic bacon, lettuce, and tomato sandwich",
+        "es": "Clásico sándwich de tocino, lechuga y tomate",
+        "fr": "Sandwich classique bacon, laitue et tomate"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 8,
+      "cookTime": 7,
+      "totalTime": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "classic",
+        "quick"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 sandwich",
+        "calories": 445,
+        "protein": 18,
+        "carbs": 38,
+        "fat": 26,
+        "fiber": 4,
+        "sugar": 5,
+        "sodium": 920,
+        "cholesterol": 45
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_038",
+          "quantity": 6,
+          "unit": "slice",
+          "preparation": "cooked crispy",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_020",
+          "quantity": 4,
+          "unit": "slice",
+          "preparation": "toasted",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_035",
+          "quantity": 2,
+          "unit": "leaf",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook bacon until crispy",
+            "es": "Cocina tocino hasta crujiente",
+            "fr": "Cuire bacon jusqu'à croustillant"
+          },
+          "time": 7
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Toast bread",
+            "es": "Tuesta pan",
+            "fr": "Griller pain"
+          },
+          "time": 3
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Layer bacon, lettuce, tomato",
+            "es": "Coloca tocino, lechuga, tomate en capas",
+            "fr": "Disposer bacon, laitue, tomate en couches"
+          },
+          "time": 3
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Add mayo and top with bread",
+            "es": "Agrega mayonesa y cubre con pan",
+            "fr": "Ajouter mayo et couvrir de pain"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Use thick-cut bacon for best flavor",
+        "es": "Usa tocino grueso para mejor sabor",
+        "fr": "Utiliser bacon épais pour meilleure saveur"
+      },
+      "equipment": [
+        "pan",
+        "toaster"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-26",
+      "rating": 4.7,
+      "reviewCount": 567
+    },
+    {
+      "id": "rec_014",
+      "name": {
+        "en": "Tuna Melt",
+        "es": "Tostada de Atún Fundido",
+        "fr": "Croque Thon"
+      },
+      "description": {
+        "en": "Hot tuna sandwich with melted cheese",
+        "es": "Sándwich caliente de atún con queso fundido",
+        "fr": "Sandwich chaud au thon avec fromage fondu"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 8,
+      "cookTime": 5,
+      "totalTime": 13,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "quick",
+        "comfort-food"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 sandwich",
+        "calories": 465,
+        "protein": 32,
+        "carbs": 36,
+        "fat": 22,
+        "fiber": 3,
+        "sugar": 4,
+        "sodium": 890,
+        "cholesterol": 65
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_020",
+          "quantity": 4,
+          "unit": "slice",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_029",
+          "quantity": 4,
+          "unit": "slice",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mix tuna with mayo",
+            "es": "Mezcla atún con mayonesa",
+            "fr": "Mélanger thon avec mayo"
+          },
+          "time": 3
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Spread on bread",
+            "es": "Unta en pan",
+            "fr": "Étaler sur pain"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Top with cheese and tomato",
+            "es": "Cubre con queso y tomate",
+            "fr": "Garnir de fromage et tomate"
+          },
+          "time": 1
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Broil until cheese melts",
+            "es": "Gratina hasta que queso se derrita",
+            "fr": "Gratin jusqu'à fromage fondu"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add pickles for tang",
+        "es": "Agrega pepinillos para acidez",
+        "fr": "Ajouter cornichons pour acidité"
+      },
+      "equipment": [
+        "oven",
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-27",
+      "rating": 4.5,
+      "reviewCount": 334
+    },
+    {
+      "id": "rec_015",
+      "name": {
+        "en": "Grilled Salmon",
+        "es": "Salmón a la Parrilla",
+        "fr": "Saumon Grillé"
+      },
+      "description": {
+        "en": "Perfectly grilled salmon with lemon and herbs",
+        "es": "Salmón perfectamente asado con limón y hierbas",
+        "fr": "Saumon parfaitement grillé au citron et herbes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "mediterranean"
+      ],
+      "prepTime": 5,
+      "cookTime": 12,
+      "totalTime": 17,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "high-protein",
+        "omega-3"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "6 oz",
+        "calories": 385,
+        "protein": 42,
+        "carbs": 2,
+        "fat": 22,
+        "fiber": 0,
+        "sugar": 1,
+        "sodium": 320,
+        "cholesterol": 95
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_036",
+          "quantity": 24,
+          "unit": "oz",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_006",
+          "quantity": 2,
+          "unit": "clove",
+          "preparation": "minced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Pat salmon dry and season",
+            "es": "Seca salmón y sazona",
+            "fr": "Sécher saumon et assaisonner"
+          },
+          "time": 2
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Brush with olive oil and garlic",
+            "es": "Pincela con aceite de oliva y ajo",
+            "fr": "Badigeonner d'huile d'olive et ail"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Grill skin-side down 6 minutes",
+            "es": "Asa con piel hacia abajo 6 minutos",
+            "fr": "Griller côté peau 6 minutes"
+          },
+          "time": 6
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Flip and grill 4-6 minutes more",
+            "es": "Voltea y asa 4-6 minutos más",
+            "fr": "Retourner et griller 4-6 minutes"
+          },
+          "time": 5
+        },
+        {
+          "step": 5,
+          "text": {
+            "en": "Serve with lemon wedges",
+            "es": "Sirve con rodajas de limón",
+            "fr": "Servir avec quartiers de citron"
+          },
+          "time": 1
+        }
+      ],
+      "tips": {
+        "en": "Don't overcook - salmon should be slightly pink inside",
+        "es": "No cocines demás - salmón debe estar rosado adentro",
+        "fr": "Ne pas trop cuire - saumon doit être rosé à l'intérieur"
+      },
+      "equipment": [
+        "grill",
+        "tongs"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-28",
+      "rating": 4.9,
+      "reviewCount": 678
+    },
+    {
+      "id": "rec_016",
+      "name": {
+        "en": "Beef Stir Fry",
+        "es": "Salteado de Res",
+        "fr": "Sauté de Bœuf"
+      },
+      "description": {
+        "en": "Quick Asian beef stir fry with vegetables",
+        "es": "Salteado rápido asiático de res con verduras",
+        "fr": "Sauté asiatique rapide de bœuf aux légumes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "asian",
+        "chinese"
+      ],
+      "prepTime": 15,
+      "cookTime": 12,
+      "totalTime": 27,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "quick",
+        "high-protein"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": false,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1.5 cups",
+        "calories": 420,
+        "protein": 36,
+        "carbs": 18,
+        "fat": 24,
+        "fiber": 4,
+        "sugar": 8,
+        "sodium": 890,
+        "cholesterol": 95
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_031",
+          "quantity": 1.5,
+          "unit": "lb",
+          "preparation": "sliced thin",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_041",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "florets",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_009",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_051",
+          "quantity": 3,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_058",
+          "quantity": 1,
+          "unit": "tbsp",
+          "preparation": "grated",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Slice beef thin against grain",
+            "es": "Rebana res finamente contra fibra",
+            "fr": "Trancher bœuf finement contre grain"
+          },
+          "time": 8
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Heat wok over high heat",
+            "es": "Calienta wok a fuego alto",
+            "fr": "Chauffer wok à feu vif"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Stir-fry beef until browned",
+            "es": "Saltea res hasta dorar",
+            "fr": "Faire sauter bœuf jusqu'à doré"
+          },
+          "time": 4
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Add vegetables and stir-fry",
+            "es": "Agrega verduras y saltea",
+            "fr": "Ajouter légumes et faire sauter"
+          },
+          "time": 5
+        },
+        {
+          "step": 5,
+          "text": {
+            "en": "Add soy sauce and ginger, toss",
+            "es": "Agrega salsa soja y jengibre, mezcla",
+            "fr": "Ajouter sauce soja et gingembre, mélanger"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Serve over rice or noodles",
+        "es": "Sirve sobre arroz o fideos",
+        "fr": "Servir sur riz ou nouilles"
+      },
+      "equipment": [
+        "wok",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-29",
+      "rating": 4.7,
+      "reviewCount": 445
+    },
+    {
+      "id": "rec_017",
+      "name": {
+        "en": "Shrimp Tacos",
+        "es": "Tacos de Camarón",
+        "fr": "Tacos aux Crevettes"
+      },
+      "description": {
+        "en": "Spicy grilled shrimp tacos with cabbage slaw",
+        "es": "Tacos picantes de camarón a la parrilla con ensalada de col",
+        "fr": "Tacos épicés aux crevettes grillées avec salade de chou"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "mexican"
+      ],
+      "prepTime": 15,
+      "cookTime": 8,
+      "totalTime": 23,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "seafood",
+        "quick",
+        "fresh"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "3 tacos",
+        "calories": 385,
+        "protein": 28,
+        "carbs": 42,
+        "fat": 12,
+        "fiber": 6,
+        "sugar": 4,
+        "sodium": 820,
+        "cholesterol": 165
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_037",
+          "quantity": 1,
+          "unit": "lb",
+          "preparation": "peeled",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_063",
+          "quantity": 12,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_059",
+          "quantity": 2,
+          "unit": "tsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "juiced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Season shrimp with chili powder and lime",
+            "es": "Sazona camarones con chile en polvo y limón",
+            "fr": "Assaisonner crevettes avec piment et citron vert"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Grill shrimp 2-3 minutes per side",
+            "es": "Asa camarones 2-3 minutos por lado",
+            "fr": "Griller crevettes 2-3 minutes par côté"
+          },
+          "time": 6
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Warm tortillas",
+            "es": "Calienta tortillas",
+            "fr": "Réchauffer tortillas"
+          },
+          "time": 2
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Assemble tacos with shrimp and slaw",
+            "es": "Arma tacos con camarones y ensalada",
+            "fr": "Assembler tacos avec crevettes et salade"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add avocado and cilantro for freshness",
+        "es": "Agrega aguacate y cilantro para frescura",
+        "fr": "Ajouter avocat et coriandre pour fraîcheur"
+      },
+      "equipment": [
+        "grill",
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-30",
+      "rating": 4.8,
+      "reviewCount": 512
+    },
+    {
+      "id": "rec_018",
+      "name": {
+        "en": "Baked Chicken Breast",
+        "es": "Pechuga de Pollo al Horno",
+        "fr": "Poitrine de Poulet au Four"
+      },
+      "description": {
+        "en": "Simple oven-baked chicken breast with herbs",
+        "es": "Pechuga de pollo simple al horno con hierbas",
+        "fr": "Simple poitrine de poulet au four aux herbes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "international"
+      ],
+      "prepTime": 5,
+      "cookTime": 25,
+      "totalTime": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "high-protein",
+        "simple"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1 breast",
+        "calories": 285,
+        "protein": 42,
+        "carbs": 2,
+        "fat": 11,
+        "fiber": 0,
+        "sugar": 0,
+        "sodium": 420,
+        "cholesterol": 125
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 2,
+          "unit": "lb",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_056",
+          "quantity": 1,
+          "unit": "tsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_055",
+          "quantity": 1,
+          "unit": "tsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Preheat oven to 400°F",
+            "es": "Precalienta horno a 200°C",
+            "fr": "Préchauffer four à 200°C"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Brush chicken with olive oil",
+            "es": "Pincela pollo con aceite de oliva",
+            "fr": "Badigeonner poulet d'huile d'olive"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Season with oregano, paprika, salt, pepper",
+            "es": "Sazona con orégano, pimentón, sal, pimienta",
+            "fr": "Assaisonner avec origan, paprika, sel, poivre"
+          },
+          "time": 2
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Bake 20-25 minutes until cooked through",
+            "es": "Hornea 20-25 minutos hasta cocinar",
+            "fr": "Cuire au four 20-25 minutes jusqu'à cuisson"
+          },
+          "time": 23
+        }
+      ],
+      "tips": {
+        "en": "Use meat thermometer - internal temp should be 165°F",
+        "es": "Usa termómetro - temperatura interna debe ser 75°C",
+        "fr": "Utiliser thermomètre - température interne 75°C"
+      },
+      "equipment": [
+        "baking-sheet",
+        "brush"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-31",
+      "rating": 4.6,
+      "reviewCount": 523
+    },
+    {
+      "id": "rec_019",
+      "name": {
+        "en": "Guacamole",
+        "es": "Guacamole",
+        "fr": "Guacamole"
+      },
+      "description": {
+        "en": "Fresh homemade guacamole with chips",
+        "es": "Guacamole casero fresco con totopos",
+        "fr": "Guacamole maison frais avec chips"
+      },
+      "type": "snack",
+      "cuisine": [
+        "mexican"
+      ],
+      "prepTime": 10,
+      "cookTime": 0,
+      "totalTime": 10,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "vegan",
+        "vegetarian",
+        "no-cook",
+        "fresh"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "0.5 cup",
+        "calories": 185,
+        "protein": 3,
+        "carbs": 12,
+        "fat": 15,
+        "fiber": 8,
+        "sugar": 2,
+        "sodium": 280,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_014",
+          "quantity": 3,
+          "unit": "piece",
+          "preparation": "ripe",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "juiced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": true
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 0.25,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mash avocados in bowl",
+            "es": "Machaca aguacates en tazón",
+            "fr": "Écraser avocats dans bol"
+          },
+          "time": 3
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add lime juice immediately",
+            "es": "Agrega jugo de limón inmediatamente",
+            "fr": "Ajouter jus de citron vert immédiatement"
+          },
+          "time": 1
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Mix in tomato, onion, salt",
+            "es": "Mezcla tomate, cebolla, sal",
+            "fr": "Mélanger tomate, oignon, sel"
+          },
+          "time": 3
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Serve with tortilla chips",
+            "es": "Sirve con totopos",
+            "fr": "Servir avec chips de tortilla"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add jalapeño for spice",
+        "es": "Agrega jalapeño para picante",
+        "fr": "Ajouter jalapeño pour épicé"
+      },
+      "equipment": [
+        "bowl",
+        "fork"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-01",
+      "rating": 4.9,
+      "reviewCount": 789
+    },
+    {
+      "id": "rec_020",
+      "name": {
+        "en": "Caprese Skewers",
+        "es": "Brochetas Caprese",
+        "fr": "Brochettes Caprese"
+      },
+      "description": {
+        "en": "Fresh mozzarella, tomato, and basil skewers",
+        "es": "Brochetas de mozzarella fresca, tomate y albahaca",
+        "fr": "Brochettes de mozzarella fraîche, tomate et basilic"
+      },
+      "type": "snack",
+      "cuisine": [
+        "italian"
+      ],
+      "prepTime": 10,
+      "cookTime": 0,
+      "totalTime": 10,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "no-cook",
+        "elegant"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "3 skewers",
+        "calories": 245,
+        "protein": 14,
+        "carbs": 8,
+        "fat": 18,
+        "fiber": 2,
+        "sugar": 4,
+        "sodium": 420,
+        "cholesterol": 45
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_050",
+          "quantity": 8,
+          "unit": "oz",
+          "preparation": "cubed",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 12,
+          "unit": "piece",
+          "preparation": "cherry tomatoes",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_057",
+          "quantity": 12,
+          "unit": "leaf",
+          "preparation": "fresh",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Thread mozzarella, tomato, basil on skewers",
+            "es": "Ensarta mozzarella, tomate, albahaca en palillos",
+            "fr": "Enfiler mozzarella, tomate, basilic sur piques"
+          },
+          "time": 8
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Drizzle with olive oil",
+            "es": "Rocía con aceite de oliva",
+            "fr": "Arroser d'huile d'olive"
+          },
+          "time": 1
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Season with salt and pepper",
+            "es": "Sazona con sal y pimienta",
+            "fr": "Assaisonner de sel et poivre"
+          },
+          "time": 1
+        }
+      ],
+      "tips": {
+        "en": "Add balsamic glaze for sweetness",
+        "es": "Agrega glaseado balsámico para dulzura",
+        "fr": "Ajouter glaçage balsamique pour douceur"
+      },
+      "equipment": [
+        "skewers"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-02",
+      "rating": 4.8,
+      "reviewCount": 623
+    },
+    {
+      "id": "rec_021",
+      "name": {
+        "en": "Quinoa Buddha Bowl",
+        "es": "Bowl Buddha de Quinoa",
+        "fr": "Bol Buddha au Quinoa"
+      },
+      "description": {
+        "en": "Healthy grain bowl with quinoa and roasted vegetables",
+        "es": "Bowl saludable de granos con quinoa y verduras asadas",
+        "fr": "Bol de grains sain avec quinoa et légumes rôtis"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "international"
+      ],
+      "prepTime": 15,
+      "cookTime": 30,
+      "totalTime": 45,
+      "servings": 2,
+      "difficulty": "medium",
+      "tags": [
+        "vegan",
+        "vegetarian",
+        "healthy",
+        "protein-rich"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 bowl",
+        "calories": 485,
+        "protein": 18,
+        "carbs": 68,
+        "fat": 18,
+        "fiber": 12,
+        "sugar": 8,
+        "sodium": 420,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_061",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_065",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_041",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "roasted",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_014",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook quinoa according to package",
+            "es": "Cocina quinoa según paquete",
+            "fr": "Cuire quinoa selon paquet"
+          },
+          "time": 15
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Roast vegetables with olive oil",
+            "es": "Asa verduras con aceite de oliva",
+            "fr": "Rôtir légumes à l'huile d'olive"
+          },
+          "time": 25
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Assemble bowl with quinoa, chickpeas, vegetables",
+            "es": "Arma bowl con quinoa, garbanzos, verduras",
+            "fr": "Assembler bol avec quinoa, pois chiches, légumes"
+          },
+          "time": 5
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Top with avocado",
+            "es": "Cubre con aguacate",
+            "fr": "Garnir d'avocat"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add tahini dressing for extra flavor",
+        "es": "Agrega aderezo de tahini para más sabor",
+        "fr": "Ajouter vinaigrette tahini pour plus de saveur"
+      },
+      "equipment": [
+        "pot",
+        "baking-sheet"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-03",
+      "rating": 4.8,
+      "reviewCount": 567
+    },
+    {
+      "id": "rec_022",
+      "name": {
+        "en": "Chicken Quesadilla",
+        "es": "Quesadilla de Pollo",
+        "fr": "Quesadilla au Poulet"
+      },
+      "description": {
+        "en": "Cheesy quesadilla with seasoned chicken",
+        "es": "Quesadilla con queso y pollo sazonado",
+        "fr": "Quesadilla au fromage avec poulet assaisonné"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "mexican"
+      ],
+      "prepTime": 10,
+      "cookTime": 10,
+      "totalTime": 20,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "quick",
+        "kid-friendly"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 quesadilla",
+        "calories": 520,
+        "protein": 38,
+        "carbs": 42,
+        "fat": 22,
+        "fiber": 3,
+        "sugar": 2,
+        "sodium": 920,
+        "cholesterol": 95
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 8,
+          "unit": "oz",
+          "preparation": "cooked and shredded",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_028",
+          "quantity": 4,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_029",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "shredded",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_030",
+          "quantity": 4,
+          "unit": "tbsp",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Heat tortilla in pan",
+            "es": "Calienta tortilla en sartén",
+            "fr": "Chauffer tortilla dans poêle"
+          },
+          "time": 1
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add cheese and chicken to half",
+            "es": "Agrega queso y pollo a la mitad",
+            "fr": "Ajouter fromage et poulet sur moitié"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Fold and cook until crispy",
+            "es": "Dobla y cocina hasta crujiente",
+            "fr": "Plier et cuire jusqu'à croustillant"
+          },
+          "time": 7
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Cut into wedges and serve",
+            "es": "Corta en triángulos y sirve",
+            "fr": "Couper en triangles et servir"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Serve with sour cream and guacamole",
+        "es": "Sirve con crema agria y guacamole",
+        "fr": "Servir avec crème aigre et guacamole"
+      },
+      "equipment": [
+        "pan",
+        "spatula"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-04",
+      "rating": 4.7,
+      "reviewCount": 678
+    },
+    {
+      "id": "rec_023",
+      "name": {
+        "en": "Greek Pita Pocket",
+        "es": "Pita Griego",
+        "fr": "Pita Grec"
+      },
+      "description": {
+        "en": "Pita stuffed with chicken, vegetables, and tzatziki",
+        "es": "Pita relleno de pollo, verduras y tzatziki",
+        "fr": "Pita farci de poulet, légumes et tzatziki"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "mediterranean",
+        "greek"
+      ],
+      "prepTime": 10,
+      "cookTime": 12,
+      "totalTime": 22,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "fresh"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 pita",
+        "calories": 445,
+        "protein": 36,
+        "carbs": 48,
+        "fat": 14,
+        "fiber": 6,
+        "sugar": 5,
+        "sodium": 720,
+        "cholesterol": 85
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_064",
+          "quantity": 2,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_004",
+          "quantity": 8,
+          "unit": "oz",
+          "preparation": "grilled",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_043",
+          "quantity": 0.5,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Grill chicken breast",
+            "es": "Asa pechuga de pollo",
+            "fr": "Griller poitrine de poulet"
+          },
+          "time": 12
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Slice chicken",
+            "es": "Rebana pollo",
+            "fr": "Trancher poulet"
+          },
+          "time": 2
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Fill pita with chicken, cucumber, tomato",
+            "es": "Rellena pita con pollo, pepino, tomate",
+            "fr": "Remplir pita avec poulet, concombre, tomate"
+          },
+          "time": 3
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Add tzatziki sauce",
+            "es": "Agrega salsa tzatziki",
+            "fr": "Ajouter sauce tzatziki"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add feta cheese for extra flavor",
+        "es": "Agrega queso feta para más sabor",
+        "fr": "Ajouter fromage feta pour plus de saveur"
+      },
+      "equipment": [
+        "grill",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-05",
+      "rating": 4.8,
+      "reviewCount": 489
+    },
+    {
+      "id": "rec_024",
+      "name": {
+        "en": "Veggie Burger",
+        "es": "Hamburguesa Vegetariana",
+        "fr": "Burger Végétarien"
+      },
+      "description": {
+        "en": "Hearty black bean and quinoa veggie burger",
+        "es": "Hamburguesa sustanciosa de frijoles negros y quinoa",
+        "fr": "Burger végétarien copieux aux haricots noirs et quinoa"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 15,
+      "cookTime": 12,
+      "totalTime": 27,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "protein-rich"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 burger",
+        "calories": 385,
+        "protein": 16,
+        "carbs": 58,
+        "fat": 11,
+        "fiber": 12,
+        "sugar": 6,
+        "sodium": 680,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_013",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_061",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 0.5,
+          "unit": "piece",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_015",
+          "quantity": 2,
+          "unit": "tsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mash beans and quinoa in bowl",
+            "es": "Machaca frijoles y quinoa en tazón",
+            "fr": "Écraser haricots et quinoa dans bol"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Mix in onion and spices",
+            "es": "Mezcla cebolla y especias",
+            "fr": "Mélanger oignon et épices"
+          },
+          "time": 3
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Form into 4 patties",
+            "es": "Forma 4 hamburguesas",
+            "fr": "Former 4 galettes"
+          },
+          "time": 5
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Cook in pan 5-6 minutes per side",
+            "es": "Cocina en sartén 5-6 minutos por lado",
+            "fr": "Cuire à la poêle 5-6 minutes par côté"
+          },
+          "time": 12
+        }
+      ],
+      "tips": {
+        "en": "Chill patties before cooking for easier handling",
+        "es": "Refrigera hamburguesas antes de cocinar para manejar mejor",
+        "fr": "Réfrigérer galettes avant cuisson pour manipulation facile"
+      },
+      "equipment": [
+        "bowl",
+        "pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-06",
+      "rating": 4.6,
+      "reviewCount": 434
+    },
+    {
+      "id": "rec_025",
+      "name": {
+        "en": "Oatmeal with Berries",
+        "es": "Avena con Bayas",
+        "fr": "Flocons d'Avoine aux Baies"
+      },
+      "description": {
+        "en": "Healthy oatmeal topped with fresh berries",
+        "es": "Avena saludable con bayas frescas",
+        "fr": "Flocons d'avoine sains avec baies fraîches"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 5,
+      "cookTime": 10,
+      "totalTime": 15,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "vegetarian",
+        "quick"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 bowl",
+        "calories": 280,
+        "protein": 8,
+        "carbs": 52,
+        "fat": 5,
+        "fiber": 8,
+        "sugar": 12,
+        "sodium": 5,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_090",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_082",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_081",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook oats according to package",
+            "es": "Cocina avena según paquete",
+            "fr": "Cuire flocons selon paquet"
+          },
+          "time": 8
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Top with fresh berries",
+            "es": "Cubre con bayas frescas",
+            "fr": "Garnir de baies fraîches"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add honey for sweetness",
+        "es": "Agrega miel para dulzura",
+        "fr": "Ajouter miel pour sucré"
+      },
+      "equipment": [
+        "pot",
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-23",
+      "rating": 4.6,
+      "reviewCount": 512
+    },
+    {
+      "id": "rec_026",
+      "name": {
+        "en": "French Toast",
+        "es": "Tostadas Francesas",
+        "fr": "Pain Perdu"
+      },
+      "description": {
+        "en": "Classic French toast with cinnamon",
+        "es": "Tostadas francesas clásicas con canela",
+        "fr": "Pain perdu classique à la cannelle"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "french"
+      ],
+      "prepTime": 10,
+      "cookTime": 10,
+      "totalTime": 20,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "classic",
+        "kid-friendly"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 slices",
+        "calories": 320,
+        "protein": 12,
+        "carbs": 48,
+        "fat": 9,
+        "fiber": 2,
+        "sugar": 18,
+        "sodium": 380,
+        "cholesterol": 185
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_001",
+          "quantity": 4,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_047",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_064",
+          "quantity": 1,
+          "unit": "tsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Whisk eggs and milk",
+            "es": "Bate huevos y leche",
+            "fr": "Battre œufs et lait"
+          },
+          "time": 3
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Dip bread and cook until golden",
+            "es": "Moja pan y cocina hasta dorar",
+            "fr": "Tremper pain et cuire jusqu'à doré"
+          },
+          "time": 7
+        }
+      ],
+      "tips": {
+        "en": "Serve with maple syrup",
+        "es": "Sirve con jarabe de arce",
+        "fr": "Servir avec sirop d'érable"
+      },
+      "equipment": [
+        "pan",
+        "bowl",
+        "whisk"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-24",
+      "rating": 4.7,
+      "reviewCount": 678
+    },
+    {
+      "id": "rec_027",
+      "name": {
+        "en": "Caprese Sandwich",
+        "es": "Sándwich Caprese",
+        "fr": "Sandwich Caprese"
+      },
+      "description": {
+        "en": "Fresh mozzarella, tomato and basil sandwich",
+        "es": "Sándwich de mozzarella, tomate y albahaca",
+        "fr": "Sandwich mozzarella, tomate et basilic"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "italian"
+      ],
+      "prepTime": 10,
+      "cookTime": 0,
+      "totalTime": 10,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "quick",
+        "fresh"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 sandwich",
+        "calories": 380,
+        "protein": 18,
+        "carbs": 42,
+        "fat": 16,
+        "fiber": 3,
+        "sugar": 4,
+        "sodium": 620,
+        "cholesterol": 45
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_050",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_058",
+          "quantity": 2,
+          "unit": "tbsp",
+          "preparation": "fresh",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_099",
+          "quantity": 1,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Layer ingredients on bread",
+            "es": "Coloca ingredientes en pan",
+            "fr": "Disposer ingrédients sur pain"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Drizzle with balsamic",
+            "es": "Rocía con balsámico",
+            "fr": "Arroser de balsamique"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Use fresh basil for best flavor",
+        "es": "Usa albahaca fresca",
+        "fr": "Utiliser basilic frais"
+      },
+      "equipment": [
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-25",
+      "rating": 4.5,
+      "reviewCount": 389
+    },
+    {
+      "id": "rec_028",
+      "name": {
+        "en": "Asian Noodle Bowl",
+        "es": "Bowl de Fideos Asiáticos",
+        "fr": "Bol de Nouilles Asiatiques"
+      },
+      "description": {
+        "en": "Flavorful noodles with vegetables",
+        "es": "Fideos sabrosos con verduras",
+        "fr": "Nouilles savoureuses aux légumes"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "asian"
+      ],
+      "prepTime": 15,
+      "cookTime": 10,
+      "totalTime": 25,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "asian",
+        "noodles"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 bowl",
+        "calories": 420,
+        "protein": 14,
+        "carbs": 68,
+        "fat": 10,
+        "fiber": 5,
+        "sugar": 8,
+        "sodium": 890,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_032",
+          "quantity": 8,
+          "unit": "oz",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_051",
+          "quantity": 3,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_059",
+          "quantity": 1,
+          "unit": "tbsp",
+          "preparation": "minced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook noodles",
+            "es": "Cocina fideos",
+            "fr": "Cuire nouilles"
+          },
+          "time": 8
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Toss with sauce and vegetables",
+            "es": "Mezcla con salsa y verduras",
+            "fr": "Mélanger avec sauce et légumes"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add sesame seeds for garnish",
+        "es": "Agrega semillas de sésamo",
+        "fr": "Ajouter graines de sésame"
+      },
+      "equipment": [
+        "pot",
+        "wok"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-26",
+      "rating": 4.6,
+      "reviewCount": 445
+    },
+    {
+      "id": "rec_029",
+      "name": {
+        "en": "Herb Roasted Chicken",
+        "es": "Pollo Asado con Hierbas",
+        "fr": "Poulet Rôti aux Herbes"
+      },
+      "description": {
+        "en": "Juicy roasted chicken with herbs",
+        "es": "Pollo jugoso asado con hierbas",
+        "fr": "Poulet juteux rôti aux herbes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 15,
+      "cookTime": 60,
+      "totalTime": 75,
+      "servings": 6,
+      "difficulty": "medium",
+      "tags": [
+        "comfort-food",
+        "family-dinner"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "4 oz",
+        "calories": 280,
+        "protein": 38,
+        "carbs": 2,
+        "fat": 13,
+        "fiber": 0,
+        "sugar": 0,
+        "sodium": 420,
+        "cholesterol": 115
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 1,
+          "unit": "whole",
+          "preparation": "whole chicken",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_057",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_058",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Season chicken with herbs",
+            "es": "Sazona pollo con hierbas",
+            "fr": "Assaisonner poulet aux herbes"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Roast at 375°F for 60 minutes",
+            "es": "Asa a 190°C por 60 minutos",
+            "fr": "Rôtir à 190°C pendant 60 minutes"
+          },
+          "time": 60
+        }
+      ],
+      "tips": {
+        "en": "Let rest before carving",
+        "es": "Deja reposar antes de trinchar",
+        "fr": "Laisser reposer avant découpe"
+      },
+      "equipment": [
+        "oven",
+        "roasting pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-27",
+      "rating": 4.8,
+      "reviewCount": 892
+    },
+    {
+      "id": "rec_030",
+      "name": {
+        "en": "Pork Chops with Apples",
+        "es": "Chuletas de Cerdo con Manzanas",
+        "fr": "Côtelettes de Porc aux Pommes"
+      },
+      "description": {
+        "en": "Pan-seared pork chops with caramelized apples",
+        "es": "Chuletas de cerdo selladas con manzanas caramelizadas",
+        "fr": "Côtelettes de porc poêlées aux pommes caramélisées"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 10,
+      "cookTime": 20,
+      "totalTime": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "comfort-food"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 chop",
+        "calories": 380,
+        "protein": 32,
+        "carbs": 18,
+        "fat": 20,
+        "fiber": 2,
+        "sugar": 14,
+        "sodium": 520,
+        "cholesterol": 95
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_066",
+          "quantity": 4,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_083",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_046",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Sear pork chops in butter",
+            "es": "Sella chuletas en mantequilla",
+            "fr": "Saisir côtelettes au beurre"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Add apples and cook until caramelized",
+            "es": "Agrega manzanas y cocina hasta caramelizar",
+            "fr": "Ajouter pommes et cuire jusqu'à caramélisation"
+          },
+          "time": 10
+        }
+      ],
+      "tips": {
+        "en": "Don't overcook the pork",
+        "es": "No cocines de más el cerdo",
+        "fr": "Ne pas trop cuire le porc"
+      },
+      "equipment": [
+        "pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-28",
+      "rating": 4.7,
+      "reviewCount": 567
+    },
+    {
+      "id": "rec_031",
+      "name": {
+        "en": "Vegetable Stir Fry",
+        "es": "Salteado de Verduras",
+        "fr": "Sauté de Légumes"
+      },
+      "description": {
+        "en": "Colorful vegetable stir fry with soy sauce",
+        "es": "Salteado colorido de verduras con salsa de soja",
+        "fr": "Sauté de légumes colorés à la sauce soja"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "asian"
+      ],
+      "prepTime": 15,
+      "cookTime": 10,
+      "totalTime": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "quick",
+        "healthy"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 cups",
+        "calories": 180,
+        "protein": 6,
+        "carbs": 28,
+        "fat": 6,
+        "fiber": 6,
+        "sugar": 10,
+        "sodium": 680,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_041",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_042",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_044",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_051",
+          "quantity": 3,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Heat wok over high heat",
+            "es": "Calienta wok a fuego alto",
+            "fr": "Chauffer wok à feu vif"
+          },
+          "time": 2
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Stir fry vegetables until tender",
+            "es": "Saltea verduras hasta tiernas",
+            "fr": "Faire sauter légumes jusqu'à tendres"
+          },
+          "time": 8
+        }
+      ],
+      "tips": {
+        "en": "Keep vegetables crisp",
+        "es": "Mantén verduras crujientes",
+        "fr": "Garder légumes croquants"
+      },
+      "equipment": [
+        "wok"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-29",
+      "rating": 4.5,
+      "reviewCount": 478
+    },
+    {
+      "id": "rec_032",
+      "name": {
+        "en": "Baked Salmon with Asparagus",
+        "es": "Salmón al Horno con Espárragos",
+        "fr": "Saumon au Four avec Asperges"
+      },
+      "description": {
+        "en": "Healthy baked salmon with roasted asparagus",
+        "es": "Salmón saludable al horno con espárragos asados",
+        "fr": "Saumon sain au four avec asperges rôties"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "mediterranean"
+      ],
+      "prepTime": 10,
+      "cookTime": 20,
+      "totalTime": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "low-carb",
+        "keto"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1 fillet",
+        "calories": 320,
+        "protein": 36,
+        "carbs": 6,
+        "fat": 17,
+        "fiber": 3,
+        "sugar": 2,
+        "sodium": 380,
+        "cholesterol": 85
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_036",
+          "quantity": 4,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_074",
+          "quantity": 1,
+          "unit": "bunch",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Place salmon and asparagus on baking sheet",
+            "es": "Coloca salmón y espárragos en bandeja",
+            "fr": "Placer saumon et asperges sur plaque"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Bake at 400°F for 15-20 minutes",
+            "es": "Hornea a 200°C por 15-20 minutos",
+            "fr": "Cuire à 200°C pendant 15-20 minutes"
+          },
+          "time": 20
+        }
+      ],
+      "tips": {
+        "en": "Don't overcook salmon",
+        "es": "No cocines de más el salmón",
+        "fr": "Ne pas trop cuire le saumon"
+      },
+      "equipment": [
+        "oven",
+        "baking sheet"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-30",
+      "rating": 4.8,
+      "reviewCount": 745
+    },
+    {
+      "id": "rec_033",
+      "name": {
+        "en": "Pasta Primavera",
+        "es": "Pasta Primavera",
+        "fr": "Pâtes Primavera"
+      },
+      "description": {
+        "en": "Light pasta with fresh spring vegetables",
+        "es": "Pasta ligera con verduras frescas de primavera",
+        "fr": "Pâtes légères aux légumes printaniers"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "italian"
+      ],
+      "prepTime": 15,
+      "cookTime": 15,
+      "totalTime": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "vegetarian",
+        "light"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 cups",
+        "calories": 420,
+        "protein": 16,
+        "carbs": 58,
+        "fat": 14,
+        "fiber": 6,
+        "sugar": 6,
+        "sodium": 480,
+        "cholesterol": 25
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_088",
+          "quantity": 12,
+          "unit": "oz",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_041",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_044",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_034",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook pasta according to package",
+            "es": "Cocina pasta según paquete",
+            "fr": "Cuire pâtes selon paquet"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Sauté vegetables and toss with pasta",
+            "es": "Saltea verduras y mezcla con pasta",
+            "fr": "Faire sauter légumes et mélanger avec pâtes"
+          },
+          "time": 8
+        }
+      ],
+      "tips": {
+        "en": "Reserve pasta water for sauce",
+        "es": "Guarda agua de pasta para salsa",
+        "fr": "Réserver eau de cuisson pour sauce"
+      },
+      "equipment": [
+        "pot",
+        "pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-01-31",
+      "rating": 4.6,
+      "reviewCount": 589
+    },
+    {
+      "id": "rec_034",
+      "name": {
+        "en": "Grilled Lamb Chops",
+        "es": "Chuletas de Cordero a la Parrilla",
+        "fr": "Côtelettes d'Agneau Grillées"
+      },
+      "description": {
+        "en": "Tender grilled lamb chops with herbs",
+        "es": "Tiernas chuletas de cordero a la parrilla con hierbas",
+        "fr": "Tendres côtelettes d'agneau grillées aux herbes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "mediterranean"
+      ],
+      "prepTime": 10,
+      "cookTime": 10,
+      "totalTime": 20,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "grilled",
+        "gourmet"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "2 chops",
+        "calories": 420,
+        "protein": 38,
+        "carbs": 2,
+        "fat": 28,
+        "fiber": 0,
+        "sugar": 0,
+        "sodium": 380,
+        "cholesterol": 125
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_067",
+          "quantity": 8,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_057",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Season lamb with herbs and oil",
+            "es": "Sazona cordero con hierbas y aceite",
+            "fr": "Assaisonner agneau aux herbes et huile"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Grill for 4-5 minutes per side",
+            "es": "Asa 4-5 minutos por lado",
+            "fr": "Griller 4-5 minutes par côté"
+          },
+          "time": 10
+        }
+      ],
+      "tips": {
+        "en": "Let rest before serving",
+        "es": "Deja reposar antes de servir",
+        "fr": "Laisser reposer avant de servir"
+      },
+      "equipment": [
+        "grill"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-01",
+      "rating": 4.9,
+      "reviewCount": 423
+    },
+    {
+      "id": "rec_035",
+      "name": {
+        "en": "Trail Mix",
+        "es": "Mezcla de Frutos Secos",
+        "fr": "Mélange Montagnard"
+      },
+      "description": {
+        "en": "Healthy mix of nuts and dried fruits",
+        "es": "Mezcla saludable de nueces y frutas secas",
+        "fr": "Mélange sain de noix et fruits secs"
+      },
+      "type": "snack",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 5,
+      "cookTime": 0,
+      "totalTime": 5,
+      "servings": 8,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "quick",
+        "portable"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1/4 cup",
+        "calories": 180,
+        "protein": 5,
+        "carbs": 14,
+        "fat": 13,
+        "fiber": 3,
+        "sugar": 8,
+        "sodium": 5,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_091",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_092",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_093",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mix all ingredients in bowl",
+            "es": "Mezcla todos los ingredientes en bol",
+            "fr": "Mélanger tous ingrédients dans bol"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Store in airtight container",
+        "es": "Guarda en recipiente hermético",
+        "fr": "Conserver dans récipient hermétique"
+      },
+      "equipment": [
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-02",
+      "rating": 4.4,
+      "reviewCount": 267
+    },
+    {
+      "id": "rec_036",
+      "name": {
+        "en": "Chia Pudding",
+        "es": "Pudín de Chía",
+        "fr": "Pudding de Chia"
+      },
+      "description": {
+        "en": "Healthy overnight chia seed pudding",
+        "es": "Pudín saludable de semillas de chía",
+        "fr": "Pudding sain aux graines de chia"
+      },
+      "type": "snack",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 5,
+      "cookTime": 0,
+      "totalTime": 245,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "make-ahead",
+        "vegan"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": true,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1/2 cup",
+        "calories": 150,
+        "protein": 5,
+        "carbs": 18,
+        "fat": 7,
+        "fiber": 10,
+        "sugar": 6,
+        "sodium": 55,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_095",
+          "quantity": 4,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_047",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_100",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Mix chia seeds and milk",
+            "es": "Mezcla semillas de chía y leche",
+            "fr": "Mélanger graines de chia et lait"
+          },
+          "time": 3
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Refrigerate overnight",
+            "es": "Refrigera toda la noche",
+            "fr": "Réfrigérer toute la nuit"
+          },
+          "time": 240
+        }
+      ],
+      "tips": {
+        "en": "Top with fresh fruit",
+        "es": "Cubre con fruta fresca",
+        "fr": "Garnir de fruits frais"
+      },
+      "equipment": [
+        "jar",
+        "spoon"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-03",
+      "rating": 4.5,
+      "reviewCount": 389
+    },
+    {
+      "id": "rec_037",
+      "name": {
+        "en": "Apple Crisp",
+        "es": "Crujiente de Manzana",
+        "fr": "Croustade aux Pommes"
+      },
+      "description": {
+        "en": "Warm apple crisp with oat topping",
+        "es": "Crujiente tibio de manzana con avena",
+        "fr": "Croustade tiède aux pommes avec flocons d'avoine"
+      },
+      "type": "dessert",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 15,
+      "cookTime": 40,
+      "totalTime": 55,
+      "servings": 6,
+      "difficulty": "easy",
+      "tags": [
+        "dessert",
+        "comfort-food"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 serving",
+        "calories": 280,
+        "protein": 3,
+        "carbs": 48,
+        "fat": 10,
+        "fiber": 4,
+        "sugar": 28,
+        "sodium": 75,
+        "cholesterol": 25
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_083",
+          "quantity": 6,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_090",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_046",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_064",
+          "quantity": 1,
+          "unit": "tsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Layer apples in baking dish",
+            "es": "Coloca manzanas en molde",
+            "fr": "Disposer pommes dans plat"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Mix topping and sprinkle over apples",
+            "es": "Mezcla cobertura y espolvorea",
+            "fr": "Mélanger garniture et saupoudrer"
+          },
+          "time": 5
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Bake at 350°F for 40 minutes",
+            "es": "Hornea a 175°C por 40 minutos",
+            "fr": "Cuire à 175°C pendant 40 minutes"
+          },
+          "time": 40
+        }
+      ],
+      "tips": {
+        "en": "Serve warm with ice cream",
+        "es": "Sirve tibio con helado",
+        "fr": "Servir tiède avec glace"
+      },
+      "equipment": [
+        "oven",
+        "baking dish",
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-04",
+      "rating": 4.7,
+      "reviewCount": 534
+    },
+    {
+      "id": "rec_038",
+      "name": {
+        "en": "Berry Smoothie Bowl",
+        "es": "Bowl de Batido de Bayas",
+        "fr": "Bol de Smoothie aux Baies"
+      },
+      "description": {
+        "en": "Thick berry smoothie topped with fresh fruit",
+        "es": "Batido espeso de bayas con fruta fresca",
+        "fr": "Smoothie épais aux baies avec fruits frais"
+      },
+      "type": "dessert",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 10,
+      "cookTime": 0,
+      "totalTime": 10,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "quick",
+        "refreshing"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 bowl",
+        "calories": 220,
+        "protein": 5,
+        "carbs": 48,
+        "fat": 3,
+        "fiber": 8,
+        "sugar": 32,
+        "sodium": 45,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_081",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_082",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_025",
+          "quantity": 1,
+          "unit": "piece",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Blend berries and banana until thick",
+            "es": "Licúa bayas y plátano hasta espeso",
+            "fr": "Mixer baies et banane jusqu'à épais"
+          },
+          "time": 5
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Pour into bowl and add toppings",
+            "es": "Vierte en bol y agrega ingredientes",
+            "fr": "Verser dans bol et ajouter garnitures"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Use frozen fruit for thickness",
+        "es": "Usa fruta congelada para espesor",
+        "fr": "Utiliser fruits congelés pour épaisseur"
+      },
+      "equipment": [
+        "blender",
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-05",
+      "rating": 4.6,
+      "reviewCount": 412
+    },
+    {
+      "id": "rec_039",
+      "name": {
+        "en": "Greek Salad",
+        "es": "Ensalada Griega",
+        "fr": "Salade Grecque"
+      },
+      "description": {
+        "en": "Fresh Greek salad with feta and olives",
+        "es": "Ensalada griega fresca con feta y aceitunas",
+        "fr": "Salade grecque fraîche au feta et olives"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "greek"
+      ],
+      "prepTime": 15,
+      "cookTime": 0,
+      "totalTime": 15,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "vegetarian",
+        "mediterranean"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": true,
+        "keto": true,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 cups",
+        "calories": 280,
+        "protein": 9,
+        "carbs": 14,
+        "fat": 22,
+        "fiber": 4,
+        "sugar": 7,
+        "sodium": 720,
+        "cholesterol": 35
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_043",
+          "quantity": 3,
+          "unit": "cup",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_035",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "chopped",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 3,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Chop all vegetables",
+            "es": "Pica todas las verduras",
+            "fr": "Hacher tous légumes"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Toss with olive oil and herbs",
+            "es": "Mezcla con aceite de oliva y hierbas",
+            "fr": "Mélanger avec huile d'olive et herbes"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Best served fresh",
+        "es": "Mejor servir fresco",
+        "fr": "Meilleur servi frais"
+      },
+      "equipment": [
+        "bowl",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-06",
+      "rating": 4.7,
+      "reviewCount": 623
+    },
+    {
+      "id": "rec_040",
+      "name": {
+        "en": "Chicken Caesar Wrap",
+        "es": "Wrap César de Pollo",
+        "fr": "Wrap César au Poulet"
+      },
+      "description": {
+        "en": "Grilled chicken Caesar salad in a wrap",
+        "es": "Ensalada César de pollo asado en wrap",
+        "fr": "Salade César au poulet grillé en wrap"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 10,
+      "cookTime": 10,
+      "totalTime": 20,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "quick",
+        "portable"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 wrap",
+        "calories": 480,
+        "protein": 36,
+        "carbs": 42,
+        "fat": 18,
+        "fiber": 3,
+        "sugar": 3,
+        "sodium": 890,
+        "cholesterol": 95
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "grilled and sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_035",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_034",
+          "quantity": 0.25,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_028",
+          "quantity": 2,
+          "unit": "piece",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Grill and slice chicken",
+            "es": "Asa y corta pollo",
+            "fr": "Griller et trancher poulet"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Fill tortillas with chicken and salad",
+            "es": "Rellena tortillas con pollo y ensalada",
+            "fr": "Garnir tortillas de poulet et salade"
+          },
+          "time": 5
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Roll and serve",
+            "es": "Enrolla y sirve",
+            "fr": "Rouler et servir"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Add Caesar dressing",
+        "es": "Agrega aderezo César",
+        "fr": "Ajouter vinaigrette César"
+      },
+      "equipment": [
+        "grill",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-07",
+      "rating": 4.6,
+      "reviewCount": 489
+    },
+    {
+      "id": "rec_041",
+      "name": {
+        "en": "Yogurt Parfait",
+        "es": "Parfait de Yogur",
+        "fr": "Parfait au Yaourt"
+      },
+      "description": {
+        "en": "Layered yogurt with granola and berries",
+        "es": "Yogur en capas con granola y bayas",
+        "fr": "Yaourt en couches avec granola et baies"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 5,
+      "cookTime": 0,
+      "totalTime": 5,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "quick",
+        "vegetarian"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 parfait",
+        "calories": 280,
+        "protein": 14,
+        "carbs": 42,
+        "fat": 7,
+        "fiber": 5,
+        "sugar": 24,
+        "sodium": 120,
+        "cholesterol": 15
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_081",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_082",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_100",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Layer yogurt and berries in glass",
+            "es": "Coloca yogur y bayas en capas",
+            "fr": "Disposer yaourt et baies en couches"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add honey for sweetness",
+        "es": "Agrega miel para dulzura",
+        "fr": "Ajouter miel pour sucré"
+      },
+      "equipment": [
+        "glass",
+        "spoon"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-08",
+      "rating": 4.5,
+      "reviewCount": 356
+    },
+    {
+      "id": "rec_042",
+      "name": {
+        "en": "Breakfast Smoothie",
+        "es": "Batido de Desayuno",
+        "fr": "Smoothie du Matin"
+      },
+      "description": {
+        "en": "Energizing breakfast smoothie with fruits",
+        "es": "Batido energizante con frutas",
+        "fr": "Smoothie énergisant aux fruits"
+      },
+      "type": "breakfast",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 5,
+      "cookTime": 0,
+      "totalTime": 5,
+      "servings": 2,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "quick",
+        "vegan"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 smoothie",
+        "calories": 240,
+        "protein": 4,
+        "carbs": 56,
+        "fat": 2,
+        "fiber": 7,
+        "sugar": 38,
+        "sodium": 35,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_025",
+          "quantity": 2,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_081",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_085",
+          "quantity": 1,
+          "unit": "piece",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Blend all ingredients until smooth",
+            "es": "Licúa todos los ingredientes",
+            "fr": "Mixer tous ingrédients"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add ice for thickness",
+        "es": "Agrega hielo para espesor",
+        "fr": "Ajouter glace pour épaisseur"
+      },
+      "equipment": [
+        "blender"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-09",
+      "rating": 4.6,
+      "reviewCount": 428
+    },
+    {
+      "id": "rec_043",
+      "name": {
+        "en": "Tuna Poke Bowl",
+        "es": "Bowl Poke de Atún",
+        "fr": "Bol Poke au Thon"
+      },
+      "description": {
+        "en": "Fresh tuna poke bowl with rice and vegetables",
+        "es": "Bowl poke de atún fresco con arroz y verduras",
+        "fr": "Bol poke au thon frais avec riz et légumes"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "hawaiian"
+      ],
+      "prepTime": 20,
+      "cookTime": 15,
+      "totalTime": 35,
+      "servings": 2,
+      "difficulty": "medium",
+      "tags": [
+        "healthy",
+        "seafood",
+        "fresh"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 bowl",
+        "calories": 480,
+        "protein": 38,
+        "carbs": 52,
+        "fat": 14,
+        "fiber": 4,
+        "sugar": 6,
+        "sodium": 720,
+        "cholesterol": 65
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_070",
+          "quantity": 12,
+          "unit": "oz",
+          "preparation": "cubed",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_087",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_043",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "diced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_051",
+          "quantity": 2,
+          "unit": "tbsp",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook rice according to package",
+            "es": "Cocina arroz según paquete",
+            "fr": "Cuire riz selon paquet"
+          },
+          "time": 15
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Cube tuna and marinate in soy sauce",
+            "es": "Corta atún y marina en salsa de soja",
+            "fr": "Couper thon et mariner dans sauce soja"
+          },
+          "time": 10
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Assemble bowl with rice, tuna, and vegetables",
+            "es": "Arma bowl con arroz, atún y verduras",
+            "fr": "Assembler bol avec riz, thon et légumes"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Use sushi-grade tuna",
+        "es": "Usa atún grado sushi",
+        "fr": "Utiliser thon qualité sushi"
+      },
+      "equipment": [
+        "pot",
+        "bowl",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-10",
+      "rating": 4.8,
+      "reviewCount": 567
+    },
+    {
+      "id": "rec_044",
+      "name": {
+        "en": "Falafel Wrap",
+        "es": "Wrap de Falafel",
+        "fr": "Wrap au Falafel"
+      },
+      "description": {
+        "en": "Crispy falafel in pita with fresh vegetables",
+        "es": "Falafel crujiente en pita con verduras frescas",
+        "fr": "Falafel croustillant en pita avec légumes frais"
+      },
+      "type": "lunch",
+      "cuisine": [
+        "middle-eastern"
+      ],
+      "prepTime": 15,
+      "cookTime": 15,
+      "totalTime": 30,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "vegetarian",
+        "vegan",
+        "mediterranean"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 wrap",
+        "calories": 380,
+        "protein": 14,
+        "carbs": 58,
+        "fat": 12,
+        "fiber": 10,
+        "sugar": 5,
+        "sodium": 620,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_065",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "cooked and mashed",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_064",
+          "quantity": 4,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_035",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "shredded",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Form chickpea mixture into patties",
+            "es": "Forma mezcla de garbanzos en tortitas",
+            "fr": "Former mélange pois chiches en galettes"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Fry until golden and crispy",
+            "es": "Fríe hasta dorar",
+            "fr": "Frire jusqu'à doré"
+          },
+          "time": 10
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Assemble in pita with vegetables",
+            "es": "Arma en pita con verduras",
+            "fr": "Assembler dans pita avec légumes"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Serve with tahini sauce",
+        "es": "Sirve con salsa tahini",
+        "fr": "Servir avec sauce tahini"
+      },
+      "equipment": [
+        "pan",
+        "bowl"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-11",
+      "rating": 4.7,
+      "reviewCount": 492
+    },
+    {
+      "id": "rec_045",
+      "name": {
+        "en": "Stuffed Bell Peppers",
+        "es": "Pimientos Rellenos",
+        "fr": "Poivrons Farcis"
+      },
+      "description": {
+        "en": "Bell peppers stuffed with rice and ground beef",
+        "es": "Pimientos rellenos de arroz y carne",
+        "fr": "Poivrons farcis au riz et bœuf"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 20,
+      "cookTime": 40,
+      "totalTime": 60,
+      "servings": 4,
+      "difficulty": "medium",
+      "tags": [
+        "comfort-food",
+        "family-dinner"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 peppers",
+        "calories": 420,
+        "protein": 28,
+        "carbs": 48,
+        "fat": 14,
+        "fiber": 6,
+        "sugar": 10,
+        "sodium": 680,
+        "cholesterol": 75
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_031",
+          "quantity": 1,
+          "unit": "lb",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_086",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "cooked",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_033",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cut peppers and remove seeds",
+            "es": "Corta pimientos y quita semillas",
+            "fr": "Couper poivrons et retirer graines"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Mix filling ingredients",
+            "es": "Mezcla ingredientes del relleno",
+            "fr": "Mélanger ingrédients de farce"
+          },
+          "time": 10
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Stuff peppers and bake at 375°F for 40 minutes",
+            "es": "Rellena pimientos y hornea a 190°C por 40 minutos",
+            "fr": "Farcir poivrons et cuire à 190°C pendant 40 minutes"
+          },
+          "time": 40
+        }
+      ],
+      "tips": {
+        "en": "Top with cheese before baking",
+        "es": "Cubre con queso antes de hornear",
+        "fr": "Garnir de fromage avant cuisson"
+      },
+      "equipment": [
+        "oven",
+        "baking dish",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-12",
+      "rating": 4.7,
+      "reviewCount": 634
+    },
+    {
+      "id": "rec_046",
+      "name": {
+        "en": "Shrimp Scampi",
+        "es": "Camarones al Ajillo",
+        "fr": "Crevettes Scampi"
+      },
+      "description": {
+        "en": "Garlic butter shrimp with pasta",
+        "es": "Camarones en mantequilla de ajo con pasta",
+        "fr": "Crevettes au beurre d'ail avec pâtes"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "italian"
+      ],
+      "prepTime": 10,
+      "cookTime": 15,
+      "totalTime": 25,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "seafood",
+        "quick",
+        "elegant"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1.5 cups",
+        "calories": 480,
+        "protein": 32,
+        "carbs": 52,
+        "fat": 16,
+        "fiber": 3,
+        "sugar": 3,
+        "sodium": 820,
+        "cholesterol": 245
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_037",
+          "quantity": 1.5,
+          "unit": "lb",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_089",
+          "quantity": 12,
+          "unit": "oz",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_046",
+          "quantity": 4,
+          "unit": "tbsp",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_011",
+          "quantity": 4,
+          "unit": "clove",
+          "preparation": "minced",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Cook pasta according to package",
+            "es": "Cocina pasta según paquete",
+            "fr": "Cuire pâtes selon paquet"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Sauté shrimp in garlic butter",
+            "es": "Saltea camarones en mantequilla de ajo",
+            "fr": "Faire sauter crevettes au beurre d'ail"
+          },
+          "time": 5
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Toss with pasta",
+            "es": "Mezcla con pasta",
+            "fr": "Mélanger avec pâtes"
+          },
+          "time": 3
+        }
+      ],
+      "tips": {
+        "en": "Don't overcook shrimp",
+        "es": "No cocines de más los camarones",
+        "fr": "Ne pas trop cuire crevettes"
+      },
+      "equipment": [
+        "pot",
+        "pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-13",
+      "rating": 4.8,
+      "reviewCount": 789
+    },
+    {
+      "id": "rec_047",
+      "name": {
+        "en": "Chicken Fajitas",
+        "es": "Fajitas de Pollo",
+        "fr": "Fajitas au Poulet"
+      },
+      "description": {
+        "en": "Sizzling chicken fajitas with peppers and onions",
+        "es": "Fajitas de pollo con pimientos y cebollas",
+        "fr": "Fajitas de poulet aux poivrons et oignons"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "mexican"
+      ],
+      "prepTime": 15,
+      "cookTime": 15,
+      "totalTime": 30,
+      "servings": 4,
+      "difficulty": "easy",
+      "tags": [
+        "mexican",
+        "quick",
+        "family-friendly"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": false,
+        "vegan": false,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "2 fajitas",
+        "calories": 420,
+        "protein": 36,
+        "carbs": 48,
+        "fat": 10,
+        "fiber": 5,
+        "sugar": 6,
+        "sodium": 720,
+        "cholesterol": 95
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_004",
+          "quantity": 1.5,
+          "unit": "lb",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_009",
+          "quantity": 1,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_062",
+          "quantity": 8,
+          "unit": "piece",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_030",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": true
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Slice chicken and vegetables",
+            "es": "Corta pollo y verduras",
+            "fr": "Trancher poulet et légumes"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Sauté chicken until cooked",
+            "es": "Saltea pollo hasta cocinar",
+            "fr": "Faire sauter poulet jusqu'à cuisson"
+          },
+          "time": 8
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Add vegetables and cook until tender",
+            "es": "Agrega verduras y cocina hasta tiernas",
+            "fr": "Ajouter légumes et cuire jusqu'à tendres"
+          },
+          "time": 5
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Serve in warm tortillas",
+            "es": "Sirve en tortillas tibias",
+            "fr": "Servir dans tortillas chaudes"
+          },
+          "time": 2
+        }
+      ],
+      "tips": {
+        "en": "Serve with sour cream and guacamole",
+        "es": "Sirve con crema y guacamole",
+        "fr": "Servir avec crème et guacamole"
+      },
+      "equipment": [
+        "pan",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-14",
+      "rating": 4.7,
+      "reviewCount": 712
+    },
+    {
+      "id": "rec_048",
+      "name": {
+        "en": "Eggplant Parmesan",
+        "es": "Berenjenas a la Parmesana",
+        "fr": "Aubergines Parmigiana"
+      },
+      "description": {
+        "en": "Breaded eggplant layered with marinara and cheese",
+        "es": "Berenjenas empanizadas con marinara y queso",
+        "fr": "Aubergines panées avec marinara et fromage"
+      },
+      "type": "dinner",
+      "cuisine": [
+        "italian"
+      ],
+      "prepTime": 20,
+      "cookTime": 40,
+      "totalTime": 60,
+      "servings": 6,
+      "difficulty": "medium",
+      "tags": [
+        "vegetarian",
+        "comfort-food",
+        "italian"
+      ],
+      "dietaryLabels": {
+        "glutenFree": false,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1 serving",
+        "calories": 380,
+        "protein": 18,
+        "carbs": 42,
+        "fat": 16,
+        "fiber": 8,
+        "sugar": 12,
+        "sodium": 820,
+        "cholesterol": 55
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_071",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "sliced",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_033",
+          "quantity": 3,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_050",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_034",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Slice and bread eggplant",
+            "es": "Corta y empaniza berenjenas",
+            "fr": "Trancher et paner aubergines"
+          },
+          "time": 15
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Fry until golden",
+            "es": "Fríe hasta dorar",
+            "fr": "Frire jusqu'à doré"
+          },
+          "time": 10
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Layer with sauce and cheese",
+            "es": "Coloca en capas con salsa y queso",
+            "fr": "Disposer en couches avec sauce et fromage"
+          },
+          "time": 5
+        },
+        {
+          "step": 4,
+          "text": {
+            "en": "Bake at 375°F for 30 minutes",
+            "es": "Hornea a 190°C por 30 minutos",
+            "fr": "Cuire à 190°C pendant 30 minutes"
+          },
+          "time": 30
+        }
+      ],
+      "tips": {
+        "en": "Salt eggplant to remove moisture",
+        "es": "Sala berenjenas para quitar humedad",
+        "fr": "Saler aubergines pour retirer humidité"
+      },
+      "equipment": [
+        "oven",
+        "baking dish",
+        "pan"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-15",
+      "rating": 4.6,
+      "reviewCount": 578
+    },
+    {
+      "id": "rec_049",
+      "name": {
+        "en": "Chocolate Mousse",
+        "es": "Mousse de Chocolate",
+        "fr": "Mousse au Chocolat"
+      },
+      "description": {
+        "en": "Rich and creamy chocolate mousse",
+        "es": "Mousse de chocolate rico y cremoso",
+        "fr": "Mousse au chocolat riche et crémeux"
+      },
+      "type": "dessert",
+      "cuisine": [
+        "french"
+      ],
+      "prepTime": 15,
+      "cookTime": 0,
+      "totalTime": 135,
+      "servings": 6,
+      "difficulty": "medium",
+      "tags": [
+        "dessert",
+        "elegant",
+        "make-ahead"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": false,
+        "dairyFree": false,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": false
+      },
+      "nutrition": {
+        "servingSize": "1/2 cup",
+        "calories": 320,
+        "protein": 6,
+        "carbs": 28,
+        "fat": 22,
+        "fiber": 2,
+        "sugar": 24,
+        "sodium": 65,
+        "cholesterol": 185
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_001",
+          "quantity": 4,
+          "unit": "piece",
+          "preparation": "separated",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_027",
+          "quantity": 0.5,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_048",
+          "quantity": 1,
+          "unit": "cup",
+          "preparation": "heavy cream",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Melt chocolate and let cool",
+            "es": "Derrite chocolate y deja enfriar",
+            "fr": "Faire fondre chocolat et laisser refroidir"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Whip cream and fold into chocolate",
+            "es": "Bate crema y mezcla con chocolate",
+            "fr": "Fouetter crème et incorporer au chocolat"
+          },
+          "time": 10
+        },
+        {
+          "step": 3,
+          "text": {
+            "en": "Refrigerate for 2 hours",
+            "es": "Refrigera por 2 horas",
+            "fr": "Réfrigérer pendant 2 heures"
+          },
+          "time": 120
+        }
+      ],
+      "tips": {
+        "en": "Garnish with whipped cream",
+        "es": "Decora con crema batida",
+        "fr": "Garnir de crème fouettée"
+      },
+      "equipment": [
+        "bowl",
+        "whisk",
+        "double boiler"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-16",
+      "rating": 4.8,
+      "reviewCount": 645
+    },
+    {
+      "id": "rec_050",
+      "name": {
+        "en": "Fruit Salad",
+        "es": "Ensalada de Frutas",
+        "fr": "Salade de Fruits"
+      },
+      "description": {
+        "en": "Fresh seasonal fruit salad",
+        "es": "Ensalada fresca de frutas de temporada",
+        "fr": "Salade de fruits frais de saison"
+      },
+      "type": "dessert",
+      "cuisine": [
+        "american"
+      ],
+      "prepTime": 15,
+      "cookTime": 0,
+      "totalTime": 15,
+      "servings": 6,
+      "difficulty": "easy",
+      "tags": [
+        "healthy",
+        "fresh",
+        "vegan"
+      ],
+      "dietaryLabels": {
+        "glutenFree": true,
+        "vegetarian": true,
+        "vegan": true,
+        "dairyFree": true,
+        "lowCarb": false,
+        "keto": false,
+        "paleo": true
+      },
+      "nutrition": {
+        "servingSize": "1.5 cups",
+        "calories": 120,
+        "protein": 2,
+        "carbs": 30,
+        "fat": 1,
+        "fiber": 4,
+        "sugar": 24,
+        "sodium": 5,
+        "cholesterol": 0
+      },
+      "ingredients": [
+        {
+          "ingredientId": "ing_081",
+          "quantity": 2,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_082",
+          "quantity": 1,
+          "unit": "cup",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_084",
+          "quantity": 2,
+          "unit": "cup",
+          "preparation": "cubed",
+          "optional": false
+        },
+        {
+          "ingredientId": "ing_085",
+          "quantity": 2,
+          "unit": "piece",
+          "preparation": "cubed",
+          "optional": false
+        }
+      ],
+      "instructions": [
+        {
+          "step": 1,
+          "text": {
+            "en": "Chop all fruit into bite-size pieces",
+            "es": "Corta toda la fruta en trozos",
+            "fr": "Couper tous fruits en morceaux"
+          },
+          "time": 10
+        },
+        {
+          "step": 2,
+          "text": {
+            "en": "Mix gently and serve chilled",
+            "es": "Mezcla suavemente y sirve frío",
+            "fr": "Mélanger doucement et servir frais"
+          },
+          "time": 5
+        }
+      ],
+      "tips": {
+        "en": "Add honey for sweetness",
+        "es": "Agrega miel para dulzura",
+        "fr": "Ajouter miel pour sucré"
+      },
+      "equipment": [
+        "bowl",
+        "knife"
+      ],
+      "author": "foodie_team",
+      "dateAdded": "2025-02-17",
+      "rating": 4.5,
+      "reviewCount": 412
+    }
+  ]
+}

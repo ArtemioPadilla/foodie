@@ -1,0 +1,44 @@
+{
+  "mealTypes": [
+    { "id": "breakfast", "name": { "en": "Breakfast", "es": "Desayuno", "fr": "Petit-déjeuner" }, "icon": "sunrise" },
+    { "id": "lunch", "name": { "en": "Lunch", "es": "Comida", "fr": "Déjeuner" }, "icon": "sun" },
+    { "id": "dinner", "name": { "en": "Dinner", "es": "Cena", "fr": "Dîner" }, "icon": "moon" },
+    { "id": "snack", "name": { "en": "Snack", "es": "Colación", "fr": "Collation" }, "icon": "cookie" },
+    { "id": "dessert", "name": { "en": "Dessert", "es": "Postre", "fr": "Dessert" }, "icon": "cake" }
+  ],
+  "cuisines": [
+    { "id": "mediterranean", "name": { "en": "Mediterranean", "es": "Mediterránea", "fr": "Méditerranéenne" } },
+    { "id": "mexican", "name": { "en": "Mexican", "es": "Mexicana", "fr": "Mexicaine" } },
+    { "id": "asian", "name": { "en": "Asian", "es": "Asiática", "fr": "Asiatique" } },
+    { "id": "italian", "name": { "en": "Italian", "es": "Italiana", "fr": "Italienne" } },
+    { "id": "american", "name": { "en": "American", "es": "Americana", "fr": "Américaine" } },
+    { "id": "indian", "name": { "en": "Indian", "es": "India", "fr": "Indienne" } },
+    { "id": "middle-eastern", "name": { "en": "Middle Eastern", "es": "Medio Oriente", "fr": "Moyen-Orient" } },
+    { "id": "french", "name": { "en": "French", "es": "Francesa", "fr": "Française" } },
+    { "id": "greek", "name": { "en": "Greek", "es": "Griega", "fr": "Grecque" } },
+    { "id": "thai", "name": { "en": "Thai", "es": "Tailandesa", "fr": "Thaïlandaise" } },
+    { "id": "japanese", "name": { "en": "Japanese", "es": "Japonesa", "fr": "Japonaise" } }
+  ],
+  "dietaryTags": [
+    { "id": "gluten-free", "name": { "en": "Gluten Free", "es": "Sin Gluten", "fr": "Sans Gluten" } },
+    { "id": "vegetarian", "name": { "en": "Vegetarian", "es": "Vegetariano", "fr": "Végétarien" } },
+    { "id": "vegan", "name": { "en": "Vegan", "es": "Vegano", "fr": "Végétalien" } },
+    { "id": "dairy-free", "name": { "en": "Dairy Free", "es": "Sin Lácteos", "fr": "Sans Produits Laitiers" } },
+    { "id": "low-carb", "name": { "en": "Low Carb", "es": "Bajo en Carbohidratos", "fr": "Faible en Glucides" } },
+    { "id": "keto", "name": { "en": "Keto", "es": "Keto", "fr": "Keto" } },
+    { "id": "paleo", "name": { "en": "Paleo", "es": "Paleo", "fr": "Paleo" } },
+    { "id": "whole30", "name": { "en": "Whole30", "es": "Whole30", "fr": "Whole30" } },
+    { "id": "nut-free", "name": { "en": "Nut Free", "es": "Sin Nueces", "fr": "Sans Noix" } },
+    { "id": "kosher", "name": { "en": "Kosher", "es": "Kosher", "fr": "Kasher" } },
+    { "id": "halal", "name": { "en": "Halal", "es": "Halal", "fr": "Halal" } }
+  ],
+  "ingredientCategories": [
+    { "id": "protein", "name": { "en": "Proteins", "es": "Proteínas", "fr": "Protéines" }, "icon": "drumstick" },
+    { "id": "vegetables", "name": { "en": "Vegetables", "es": "Verduras", "fr": "Légumes" }, "icon": "carrot" },
+    { "id": "fruits", "name": { "en": "Fruits", "es": "Frutas", "fr": "Fruits" }, "icon": "apple" },
+    { "id": "grains", "name": { "en": "Grains", "es": "Granos", "fr": "Céréales" }, "icon": "wheat" },
+    { "id": "dairy", "name": { "en": "Dairy", "es": "Lácteos", "fr": "Produits Laitiers" }, "icon": "milk" },
+    { "id": "pantry", "name": { "en": "Pantry", "es": "Despensa", "fr": "Garde-Manger" }, "icon": "jar" },
+    { "id": "spices", "name": { "en": "Spices & Herbs", "es": "Especias y Hierbas", "fr": "Épices et Herbes" }, "icon": "leaf" }
+  ]
+}

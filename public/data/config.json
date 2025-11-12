@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "Foodie",
+    "version": "1.0.0",
+    "defaultLanguage": "en",
+    "supportedLanguages": ["en", "es", "fr"],
+    "defaultCurrency": "USD",
+    "defaultServings": 2,
+    "theme": {
+      "primary": "#10b981",
+      "secondary": "#3b82f6",
+      "accent": "#f59e0b"
+    }
+  },
+  "features": {
+    "communityRecipes": true,
+    "shoppingList": true,
+    "mealPlanner": true,
+    "nutritionTracking": true,
+    "priceEstimation": true,
+    "recipeRatings": true,
+    "socialSharing": true,
+    "offlineMode": true
+  },
+  "limits": {
+    "maxServings": 20,
+    "minServings": 1,
+    "maxRecipesPerPlan": 50,
+    "maxIngredientsPerRecipe": 50
+  }
+}

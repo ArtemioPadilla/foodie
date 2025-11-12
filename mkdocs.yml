@@ -1,0 +1,167 @@
+site_name: Foodie PWA Documentation
+site_url: https://artemiopadilla.github.io/foodie
+site_description: Comprehensive meal planning Progressive Web Application
+site_author: Artemio Padilla
+repo_url: https://github.com/artemiopadilla/foodie
+repo_name: artemiopadilla/foodie
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode
+    - scheme: default
+      primary: green
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: green
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+  favicon: public/favicon.ico
+  logo: public/images/logo.svg
+
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Anchor link to this section
+
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/abbreviations.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      separator: '[\s\-,:!=\[\]()"/]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
+      lang:
+        - en
+  - tags:
+      tags_file: tags.md
+  - minify:
+      minify_html: true
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/artemiopadilla/foodie
+      name: Foodie on GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/foodiepwa
+      name: Foodie on Twitter
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+nav:
+  - Home: index.md
+
+  - Getting Started:
+      - Quick Start: getting-started/quick-start.md
+      - Installation: getting-started/installation.md
+      - Configuration: getting-started/configuration.md
+
+  - Tutorials:
+      - Your First Recipe: tutorials/first-recipe.md
+      - Creating a Meal Plan: tutorials/meal-planning.md
+      - Using the Shopping List: tutorials/shopping-list.md
+      - Contributing a Recipe: tutorials/contributing-recipe.md
+
+  - How-To Guides:
+      - Development: guides/development.md
+      - Deployment: guides/deployment.md
+      - Testing: guides/testing.md
+      - Internationalization: guides/i18n.md
+
+  - Reference:
+      - API Documentation: reference/api.md
+      - Architecture: reference/architecture.md
+      - Components: reference/components.md
+      - Services: reference/services.md
+      - Types: reference/types.md
+
+  - Explanation:
+      - Architecture Overview: explanation/architecture.md
+      - State Management: explanation/state-management.md
+      - PWA Implementation: explanation/pwa.md
+      - GitHub Integration: explanation/github-integration.md
+
+  - Contributing:
+      - Contribution Guide: contributing/guide.md
+      - Recipe Format: contributing/recipe-format.md
+      - Code Style: contributing/code-style.md
+      - Pull Requests: contributing/pull-requests.md
+
+  - Changelog: CHANGELOG.md
+
+copyright: Copyright &copy; 2025 Artemio Padilla - Built with MkDocs Material

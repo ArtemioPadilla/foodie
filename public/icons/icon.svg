@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Background -->
+  <rect width="512" height="512" rx="64" fill="#10b981"/>
+
+  <!-- Chef Hat Icon (simplified) -->
+  <g transform="translate(128, 100)">
+    <!-- Hat top -->
+    <circle cx="64" cy="64" r="48" fill="white" opacity="0.9"/>
+    <circle cx="128" cy="48" r="56" fill="white"/>
+    <circle cx="192" cy="64" r="48" fill="white" opacity="0.9"/>
+
+    <!-- Hat band -->
+    <rect x="32" y="96" width="192" height="24" rx="4" fill="white"/>
+
+    <!-- Hat base -->
+    <path d="M 32 120 L 32 180 Q 32 200 52 200 L 204 200 Q 224 200 224 180 L 224 120 Z"
+          fill="white" opacity="0.95"/>
+
+    <!-- Fork accent -->
+    <g transform="translate(80, 240)" fill="white" opacity="0.3">
+      <rect x="0" y="0" width="8" height="80" rx="4"/>
+      <rect x="16" y="0" width="8" height="80" rx="4"/>
+      <rect x="32" y="0" width="8" height="80" rx="4"/>
+      <rect x="-4" y="0" width="48" height="12" rx="6"/>
+    </g>
+
+    <!-- Spoon accent -->
+    <g transform="translate(160, 240)" fill="white" opacity="0.3">
+      <ellipse cx="12" cy="12" rx="12" ry="16"/>
+      <rect x="8" y="24" width="8" height="56" rx="4"/>
+    </g>
+  </g>
+
+  <!-- App name -->
+  <text x="256" y="440" font-family="Arial, sans-serif" font-size="72" font-weight="bold"
+        fill="white" text-anchor="middle">Foodie</text>
+</svg>
