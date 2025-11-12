@@ -1,5 +1,5 @@
 site_name: Foodie PWA Documentation
-site_url: https://artemiopadilla.github.io/foodie
+site_url: https://artemiopadilla.github.io/foodie/docs
 site_description: Comprehensive meal planning Progressive Web Application
 site_author: Artemio Padilla
 repo_url: https://github.com/artemiopadilla/foodie
@@ -141,6 +141,7 @@ nav:
       - Development: guides/development.md
       - Deployment: guides/deployment.md
       - Testing: guides/testing.md
+      - GitHub Pages Setup: guides/github-pages-setup.md
       - Internationalization: guides/i18n.md
 
   - Reference:

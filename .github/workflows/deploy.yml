@@ -3,6 +3,15 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
+      - 'package.json'
+      - 'vite.config.ts'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
@@ -20,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git-based MkDocs plugins
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,13 +38,37 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Node dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build React App
         run: npm run build
 
-      - name: Upload artifact
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          key: mkdocs-material-${{ github.run_id }}
+          path: ~/.cache/pip
+          restore-keys: |
+            mkdocs-material-
+
+      - name: Install MkDocs dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build MkDocs Documentation
+        run: mkdocs build
+
+      - name: Merge builds (docs into React dist)
+        run: |
+          mkdir -p dist/docs
+          cp -r site/* dist/docs/
+
+      - name: Upload combined artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
