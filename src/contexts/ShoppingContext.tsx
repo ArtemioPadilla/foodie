@@ -96,12 +96,13 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     switch (format) {
       case 'json':
         return JSON.stringify(shoppingList, null, 2);
-      case 'csv':
+      case 'csv': {
         const headers = 'Ingredient,Quantity,Unit,Category,Notes\n';
         const rows = shoppingList
           .map(item => `${item.ingredientId},${item.quantity},${item.unit},${item.category || ''},"${item.notes || ''}"`)
           .join('\n');
         return headers + rows;
+      }
       case 'text':
       default:
         return shoppingList

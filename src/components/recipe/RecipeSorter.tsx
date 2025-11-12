@@ -99,21 +99,23 @@ export function sortRecipes<T extends {
     case 'rating-asc':
       return sorted.sort((a, b) => (a.rating || 0) - (b.rating || 0));
 
-    case 'difficulty-asc':
+    case 'difficulty-asc': {
       const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
       return sorted.sort(
         (a, b) =>
           (difficultyOrder[a.difficulty as keyof typeof difficultyOrder] || 0) -
           (difficultyOrder[b.difficulty as keyof typeof difficultyOrder] || 0)
       );
+    }
 
-    case 'difficulty-desc':
+    case 'difficulty-desc': {
       const difficultyOrderDesc = { hard: 1, medium: 2, easy: 3 };
       return sorted.sort(
         (a, b) =>
           (difficultyOrderDesc[a.difficulty as keyof typeof difficultyOrderDesc] || 0) -
           (difficultyOrderDesc[b.difficulty as keyof typeof difficultyOrderDesc] || 0)
       );
+    }
 
     case 'recent':
       return sorted.sort((a, b) => {
