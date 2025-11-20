@@ -214,15 +214,24 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 {isEditing && (
-                  <select
-                    value={language}
-                    onChange={(e) => changeLanguage(e.target.value)}
-                    className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
-                  >
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                    <option value="fr">Français</option>
-                  </select>
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="profile-language-select"
+                      className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+                    >
+                      {t('settings.language', 'Language')}
+                    </label>
+                    <select
+                      id="profile-language-select"
+                      value={language}
+                      onChange={(e) => changeLanguage(e.target.value)}
+                      className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
+                    >
+                      <option value="en">English</option>
+                      <option value="es">Español</option>
+                      <option value="fr">Français</option>
+                    </select>
+                  </div>
                 )}
               </div>
 
