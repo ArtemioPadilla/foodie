@@ -1,11 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext';
 import { useTheme } from '@contexts/ThemeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { useRecipes } from '@contexts/RecipeContext';
 import { User, Mail, Calendar, Heart, Settings, LogOut, Moon, Sun, Globe } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Card } from '@components/common';
 import { AuthModal } from '@components/auth/AuthModal';
 
@@ -253,9 +255,12 @@ export default function ProfilePage() {
                     min="1"
                     max="12"
                     value={user.preferences.defaultServings}
-                    onChange={(e) =>
-                      updatePreferences({ defaultServings: parseInt(e.target.value) })
-                    }
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!isNaN(value) && value >= 1 && value <= 12) {
+                        updatePreferences({ defaultServings: value });
+                      }
+                    }}
                     aria-label={t('settings.defaultServings', 'Default Servings')}
                     className="w-20 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
                   />
@@ -312,9 +317,9 @@ export default function ProfilePage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {favoriteRecipeObjects.slice(0, 6).map((recipe) => (
-                  <a
+                  <Link
                     key={recipe.id}
-                    href={`/recipes/${recipe.id}`}
+                    to={`/recipes/${recipe.id}`}
                     className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     {recipe.imageUrl && (
@@ -332,19 +337,19 @@ export default function ProfilePage() {
                         {recipe.totalTime} {t('common.minutes', 'min')}
                       </div>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             )}
 
             {favoriteRecipeObjects.length > 6 && (
               <div className="mt-4 text-center">
-                <a
-                  href="/recipes?filter=favorites"
+                <Link
+                  to="/recipes?filter=favorites"
                   className="text-primary-600 dark:text-primary-400 hover:underline text-sm"
                 >
                   {t('profile.viewAllFavorites', 'View all favorites')} ({favoriteRecipes.length})
-                </a>
+                </Link>
               </div>
             )}
           </Card>
