@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext';
 import { useTheme } from '@contexts/ThemeContext';
 import { useLanguage } from '@contexts/LanguageContext';
@@ -10,6 +11,7 @@ import { AuthModal } from '@components/auth/AuthModal';
 
 export default function ProfilePage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user, isAuthenticated, signOut, updatePreferences } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
@@ -301,7 +303,7 @@ export default function ProfilePage() {
                 </p>
                 <Button
                   variant="primary"
-                  onClick={() => (window.location.href = '/recipes')}
+                  onClick={() => navigate('/recipes')}
                   className="mt-4"
                 >
                   {t('profile.browseRecipes', 'Browse Recipes')}
