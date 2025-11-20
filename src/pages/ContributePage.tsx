@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ContributionWizard, RecipeFormData } from '@components/contribute/ContributionWizard';
 import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@components/common/Button';
 
 export default function ContributePage() {
   const { t } = useTranslation();
@@ -37,7 +38,6 @@ export default function ContributePage() {
             <button
               type="button"
               onClick={() => navigate('/recipes')}
-              className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
             >
               {t('contribute.browseRecipes', 'Browse Recipes')}
             </button>
@@ -49,7 +49,7 @@ export default function ContributePage() {
               className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             >
               {t('contribute.submitAnother', 'Submit Another Recipe')}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
