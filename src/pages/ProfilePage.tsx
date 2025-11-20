@@ -254,6 +254,7 @@ export default function ProfilePage() {
                     onChange={(e) =>
                       updatePreferences({ defaultServings: parseInt(e.target.value) })
                     }
+                    aria-label={t('settings.defaultServings', 'Default Servings')}
                     className="w-20 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
                   />
                 )}
