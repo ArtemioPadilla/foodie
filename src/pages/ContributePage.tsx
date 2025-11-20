@@ -35,12 +35,14 @@ export default function ContributePage() {
           </p>
           <div className="flex gap-4 justify-center">
             <button
+              type="button"
               onClick={() => navigate('/recipes')}
               className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
             >
               {t('contribute.browseRecipes', 'Browse Recipes')}
             </button>
             <button
+              type="button"
               onClick={() => {
                 setSubmitted(false);
               }}
