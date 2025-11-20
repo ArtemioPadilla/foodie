@@ -251,9 +251,12 @@ export default function ProfilePage() {
                     min="1"
                     max="12"
                     value={user.preferences.defaultServings}
-                    onChange={(e) =>
-                      updatePreferences({ defaultServings: parseInt(e.target.value) })
-                    }
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value);
+                      if (!isNaN(value) && value >= 1 && value <= 12) {
+                        updatePreferences({ defaultServings: value });
+                      }
+                    }}
                     aria-label={t('settings.defaultServings', 'Default Servings')}
                     className="w-20 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
                   />
