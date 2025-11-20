@@ -5,6 +5,7 @@ import { useLanguage } from '@contexts/LanguageContext';
 import { useRecipes } from '@contexts/RecipeContext';
 import { User, Mail, Calendar, Heart, Settings, LogOut, Moon, Sun, Globe } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Card } from '@components/common';
 import { AuthModal } from '@components/auth/AuthModal';
 
@@ -340,12 +341,12 @@ export default function ProfilePage() {
 
             {favoriteRecipeObjects.length > 6 && (
               <div className="mt-4 text-center">
-                <a
-                  href="/recipes?filter=favorites"
+                <Link
+                  to="/recipes?filter=favorites"
                   className="text-primary-600 dark:text-primary-400 hover:underline text-sm"
                 >
                   {t('profile.viewAllFavorites', 'View all favorites')} ({favoriteRecipes.length})
-                </a>
+                </Link>
               </div>
             )}
           </Card>
