@@ -35,17 +35,18 @@ export default function ContributePage() {
             {t('contribute.submissionSuccess', 'Your recipe has been submitted and will be reviewed shortly. Check your GitHub for the pull request.')}
           </p>
           <div className="flex gap-4 justify-center">
-            <Button
-              variant="primary"
-              size="lg"
+            <button
+              type="button"
               onClick={() => navigate('/recipes')}
             >
               {t('contribute.browseRecipes', 'Browse Recipes')}
-            </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => setSubmitted(false)}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSubmitted(false);
+              }}
+              className="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
             >
               {t('contribute.submitAnother', 'Submit Another Recipe')}
             </Button>
