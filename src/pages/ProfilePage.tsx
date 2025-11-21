@@ -1,13 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext';
 import { useTheme } from '@contexts/ThemeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { useRecipes } from '@contexts/RecipeContext';
 import { User, Mail, Calendar, Heart, Settings, LogOut, Moon, Sun, Globe } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Button, Card } from '@components/common';
 import { AuthModal } from '@components/auth/AuthModal';
 
