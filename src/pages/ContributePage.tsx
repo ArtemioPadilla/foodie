@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ContributionWizard, RecipeFormData } from '@components/contribute/ContributionWizard';
 import { CheckCircle } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@components/common/Button';
 
 export default function ContributePage() {
   const { t } = useTranslation();
