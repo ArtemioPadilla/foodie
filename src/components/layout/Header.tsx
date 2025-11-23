@@ -135,7 +135,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-md text-gray-700 dark:text-gray-300"
+              className="lg:hidden p-2 rounded-md text-gray-700 dark:text-gray-100"
               aria-label={t('nav.toggleMenu') || 'Toggle menu'}
               aria-expanded={mobileMenuOpen}
             >
