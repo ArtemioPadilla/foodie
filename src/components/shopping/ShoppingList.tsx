@@ -81,10 +81,9 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
   const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
 
   // Handle notes update (add to ShoppingContext if needed)
-  const handleUpdateNotes = (ingredientId: string, notes: string) => {
+  const handleUpdateNotes = (_ingredientId: string, _notes: string) => {
     // This would need to be added to ShoppingContext
-    // For now, we'll just log it
-    console.log('Update notes for', ingredientId, notes);
+    // TODO: Implement notes update in ShoppingContext
   };
 
   if (totalItems === 0) {

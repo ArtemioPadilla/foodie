@@ -120,6 +120,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
                 setIsEditingQuantity(true);
               }}
               className="hover:text-emerald-600 dark:hover:text-emerald-400"
+              aria-label={`Edit quantity: ${item.quantity} ${item.unit}`}
             >
               <span className="font-medium">{item.quantity}</span> {item.unit}
             </button>

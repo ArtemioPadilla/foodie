@@ -42,7 +42,7 @@ export function initializeFirebase(): FirebaseApp {
     try {
       app = initializeApp(firebaseConfig);
       auth = getAuth(app);
-      console.log('Firebase initialized successfully');
+      // Firebase initialized successfully
     } catch (error) {
       console.error('Failed to initialize Firebase:', error);
       throw error;

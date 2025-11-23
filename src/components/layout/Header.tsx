@@ -99,7 +99,10 @@ export default function Header() {
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="relative group">
-                <button className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <button 
+                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  aria-label={t('nav.userMenu') || 'User menu'}
+                >
                   <User className="h-5 w-5 text-gray-700 dark:text-gray-300" />
                   <span className="hidden sm:inline text-sm text-gray-700 dark:text-gray-300">
                     {user?.displayName}
@@ -133,6 +136,8 @@ export default function Header() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-md text-gray-700 dark:text-gray-300"
+              aria-label={t('nav.toggleMenu') || 'Toggle menu'}
+              aria-expanded={mobileMenuOpen}
             >
               <Menu className="h-6 w-6" />
             </button>

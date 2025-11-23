@@ -84,6 +84,19 @@
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
+
+  /* Links in text blocks should be underlined for accessibility */
+  p a,
+  li a,
+  .text-content a {
+    @apply underline decoration-2 underline-offset-2;
+  }
+
+  p a:hover,
+  li a:hover,
+  .text-content a:hover {
+    @apply decoration-primary-500;
+  }
 }
 
 @layer utilities {

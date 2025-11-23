@@ -109,6 +109,8 @@ export const AccordionTrigger: React.FC<AccordionTriggerProps> = ({
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500',
         className
       )}
+      aria-expanded={isOpen}
+      aria-label={`Toggle accordion item ${value}`}
     >
       {children}
       <svg

@@ -90,6 +90,7 @@ export const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
                 'font-semibold text-gray-900 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400',
                 item.checked && 'line-through'
               )}
+              aria-label={`Edit quantity: ${item.quantity} ${item.unit}`}
             >
               {item.quantity} {item.unit}
             </button>
