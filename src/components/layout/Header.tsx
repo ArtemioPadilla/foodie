@@ -92,7 +92,7 @@ export default function Header() {
               {theme === 'light' ? (
                 <Moon className="h-5 w-5 text-gray-700 dark:text-gray-300" />
               ) : (
-                <Sun className="h-5 w-5 text-gray-300" />
+                <Sun className="h-5 w-5 text-gray-100" />
               )}
             </button>
 
