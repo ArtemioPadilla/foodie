@@ -86,7 +86,10 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        // Only precache essential files, not data JSON files
+        globPatterns: ['**/*.{js,css,html,ico,svg}'],
+        globIgnores: ['**/data/**', '**/locales/**/*.json'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB max
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -114,6 +117,19 @@ export default defineConfig({
               cacheableResponse: {
                 statuses: [0, 200]
               }
+            }
+          },
+          {
+            // Cache recipe and translation data at runtime with NetworkFirst strategy
+            urlPattern: /\/(data|locales)\/.+\.json$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'data-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              },
+              networkTimeoutSeconds: 10
             }
           }
         ]
