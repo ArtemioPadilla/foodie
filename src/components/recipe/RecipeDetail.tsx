@@ -191,7 +191,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                   <div className="font-semibold text-gray-900 dark:text-gray-100">
                     {recipe.rating.toFixed(1)}
                     {recipe.reviewCount && (
-                      <span className="text-sm text-gray-500 ml-1">
+                      <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
                         ({recipe.reviewCount})
                       </span>
                     )}

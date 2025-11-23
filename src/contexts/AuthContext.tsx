@@ -45,7 +45,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       initializeFirebase();
     } catch (error) {
-      console.error('Failed to initialize Firebase:', error);
+      // Only log errors in development
+      if (import.meta.env.DEV) {
+        console.error('Failed to initialize Firebase:', error);
+      }
       setLoading(false);
       return;
     }

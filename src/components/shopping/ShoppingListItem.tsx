@@ -159,7 +159,7 @@ export const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
       {/* Remove Button */}
       <button
         onClick={onRemove}
-        className="p-1 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+        className="p-1 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
         aria-label={t('common.remove', 'Remove')}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -36,7 +36,7 @@ export default function ProfilePage() {
       <>
         <div className="container-custom py-12">
           <div className="max-w-md mx-auto text-center">
-            <User className="h-24 w-24 text-gray-400 mx-auto mb-6" />
+            <User className="h-24 w-24 text-gray-500 dark:text-gray-400 mx-auto mb-6" />
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               {t('profile.signInRequired', 'Sign In Required')}
             </h1>
@@ -115,7 +115,7 @@ export default function ProfilePage() {
                 <Mail className="w-4 h-4" />
                 <span className="text-sm">{user.email}</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-500 text-xs">
+              <div className="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 text-xs">
                 <Calendar className="w-3 h-3" />
                 <span>
                   {t('profile.memberSince', 'Member since')}{' '}

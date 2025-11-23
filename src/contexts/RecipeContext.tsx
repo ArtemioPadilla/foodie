@@ -37,7 +37,10 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
         setRecipes(data.recipes || []);
         setFilteredRecipes(data.recipes || []);
       } catch (error) {
-        console.error('Failed to load recipes:', error);
+        // Only log errors in development
+        if (import.meta.env.DEV) {
+          console.error('Failed to load recipes:', error);
+        }
         setRecipes([]);
         setFilteredRecipes([]);
       } finally {

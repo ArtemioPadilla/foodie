@@ -72,7 +72,10 @@ export const SubmitStep: React.FC<SubmitStepProps> = ({
         setIsAuthenticated(true);
         setSubmitState('ready');
       } catch (error) {
-        console.error('Authentication failed:', error);
+        // Only log errors in development
+        if (import.meta.env.DEV) {
+          console.error('Authentication failed:', error);
+        }
         setSubmitState('error');
         setPrResult({
           success: false,
@@ -125,7 +128,10 @@ export const SubmitStep: React.FC<SubmitStepProps> = ({
         setSubmitState('error');
       }
     } catch (error: any) {
-      console.error('Submission error:', error);
+      // Only log errors in development
+      if (import.meta.env.DEV) {
+        console.error('Submission error:', error);
+      }
       setPrResult({
         success: false,
         error: error?.message || 'An unexpected error occurred',
