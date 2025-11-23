@@ -11,7 +11,10 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'favicon.svg'],
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,svg}']
+      },
       manifest: {
         name: 'Foodie - Meal Planner',
         short_name: 'Foodie',
