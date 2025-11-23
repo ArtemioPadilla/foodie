@@ -60,6 +60,7 @@ export default function RecipesPage() {
                     src={recipe.imageUrl}
                     alt={getTranslated(recipe.name)}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500 text-4xl">🍽️</span>

@@ -142,6 +142,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                     src={data.imageUrl}
                     alt={data.nameEn}
                     className="w-full h-48 object-cover rounded-lg"
+                    loading="lazy"
                     onError={(e) => {
                       e.currentTarget.style.display = 'none';
                     }}

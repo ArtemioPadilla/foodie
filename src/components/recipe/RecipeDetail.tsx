@@ -38,6 +38,8 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             }
             alt={name}
             className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
           />
 
           {/* Overlay Info */}

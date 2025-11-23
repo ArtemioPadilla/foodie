@@ -101,6 +101,7 @@ export default function ProfilePage() {
                   src={user.photoURL}
                   alt={user.displayName}
                   className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                  loading="lazy"
                 />
               ) : (
                 <div className="w-24 h-24 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center mx-auto mb-4">
@@ -325,6 +326,7 @@ export default function ProfilePage() {
                         src={recipe.imageUrl}
                         alt={recipe.name.en}
                         className="w-16 h-16 object-cover rounded-lg"
+                        loading="lazy"
                       />
                     )}
                     <div className="flex-1 min-w-0">

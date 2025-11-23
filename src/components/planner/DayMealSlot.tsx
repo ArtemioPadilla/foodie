@@ -89,6 +89,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
                 src={recipe.imageUrl}
                 alt={recipe.name[currentLang] || recipe.name.en}
                 className="w-full h-32 object-cover rounded-md"
+                loading="lazy"
               />
             )}
 
