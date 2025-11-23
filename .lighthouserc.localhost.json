@@ -1,0 +1,37 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npm run preview",
+      "startServerReadyPattern": "Local:.*http://localhost:.*",
+      "url": [
+        "http://localhost:4173/foodie/"
+      ],
+      "numberOfRuns": 2
+    },
+    "assert": {
+      "assertions": {
+        "categories:accessibility": ["error", {"minScore": 0.9}],
+        "categories:seo": ["warn", {"minScore": 0.9}],
+        "button-name": ["error", {"minScore": 0.9}],
+        "heading-order": ["error", {"minScore": 0.9}],
+        "link-in-text-block": ["error", {"minScore": 0.9}],
+        "color-contrast": ["error", {"minScore": 0.9}],
+        "csp-xss": "off",
+        "errors-in-console": "off",
+        "installable-manifest": "off",
+        "maskable-icon": "off",
+        "splash-screen": "off",
+        "themed-omnibox": "off",
+        "total-byte-weight": "off",
+        "unminified-javascript": "off",
+        "unused-javascript": "off",
+        "categories:performance": "off",
+        "categories:best-practices": "off",
+        "categories:pwa": "off"
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}

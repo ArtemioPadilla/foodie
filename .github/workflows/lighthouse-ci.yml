@@ -1,4 +1,4 @@
-name: Lighthouse CI
+name: Lighthouse Production Check
 
 on:
   # Run after deployment completes
@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  lighthouse:
-    name: Lighthouse Performance Check (Production)
+  lighthouse-production:
+    name: Lighthouse Full Check (Production)
     runs-on: ubuntu-latest
     # Only run if deployment succeeded
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
@@ -36,6 +36,7 @@ jobs:
             https://artemiopadilla.github.io/foodie/shopping
           uploadArtifacts: true
           temporaryPublicStorage: true
+          configPath: './.lighthouserc.production.json'
 
       - name: Check Lighthouse scores
         run: |
@@ -44,4 +45,6 @@ jobs:
           echo "  - Real service worker functionality"
           echo "  - Actual PWA installation capabilities"
           echo "  - Production CDN performance"
+          echo "  - Complete accessibility validation"
+          echo "  - Security and best practices"
           echo "Results available in artifacts"
