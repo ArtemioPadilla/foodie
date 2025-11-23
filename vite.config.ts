@@ -6,7 +6,9 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic',
+    }),
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
@@ -124,16 +126,42 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
-          'dnd-vendor': ['react-dnd', 'react-dnd-html5-backend']
-        }
-      }
-    }
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('firebase')) {
+              return 'firebase-vendor';
+            }
+            if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('recharts')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('react-dnd')) {
+              return 'dnd-vendor';
+            }
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'i18n-vendor';
+            }
+            if (id.includes('@tanstack')) {
+              return 'query-vendor';
+            }
+            // Split other vendors into smaller chunks
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
   server: {
     port: 5173,
