@@ -1,16 +1,5 @@
 {
   "ci": {
-    "collect": {
-      "startServerCommand": "npm run preview",
-      "startServerReadyPattern": "Local:.*http://localhost:.*",
-      "url": [
-        "http://localhost:4173/foodie/",
-        "http://localhost:4173/foodie/recipes",
-        "http://localhost:4173/foodie/planner",
-        "http://localhost:4173/foodie/shopping"
-      ],
-      "numberOfRuns": 3
-    },
     "assert": {
       "preset": "lighthouse:recommended",
       "assertions": {
