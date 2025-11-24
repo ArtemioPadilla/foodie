@@ -83,9 +83,12 @@ describe('shoppingService', () => {
       expect(result.unit).toBe('kg');
     });
 
-    it('returns same quantity for base units', () => {
-      expect(convertToBaseUnit(1, 'tbsp')).toEqual({ quantity: 1, unit: 'tbsp' });
+    it('converts to base units correctly', () => {
+      // tbsp converts to cup (16 tbsp = 1 cup)
+      expect(convertToBaseUnit(1, 'tbsp')).toEqual({ quantity: 1/16, unit: 'cup' });
+      // cup is already a base unit
       expect(convertToBaseUnit(2, 'cup')).toEqual({ quantity: 2, unit: 'cup' });
+      // lb is a base unit
       expect(convertToBaseUnit(1, 'lb')).toEqual({ quantity: 1, unit: 'lb' });
     });
 

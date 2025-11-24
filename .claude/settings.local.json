@@ -9,7 +9,11 @@
       "Bash(jq:*)",
       "Bash(make act:list:*)",
       "Bash(make typecheck:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(cat:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(act:*)",
+      "Bash(make act:test:*)"
     ],
     "deny": [],
     "ask": []

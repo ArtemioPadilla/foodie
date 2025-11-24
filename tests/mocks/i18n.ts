@@ -4,6 +4,8 @@ import { initReactI18next } from 'react-i18next';
 i18n.use(initReactI18next).init({
   lng: 'en',
   fallbackLng: 'en',
+  supportedLngs: ['en', 'es', 'fr'],
+  nonExplicitSupportedLngs: false,
   ns: ['translation'],
   defaultNS: 'translation',
   debug: false,
@@ -92,7 +94,7 @@ i18n.use(initReactI18next).init({
         // Navigation
         'nav.home': 'Inicio',
         'nav.recipes': 'Recetas',
-        'nav.planner': 'Planificador',
+        'nav.planner': 'Planificador de Comidas',
         'nav.shopping': 'Lista de Compras',
         'nav.pantry': 'Despensa',
         'nav.contribute': 'Contribuir',
@@ -112,7 +114,7 @@ i18n.use(initReactI18next).init({
         // Navigation
         'nav.home': 'Accueil',
         'nav.recipes': 'Recettes',
-        'nav.planner': 'Planificateur',
+        'nav.planner': 'Planificateur de Repas',
         'nav.shopping': 'Liste de Courses',
         'nav.pantry': 'Garde-manger',
         'nav.contribute': 'Contribuer',
