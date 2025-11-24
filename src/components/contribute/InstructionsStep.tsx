@@ -104,7 +104,7 @@ export const InstructionsStep: React.FC<InstructionsStepProps> = ({
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {t('contribute.instructions', 'Instructions')}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {t(
                 'contribute.instructionsDescription',
                 'Provide step-by-step cooking instructions'
@@ -134,7 +134,7 @@ export const InstructionsStep: React.FC<InstructionsStepProps> = ({
           {data.instructions.length === 0 ? (
             <div className="p-8 text-center bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
               <svg
-                className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-3"
+                className="w-12 h-12 mx-auto text-gray-700 dark:text-gray-500 mb-3"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -146,7 +146,7 @@ export const InstructionsStep: React.FC<InstructionsStepProps> = ({
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                 {t('contribute.noInstructionsYet', 'No instructions added yet')}
               </p>
               <Button variant="secondary" onClick={handleAddInstruction} size="sm">
@@ -180,7 +180,7 @@ export const InstructionsStep: React.FC<InstructionsStepProps> = ({
                         'bg-white dark:bg-gray-900',
                         'border-gray-300 dark:border-gray-600',
                         'text-gray-900 dark:text-gray-100',
-                        'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                        'placeholder:text-gray-700 dark:placeholder:text-gray-400',
                         'focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-600',
                         errors[`instruction-${index}`] &&
                           'border-red-500 dark:border-red-500 focus:ring-red-500'
@@ -203,8 +203,8 @@ export const InstructionsStep: React.FC<InstructionsStepProps> = ({
                       className={cn(
                         'p-1.5 rounded transition-colors',
                         index === 0
-                          ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                          : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          ? 'text-gray-700 dark:text-gray-300 cursor-not-allowed'
+                          : 'text-gray-700 hover:text-gray-700 dark:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                       )}
                       aria-label={t('contribute.moveStepUp', 'Move step up')}
                     >
@@ -231,8 +231,8 @@ export const InstructionsStep: React.FC<InstructionsStepProps> = ({
                       className={cn(
                         'p-1.5 rounded transition-colors',
                         index === data.instructions.length - 1
-                          ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                          : 'text-gray-600 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          ? 'text-gray-700 dark:text-gray-300 cursor-not-allowed'
+                          : 'text-gray-700 hover:text-gray-700 dark:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                       )}
                       aria-label={t('contribute.moveStepDown', 'Move step down')}
                     >

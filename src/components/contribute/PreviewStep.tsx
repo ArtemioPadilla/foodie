@@ -83,7 +83,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {t('contribute.preview', 'Preview & Submit')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'contribute.previewDescription',
               'Review your recipe before submitting. Click "Edit" to make changes to any section.'
@@ -106,20 +106,20 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
 
             <div className="space-y-3">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('contribute.recipeName', 'Recipe Name')}
                 </p>
                 <p className="text-base text-gray-900 dark:text-gray-100">{data.nameEn}</p>
                 {data.nameEs && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">ES: {data.nameEs}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">ES: {data.nameEs}</p>
                 )}
                 {data.nameFr && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">FR: {data.nameFr}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">FR: {data.nameFr}</p>
                 )}
               </div>
 
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('contribute.recipeDescription', 'Description')}
                 </p>
                 <p className="text-sm text-gray-700 dark:text-gray-300">{data.descriptionEn}</p>
@@ -135,7 +135,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
 
               {data.imageUrl && (
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('contribute.image', 'Image')}
                   </p>
                   <img
@@ -165,7 +165,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('contribute.prepTime', 'Prep Time')}
                 </p>
                 <p className="text-base text-gray-900 dark:text-gray-100">
@@ -173,7 +173,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('contribute.cookTime', 'Cook Time')}
                 </p>
                 <p className="text-base text-gray-900 dark:text-gray-100">
@@ -182,7 +182,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
               </div>
               {data.restTime !== undefined && data.restTime > 0 && (
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t('contribute.restTime', 'Rest Time')}
                   </p>
                   <p className="text-base text-gray-900 dark:text-gray-100">
@@ -191,7 +191,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 </div>
               )}
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('contribute.totalTime', 'Total Time')}
                 </p>
                 <p className="text-base font-semibold text-emerald-600 dark:text-emerald-400">
@@ -199,7 +199,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('contribute.servings', 'Servings')}
                 </p>
                 <p className="text-base text-gray-900 dark:text-gray-100">{data.servings}</p>
@@ -228,7 +228,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                   <span>
                     {ingredient.quantity} {ingredient.unit} {ingredient.ingredientId}
                     {ingredient.optional && (
-                      <span className="text-gray-500 dark:text-gray-400 ml-1">
+                      <span className="text-gray-700 dark:text-gray-300 ml-1">
                         ({t('common.optional', 'optional')})
                       </span>
                     )}
@@ -278,7 +278,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {data.calories !== undefined && data.calories > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.calories', 'Calories')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">
@@ -288,7 +288,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 )}
                 {data.protein !== undefined && data.protein > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.protein', 'Protein')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">{data.protein}g</p>
@@ -296,7 +296,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 )}
                 {data.carbohydrates !== undefined && data.carbohydrates > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.carbs', 'Carbs')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">
@@ -306,7 +306,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 )}
                 {data.fat !== undefined && data.fat > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.fat', 'Fat')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">{data.fat}g</p>
@@ -314,7 +314,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 )}
                 {data.fiber !== undefined && data.fiber > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.fiber', 'Fiber')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">{data.fiber}g</p>
@@ -322,7 +322,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 )}
                 {data.sugar !== undefined && data.sugar > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.sugar', 'Sugar')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">{data.sugar}g</p>
@@ -330,7 +330,7 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                 )}
                 {data.sodium !== undefined && data.sodium > 0 && (
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       {t('nutrition.sodium', 'Sodium')}
                     </p>
                     <p className="text-base text-gray-900 dark:text-gray-100">{data.sodium}mg</p>

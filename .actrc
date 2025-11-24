@@ -1,0 +1,25 @@
+# act configuration file
+# https://github.com/nektos/act
+
+# Use platform-specific images for better compatibility
+--platform ubuntu-latest=catthehacker/ubuntu:act-latest
+--platform ubuntu-22.04=catthehacker/ubuntu:act-22.04
+--platform ubuntu-20.04=catthehacker/ubuntu:act-20.04
+
+# Container architecture (important for Apple M-series chips)
+--container-architecture linux/amd64
+
+# Enable artifact server for upload/download actions
+--artifact-server-path /tmp/artifacts
+
+# Bind Docker socket for Docker-in-Docker operations
+--bind
+
+# Use GitHub cache server
+--use-gitignore=true
+
+# Verbose output for debugging (comment out for quieter output)
+# --verbose
+
+# Don't pull images automatically (use cached when available)
+# --pull=false

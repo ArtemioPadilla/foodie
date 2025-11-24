@@ -163,7 +163,7 @@ export const mockShoppingListItem: ShoppingListItem = {
   category: 'proteins',
   checked: false,
   notes: '',
-  recipes: ['recipe-1'],
+  usedIn: ['recipe-1'],
 };
 
 export const mockShoppingList: ShoppingListItem[] = [

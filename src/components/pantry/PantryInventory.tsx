@@ -117,7 +117,7 @@ export const PantryInventory: React.FC<PantryInventoryProps> = ({ className }) =
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {t('pantry.title', 'Pantry Inventory')}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {pantryItems.length} {pantryItems.length === 1 ? t('common.item', 'item') : t('common.items', 'items')}
             </p>
           </div>

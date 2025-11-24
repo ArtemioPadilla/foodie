@@ -37,7 +37,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
             Rating & Reviews
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
             {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
           </p>
         </div>
@@ -46,7 +46,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
           <div className="text-4xl font-bold text-gray-900 dark:text-gray-100">
             {rating.toFixed(1)}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">out of 5</div>
+          <div className="text-sm text-gray-700 dark:text-gray-300">out of 5</div>
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
                 'w-8 h-8 transition-colors',
                 value <= displayRating
                   ? 'text-yellow-500 fill-current'
-                  : 'text-gray-300 dark:text-gray-600'
+                  : 'text-gray-700 dark:text-gray-300'
               )}
               fill={value <= displayRating ? 'currentColor' : 'none'}
               stroke="currentColor"
@@ -107,7 +107,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
             return (
               <div key={stars} className="flex items-center gap-3">
                 <div className="flex items-center gap-1 w-12">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{stars}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{stars}</span>
                   <svg className="w-3 h-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
@@ -118,7 +118,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
                     style={{ width: `${percentage}%` }}
                   />
                 </div>
-                <span className="text-sm text-gray-600 dark:text-gray-400 w-12 text-right">
+                <span className="text-sm text-gray-700 dark:text-gray-300 w-12 text-right">
                   {count}
                 </span>
               </div>

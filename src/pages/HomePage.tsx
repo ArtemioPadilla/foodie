@@ -41,19 +41,19 @@ export default function HomePage() {
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               {t('app.name')}
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-50">
+            <p className="text-xl md:text-2xl mb-8 text-white">
               {t('app.tagline')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/recipes"
-                className="px-8 py-3 bg-white text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg"
+                className="px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg"
               >
                 Browse Recipes
               </Link>
               <Link
                 to="/planner"
-                className="px-8 py-3 bg-primary-600 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors border-2 border-white"
+                className="px-8 py-3 bg-primary-700 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors border-2 border-white"
               >
                 Create Meal Plan
               </Link>
@@ -84,7 +84,7 @@ export default function HomePage() {
                     <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-700 dark:text-gray-300">
                       {feature.description}
                     </p>
                   </div>
@@ -104,38 +104,38 @@ export default function HomePage() {
                 <ChefHat className="h-12 w-12 text-primary-500" />
               </div>
               <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">100+</div>
-              <div className="text-gray-600 dark:text-gray-400">Recipes Available</div>
+              <div className="text-gray-700 dark:text-gray-300">Recipes Available</div>
             </div>
             <div>
               <div className="flex justify-center mb-4">
                 <Star className="h-12 w-12 text-accent-500" />
               </div>
               <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">4.8</div>
-              <div className="text-gray-600 dark:text-gray-400">Average Rating</div>
+              <div className="text-gray-700 dark:text-gray-300">Average Rating</div>
             </div>
             <div>
               <div className="flex justify-center mb-4">
                 <TrendingUp className="h-12 w-12 text-primary-500" />
               </div>
               <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">3+</div>
-              <div className="text-gray-600 dark:text-gray-400">Languages Supported</div>
+              <div className="text-gray-700 dark:text-gray-300">Languages Supported</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary-500">
+      <section className="py-20 bg-primary-700">
         <div className="container-custom text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
             Ready to Start Planning?
           </h2>
-          <p className="text-xl text-primary-50 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
             Join thousands of users who are simplifying their meal planning with Foodie
           </p>
           <Link
             to="/contribute"
-            className="inline-block px-8 py-3 bg-white text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg"
+            className="inline-block px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg"
           >
             Contribute a Recipe
           </Link>

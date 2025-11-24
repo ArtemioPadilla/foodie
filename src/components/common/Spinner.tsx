@@ -42,7 +42,7 @@ export const Spinner: React.FC<SpinnerProps> = ({
         />
       </svg>
       {label && (
-        <p className="text-sm text-gray-600 dark:text-gray-400">{label}</p>
+        <p className="text-sm text-gray-700 dark:text-gray-300">{label}</p>
       )}
     </div>
   );

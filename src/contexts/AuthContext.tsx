@@ -68,54 +68,54 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   // Sign in
-  const signIn = async (credentials: authService.SignInCredentials) => {
+  const signIn = React.useCallback(async (credentials: authService.SignInCredentials) => {
     const result = await authService.signIn(credentials);
     if (result.success && result.user) {
       setUser(result.user);
     }
     return result;
-  };
+  }, []);
 
   // Sign up
-  const signUp = async (data: authService.SignUpData) => {
+  const signUp = React.useCallback(async (data: authService.SignUpData) => {
     const result = await authService.signUp(data);
     if (result.success && result.user) {
       setUser(result.user);
     }
     return result;
-  };
+  }, []);
 
   // Sign in with Google
-  const signInGoogle = async () => {
+  const signInGoogle = React.useCallback(async () => {
     const result = await authService.signInGoogle();
     if (result.success && result.user) {
       setUser(result.user);
     }
     return result;
-  };
+  }, []);
 
   // Sign in with GitHub
-  const signInGitHub = async () => {
+  const signInGitHub = React.useCallback(async () => {
     const result = await authService.signInGitHub();
     if (result.success && result.user) {
       setUser(result.user);
     }
     return result;
-  };
+  }, []);
 
   // Sign out
-  const signOut = async () => {
+  const signOut = React.useCallback(async () => {
     await authService.signOut();
     setUser(null);
-  };
+  }, []);
 
   // Reset password
-  const resetPassword = async (email: string) => {
+  const resetPassword = React.useCallback(async (email: string) => {
     return authService.resetPassword(email);
-  };
+  }, []);
 
   // Update preferences
-  const updatePreferences = async (preferences: Partial<User['preferences']>) => {
+  const updatePreferences = React.useCallback(async (preferences: Partial<User['preferences']>) => {
     if (!user) {
       throw new Error('No user signed in');
     }
@@ -124,10 +124,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       ...user,
       preferences: { ...user.preferences, ...preferences },
     });
-  };
+  }, [user]);
 
   // Add favorite
-  const addFavorite = (recipeId: string) => {
+  const addFavorite = React.useCallback((recipeId: string) => {
     if (!user) {
       throw new Error('No user signed in');
     }
@@ -136,10 +136,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       ...user,
       favoriteRecipes: [...user.favoriteRecipes, recipeId],
     });
-  };
+  }, [user]);
 
   // Remove favorite
-  const removeFavorite = (recipeId: string) => {
+  const removeFavorite = React.useCallback((recipeId: string) => {
     if (!user) {
       throw new Error('No user signed in');
     }
@@ -148,33 +148,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       ...user,
       favoriteRecipes: user.favoriteRecipes.filter((id) => id !== recipeId),
     });
-  };
+  }, [user]);
 
   // Check if recipe is favorite
-  const isFavorite = (recipeId: string): boolean => {
+  const isFavorite = React.useCallback((recipeId: string): boolean => {
     if (!user) {
       return false;
     }
     return user.favoriteRecipes.includes(recipeId);
-  };
+  }, [user]);
 
   // Update display name
-  const updateDisplayName = async (displayName: string) => {
+  const updateDisplayName = React.useCallback(async (displayName: string) => {
     if (!user) {
       throw new Error('No user signed in');
     }
     await authService.updateDisplayName(displayName);
     setUser({ ...user, displayName });
-  };
+  }, [user]);
 
   // Update photo URL
-  const updatePhotoURL = async (photoURL: string) => {
+  const updatePhotoURL = React.useCallback(async (photoURL: string) => {
     if (!user) {
       throw new Error('No user signed in');
     }
     await authService.updatePhotoURL(photoURL);
     setUser({ ...user, photoURL });
-  };
+  }, [user]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -194,7 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       updateDisplayName,
       updatePhotoURL,
     }),
-    [user, loading]
+    [user, loading, signIn, signUp, signInGoogle, signInGitHub, signOut, resetPassword, updatePreferences, addFavorite, removeFavorite, isFavorite, updateDisplayName, updatePhotoURL]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -204,6 +204,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
  * useAuth Hook
  * Access authentication context
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext);
   if (context === undefined) {

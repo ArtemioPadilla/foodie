@@ -83,7 +83,7 @@ export const ExpirationTracker: React.FC<ExpirationTrackerProps> = ({
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {t('pantry.expirationTracker', 'Expiration Tracker')}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {t('pantry.trackingNext', 'Tracking items expiring in the next {days} days', {
                 days: daysThreshold,
               })}

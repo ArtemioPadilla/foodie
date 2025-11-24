@@ -39,7 +39,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-700 dark:text-gray-300">
               {leftIcon}
             </div>
           )}
@@ -50,7 +50,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'w-full h-10 px-3 text-base rounded-lg border transition-colors',
               'bg-white dark:bg-gray-800',
               'text-gray-900 dark:text-gray-100',
-              'placeholder:text-gray-500 dark:placeholder:text-gray-400',
+              'placeholder:text-gray-700 dark:placeholder:text-gray-700',
               'focus:outline-none focus:ring-2 focus:ring-offset-0',
               error
                 ? 'border-red-500 focus:ring-red-500'
@@ -63,7 +63,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {...props}
           />
           {rightIcon && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 dark:text-gray-300">
               {rightIcon}
             </div>
           )}
@@ -72,7 +72,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <p className="text-sm text-red-500">{error}</p>
         )}
         {helperText && !error && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">{helperText}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{helperText}</p>
         )}
       </div>
     );

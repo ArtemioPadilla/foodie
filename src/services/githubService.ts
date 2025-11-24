@@ -182,9 +182,10 @@ class GitHubService {
         ref: `refs/heads/${branchName}`,
         sha: fromSha,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Branch might already exist, that's ok
-      if (error?.status !== 422) {
+      const errorStatus = (error as { status?: number })?.status;
+      if (errorStatus !== 422) {
         throw error;
       }
     }
@@ -321,19 +322,22 @@ Co-Authored-By: ${options.contributorName} ${options.contributorEmail ? `<${opti
         prUrl: pr.url,
         prNumber: pr.number,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error submitting recipe:', error);
 
       let errorMessage = 'Failed to submit recipe. Please try again.';
 
-      if (error?.status === 401) {
+      const errorStatus = (error as { status?: number })?.status;
+      const errorMsg = (error as { message?: string })?.message;
+
+      if (errorStatus === 401) {
         errorMessage = 'Authentication failed. Please sign in again.';
-      } else if (error?.status === 403) {
+      } else if (errorStatus === 403) {
         errorMessage = 'Permission denied. Please check your GitHub permissions.';
-      } else if (error?.status === 404) {
+      } else if (errorStatus === 404) {
         errorMessage = 'Repository not found. Please check the configuration.';
-      } else if (error?.message) {
-        errorMessage = error.message;
+      } else if (errorMsg) {
+        errorMessage = errorMsg;
       }
 
       return {

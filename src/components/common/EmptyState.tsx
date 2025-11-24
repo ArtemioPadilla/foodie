@@ -34,7 +34,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       )}
     >
       {icon && (
-        <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-400">
+        <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-700 dark:text-gray-300">
           {icon}
         </div>
       )}
@@ -44,7 +44,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       </h3>
 
       {description && (
-        <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md">
+        <p className="text-gray-700 dark:text-gray-300 mb-6 max-w-md">
           {description}
         </p>
       )}

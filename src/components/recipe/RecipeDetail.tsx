@@ -55,7 +55,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             {/* Prep Time */}
             <div className="flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -68,7 +68,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 />
               </svg>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Prep</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">Prep</div>
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.prepTime} min
                 </div>
@@ -78,7 +78,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             {/* Cook Time */}
             <div className="flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -91,7 +91,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 />
               </svg>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Cook</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">Cook</div>
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.cookTime} min
                 </div>
@@ -101,7 +101,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             {/* Total Time */}
             <div className="flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -114,7 +114,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 />
               </svg>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">Total</div>
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.totalTime} min
                 </div>
@@ -124,7 +124,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             {/* Servings */}
             <div className="flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -137,7 +137,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 />
               </svg>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Servings</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">Servings</div>
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.servings}
                 </div>
@@ -147,7 +147,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
             {/* Difficulty */}
             <div className="flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                className="w-5 h-5 text-gray-700 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -160,7 +160,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                 />
               </svg>
               <div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">Difficulty</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">Difficulty</div>
                 <Badge
                   variant={
                     recipe.difficulty === 'easy'
@@ -187,11 +187,11 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Rating</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Rating</div>
                   <div className="font-semibold text-gray-900 dark:text-gray-100">
                     {recipe.rating.toFixed(1)}
                     {recipe.reviewCount && (
-                      <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
+                      <span className="text-sm text-gray-700 dark:text-gray-300 ml-1">
                         ({recipe.reviewCount})
                       </span>
                     )}
@@ -215,7 +215,7 @@ export const RecipeDetail: React.FC<RecipeDetailProps> = ({
       )}
 
       {/* Cuisine & Type */}
-      <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
+      <div className="flex gap-4 text-sm text-gray-700 dark:text-gray-300">
         <div>
           <span className="font-medium">Cuisine:</span>{' '}
           {recipe.cuisine.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(', ')}

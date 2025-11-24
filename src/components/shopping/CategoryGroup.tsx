@@ -50,7 +50,7 @@ export const CategoryGroup: React.FC<CategoryGroupProps> = ({
           {/* Expand/Collapse Icon */}
           <svg
             className={cn(
-              'w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform',
+              'w-5 h-5 text-gray-700 dark:text-gray-300 transition-transform',
               !isCollapsed && 'transform rotate-90'
             )}
             fill="none"

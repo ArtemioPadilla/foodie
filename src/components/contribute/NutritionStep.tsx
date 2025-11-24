@@ -109,7 +109,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {t('contribute.nutritionInfo', 'Nutrition Information')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'contribute.nutritionInfoDescription',
               'Add nutrition facts per serving (optional but recommended)'
@@ -135,7 +135,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="1"
                 error={errors.calories}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 kcal
               </div>
             </div>
@@ -157,7 +157,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="0.1"
                 error={errors.protein}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 g
               </div>
             </div>
@@ -179,7 +179,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="0.1"
                 error={errors.carbohydrates}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 g
               </div>
             </div>
@@ -201,7 +201,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="0.1"
                 error={errors.fat}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 g
               </div>
             </div>
@@ -223,7 +223,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="0.1"
                 error={errors.fiber}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 g
               </div>
             </div>
@@ -245,7 +245,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="0.1"
                 error={errors.sugar}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 g
               </div>
             </div>
@@ -267,7 +267,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
                 step="1"
                 error={errors.sodium}
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                 mg
               </div>
             </div>
@@ -283,7 +283,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
               {data.calories !== undefined && data.calories > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.calories', 'Calories')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">
@@ -293,7 +293,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
               )}
               {data.protein !== undefined && data.protein > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.protein', 'Protein')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">
@@ -303,7 +303,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
               )}
               {data.carbohydrates !== undefined && data.carbohydrates > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.carbs', 'Carbs')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">
@@ -313,7 +313,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
               )}
               {data.fat !== undefined && data.fat > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.fat', 'Fat')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">
@@ -323,7 +323,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
               )}
               {data.fiber !== undefined && data.fiber > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.fiber', 'Fiber')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">
@@ -333,7 +333,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
               )}
               {data.sugar !== undefined && data.sugar > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.sugar', 'Sugar')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">
@@ -343,7 +343,7 @@ export const NutritionStep: React.FC<NutritionStepProps> = ({
               )}
               {data.sodium !== undefined && data.sodium > 0 && (
                 <div>
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('nutrition.sodium', 'Sodium')}:
                   </span>
                   <span className="ml-1 font-medium text-emerald-700 dark:text-emerald-300">

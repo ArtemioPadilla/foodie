@@ -68,7 +68,7 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
       }
       day.meals.snacks.push({ recipeId, servings });
     } else {
-      (day.meals as any)[mealType] = { recipeId, servings };
+      (day.meals as Record<string, unknown>)[mealType] = { recipeId, servings };
     }
 
     setCurrentPlan({ ...currentPlan, days: updatedDays });
@@ -157,6 +157,7 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const usePlanner = () => {
   const context = useContext(PlannerContext);
   if (!context) {

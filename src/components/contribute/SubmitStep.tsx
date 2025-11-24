@@ -64,7 +64,7 @@ export const SubmitStep: React.FC<SubmitStepProps> = ({
     );
 
     // Check for token in environment (development only)
-    const token = (import.meta as any).env?.VITE_GITHUB_TOKEN;
+    const token = import.meta.env.VITE_GITHUB_TOKEN;
     if (token) {
       try {
         const githubService = getGitHubService();
@@ -127,14 +127,15 @@ export const SubmitStep: React.FC<SubmitStepProps> = ({
       } else {
         setSubmitState('error');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Only log errors in development
       if (import.meta.env.DEV) {
         console.error('Submission error:', error);
       }
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
       setPrResult({
         success: false,
-        error: error?.message || 'An unexpected error occurred',
+        error: message,
       });
       setSubmitState('error');
     }
@@ -148,7 +149,7 @@ export const SubmitStep: React.FC<SubmitStepProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {t('contribute.submit', 'Submit Recipe')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'contribute.submitDescription',
               'Final validation and submission to GitHub'
@@ -260,7 +261,7 @@ export const SubmitStep: React.FC<SubmitStepProps> = ({
             <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">
               {t('contribute.githubAuth', 'GitHub Authentication Required')}
             </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
               {t(
                 'contribute.githubAuthDescription',
                 'Sign in with GitHub to submit your recipe as a pull request'

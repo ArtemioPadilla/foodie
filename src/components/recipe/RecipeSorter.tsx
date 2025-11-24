@@ -59,6 +59,7 @@ RecipeSorter.displayName = 'RecipeSorter';
 /**
  * Helper function to sort recipes based on sort option
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function sortRecipes<T extends {
   name?: { en?: string; es?: string; fr?: string };
   totalTime?: number;

@@ -104,7 +104,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
             {summary.totalMeals}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('planner.totalMeals', 'Total Meals')}
           </div>
         </div>
@@ -114,7 +114,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-red-600 dark:text-red-400">
             {summary.totalCalories.toLocaleString()}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('nutrition.calories', 'Calories')}
           </div>
         </div>
@@ -124,7 +124,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
             {summary.totalProtein}g
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('nutrition.protein', 'Protein')}
           </div>
         </div>
@@ -134,7 +134,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">
             {summary.totalCarbs}g
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('nutrition.carbs', 'Carbs')}
           </div>
         </div>
@@ -144,7 +144,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
             {summary.totalFat}g
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('nutrition.fat', 'Fat')}
           </div>
         </div>
@@ -154,7 +154,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
             {summary.uniqueIngredients}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('planner.ingredients', 'Ingredients')}
           </div>
         </div>
@@ -164,7 +164,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
           <div className="text-3xl font-bold text-green-600 dark:text-green-400">
             ${summary.estimatedCost.toFixed(2)}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('planner.estimatedCost', 'Est. Cost')}
           </div>
         </div>
@@ -174,7 +174,7 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
       {plan.dietaryRestrictions && plan.dietaryRestrictions.length > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-gray-600 dark:text-gray-400">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
               {t('planner.dietaryRestrictions', 'Dietary Restrictions')}:
             </span>
             {plan.dietaryRestrictions.map((restriction) => (

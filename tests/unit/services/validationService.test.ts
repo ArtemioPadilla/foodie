@@ -20,7 +20,8 @@ describe('validationService', () => {
       { ingredientId: 'ing-1', quantity: 2, unit: 'cup', optional: false },
     ],
     instructions: [
-      { step: 1, textEn: 'Step 1', textEs: 'Paso 1', textFr: 'Étape 1' },
+      'Step 1: Preheat the oven to 350°F',
+      'Step 2: Mix all ingredients together',
     ],
     calories: 200,
     protein: 10,

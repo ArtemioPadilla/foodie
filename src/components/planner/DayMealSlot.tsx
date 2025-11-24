@@ -51,7 +51,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
       <div className="space-y-3">
         {/* Meal Type Header */}
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase">
+          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 uppercase">
             {mealTypeLabels[mealType]}
           </h4>
           {meal && (
@@ -65,7 +65,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
         {isEmpty ? (
           <div className="py-6 text-center">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600"
+              className="mx-auto h-12 w-12 text-gray-700 dark:text-gray-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -77,7 +77,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
               {t('planner.dragRecipeHere', 'Drag a recipe here')}
             </p>
           </div>
@@ -98,7 +98,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
               <h5 className="font-semibold text-gray-900 dark:text-gray-100">
                 {recipe?.name[currentLang] || recipe?.name.en}
               </h5>
-              <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-2 mt-1 text-sm text-gray-700 dark:text-gray-300">
                 {/* Time */}
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

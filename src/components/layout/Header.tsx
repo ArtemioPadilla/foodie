@@ -126,7 +126,7 @@ export default function Header() {
             ) : (
               <Link
                 to="/profile"
-                className="px-4 py-2 rounded-md bg-primary-500 text-white hover:bg-primary-600 transition-colors text-sm font-medium"
+                className="px-4 py-2 rounded-md bg-primary-700 text-white hover:bg-primary-600 transition-colors text-sm font-medium"
               >
                 {t('nav.signIn')}
               </Link>

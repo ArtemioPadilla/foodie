@@ -41,7 +41,7 @@ export default function RecipesPage() {
       {/* Recipe Grid */}
       {filteredRecipes.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
+          <p className="text-gray-700 dark:text-gray-300 text-lg">
             {t('recipe.noRecipes')}
           </p>
         </div>
@@ -65,7 +65,7 @@ export default function RecipesPage() {
                     loading="lazy"
                   />
                 ) : (
-                  <span className="text-gray-400 dark:text-gray-500 text-4xl">🍽️</span>
+                  <span className="text-gray-700 dark:text-gray-500 text-4xl">🍽️</span>
                 )}
               </div>
 
@@ -75,12 +75,12 @@ export default function RecipesPage() {
                   {getTranslated(recipe.name)}
                 </h3>
 
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                <p className="text-gray-700 dark:text-gray-300 text-sm mb-4 line-clamp-2">
                   {getTranslated(recipe.description)}
                 </p>
 
                 {/* Meta Info */}
-                <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
                   <div className="flex items-center space-x-1">
                     <Clock className="h-4 w-4" />
                     <span>{recipe.totalTime} {t('common.minutes')}</span>

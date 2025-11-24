@@ -92,7 +92,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
               <div
                 className={cn(
                   'flex-1',
-                  isChecked && 'line-through text-gray-500 dark:text-gray-500'
+                  isChecked && 'line-through text-gray-700 dark:text-gray-300'
                 )}
               >
                 <div className="flex items-baseline gap-2 flex-wrap">
@@ -102,7 +102,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                   <span className="text-gray-700 dark:text-gray-300">
                     {ingredient.ingredientId}
                     {ingredient.preparation && (
-                      <span className="text-gray-500 dark:text-gray-400">
+                      <span className="text-gray-700 dark:text-gray-300">
                         {' '}
                         ({ingredient.preparation})
                       </span>
@@ -110,7 +110,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                   </span>
                 </div>
                 {ingredient.optional && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-700 dark:text-gray-300">
                     (optional)
                   </span>
                 )}
@@ -124,7 +124,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
       {showCheckboxes && checkedItems.size > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Progress</span>
+            <span className="text-gray-700 dark:text-gray-300">Progress</span>
             <span className="font-medium text-emerald-600 dark:text-emerald-400">
               {checkedItems.size} / {recipe.ingredients.length} checked
             </span>

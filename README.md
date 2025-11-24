@@ -20,7 +20,7 @@ A comprehensive, multilingual Progressive Web Application for meal planning, rec
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 20+ and npm
 - Git
 
 ### Installation
@@ -56,6 +56,8 @@ The app will be available at `http://localhost:5173`
 
 ## 📝 Available Scripts
 
+### Using npm
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -64,6 +66,28 @@ npm run lint         # Run ESLint
 npm test             # Run unit tests
 npm run test:e2e     # Run E2E tests
 ```
+
+### Using Makefile (Recommended)
+
+We provide a comprehensive Makefile for easier development and testing:
+
+```bash
+make help            # Show all available commands
+make dev             # Start development server
+make build           # Build for production
+make test:all        # Run all tests
+make validate:all    # Run all validations
+make act:lighthouse  # Run Lighthouse checks locally
+make doctor          # Check environment setup
+```
+
+See [MAKEFILE.md](./MAKEFILE.md) for complete documentation and all available commands.
+
+**Benefits of using Makefile:**
+- Run GitHub Actions locally with `make act:*` commands
+- Pre-push validation to catch CI failures early
+- Convenient shortcuts for common tasks
+- Color-coded output for better readability
 
 ## 🏗️ Project Structure
 

@@ -95,7 +95,7 @@ export const Modal: React.FC<ModalProps> = ({
               {description && (
                 <p
                   id="modal-description"
-                  className="text-sm text-gray-500 dark:text-gray-400"
+                  className="text-sm text-gray-700 dark:text-gray-300"
                 >
                   {description}
                 </p>
@@ -104,7 +104,7 @@ export const Modal: React.FC<ModalProps> = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+                className="text-gray-700 hover:text-gray-700 dark:text-gray-700 dark:hover:text-gray-200 transition-colors"
                 aria-label="Close modal"
               >
                 <svg

@@ -75,7 +75,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500 dark:text-gray-400">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-700 dark:text-gray-300">
             <svg
               className="w-4 h-4"
               fill="none"
@@ -93,7 +93,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         </div>
         {error && <p className="text-sm text-red-500">{error}</p>}
         {helperText && !error && (
-          <p className="text-sm text-gray-500 dark:text-gray-400">{helperText}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300">{helperText}</p>
         )}
       </div>
     );

@@ -24,7 +24,7 @@ export const PantryProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('pantryItems', JSON.stringify(items));
   };
 
-  const addItem = (item: Omit<PantryItem, 'id' | 'addedAt'>) => {
+  const addItem = useMemo(() => (item: Omit<PantryItem, 'id' | 'addedAt'>) => {
     setPantryItems((prev) => {
       const newItem: PantryItem = {
         ...item,
@@ -36,9 +36,9 @@ export const PantryProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
-  const updateItem = (id: string, updates: Partial<PantryItem>) => {
+  const updateItem = useMemo(() => (id: string, updates: Partial<PantryItem>) => {
     setPantryItems((prev) => {
       const updated = prev.map((item) =>
         item.id === id ? { ...item, ...updates } : item
@@ -46,21 +46,21 @@ export const PantryProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
-  const removeItem = (id: string) => {
+  const removeItem = useMemo(() => (id: string) => {
     setPantryItems((prev) => {
       const filtered = prev.filter((item) => item.id !== id);
       saveToLocalStorage(filtered);
       return filtered;
     });
-  };
+  }, []);
 
-  const getItemById = (id: string): PantryItem | undefined => {
+  const getItemById = useMemo(() => (id: string): PantryItem | undefined => {
     return pantryItems.find((item) => item.id === id);
-  };
+  }, [pantryItems]);
 
-  const getExpiringItems = (days: number): PantryItem[] => {
+  const getExpiringItems = useMemo(() => (days: number): PantryItem[] => {
     const now = new Date();
     const threshold = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
 
@@ -69,16 +69,16 @@ export const PantryProvider = ({ children }: { children: ReactNode }) => {
       const expDate = new Date(item.expirationDate);
       return expDate <= threshold && expDate >= now;
     });
-  };
+  }, [pantryItems]);
 
-  const getLowStockItems = (threshold: number): PantryItem[] => {
+  const getLowStockItems = useMemo(() => (threshold: number): PantryItem[] => {
     return pantryItems.filter((item) => item.quantity <= threshold);
-  };
+  }, [pantryItems]);
 
-  const clearPantry = () => {
+  const clearPantry = useMemo(() => () => {
     setPantryItems([]);
     localStorage.removeItem('pantryItems');
-  };
+  }, []);
 
   const value = useMemo(
     () => ({
@@ -91,12 +91,13 @@ export const PantryProvider = ({ children }: { children: ReactNode }) => {
       getLowStockItems,
       clearPantry,
     }),
-    [pantryItems]
+    [pantryItems, addItem, updateItem, removeItem, getItemById, getExpiringItems, getLowStockItems, clearPantry]
   );
 
   return <PantryContext.Provider value={value}>{children}</PantryContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const usePantry = () => {
   const context = useContext(PantryContext);
   if (!context) {

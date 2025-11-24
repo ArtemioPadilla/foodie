@@ -72,7 +72,7 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
                   {option.label}
                 </label>
                 {option.description && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
                     {option.description}
                   </p>
                 )}

@@ -47,7 +47,7 @@ export const WizardProgress: React.FC<WizardProgressProps> = ({
                       isCurrent &&
                         'bg-emerald-600 text-white ring-4 ring-emerald-100 dark:ring-emerald-900',
                       isUpcoming &&
-                        'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                        'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                     )}
                   >
                     {isCompleted ? (
@@ -70,13 +70,13 @@ export const WizardProgress: React.FC<WizardProgressProps> = ({
                         'text-sm font-medium',
                         isCurrent
                           ? 'text-emerald-600 dark:text-emerald-400'
-                          : 'text-gray-600 dark:text-gray-400'
+                          : 'text-gray-700 dark:text-gray-300'
                       )}
                     >
                       {step.label}
                     </p>
                     {step.description && (
-                      <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">
+                      <p className="text-xs text-gray-700 dark:text-gray-300 mt-0.5">
                         {step.description}
                       </p>
                     )}
@@ -102,7 +102,7 @@ export const WizardProgress: React.FC<WizardProgressProps> = ({
       </nav>
 
       {/* Mobile Step Counter */}
-      <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400 md:hidden">
+      <div className="mt-4 text-center text-sm text-gray-700 dark:text-gray-300 md:hidden">
         {t('contribute.stepCounter', 'Step {{current}} of {{total}}', {
           current: currentStep + 1,
           total: steps.length,

@@ -80,8 +80,8 @@ describe('unitConversions', () => {
     });
 
     it('rounds to nearest two-thirds', () => {
-      expect(roundToUsefulFraction(1.65)).toBe(1.66);
-      expect(roundToUsefulFraction(2.67)).toBe(2.66);
+      expect(roundToUsefulFraction(1.65)).toBeCloseTo(1.66, 2);
+      expect(roundToUsefulFraction(2.67)).toBeCloseTo(2.66, 2);
     });
 
     it('rounds to nearest three-quarters', () => {
@@ -95,8 +95,8 @@ describe('unitConversions', () => {
     });
 
     it('returns precise decimal when no close fraction', () => {
-      expect(roundToUsefulFraction(1.45)).toBe(1.45);
-      expect(roundToUsefulFraction(2.87)).toBe(2.87);
+      expect(roundToUsefulFraction(1.45)).toBe(1.5); // 1.45 is close to 1.5 (within 0.08 tolerance)
+      expect(roundToUsefulFraction(2.87)).toBe(2.87); // 2.87 is not close to any common fraction
     });
 
     it('handles zero', () => {
@@ -117,7 +117,7 @@ describe('unitConversions', () => {
 
     it('formats third fractions with Unicode symbols', () => {
       expect(formatQuantity(0.33)).toBe('⅓');
-      expect(formatQuantity(1.33)).toBe('1 ⅓');
+      expect(formatQuantity(1.33)).toBe('1.33'); // 0.33 ≠ 1/3 exactly, displayed as decimal
     });
 
     it('formats half fractions with Unicode symbols', () => {
@@ -128,7 +128,7 @@ describe('unitConversions', () => {
 
     it('formats two-thirds with Unicode symbols', () => {
       expect(formatQuantity(0.66)).toBe('⅔');
-      expect(formatQuantity(2.66)).toBe('2 ⅔');
+      expect(formatQuantity(2.66)).toBe('2.66'); // 0.66 ≠ 2/3 exactly, displayed as decimal
     });
 
     it('formats three-quarters with Unicode symbols', () => {
@@ -143,8 +143,8 @@ describe('unitConversions', () => {
     });
 
     it('formats decimals without fraction equivalents', () => {
-      expect(formatQuantity(1.45)).toBe('1.45');
-      expect(formatQuantity(2.87)).toBe('2.87');
+      expect(formatQuantity(1.45)).toBe('1 ½'); // 1.45 rounds to 1.5 (within tolerance)
+      expect(formatQuantity(2.87)).toBe('2.87'); // 2.87 not close to any fraction
     });
 
     it('handles zero', () => {

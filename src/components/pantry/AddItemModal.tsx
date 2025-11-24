@@ -166,7 +166,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
               onChange={(e) => setExpirationDate(e.target.value)}
               min={new Date().toISOString().split('T')[0]}
             />
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
               {t('pantry.expirationHelp', 'Leave empty if item does not expire')}
             </p>
           </div>

@@ -10,7 +10,7 @@ export default function PantryPage() {
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
           {t('pantry.title')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-700 dark:text-gray-300">
           {t('pantry.subtitle', 'Track your pantry inventory and get notified when items are expiring.')}
         </p>
       </div>

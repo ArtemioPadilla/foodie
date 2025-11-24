@@ -13,6 +13,18 @@ i18n.use(initReactI18next).init({
   resources: {
     en: {
       translation: {
+        // App
+        'app.name': 'Foodie',
+        'app.tagline': 'Your Personal Meal Planning Assistant',
+
+        // Navigation
+        'nav.home': 'Home',
+        'nav.recipes': 'Recipes',
+        'nav.planner': 'Meal Planner',
+        'nav.shopping': 'Shopping List',
+        'nav.pantry': 'Pantry',
+        'nav.contribute': 'Contribute',
+
         // Common
         'common.loading': 'Loading...',
         'common.error': 'Error',
@@ -28,6 +40,16 @@ i18n.use(initReactI18next).init({
         'common.next': 'Next',
         'common.previous': 'Previous',
         'common.close': 'Close',
+
+        // Recipe
+        'recipe.ingredients': 'Ingredients',
+        'recipe.instructions': 'Instructions',
+        'recipe.prepTime': 'Prep Time',
+        'recipe.cookTime': 'Cook Time',
+        'recipe.totalTime': 'Total Time',
+        'recipe.servings': 'Servings',
+        'recipe.difficulty': 'Difficulty',
+        'recipe.cuisine': 'Cuisine',
 
         // Recipes
         'recipes.title': 'Recipes',
@@ -59,6 +81,46 @@ i18n.use(initReactI18next).init({
         'auth.signOut': 'Sign Out',
         'auth.email': 'Email',
         'auth.password': 'Password',
+      },
+    },
+    es: {
+      translation: {
+        // App
+        'app.name': 'Foodie',
+        'app.tagline': 'Tu Asistente Personal de Planificación de Comidas',
+
+        // Navigation
+        'nav.home': 'Inicio',
+        'nav.recipes': 'Recetas',
+        'nav.planner': 'Planificador',
+        'nav.shopping': 'Lista de Compras',
+        'nav.pantry': 'Despensa',
+        'nav.contribute': 'Contribuir',
+
+        // Common
+        'common.save': 'Guardar',
+        'common.cancel': 'Cancelar',
+        'common.delete': 'Eliminar',
+      },
+    },
+    fr: {
+      translation: {
+        // App
+        'app.name': 'Foodie',
+        'app.tagline': 'Votre Assistant Personnel de Planification de Repas',
+
+        // Navigation
+        'nav.home': 'Accueil',
+        'nav.recipes': 'Recettes',
+        'nav.planner': 'Planificateur',
+        'nav.shopping': 'Liste de Courses',
+        'nav.pantry': 'Garde-manger',
+        'nav.contribute': 'Contribuer',
+
+        // Common
+        'common.save': 'Enregistrer',
+        'common.cancel': 'Annuler',
+        'common.delete': 'Supprimer',
       },
     },
   },
