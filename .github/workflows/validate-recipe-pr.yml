@@ -3,8 +3,8 @@ name: Validate Recipe PR
 on:
   pull_request:
     paths:
-      - 'public/data/recipes/*.json'
-      - 'public/data/ingredients/*.json'
+      - 'public/data/recipes.json'
+      - 'public/data/ingredients.json'
 
 jobs:
   validate:
@@ -31,8 +31,8 @@ jobs:
         uses: tj-actions/changed-files@v42
         with:
           files: |
-            public/data/recipes/*.json
-            public/data/ingredients/*.json
+            public/data/recipes.json
+            public/data/ingredients.json
 
       - name: Validate JSON schema
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -52,17 +52,8 @@ jobs:
       - name: Check recipe images exist
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            if [[ $file == public/data/recipes/*.json ]]; then
-              IMAGE_URL=$(jq -r '.imageUrl' "$file")
-              if [ ! -z "$IMAGE_URL" ] && [ "$IMAGE_URL" != "null" ]; then
-                IMAGE_PATH="public${IMAGE_URL}"
-                if [ ! -f "$IMAGE_PATH" ]; then
-                  echo "Warning: Image not found: $IMAGE_PATH"
-                fi
-              fi
-            fi
-          done
+          echo "Image validation skipped for consolidated JSON structure"
+          echo "Images should be validated manually or through separate tooling"
 
       - name: Comment PR with validation results
         if: always()

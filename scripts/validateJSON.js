@@ -5,19 +5,18 @@
  * Usage: node scripts/validateJSON.js
  */
 
-import { readdir, readFile } from 'fs/promises';
-import { join } from 'path';
+import { readFile } from 'fs/promises';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ allErrors: true });
 
-const RECIPES_DIR = './public/data/recipes';
-const INGREDIENTS_DIR = './public/data/ingredients';
+const RECIPES_FILE = './public/data/recipes.json';
+const INGREDIENTS_FILE = './public/data/ingredients.json';
 
 // Recipe schema (simplified)
 const recipeSchema = {
   type: 'object',
-  required: ['id', 'name', 'description', 'cuisine', 'category', 'difficulty', 'prepTime', 'cookTime', 'servings', 'ingredients', 'instructions'],
+  required: ['id', 'name', 'description', 'cuisine', 'type', 'difficulty', 'prepTime', 'cookTime', 'servings', 'ingredients', 'instructions'],
   properties: {
     id: { type: 'string', minLength: 1 },
     name: {
@@ -33,8 +32,12 @@ const recipeSchema = {
       type: 'object',
       required: ['en', 'es', 'fr'],
     },
-    cuisine: { type: 'string' },
-    category: { type: 'string', enum: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'] },
+    cuisine: {
+      type: 'array',
+      items: { type: 'string' },
+      minItems: 1
+    },
+    type: { type: 'string', enum: ['breakfast', 'lunch', 'dinner', 'snack', 'dessert'] },
     difficulty: { type: 'string', enum: ['easy', 'medium', 'hard'] },
     prepTime: { type: 'number', minimum: 0 },
     cookTime: { type: 'number', minimum: 0 },
@@ -74,7 +77,7 @@ const recipeSchema = {
 // Ingredient schema (simplified)
 const ingredientSchema = {
   type: 'object',
-  required: ['id', 'name', 'category', 'avgPrice', 'unitType'],
+  required: ['id', 'name', 'category', 'avgPrice', 'unit'],
   properties: {
     id: { type: 'string', minLength: 1 },
     name: {
@@ -88,7 +91,7 @@ const ingredientSchema = {
     },
     category: { type: 'string' },
     avgPrice: { type: 'number', minimum: 0 },
-    unitType: { type: 'string' },
+    unit: { type: 'string' },
   },
 };
 
@@ -102,69 +105,71 @@ async function validateJSONFiles() {
 
   // Validate recipes
   try {
-    const recipeFiles = await readdir(RECIPES_DIR);
-    console.log(`Validating ${recipeFiles.length} recipe files...`);
+    const content = await readFile(RECIPES_FILE, 'utf-8');
+    const data = JSON.parse(content);
 
-    for (const file of recipeFiles) {
-      if (!file.endsWith('.json')) continue;
+    // Support both array format and object with recipes array
+    const recipes = Array.isArray(data) ? data : data.recipes;
 
-      const content = await readFile(join(RECIPES_DIR, file), 'utf-8');
+    if (!recipes || !Array.isArray(recipes)) {
+      console.error(`❌ ${RECIPES_FILE}: Invalid format - expected array or object with 'recipes' array`);
+      hasErrors = true;
+    } else {
+      console.log(`Validating ${recipes.length} recipes...`);
 
-      try {
-        const recipe = JSON.parse(content);
+      for (let i = 0; i < recipes.length; i++) {
+        const recipe = recipes[i];
+        const recipeId = recipe.id || `recipe-${i}`;
         const valid = validateRecipe(recipe);
 
         if (!valid) {
-          console.error(`\n❌ ${file}:`);
+          console.error(`\n❌ Recipe ${recipeId}:`);
           validateRecipe.errors?.forEach(err => {
             console.error(`  ${err.instancePath} ${err.message}`);
           });
           hasErrors = true;
         } else {
-          console.log(`  ✓ ${file}`);
+          console.log(`  ✓ ${recipeId}`);
         }
-      } catch (error) {
-        console.error(`\n❌ ${file}: Invalid JSON`);
-        console.error(`  ${error.message}`);
-        hasErrors = true;
       }
     }
   } catch (error) {
-    console.error(`❌ Error reading recipes directory: ${error.message}`);
+    console.error(`❌ Error reading recipes file: ${error.message}`);
     hasErrors = true;
   }
 
   // Validate ingredients
   try {
-    const ingredientFiles = await readdir(INGREDIENTS_DIR);
-    console.log(`\nValidating ${ingredientFiles.length} ingredient files...`);
+    const content = await readFile(INGREDIENTS_FILE, 'utf-8');
+    const data = JSON.parse(content);
 
-    for (const file of ingredientFiles) {
-      if (!file.endsWith('.json')) continue;
+    // Support both array format and object with ingredients array
+    const ingredients = Array.isArray(data) ? data : data.ingredients;
 
-      const content = await readFile(join(INGREDIENTS_DIR, file), 'utf-8');
+    if (!ingredients || !Array.isArray(ingredients)) {
+      console.error(`❌ ${INGREDIENTS_FILE}: Invalid format - expected array or object with 'ingredients' array`);
+      hasErrors = true;
+    } else {
+      console.log(`\nValidating ${ingredients.length} ingredients...`);
 
-      try {
-        const ingredient = JSON.parse(content);
+      for (let i = 0; i < ingredients.length; i++) {
+        const ingredient = ingredients[i];
+        const ingredientId = ingredient.id || `ingredient-${i}`;
         const valid = validateIngredient(ingredient);
 
         if (!valid) {
-          console.error(`\n❌ ${file}:`);
+          console.error(`\n❌ Ingredient ${ingredientId}:`);
           validateIngredient.errors?.forEach(err => {
             console.error(`  ${err.instancePath} ${err.message}`);
           });
           hasErrors = true;
         } else {
-          console.log(`  ✓ ${file}`);
+          console.log(`  ✓ ${ingredientId}`);
         }
-      } catch (error) {
-        console.error(`\n❌ ${file}: Invalid JSON`);
-        console.error(`  ${error.message}`);
-        hasErrors = true;
       }
     }
   } catch (error) {
-    console.error(`❌ Error reading ingredients directory: ${error.message}`);
+    console.error(`❌ Error reading ingredients file: ${error.message}`);
     hasErrors = true;
   }
 
