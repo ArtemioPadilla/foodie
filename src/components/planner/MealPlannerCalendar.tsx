@@ -33,9 +33,9 @@ export const MealPlannerCalendar: React.FC<MealPlannerCalendarProps> = ({
     }
   };
 
-  const handleDayClick = (dayIndex: number) => {
+  const handleDayClick = (_dayIndex: number) => {
     // Could navigate to specific day or show day details
-    console.log('Day clicked:', dayIndex);
+    // TODO: Implement day navigation or details view
   };
 
   const handleCreatePlan = () => {

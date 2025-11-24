@@ -249,8 +249,8 @@ export const ContributionWizard: React.FC<ContributionWizardProps> = ({
           <SubmitStep
             data={formData}
             onBack={handleBack}
-            onSuccess={(prUrl, prNumber) => {
-              console.log('PR created:', prUrl, prNumber);
+            onSuccess={(_prUrl, _prNumber) => {
+              // PR created successfully
               // Call the parent onSubmit callback
               onSubmit(formData);
             }}

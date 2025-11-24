@@ -6,10 +6,15 @@ import path from 'path';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic',
+    }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'favicon.svg'],
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,svg}']
+      },
       manifest: {
         name: 'Foodie - Meal Planner',
         short_name: 'Foodie',
@@ -18,61 +23,76 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: '/foodie/',
+        start_url: '/foodie/',
         icons: [
           {
-            src: '/icons/icon-72x72.png',
+            src: '/foodie/icons/icon-72x72.png',
             sizes: '72x72',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-96x96.png',
+            src: '/foodie/icons/icon-96x96.png',
             sizes: '96x96',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-128x128.png',
+            src: '/foodie/icons/icon-128x128.png',
             sizes: '128x128',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-144x144.png',
+            src: '/foodie/icons/icon-144x144.png',
             sizes: '144x144',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-152x152.png',
+            src: '/foodie/icons/icon-152x152.png',
             sizes: '152x152',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-192x192.png',
+            src: '/foodie/icons/icon-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-384x384.png',
+            src: '/foodie/icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/foodie/icons/icon-384x384.png',
             sizes: '384x384',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
           },
           {
-            src: '/icons/icon-512x512.png',
+            src: '/foodie/icons/icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'maskable any'
+            purpose: 'any'
+          },
+          {
+            src: '/foodie/icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        // Only precache essential files, not data JSON files
+        globPatterns: ['**/*.{js,css,html,ico,svg}'],
+        globIgnores: ['**/data/**', '**/locales/**/*.json'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB max
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -101,6 +121,19 @@ export default defineConfig({
                 statuses: [0, 200]
               }
             }
+          },
+          {
+            // Cache recipe and translation data at runtime with NetworkFirst strategy
+            urlPattern: /\/(data|locales)\/.+\.json$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'data-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              },
+              networkTimeoutSeconds: 10
+            }
           }
         ]
       }
@@ -124,16 +157,42 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
-          'dnd-vendor': ['react-dnd', 'react-dnd-html5-backend']
-        }
-      }
-    }
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('firebase')) {
+              return 'firebase-vendor';
+            }
+            if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('recharts')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('react-dnd')) {
+              return 'dnd-vendor';
+            }
+            if (id.includes('i18next') || id.includes('react-i18next')) {
+              return 'i18n-vendor';
+            }
+            if (id.includes('@tanstack')) {
+              return 'query-vendor';
+            }
+            // Split other vendors into smaller chunks
+            return 'vendor';
+          }
+        },
+      },
+    },
   },
   server: {
     port: 5173,

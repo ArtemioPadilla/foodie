@@ -43,6 +43,8 @@ export const CategoryGroup: React.FC<CategoryGroupProps> = ({
           'w-full flex items-center justify-between p-4 transition-colors',
           'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700'
         )}
+        aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${category} category`}
+        aria-expanded={!isCollapsed}
       >
         <div className="flex items-center gap-3">
           {/* Expand/Collapse Icon */}

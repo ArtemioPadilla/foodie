@@ -59,11 +59,11 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
             onMouseEnter={() => interactive && setHoverRating(value)}
             onMouseLeave={() => interactive && setHoverRating(0)}
             disabled={!interactive}
+            aria-label={`Rate ${value} out of 5 stars`}
             className={cn(
               'transition-all',
               interactive && 'cursor-pointer hover:scale-110'
             )}
-            aria-label={`Rate ${value} stars`}
           >
             <svg
               className={cn(

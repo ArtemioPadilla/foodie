@@ -120,6 +120,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
                 setIsEditingQuantity(true);
               }}
               className="hover:text-emerald-600 dark:hover:text-emerald-400"
+              aria-label={`Edit quantity: ${item.quantity} ${item.unit}`}
             >
               <span className="font-medium">{item.quantity}</span> {item.unit}
             </button>
@@ -174,7 +175,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
             e.stopPropagation();
             onRemove();
           }}
-          className="p-2 text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+          className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
           aria-label={t('common.remove', 'Remove')}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

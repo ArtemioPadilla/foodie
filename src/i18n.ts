@@ -36,10 +36,16 @@ i18n
 const loadTranslations = async (lang: string) => {
   try {
     const response = await fetch(`${import.meta.env.BASE_URL}locales/${lang}/translation.json`);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
     const translations = await response.json();
     i18n.addResourceBundle(lang, 'translation', translations, true, true);
   } catch (error) {
-    console.error(`Failed to load translations for ${lang}:`, error);
+    // Only log errors in development
+    if (import.meta.env.DEV) {
+      console.error(`Failed to load translations for ${lang}:`, error);
+    }
   }
 };
 

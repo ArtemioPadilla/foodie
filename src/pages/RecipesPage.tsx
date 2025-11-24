@@ -46,7 +46,9 @@ export default function RecipesPage() {
           </p>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <>
+          <h2 className="sr-only">{t('recipe.availableRecipes', 'Available Recipes')}</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredRecipes.map(recipe => (
             <Link
               key={recipe.id}
@@ -60,6 +62,7 @@ export default function RecipesPage() {
                     src={recipe.imageUrl}
                     alt={getTranslated(recipe.name)}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 ) : (
                   <span className="text-gray-400 dark:text-gray-500 text-4xl">🍽️</span>
@@ -120,6 +123,7 @@ export default function RecipesPage() {
             </Link>
           ))}
         </div>
+        </>
       )}
     </div>
   );

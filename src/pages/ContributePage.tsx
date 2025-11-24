@@ -9,8 +9,8 @@ export default function ContributePage() {
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (recipeData: RecipeFormData) => {
-    console.log('Recipe submitted:', recipeData);
+  const handleSubmit = (_recipeData: RecipeFormData) => {
+    // Recipe submitted successfully
     // Show success state
     setSubmitted(true);
   };

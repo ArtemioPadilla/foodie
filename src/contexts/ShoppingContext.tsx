@@ -86,10 +86,9 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const generateFromPlan = (planId: string) => {
+  const generateFromPlan = (_planId: string) => {
     // This would generate a shopping list from a meal plan
-    // Simplified implementation
-    console.log('Generating shopping list from plan:', planId);
+    // TODO: Implement full shopping list generation from meal plan
   };
 
   const exportList = (format: 'text' | 'json' | 'csv'): string => {

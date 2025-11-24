@@ -1,40 +1,50 @@
-name: Lighthouse CI
+name: Lighthouse Production Check
 
 on:
-  pull_request:
+  # Run after deployment completes
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types:
+      - completed
     branches: [main]
-  push:
-    branches: [main]
+  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
-  lighthouse:
-    name: Lighthouse Performance Check
+  lighthouse-production:
+    name: Lighthouse Full Check (Production)
     runs-on: ubuntu-latest
+    # Only run if deployment succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
+      - name: Wait for deployment to be ready
+        run: |
+          echo "Waiting 30 seconds for GitHub Pages to update..."
+          sleep 30
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build project
-        run: npm run build
-
-      - name: Run Lighthouse CI
+      - name: Run Lighthouse CI on Production
         uses: treosh/lighthouse-ci-action@v11
         with:
+          urls: |
+            https://artemiopadilla.github.io/foodie/
+            https://artemiopadilla.github.io/foodie/recipes
+            https://artemiopadilla.github.io/foodie/planner
+            https://artemiopadilla.github.io/foodie/shopping
           uploadArtifacts: true
           temporaryPublicStorage: true
-          configPath: './.lighthouserc.json'
+          configPath: './.lighthouserc.production.json'
 
       - name: Check Lighthouse scores
         run: |
-          echo "Lighthouse audit completed"
-          echo "Results will be available in the artifacts"
+          echo "✅ Lighthouse audit completed on production deployment"
+          echo "Testing actual HTTPS environment with:"
+          echo "  - Real service worker functionality"
+          echo "  - Actual PWA installation capabilities"
+          echo "  - Production CDN performance"
+          echo "  - Complete accessibility validation"
+          echo "  - Security and best practices"
+          echo "Results available in artifacts"

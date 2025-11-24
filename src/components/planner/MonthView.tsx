@@ -78,6 +78,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
       <button
         key={dayNumber}
         onClick={() => onDayClick?.(dayNumber - 1)}
+        aria-label={`Day ${dayNumber}${isToday ? ' (Today)' : ''}${hasMeals ? ` (${mealCount} meals)` : ''}`}
         className={cn(
           'aspect-square p-2 text-left transition-colors hover:bg-gray-100 dark:hover:bg-gray-700',
           'border border-gray-200 dark:border-gray-700',
