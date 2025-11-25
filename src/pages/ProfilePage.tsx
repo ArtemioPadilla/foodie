@@ -4,7 +4,7 @@ import { useAuth } from '@contexts/AuthContext';
 import { useTheme } from '@contexts/ThemeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { useRecipes } from '@contexts/RecipeContext';
-import { User, Mail, Calendar, Heart, Settings, LogOut, Moon, Sun, Globe } from 'lucide-react';
+import { User, Mail, Calendar, Heart, Settings, LogOut, Moon, Sun, Globe, Scale } from 'lucide-react';
 import { useState } from 'react';
 import { Button, Card } from '@components/common';
 import { AuthModal } from '@components/auth/AuthModal';
@@ -263,6 +263,44 @@ export default function ProfilePage() {
                     aria-label={t('settings.defaultServings', 'Default Servings')}
                     className="w-20 px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
                   />
+                )}
+              </div>
+
+              {/* Unit System */}
+              <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center gap-3">
+                  <Scale className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <div>
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      {t('profile.unitSystem', 'Unit System')}
+                    </div>
+                    <div className="text-sm text-gray-700 dark:text-gray-300">
+                      {user.preferences.unitSystem === 'auto' && t('profile.unitSystemAuto', 'Auto-detect')}
+                      {user.preferences.unitSystem === 'metric' && t('profile.unitSystemMetric', 'Metric (kg, g, ml)')}
+                      {user.preferences.unitSystem === 'imperial' && t('profile.unitSystemImperial', 'Imperial (lb, oz, cups)')}
+                      {!user.preferences.unitSystem && t('profile.unitSystemAuto', 'Auto-detect')}
+                    </div>
+                  </div>
+                </div>
+                {isEditing && (
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="profile-unit-system-select"
+                      className="mb-1 text-sm font-medium text-gray-900 dark:text-white sr-only"
+                    >
+                      {t('profile.unitSystem', 'Unit System')}
+                    </label>
+                    <select
+                      id="profile-unit-system-select"
+                      value={user.preferences.unitSystem || 'auto'}
+                      onChange={(e) => updatePreferences({ unitSystem: e.target.value as 'auto' | 'metric' | 'imperial' })}
+                      className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg"
+                    >
+                      <option value="auto">{t('profile.unitSystemAuto', 'Auto-detect')}</option>
+                      <option value="metric">{t('profile.unitSystemMetric', 'Metric')}</option>
+                      <option value="imperial">{t('profile.unitSystemImperial', 'Imperial')}</option>
+                    </select>
+                  </div>
                 )}
               </div>
 

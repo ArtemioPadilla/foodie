@@ -3,13 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { Recipe } from '@/types';
 import { Card, Checkbox } from '@components/common';
 import { useIngredients } from '@contexts/IngredientContext';
+import { useUnitConversion, UnitSystem } from '@hooks/useUnitConversion';
 import { cn } from '@utils/cn';
+import { Scale } from 'lucide-react';
 
 export interface RecipeIngredientsProps {
   recipe: Recipe;
   servings?: number;
   className?: string;
   showCheckboxes?: boolean;
+  showUnitToggle?: boolean;
 }
 
 export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
@@ -17,12 +20,22 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
   servings = recipe.servings,
   className,
   showCheckboxes = true,
+  showUnitToggle = true,
 }) => {
   const { t } = useTranslation();
   const { getIngredientName } = useIngredients();
   const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
+  const [unitOverride, setUnitOverride] = useState<UnitSystem | undefined>(undefined);
+
+  const { convert, preferredSystem } = useUnitConversion(unitOverride);
+  const currentSystem = unitOverride || preferredSystem;
 
   const scaleFactor = servings / recipe.servings;
+
+  const toggleUnitSystem = () => {
+    const newSystem = currentSystem === 'metric' ? 'imperial' : 'metric';
+    setUnitOverride(newSystem);
+  };
 
   const handleToggle = (index: number) => {
     const newChecked = new Set(checkedItems);
@@ -34,48 +47,38 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
     setCheckedItems(newChecked);
   };
 
-  const formatQuantity = (quantity: number): string => {
-    const scaled = quantity * scaleFactor;
-
-    // Convert to fraction if close to common fractions
-    const fractions: Record<number, string> = {
-      0.125: '⅛',
-      0.25: '¼',
-      0.333: '⅓',
-      0.5: '½',
-      0.667: '⅔',
-      0.75: '¾',
-    };
-
-    const decimal = scaled % 1;
-    const whole = Math.floor(scaled);
-
-    for (const [value, symbol] of Object.entries(fractions)) {
-      if (Math.abs(decimal - parseFloat(value)) < 0.05) {
-        return whole > 0 ? `${whole} ${symbol}` : symbol;
-      }
-    }
-
-    // Round to 2 decimal places
-    return scaled % 1 === 0 ? scaled.toString() : scaled.toFixed(2);
-  };
-
   return (
     <Card className={cn('', className)}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           {t('recipe.ingredients')}
         </h2>
-        {servings !== recipe.servings && (
-          <span className="text-sm text-emerald-600 dark:text-emerald-400">
-            {t('recipe.scaledForServings', { servings })}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {servings !== recipe.servings && (
+            <span className="text-sm text-emerald-600 dark:text-emerald-400">
+              {t('recipe.scaledForServings', { servings })}
+            </span>
+          )}
+          {showUnitToggle && (
+            <button
+              onClick={toggleUnitSystem}
+              className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              title={t('profile.unitSystem', 'Unit System')}
+            >
+              <Scale className="w-3.5 h-3.5" />
+              <span>{currentSystem === 'metric' ? 'kg/g' : 'lb/oz'}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">
         {recipe.ingredients.map((ingredient, index) => {
           const isChecked = checkedItems.has(index);
+
+          // Apply scaling first, then unit conversion
+          const scaledQuantity = ingredient.quantity * scaleFactor;
+          const { unit: convertedUnit, formatted } = convert(scaledQuantity, ingredient.unit);
 
           return (
             <div
@@ -101,7 +104,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
               >
                 <div className="flex items-baseline gap-2 flex-wrap">
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {formatQuantity(ingredient.quantity)} {ingredient.unit}
+                    {formatted} {t(`units.${convertedUnit}`, convertedUnit)}
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
                     {getIngredientName(ingredient.ingredientId)}

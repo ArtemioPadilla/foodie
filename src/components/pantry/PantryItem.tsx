@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PantryItem as PantryItemType } from '@/types';
 import { Badge, Input } from '@components/common';
+import { useUnitConversion } from '@hooks/useUnitConversion';
 import { cn } from '@utils/cn';
 
 export interface PantryItemProps {
@@ -23,8 +24,12 @@ export const PantryItem: React.FC<PantryItemProps> = ({
   className,
 }) => {
   const { t } = useTranslation();
+  const { convert } = useUnitConversion();
   const [isEditingQuantity, setIsEditingQuantity] = useState(false);
   const [quantityInput, setQuantityInput] = useState(item.quantity.toString());
+
+  // Convert quantity and unit for display
+  const { formatted: displayQuantity, unit: displayUnit } = convert(item.quantity, item.unit);
 
   const handleQuantitySubmit = () => {
     const newQuantity = parseFloat(quantityInput);
@@ -111,7 +116,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
                 className="w-20 text-sm"
                 autoFocus
               />
-              <span>{item.unit}</span>
+              <span>{t(`units.${item.unit}`, item.unit)}</span>
             </div>
           ) : (
             <button
@@ -120,9 +125,9 @@ export const PantryItem: React.FC<PantryItemProps> = ({
                 setIsEditingQuantity(true);
               }}
               className="hover:text-emerald-600 dark:hover:text-emerald-400"
-              aria-label={`Edit quantity: ${item.quantity} ${item.unit}`}
+              aria-label={`Edit quantity: ${displayQuantity} ${t(`units.${displayUnit}`, displayUnit)}`}
             >
-              <span className="font-medium">{item.quantity}</span> {item.unit}
+              <span className="font-medium">{displayQuantity}</span> {t(`units.${displayUnit}`, displayUnit)}
             </button>
           )}
 

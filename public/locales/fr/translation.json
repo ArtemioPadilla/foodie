@@ -289,7 +289,11 @@
     "noDietaryRestrictions": "Aucune restriction alimentaire définie",
     "noFavorites": "Pas encore de recettes favorites. Commencez à explorer!",
     "browseRecipes": "Parcourir les Recettes",
-    "description": "Gérez les paramètres de votre compte et vos préférences."
+    "description": "Gérez les paramètres de votre compte et vos préférences.",
+    "unitSystem": "Système d'Unités",
+    "unitSystemAuto": "Détection automatique",
+    "unitSystemMetric": "Métrique (kg, g, ml)",
+    "unitSystemImperial": "Impérial (lb, oz, tasses)"
   },
   "auth": {
     "signIn": "Se Connecter",
@@ -446,7 +450,21 @@
     "tbsp": "c. à s.",
     "tsp": "c. à c.",
     "l": "L",
-    "ml": "ml"
+    "ml": "ml",
+    "clove": "gousse",
+    "cloves": "gousses",
+    "slice": "tranche",
+    "slices": "tranches",
+    "leaf": "feuille",
+    "leaves": "feuilles",
+    "bunch": "bouquet",
+    "pinch": "pincée",
+    "can": "boîte",
+    "head": "tête",
+    "stick": "bâton",
+    "large": "grand",
+    "medium": "moyen",
+    "small": "petit"
   },
   "days": {
     "monday": "Lundi",

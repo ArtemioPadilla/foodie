@@ -168,6 +168,7 @@ export interface UserPreferences {
   dietaryRestrictions: string[];
   allergies: string[];
   excludedIngredients: string[];
+  unitSystem: 'metric' | 'imperial' | 'auto';
 }
 
 export interface User {

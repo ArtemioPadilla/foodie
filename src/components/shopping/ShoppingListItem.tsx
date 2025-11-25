@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ShoppingListItem as ShoppingListItemType } from '@/types';
 import { Checkbox, Input, Badge } from '@components/common';
+import { useUnitConversion } from '@hooks/useUnitConversion';
 import { cn } from '@utils/cn';
 
 export interface ShoppingListItemProps {
@@ -25,10 +26,14 @@ export const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   className,
 }) => {
   const { t } = useTranslation();
+  const { convert } = useUnitConversion();
   const [isEditingQuantity, setIsEditingQuantity] = useState(false);
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [quantityInput, setQuantityInput] = useState(item.quantity.toString());
   const [notesInput, setNotesInput] = useState(item.notes || '');
+
+  // Convert quantity and unit for display
+  const { formatted: displayQuantity, unit: displayUnit } = convert(item.quantity, item.unit);
 
   const handleQuantitySubmit = () => {
     const newQuantity = parseFloat(quantityInput);
@@ -90,9 +95,9 @@ export const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
                 'font-semibold text-gray-900 dark:text-gray-100 hover:text-emerald-600 dark:hover:text-emerald-400',
                 item.checked && 'line-through'
               )}
-              aria-label={`Edit quantity: ${item.quantity} ${item.unit}`}
+              aria-label={`Edit quantity: ${displayQuantity} ${t(`units.${displayUnit}`, displayUnit)}`}
             >
-              {item.quantity} {item.unit}
+              {displayQuantity} {t(`units.${displayUnit}`, displayUnit)}
             </button>
           )}
 

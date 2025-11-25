@@ -289,7 +289,11 @@
     "noDietaryRestrictions": "Sin restricciones dietéticas configuradas",
     "noFavorites": "Aún no tienes recetas favoritas. ¡Comienza a explorar!",
     "browseRecipes": "Explorar Recetas",
-    "description": "Administra la configuración de tu cuenta y preferencias."
+    "description": "Administra la configuración de tu cuenta y preferencias.",
+    "unitSystem": "Sistema de Unidades",
+    "unitSystemAuto": "Detectar automáticamente",
+    "unitSystemMetric": "Métrico (kg, g, ml)",
+    "unitSystemImperial": "Imperial (lb, oz, tazas)"
   },
   "auth": {
     "signIn": "Iniciar Sesión",
@@ -446,7 +450,21 @@
     "tbsp": "cda",
     "tsp": "cdta",
     "l": "L",
-    "ml": "ml"
+    "ml": "ml",
+    "clove": "diente",
+    "cloves": "dientes",
+    "slice": "rebanada",
+    "slices": "rebanadas",
+    "leaf": "hoja",
+    "leaves": "hojas",
+    "bunch": "manojo",
+    "pinch": "pizca",
+    "can": "lata",
+    "head": "cabeza",
+    "stick": "barra",
+    "large": "grande",
+    "medium": "mediano",
+    "small": "pequeño"
   },
   "days": {
     "monday": "Lunes",

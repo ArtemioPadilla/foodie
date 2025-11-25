@@ -48,6 +48,7 @@ function convertFirebaseUser(firebaseUser: FirebaseUser): User {
         dietaryRestrictions: [],
         allergies: [],
         excludedIngredients: [],
+        unitSystem: 'auto',
       };
 
   // Get favorites from localStorage
@@ -288,6 +289,7 @@ export async function updatePreferences(
         dietaryRestrictions: [],
         allergies: [],
         excludedIngredients: [],
+        unitSystem: 'auto',
       };
 
   const updatedPrefs = { ...currentPrefs, ...preferences };
@@ -308,6 +310,7 @@ export function getUserPreferences(userId: string): UserPreferences {
         dietaryRestrictions: [],
         allergies: [],
         excludedIngredients: [],
+        unitSystem: 'auto',
       };
 }
 
