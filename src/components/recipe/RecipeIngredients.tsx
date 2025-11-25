@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Recipe } from '@/types';
 import { Card, Checkbox } from '@components/common';
+import { useIngredients } from '@contexts/IngredientContext';
 import { cn } from '@utils/cn';
 
 export interface RecipeIngredientsProps {
@@ -16,6 +18,8 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
   className,
   showCheckboxes = true,
 }) => {
+  const { t } = useTranslation();
+  const { getIngredientName } = useIngredients();
   const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
 
   const scaleFactor = servings / recipe.servings;
@@ -60,11 +64,11 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
     <Card className={cn('', className)}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Ingredients
+          {t('recipe.ingredients')}
         </h2>
         {servings !== recipe.servings && (
           <span className="text-sm text-emerald-600 dark:text-emerald-400">
-            Scaled for {servings} servings
+            {t('recipe.scaledForServings', { servings })}
           </span>
         )}
       </div>
@@ -100,7 +104,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     {formatQuantity(ingredient.quantity)} {ingredient.unit}
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {ingredient.ingredientId}
+                    {getIngredientName(ingredient.ingredientId)}
                     {ingredient.preparation && (
                       <span className="text-gray-700 dark:text-gray-300">
                         {' '}
@@ -111,7 +115,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                 </div>
                 {ingredient.optional && (
                   <span className="text-xs text-gray-700 dark:text-gray-300">
-                    (optional)
+                    ({t('common.optional')})
                   </span>
                 )}
               </div>
@@ -124,9 +128,9 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
       {showCheckboxes && checkedItems.size > 0 && (
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-700 dark:text-gray-300">Progress</span>
+            <span className="text-gray-700 dark:text-gray-300">{t('common.progress')}</span>
             <span className="font-medium text-emerald-600 dark:text-emerald-400">
-              {checkedItems.size} / {recipe.ingredients.length} checked
+              {t('common.checkedProgress', { checked: checkedItems.size, total: recipe.ingredients.length })}
             </span>
           </div>
           <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">

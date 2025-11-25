@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { AppProvider } from '@contexts/AppContext';
 import { RecipeProvider } from '@contexts/RecipeContext';
+import { IngredientProvider } from '@contexts/IngredientContext';
 import { PlannerProvider } from '@contexts/PlannerContext';
 import { ShoppingProvider } from '@contexts/ShoppingContext';
 import { PantryProvider } from '@contexts/PantryContext';
@@ -31,6 +32,7 @@ function App() {
         <AuthProvider>
           <AppProvider>
             <RecipeProvider>
+              <IngredientProvider>
               <PlannerProvider>
                 <ShoppingProvider>
                   <PantryProvider>
@@ -60,6 +62,7 @@ function App() {
                   </PantryProvider>
                 </ShoppingProvider>
               </PlannerProvider>
+              </IngredientProvider>
             </RecipeProvider>
           </AppProvider>
         </AuthProvider>

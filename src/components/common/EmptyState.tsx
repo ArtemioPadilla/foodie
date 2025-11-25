@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, ButtonProps } from './Button';
 import { cn } from '@utils/cn';
 
@@ -80,6 +81,8 @@ export const NoResultsState: React.FC<{
   searchTerm?: string;
   onClear?: () => void;
 }> = ({ searchTerm, onClear }) => {
+  const { t } = useTranslation();
+
   return (
     <EmptyState
       icon={
@@ -92,16 +95,16 @@ export const NoResultsState: React.FC<{
           />
         </svg>
       }
-      title="No results found"
+      title={t('common.noResults')}
       description={
         searchTerm
-          ? `We couldn't find any results for "${searchTerm}". Try adjusting your search.`
-          : "We couldn't find any results matching your criteria."
+          ? t('common.noResultsForSearch', { searchTerm })
+          : t('common.noResultsMatching')
       }
       action={
         onClear
           ? {
-              label: 'Clear filters',
+              label: t('common.clearFilters'),
               onClick: onClear,
               variant: 'secondary',
             }
@@ -116,7 +119,9 @@ NoResultsState.displayName = 'NoResultsState';
 export const NoDataState: React.FC<{
   onAdd?: () => void;
   addLabel?: string;
-}> = ({ onAdd, addLabel = 'Add item' }) => {
+}> = ({ onAdd, addLabel }) => {
+  const { t } = useTranslation();
+
   return (
     <EmptyState
       icon={
@@ -129,12 +134,12 @@ export const NoDataState: React.FC<{
           />
         </svg>
       }
-      title="No data yet"
-      description="Get started by adding your first item."
+      title={t('common.noDataYet')}
+      description={t('common.getStartedAddFirst')}
       action={
         onAdd
           ? {
-              label: addLabel,
+              label: addLabel ?? t('common.addItem'),
               onClick: onAdd,
             }
           : undefined
@@ -148,6 +153,8 @@ NoDataState.displayName = 'NoDataState';
 export const ErrorState: React.FC<{
   onRetry?: () => void;
 }> = ({ onRetry }) => {
+  const { t } = useTranslation();
+
   return (
     <EmptyState
       icon={
@@ -160,12 +167,12 @@ export const ErrorState: React.FC<{
           />
         </svg>
       }
-      title="Something went wrong"
-      description="We encountered an error while loading this content. Please try again."
+      title={t('errors.somethingWentWrong')}
+      description={t('errors.errorLoadingContent')}
       action={
         onRetry
           ? {
-              label: 'Try again',
+              label: t('common.tryAgain'),
               onClick: onRetry,
               variant: 'secondary',
             }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, Button } from '@components/common';
 import { cn } from '@utils/cn';
 
@@ -19,6 +20,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
   onRate,
   showReviews = true,
 }) => {
+  const { t } = useTranslation();
   const [hoverRating, setHoverRating] = useState(0);
   const [userRating, setUserRating] = useState(0);
 
@@ -35,10 +37,10 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
       <div className="flex items-start justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
-            Rating & Reviews
+            {t('recipe.ratingsAndReviews')}
           </h2>
           <p className="text-sm text-gray-700 dark:text-gray-300">
-            {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
+            {t('recipe.reviewCount', { count: reviewCount })}
           </p>
         </div>
 
@@ -46,7 +48,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
           <div className="text-4xl font-bold text-gray-900 dark:text-gray-100">
             {rating.toFixed(1)}
           </div>
-          <div className="text-sm text-gray-700 dark:text-gray-300">out of 5</div>
+          <div className="text-sm text-gray-700 dark:text-gray-300">{t('recipe.outOf5Stars')}</div>
         </div>
       </div>
 
@@ -59,7 +61,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
             onMouseEnter={() => interactive && setHoverRating(value)}
             onMouseLeave={() => interactive && setHoverRating(0)}
             disabled={!interactive}
-            aria-label={`Rate ${value} out of 5 stars`}
+            aria-label={t('accessibility.rateStars', { value })}
             className={cn(
               'transition-all',
               interactive && 'cursor-pointer hover:scale-110'
@@ -89,7 +91,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
 
       {userRating > 0 && (
         <div className="text-center mb-4 text-sm text-emerald-600 dark:text-emerald-400">
-          Thanks for rating! You gave {userRating} stars.
+          {t('recipe.thanksForRating', { rating: userRating })}
         </div>
       )}
 
@@ -97,7 +99,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
       {showReviews && reviewCount > 0 && (
         <div className="space-y-2">
           <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-            Rating Distribution
+            {t('recipe.ratingDistribution')}
           </div>
           {[5, 4, 3, 2, 1].map((stars) => {
             // Mock distribution - in real app this would come from data
@@ -131,7 +133,7 @@ export const RecipeRating: React.FC<RecipeRatingProps> = ({
       {interactive && (
         <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <Button variant="secondary" fullWidth>
-            Write a Review
+            {t('recipe.writeReview')}
           </Button>
         </div>
       )}

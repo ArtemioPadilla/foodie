@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Accordion,
   AccordionItem,
@@ -45,6 +46,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
   availableTags = ['vegetarian', 'vegan', 'gluten-free', 'quick', 'healthy'],
   className,
 }) => {
+  const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
 
   const handleTypeToggle = (type: string) => {
@@ -108,7 +110,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('recipe.filters')}</h3>
           {activeFilterCount > 0 && (
             <Badge variant="info" size="sm">
               {activeFilterCount}
@@ -117,7 +119,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         </div>
         {activeFilterCount > 0 && (
           <Button variant="ghost" size="sm" onClick={handleClearAll}>
-            Clear all
+            {t('common.clearAll')}
           </Button>
         )}
       </div>
@@ -127,7 +129,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         <AccordionItem value="type">
           <AccordionTrigger>
             <span className="flex items-center gap-2">
-              Meal Type
+              {t('recipe.mealType')}
               {filters.types && filters.types.length > 0 && (
                 <Badge variant="success" size="sm">
                   {filters.types.length}
@@ -140,7 +142,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
               {availableTypes.map((type) => (
                 <Checkbox
                   key={type}
-                  label={type.charAt(0).toUpperCase() + type.slice(1)}
+                  label={t(`planner.${type}`, type.charAt(0).toUpperCase() + type.slice(1))}
                   checked={filters.types?.includes(type) || false}
                   onChange={() => handleTypeToggle(type)}
                 />
@@ -153,7 +155,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         <AccordionItem value="cuisine">
           <AccordionTrigger>
             <span className="flex items-center gap-2">
-              Cuisine
+              {t('recipe.cuisine')}
               {filters.cuisines && filters.cuisines.length > 0 && (
                 <Badge variant="success" size="sm">
                   {filters.cuisines.length}
@@ -166,7 +168,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
               {availableCuisines.slice(0, showAll ? undefined : 5).map((cuisine) => (
                 <Checkbox
                   key={cuisine}
-                  label={cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}
+                  label={t(`cuisine.${cuisine}`, cuisine.charAt(0).toUpperCase() + cuisine.slice(1))}
                   checked={filters.cuisines?.includes(cuisine) || false}
                   onChange={() => handleCuisineToggle(cuisine)}
                 />
@@ -178,7 +180,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                   onClick={() => setShowAll(!showAll)}
                   className="w-full"
                 >
-                  {showAll ? 'Show less' : `Show ${availableCuisines.length - 5} more`}
+                  {showAll ? t('common.showLess') : t('common.showMore', { count: availableCuisines.length - 5 })}
                 </Button>
               )}
             </div>
@@ -189,7 +191,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         <AccordionItem value="difficulty">
           <AccordionTrigger>
             <span className="flex items-center gap-2">
-              Difficulty
+              {t('recipe.difficulty')}
               {filters.difficulties && filters.difficulties.length > 0 && (
                 <Badge variant="success" size="sm">
                   {filters.difficulties.length}
@@ -202,7 +204,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
               {['easy', 'medium', 'hard'].map((difficulty) => (
                 <Checkbox
                   key={difficulty}
-                  label={difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+                  label={t(`recipe.difficulty_${difficulty}`)}
                   checked={filters.difficulties?.includes(difficulty) || false}
                   onChange={() => handleDifficultyChange(difficulty)}
                 />
@@ -215,10 +217,10 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         <AccordionItem value="time">
           <AccordionTrigger>
             <span className="flex items-center gap-2">
-              Prep Time
+              {t('recipe.prepTime')}
               {filters.maxTime && (
                 <Badge variant="success" size="sm">
-                  ≤{filters.maxTime}m
+                  {t('recipe.maxTimeFormat', { time: filters.maxTime })}
                 </Badge>
               )}
             </span>
@@ -229,10 +231,10 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
               value={filters.maxTime?.toString() || 'any'}
               onChange={handleTimeChange}
               options={[
-                { value: 'any', label: 'Any time' },
-                { value: '15', label: '15 minutes or less' },
-                { value: '30', label: '30 minutes or less' },
-                { value: '60', label: '1 hour or less' },
+                { value: 'any', label: t('recipe.anyTime') },
+                { value: '15', label: t('recipe.fifteenMinutesOrLess') },
+                { value: '30', label: t('recipe.thirtyMinutesOrLess') },
+                { value: '60', label: t('recipe.oneHourOrLess') },
               ]}
             />
           </AccordionContent>
@@ -242,7 +244,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         <AccordionItem value="dietary">
           <AccordionTrigger>
             <span className="flex items-center gap-2">
-              Dietary
+              {t('recipe.dietary')}
               {filters.dietaryLabels && filters.dietaryLabels.length > 0 && (
                 <Badge variant="success" size="sm">
                   {filters.dietaryLabels.length}
@@ -256,15 +258,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
                 (label) => (
                   <Checkbox
                     key={label}
-                    label={
-                      label === 'glutenFree'
-                        ? 'Gluten Free'
-                        : label === 'dairyFree'
-                        ? 'Dairy Free'
-                        : label === 'lowCarb'
-                        ? 'Low Carb'
-                        : label.charAt(0).toUpperCase() + label.slice(1)
-                    }
+                    label={t(`dietary.${label}`, label === 'glutenFree' ? 'Gluten Free' : label === 'dairyFree' ? 'Dairy Free' : label === 'lowCarb' ? 'Low Carb' : label.charAt(0).toUpperCase() + label.slice(1))}
                     checked={filters.dietaryLabels?.includes(label) || false}
                     onChange={() => handleDietaryLabelToggle(label)}
                   />
@@ -278,7 +272,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
         <AccordionItem value="tags">
           <AccordionTrigger>
             <span className="flex items-center gap-2">
-              Tags
+              {t('recipe.tags')}
               {filters.tags && filters.tags.length > 0 && (
                 <Badge variant="success" size="sm">
                   {filters.tags.length}
@@ -291,7 +285,7 @@ export const RecipeFilters: React.FC<RecipeFiltersProps> = ({
               {availableTags.map((tag) => (
                 <Checkbox
                   key={tag}
-                  label={tag.charAt(0).toUpperCase() + tag.slice(1)}
+                  label={t(`tags.${tag}`, tag.charAt(0).toUpperCase() + tag.slice(1))}
                   checked={filters.tags?.includes(tag) || false}
                   onChange={() => handleTagToggle(tag)}
                 />
