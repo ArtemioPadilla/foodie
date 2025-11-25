@@ -5,10 +5,19 @@ export interface MultiLangText {
   fr: string;
 }
 
+// Component ingredient for composite ingredients
+export interface ComponentIngredient {
+  ingredientId: string;
+  quantity: number;
+  unit: string;
+  notes?: MultiLangText;
+}
+
 // Ingredient interfaces
 export interface Ingredient {
   id: string;
   name: MultiLangText;
+  description?: MultiLangText;
   category: string;
   unit: string;
   avgPrice: number;
@@ -26,6 +35,11 @@ export interface Ingredient {
   alternatives: string[];
   seasonality: string[];
   storageInstructions: MultiLangText;
+  // Composite ingredient support
+  isComposite?: boolean;
+  components?: ComponentIngredient[];
+  preparationNotes?: MultiLangText;
+  imageUrl?: string;
 }
 
 export interface RecipeIngredient {

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Recipe } from '@/types';
 import { Card, Checkbox } from '@components/common';
 import { useIngredients } from '@contexts/IngredientContext';
 import { useUnitConversion, UnitSystem } from '@hooks/useUnitConversion';
 import { cn } from '@utils/cn';
-import { Scale } from 'lucide-react';
+import { Scale, ExternalLink } from 'lucide-react';
 
 export interface RecipeIngredientsProps {
   recipe: Recipe;
@@ -13,6 +14,7 @@ export interface RecipeIngredientsProps {
   className?: string;
   showCheckboxes?: boolean;
   showUnitToggle?: boolean;
+  linkToIngredients?: boolean;
 }
 
 export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
@@ -21,9 +23,10 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
   className,
   showCheckboxes = true,
   showUnitToggle = true,
+  linkToIngredients = true,
 }) => {
   const { t } = useTranslation();
-  const { getIngredientName } = useIngredients();
+  const { getIngredientName, getIngredientById } = useIngredients();
   const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
   const [unitOverride, setUnitOverride] = useState<UnitSystem | undefined>(undefined);
 
@@ -107,7 +110,18 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     {formatted} {t(`units.${convertedUnit}`, convertedUnit)}
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {getIngredientName(ingredient.ingredientId)}
+                    {linkToIngredients && getIngredientById(ingredient.ingredientId) ? (
+                      <Link
+                        to={`/ingredients/${ingredient.ingredientId}`}
+                        className="hover:text-primary-500 dark:hover:text-primary-400 transition-colors inline-flex items-center gap-1"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {getIngredientName(ingredient.ingredientId)}
+                        <ExternalLink className="w-3 h-3 opacity-50" />
+                      </Link>
+                    ) : (
+                      getIngredientName(ingredient.ingredientId)
+                    )}
                     {ingredient.preparation && (
                       <span className="text-gray-700 dark:text-gray-300">
                         {' '}
