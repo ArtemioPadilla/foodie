@@ -10,6 +10,9 @@ import {
   Calendar,
   ShoppingCart,
   Package,
+  Activity,
+  Target,
+  TrendingUp,
   PlusCircle,
   User,
   Sun,
@@ -73,6 +76,14 @@ export default function Header() {
         { name: t('nav.pantry'), href: '/pantry', icon: Package },
       ],
     },
+    {
+      name: t('nav.track'),
+      items: [
+        { name: t('nav.tracking'), href: '/tracking', icon: Activity },
+        { name: t('nav.goals'), href: '/tracking/goals', icon: Target },
+        { name: t('nav.progress'), href: '/tracking/progress', icon: TrendingUp },
+      ],
+    },
   ];
 
   // Standalone items
@@ -86,6 +97,9 @@ export default function Header() {
     { name: t('nav.planner'), href: '/planner', icon: Calendar },
     { name: t('nav.shopping'), href: '/shopping', icon: ShoppingCart },
     { name: t('nav.pantry'), href: '/pantry', icon: Package },
+    { name: t('nav.tracking'), href: '/tracking', icon: Activity },
+    { name: t('nav.goals'), href: '/tracking/goals', icon: Target },
+    { name: t('nav.progress'), href: '/tracking/progress', icon: TrendingUp },
     { name: t('nav.contribute'), href: '/contribute', icon: PlusCircle },
   ];
 

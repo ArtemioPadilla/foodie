@@ -13,6 +13,7 @@ export interface DayMealSlotProps {
   onRemove?: () => void;
   onClick?: () => void;
   onAddClick?: () => void;
+  onLogClick?: () => void;
 }
 
 /**
@@ -27,6 +28,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
   onRemove,
   onClick,
   onAddClick,
+  onLogClick,
 }) => {
   const { i18n, t } = useTranslation();
   const currentLang = i18n.language as 'en' | 'es' | 'fr';
@@ -136,17 +138,30 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
             </div>
 
             {/* Actions */}
-            {onRemove && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemove();
-                }}
-                className="w-full py-1.5 px-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
-              >
-                {t('common.remove', 'Remove')}
-              </button>
-            )}
+            <div className="flex gap-2">
+              {onLogClick && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLogClick();
+                  }}
+                  className="flex-1 py-1.5 px-3 text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-md transition-colors font-medium"
+                >
+                  {t('planner.logToTracking', 'Log')}
+                </button>
+              )}
+              {onRemove && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemove();
+                  }}
+                  className="flex-1 py-1.5 px-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+                >
+                  {t('common.remove', 'Remove')}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

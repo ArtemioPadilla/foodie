@@ -3,6 +3,8 @@ import { lazy, Suspense } from 'react';
 import { AppProvider } from '@contexts/AppContext';
 import { RecipeProvider } from '@contexts/RecipeContext';
 import { IngredientProvider } from '@contexts/IngredientContext';
+import { BeverageProvider } from '@contexts/BeverageContext';
+import { TrackingProvider } from '@contexts/TrackingContext';
 import { PlannerProvider } from '@contexts/PlannerContext';
 import { ShoppingProvider } from '@contexts/ShoppingContext';
 import { PantryProvider } from '@contexts/PantryContext';
@@ -22,6 +24,9 @@ const IngredientsPage = lazy(() => import('@pages/IngredientsPage'));
 const IngredientDetailPage = lazy(() => import('@pages/IngredientDetailPage'));
 const PlannerPage = lazy(() => import('@pages/PlannerPage'));
 const ShoppingListPage = lazy(() => import('@pages/ShoppingListPage'));
+const TrackingPage = lazy(() => import('@pages/TrackingPage'));
+const GoalsPage = lazy(() => import('@pages/GoalsPage'));
+const ProgressPage = lazy(() => import('@pages/ProgressPage'));
 const ContributePage = lazy(() => import('@pages/ContributePage'));
 const PantryPage = lazy(() => import('@pages/PantryPage'));
 const ProfilePage = lazy(() => import('@pages/ProfilePage'));
@@ -35,9 +40,11 @@ function App() {
           <AppProvider>
             <RecipeProvider>
               <IngredientProvider>
-              <PlannerProvider>
-                <ShoppingProvider>
-                  <PantryProvider>
+                <BeverageProvider>
+                  <TrackingProvider>
+                    <PlannerProvider>
+                      <ShoppingProvider>
+                        <PantryProvider>
                   <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
                     <Header />
                     <main className="flex-1">
@@ -54,6 +61,9 @@ function App() {
                           <Route path="/ingredients/:id" element={<IngredientDetailPage />} />
                           <Route path="/planner" element={<PlannerPage />} />
                           <Route path="/shopping" element={<ShoppingListPage />} />
+                          <Route path="/tracking" element={<TrackingPage />} />
+                          <Route path="/tracking/goals" element={<GoalsPage />} />
+                          <Route path="/tracking/progress" element={<ProgressPage />} />
                           <Route path="/contribute" element={<ContributePage />} />
                           <Route path="/pantry" element={<PantryPage />} />
                           <Route path="/profile" element={<ProfilePage />} />
@@ -63,9 +73,11 @@ function App() {
                     </main>
                     <Footer />
                   </div>
-                  </PantryProvider>
-                </ShoppingProvider>
-              </PlannerProvider>
+                        </PantryProvider>
+                      </ShoppingProvider>
+                    </PlannerProvider>
+                  </TrackingProvider>
+                </BeverageProvider>
               </IngredientProvider>
             </RecipeProvider>
           </AppProvider>

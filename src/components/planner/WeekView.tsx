@@ -5,6 +5,7 @@ import { DroppableSlot } from './DroppableSlot';
 import { RecipePickerModal } from './RecipePickerModal';
 import { usePlanner } from '@contexts/PlannerContext';
 import { useRecipes } from '@contexts/RecipeContext';
+import { useTracking } from '@contexts/TrackingContext';
 import { Card } from '@components/common';
 import { cn } from '@utils/cn';
 
@@ -33,6 +34,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
   const { t } = useTranslation();
   const { addRecipeToPlan, removeRecipeFromPlan } = usePlanner();
   const { getRecipeById } = useRecipes();
+  const { logRecipe } = useTracking();
 
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
@@ -75,6 +77,19 @@ export const WeekView: React.FC<WeekViewProps> = ({
     }
     setIsPickerOpen(false);
     setSelectedSlot(null);
+  };
+
+  const handleLogMeal = (dayIndex: number, meal: { recipeId: string; servings: number }, mealType: string) => {
+    // Calculate the date for this day
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + dayIndex);
+    const dateString = date.toISOString().split('T')[0];
+
+    // Log the recipe
+    logRecipe(meal.recipeId, mealType, meal.servings, dateString);
+
+    // Show success message (optional - could add toast notification here)
+    alert(t('tracking.entryLogged', 'Meal logged to tracking!'));
   };
 
   return (
@@ -125,6 +140,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                           : undefined
                       }
                       onAddClick={() => handleAddClick(dayIndex, mealType, dayNames[dayIndex])}
+                      onLogClick={meal ? () => handleLogMeal(dayIndex, meal, mealType) : undefined}
                     />
                   );
                 })}

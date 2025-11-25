@@ -289,3 +289,71 @@ export interface RecipeReview {
   createdAt: string;
   updatedAt?: string;
 }
+
+// Food Tracking interfaces
+export interface TrackingEntry {
+  id: string;
+  date: string;
+  time: string;
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'beverage';
+  recipeId?: string;
+  ingredientId?: string;
+  beverageId?: string;
+  customName?: MultiLangText;
+  quantity: number;
+  unit: string;
+  servings?: number;
+  nutrition: NutritionInfo;
+  notes?: string;
+  loggedAt: string;
+  fromMealPlan?: boolean;
+  mealPlanId?: string;
+}
+
+export interface DailyTracking {
+  date: string;
+  entries: TrackingEntry[];
+  totals: NutritionInfo;
+  goalProgress: GoalProgress;
+}
+
+export interface NutritionGoals {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  sodium?: number;
+  sugar?: number;
+  water?: number;
+}
+
+export interface GoalProgress {
+  calories: { consumed: number; goal: number; remaining: number; percentage: number };
+  protein: { consumed: number; goal: number; remaining: number; percentage: number };
+  carbs: { consumed: number; goal: number; remaining: number; percentage: number };
+  fat: { consumed: number; goal: number; remaining: number; percentage: number };
+  fiber: { consumed: number; goal: number; remaining: number; percentage: number };
+  water?: { consumed: number; goal: number; remaining: number; percentage: number };
+}
+
+export interface Beverage {
+  id: string;
+  name: MultiLangText;
+  category: 'water' | 'coffee' | 'tea' | 'juice' | 'soda' | 'alcohol' | 'milk' | 'other';
+  nutrition: NutritionInfo;
+  defaultUnit: string;
+  defaultQuantity: number;
+  imageUrl?: string;
+  isAlcoholic: boolean;
+  caffeine?: number;
+}
+
+export interface PeriodSummary {
+  startDate: string;
+  endDate: string;
+  days: DailyTracking[];
+  averages: NutritionInfo;
+  totals: NutritionInfo;
+  streakDays: number;
+}

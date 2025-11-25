@@ -15,6 +15,7 @@ export interface DroppableSlotProps {
   onRemove?: () => void;
   onClick?: () => void;
   onAddClick?: () => void;
+  onLogClick?: () => void;
 }
 
 /**
@@ -30,6 +31,7 @@ export const DroppableSlot: React.FC<DroppableSlotProps> = ({
   onRemove,
   onClick,
   onAddClick,
+  onLogClick,
 }) => {
   const [{ isOver, canDrop }, drop] = useDrop<DragItem, unknown, { isOver: boolean; canDrop: boolean }>(
     () => ({
@@ -72,6 +74,7 @@ export const DroppableSlot: React.FC<DroppableSlotProps> = ({
         onRemove={onRemove}
         onClick={onClick}
         onAddClick={onAddClick}
+        onLogClick={onLogClick}
       />
     </div>
   );
