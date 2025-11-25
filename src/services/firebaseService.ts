@@ -21,14 +21,14 @@ import {
  */
 
 // Firebase configuration
-// In production, these should come from environment variables
 const firebaseConfig: FirebaseOptions = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'demo-api-key',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'demo-project.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'demo-project',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'demo-project.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:123456789:web:abcdef',
+  apiKey: "AIzaSyD6sL_ETINsbrwn3XCy45MBFn4WMyXSzIM",
+  authDomain: "foodie-cc553.firebaseapp.com",
+  projectId: "foodie-cc553",
+  storageBucket: "foodie-cc553.firebasestorage.app",
+  messagingSenderId: "815482397968",
+  appId: "1:815482397968:web:c5a2c0e54aa86e36dbf195",
+  measurementId: "G-079J7Z1226"
 };
 
 let app: FirebaseApp | null = null;

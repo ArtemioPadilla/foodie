@@ -51,9 +51,9 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
       <div className="space-y-3">
         {/* Meal Type Header */}
         <div className="flex items-center justify-between">
-          <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 uppercase">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 uppercase">
             {mealTypeLabels[mealType]}
-          </h4>
+          </h3>
           {meal && (
             <Badge variant="default" size="sm">
               {meal.servings} {t('common.servings', 'servings')}
@@ -65,7 +65,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
         {isEmpty ? (
           <div className="py-6 text-center">
             <svg
-              className="mx-auto h-12 w-12 text-gray-700 dark:text-gray-600"
+              className="mx-auto h-12 w-12 text-gray-700 dark:text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

@@ -135,6 +135,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
       </div>
 
       {/* Categorized Items */}
+      <h2 className="sr-only">{t('shopping.itemsList', 'Shopping Items by Category')}</h2>
       {sortBy === 'category' ? (
         <div className="space-y-4">
           {Object.entries(groupedItems).map(([category, items]) => (

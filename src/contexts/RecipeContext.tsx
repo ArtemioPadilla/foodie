@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import type { Recipe, RecipeFilters, SortOption } from '@/types';
 
 interface RecipeContextType {
   recipes: Recipe[];
   filteredRecipes: Recipe[];
   loading: boolean;
+  initialized: boolean;
   filters: RecipeFilters;
   sortBy: SortOption;
   setFilters: (filters: RecipeFilters) => void;
@@ -13,6 +14,7 @@ interface RecipeContextType {
   searchRecipes: (query: string) => void;
   favoriteRecipes: string[];
   toggleFavorite: (recipeId: string) => void;
+  initializeRecipes: () => Promise<void>;
 }
 
 const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
@@ -20,7 +22,8 @@ const RecipeContext = createContext<RecipeContextType | undefined>(undefined);
 export const RecipeProvider = ({ children }: { children: ReactNode }) => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialized, setInitialized] = useState(false);
   const [filters, setFiltersState] = useState<RecipeFilters>({});
   const [sortBy, setSortByState] = useState<SortOption>('rating');
   const [favoriteRecipes, setFavoriteRecipes] = useState<string[]>(() => {
@@ -28,28 +31,29 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
     return stored ? JSON.parse(stored) : [];
   });
 
-  // Load recipes
-  useEffect(() => {
-    const loadRecipes = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.BASE_URL}data/recipes.json`);
-        const data = await response.json();
-        setRecipes(data.recipes || []);
-        setFilteredRecipes(data.recipes || []);
-      } catch (error) {
-        // Only log errors in development
-        if (import.meta.env.DEV) {
-          console.error('Failed to load recipes:', error);
-        }
-        setRecipes([]);
-        setFilteredRecipes([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Lazy load recipes - call this from pages that need recipes
+  const initializeRecipes = useCallback(async () => {
+    // Skip if already initialized or currently loading
+    if (initialized || loading) return;
 
-    loadRecipes();
-  }, []);
+    setLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.BASE_URL}data/recipes.json`);
+      const data = await response.json();
+      setRecipes(data.recipes || []);
+      setFilteredRecipes(data.recipes || []);
+      setInitialized(true);
+    } catch (error) {
+      // Only log errors in development
+      if (import.meta.env.DEV) {
+        console.error('Failed to load recipes:', error);
+      }
+      setRecipes([]);
+      setFilteredRecipes([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [initialized, loading]);
 
   // Apply filters and sorting
   useEffect(() => {
@@ -152,6 +156,7 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
         recipes,
         filteredRecipes,
         loading,
+        initialized,
         filters,
         sortBy,
         setFilters,
@@ -160,6 +165,7 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
         searchRecipes,
         favoriteRecipes,
         toggleFavorite,
+        initializeRecipes,
       }}
     >
       {children}
