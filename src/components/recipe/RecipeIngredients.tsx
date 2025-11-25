@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Recipe } from '@/types';
 import { Card, Checkbox } from '@components/common';
 import { useIngredients } from '@contexts/IngredientContext';
 import { useUnitConversion, UnitSystem } from '@hooks/useUnitConversion';
 import { cn } from '@utils/cn';
-import { Scale } from 'lucide-react';
+import { Scale, ExternalLink } from 'lucide-react';
 
 export interface RecipeIngredientsProps {
   recipe: Recipe;
@@ -13,6 +14,7 @@ export interface RecipeIngredientsProps {
   className?: string;
   showCheckboxes?: boolean;
   showUnitToggle?: boolean;
+  showIngredientLinks?: boolean;
 }
 
 export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
@@ -21,9 +23,10 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
   className,
   showCheckboxes = true,
   showUnitToggle = true,
+  showIngredientLinks = true,
 }) => {
   const { t } = useTranslation();
-  const { getIngredientName } = useIngredients();
+  const { getIngredientName, getIngredientById } = useIngredients();
   const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
   const [unitOverride, setUnitOverride] = useState<UnitSystem | undefined>(undefined);
 
@@ -75,10 +78,25 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
       <div className="space-y-3">
         {recipe.ingredients.map((ingredient, index) => {
           const isChecked = checkedItems.has(index);
+          const ingredientData = getIngredientById(ingredient.ingredientId);
+          const ingredientName = getIngredientName(ingredient.ingredientId);
 
           // Apply scaling first, then unit conversion
           const scaledQuantity = ingredient.quantity * scaleFactor;
           const { unit: convertedUnit, formatted } = convert(scaledQuantity, ingredient.unit);
+
+          const IngredientNameElement = showIngredientLinks && ingredientData ? (
+            <Link
+              to={`/ingredients/${ingredient.ingredientId}`}
+              className="text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {ingredientName}
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          ) : (
+            <span>{ingredientName}</span>
+          );
 
           return (
             <div
@@ -107,7 +125,7 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     {formatted} {t(`units.${convertedUnit}`, convertedUnit)}
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {getIngredientName(ingredient.ingredientId)}
+                    {IngredientNameElement}
                     {ingredient.preparation && (
                       <span className="text-gray-700 dark:text-gray-300">
                         {' '}

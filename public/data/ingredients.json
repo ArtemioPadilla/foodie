@@ -3261,6 +3261,241 @@
         "es": "Guardar a temperatura ambiente",
         "fr": "Conserver à température ambiante"
       }
+    },
+    {
+      "id": "ing_101",
+      "name": {
+        "en": "Mayonnaise",
+        "es": "Mayonesa",
+        "fr": "Mayonnaise"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.25,
+      "currency": "USD",
+      "region": "Global",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [
+        "vegan mayonnaise",
+        "greek yogurt"
+      ],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate after opening, use within 2 months",
+        "es": "Refrigerar después de abrir, usar dentro de 2 meses",
+        "fr": "Réfrigérer après ouverture, utiliser dans les 2 mois"
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_001",
+          "quantity": 2,
+          "unit": "piece",
+          "notes": {
+            "en": "Egg yolks only, room temperature",
+            "es": "Solo yemas de huevo, a temperatura ambiente",
+            "fr": "Jaunes d'œufs uniquement, à température ambiante"
+          }
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 1,
+          "unit": "cup",
+          "notes": {
+            "en": "Light olive oil or vegetable oil",
+            "es": "Aceite de oliva ligero o aceite vegetal",
+            "fr": "Huile d'olive légère ou huile végétale"
+          }
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 1,
+          "unit": "tbsp",
+          "notes": {
+            "en": "Fresh lemon juice",
+            "es": "Jugo de limón fresco",
+            "fr": "Jus de citron frais"
+          }
+        }
+      ],
+      "preparationInstructions": {
+        "en": "Whisk egg yolks with lemon juice. Slowly drizzle in oil while whisking constantly until emulsified and thick. Season with salt to taste.",
+        "es": "Bate las yemas con el jugo de limón. Añade el aceite lentamente mientras bates constantemente hasta emulsionar y espesar. Sazona con sal al gusto.",
+        "fr": "Fouettez les jaunes d'œufs avec le jus de citron. Versez lentement l'huile en fouettant constamment jusqu'à émulsion et épaississement. Assaisonnez avec du sel selon votre goût."
+      },
+      "yield": {
+        "quantity": 1.25,
+        "unit": "cup"
+      }
+    },
+    {
+      "id": "ing_102",
+      "name": {
+        "en": "Basil Pesto",
+        "es": "Pesto de Albahaca",
+        "fr": "Pesto au Basilic"
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 0.75,
+      "currency": "USD",
+      "region": "Italian",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": false,
+        "kosher": false,
+        "halal": false
+      },
+      "alternatives": [
+        "vegan pesto",
+        "sun-dried tomato pesto"
+      ],
+      "seasonality": [
+        "summer"
+      ],
+      "storageInstructions": {
+        "en": "Refrigerate for up to 1 week or freeze for months",
+        "es": "Refrigerar hasta 1 semana o congelar por meses",
+        "fr": "Réfrigérer jusqu'à 1 semaine ou congeler pendant des mois"
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_006",
+          "quantity": 2,
+          "unit": "clove",
+          "notes": {
+            "en": "Fresh garlic cloves",
+            "es": "Dientes de ajo frescos",
+            "fr": "Gousses d'ail frais"
+          }
+        },
+        {
+          "ingredientId": "ing_003",
+          "quantity": 0.5,
+          "unit": "cup",
+          "notes": {
+            "en": "Extra virgin olive oil",
+            "es": "Aceite de oliva extra virgen",
+            "fr": "Huile d'olive extra vierge"
+          }
+        },
+        {
+          "ingredientId": "ing_034",
+          "quantity": 0.5,
+          "unit": "cup",
+          "notes": {
+            "en": "Freshly grated parmesan",
+            "es": "Parmesano recién rallado",
+            "fr": "Parmesan fraîchement râpé"
+          }
+        }
+      ],
+      "preparationInstructions": {
+        "en": "Blend fresh basil leaves, garlic, pine nuts, and parmesan in food processor. Slowly drizzle in olive oil while processing until smooth. Season with salt and pepper.",
+        "es": "Mezcla hojas de albahaca fresca, ajo, piñones y parmesano en procesador de alimentos. Añade aceite de oliva lentamente mientras procesas hasta que esté suave. Sazona con sal y pimienta.",
+        "fr": "Mixez les feuilles de basilic frais, l'ail, les pignons et le parmesan au robot culinaire. Versez lentement l'huile d'olive en mixant jusqu'à consistance lisse. Assaisonnez avec sel et poivre."
+      },
+      "yield": {
+        "quantity": 1,
+        "unit": "cup"
+      }
+    },
+    {
+      "id": "ing_103",
+      "name": {
+        "en": "Guacamole",
+        "es": "Guacamole",
+        "fr": "Guacamole"
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 2,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": [],
+      "seasonality": [
+        "year-round"
+      ],
+      "storageInstructions": {
+        "en": "Best served fresh, can refrigerate for up to 2 days with plastic wrap directly on surface",
+        "es": "Mejor servir fresco, puede refrigerarse hasta 2 días con plástico directamente sobre la superficie",
+        "fr": "Meilleur servi frais, peut être réfrigéré jusqu'à 2 jours avec film plastique directement sur la surface"
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_014",
+          "quantity": 3,
+          "unit": "piece",
+          "notes": {
+            "en": "Ripe avocados",
+            "es": "Aguacates maduros",
+            "fr": "Avocats mûrs"
+          }
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 2,
+          "unit": "tbsp",
+          "notes": {
+            "en": "Fresh lime or lemon juice",
+            "es": "Jugo de lima o limón fresco",
+            "fr": "Jus de citron vert ou citron frais"
+          }
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 0.25,
+          "unit": "piece",
+          "notes": {
+            "en": "Finely diced",
+            "es": "Finamente picada",
+            "fr": "Finement coupé en dés"
+          }
+        },
+        {
+          "ingredientId": "ing_005",
+          "quantity": 1,
+          "unit": "piece",
+          "notes": {
+            "en": "Diced, seeds removed",
+            "es": "En cubos, sin semillas",
+            "fr": "Coupé en dés, épépiné"
+          }
+        }
+      ],
+      "preparationInstructions": {
+        "en": "Mash avocados with lime juice. Fold in diced onion, tomato, and cilantro. Season with salt and pepper to taste.",
+        "es": "Machaca los aguacates con el jugo de lima. Incorpora la cebolla, tomate y cilantro picados. Sazona con sal y pimienta al gusto.",
+        "fr": "Écrasez les avocats avec le jus de citron vert. Incorporez l'oignon, la tomate et la coriandre coupés en dés. Assaisonnez avec sel et poivre selon votre goût."
+      },
+      "yield": {
+        "quantity": 2,
+        "unit": "cup"
+      }
     }
   ]
 }

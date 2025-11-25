@@ -4,13 +4,13 @@ import { useRecipes } from '@contexts/RecipeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { useIngredients } from '@contexts/IngredientContext';
 import { useTranslation } from 'react-i18next';
-import { Clock, Users, ChefHat, ArrowLeft } from 'lucide-react';
+import { Clock, Users, ChefHat, ArrowLeft, ExternalLink } from 'lucide-react';
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { getRecipeById, loading, initialized, initializeRecipes } = useRecipes();
   const { getTranslated } = useLanguage();
-  const { getIngredientName } = useIngredients();
+  const { getIngredientName, getIngredientById } = useIngredients();
   const { t } = useTranslation();
 
   // Initialize recipes when page loads
@@ -114,18 +114,34 @@ export default function RecipeDetailPage() {
               {t('recipe.ingredients')}
             </h2>
             <ul className="space-y-2">
-              {recipe.ingredients.map((ing, index) => (
-                <li
-                  key={index}
-                  className="flex items-start space-x-2 text-gray-700 dark:text-gray-300"
-                >
-                  <span className="text-primary-500 mt-1">•</span>
-                  <span>
-                    {ing.quantity} {t(`units.${ing.unit}`, ing.unit)} {getIngredientName(ing.ingredientId)}
-                    {ing.preparation && ` (${ing.preparation})`}
-                  </span>
-                </li>
-              ))}
+              {recipe.ingredients.map((ing, index) => {
+                const ingredientData = getIngredientById(ing.ingredientId);
+                const ingredientName = getIngredientName(ing.ingredientId);
+                
+                return (
+                  <li
+                    key={index}
+                    className="flex items-start space-x-2 text-gray-700 dark:text-gray-300"
+                  >
+                    <span className="text-primary-500 mt-1">•</span>
+                    <span>
+                      {ing.quantity} {t(`units.${ing.unit}`, ing.unit)}{' '}
+                      {ingredientData ? (
+                        <Link
+                          to={`/ingredients/${ing.ingredientId}`}
+                          className="text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1"
+                        >
+                          {ingredientName}
+                          <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      ) : (
+                        ingredientName
+                      )}
+                      {ing.preparation && ` (${ing.preparation})`}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

@@ -19,6 +19,7 @@ const HomePage = lazy(() => import('@pages/HomePage'));
 const RecipesPage = lazy(() => import('@pages/RecipesPage'));
 const RecipeDetailPage = lazy(() => import('@pages/RecipeDetailPage'));
 const IngredientsPage = lazy(() => import('@pages/IngredientsPage'));
+const IngredientDetailPage = lazy(() => import('@pages/IngredientDetailPage'));
 const PlannerPage = lazy(() => import('@pages/PlannerPage'));
 const ShoppingListPage = lazy(() => import('@pages/ShoppingListPage'));
 const ContributePage = lazy(() => import('@pages/ContributePage'));
@@ -50,6 +51,7 @@ function App() {
                           <Route path="/recipes" element={<RecipesPage />} />
                           <Route path="/recipes/:id" element={<RecipeDetailPage />} />
                           <Route path="/ingredients" element={<IngredientsPage />} />
+                          <Route path="/ingredients/:id" element={<IngredientDetailPage />} />
                           <Route path="/planner" element={<PlannerPage />} />
                           <Route path="/shopping" element={<ShoppingListPage />} />
                           <Route path="/contribute" element={<ContributePage />} />
