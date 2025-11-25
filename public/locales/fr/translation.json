@@ -561,6 +561,34 @@
     "noMatchingRecipes": "Aucune recette ne correspond à votre sélection",
     "ingredientsMatch": "ingrédients"
   },
+  "ingredient": {
+    "composite": "Composé",
+    "madeFrom": "Fait de {{count}} ingrédients",
+    "avgPrice": "Prix Moy.",
+    "storage": "Instructions de Conservation",
+    "preparation": "Préparation",
+    "components": "Composants",
+    "compositeDescription": "Cet ingrédient est composé des éléments suivants:",
+    "yield": "Rendement",
+    "seasonality": "Saisonnalité",
+    "alternatives": "Alternatives",
+    "viewIngredient": "Voir l'ingrédient",
+    "notFound": "Ingrédient Non Trouvé",
+    "notFoundDescription": "L'ingrédient que vous recherchez n'existe pas.",
+    "backToIngredients": "Retour aux Ingrédients",
+    "usedInRecipes": "Utilisé dans les Recettes",
+    "noRecipesUsing": "Aucune recette n'utilise actuellement cet ingrédient.",
+    "viewAllRecipes": "Voir toutes les recettes",
+    "quickInfo": "Info Rapide",
+    "region": "Région"
+  },
+  "season": {
+    "year-round": "Toute l'année",
+    "spring": "Printemps",
+    "summer": "Été",
+    "fall": "Automne",
+    "winter": "Hiver"
+  },
   "nutrition": {
     "title": "Valeurs Nutritionnelles",
     "perServing": "Par portion ({{size}})",

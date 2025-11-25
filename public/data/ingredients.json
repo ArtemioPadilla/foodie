@@ -3261,6 +3261,304 @@
         "es": "Guardar a temperatura ambiente",
         "fr": "Conserver à température ambiante"
       }
+    },
+    {
+      "id": "ing_101",
+      "name": {
+        "en": "Basil Pesto",
+        "es": "Pesto de Albahaca",
+        "fr": "Pesto au Basilic"
+      },
+      "description": {
+        "en": "A classic Italian sauce made from fresh basil, garlic, pine nuts, Parmesan cheese, and olive oil. Perfect for pasta, sandwiches, and as a condiment.",
+        "es": "Una salsa clásica italiana hecha de albahaca fresca, ajo, piñones, queso parmesano y aceite de oliva. Perfecta para pasta, sándwiches y como condimento.",
+        "fr": "Une sauce italienne classique à base de basilic frais, d'ail, de pignons, de parmesan et d'huile d'olive. Parfait pour les pâtes, les sandwichs et comme condiment."
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 1.5,
+      "currency": "USD",
+      "region": "Mediterranean",
+      "tags": {
+        "glutenFree": true,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": false,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": ["sun-dried tomato pesto", "chimichurri"],
+      "seasonality": ["summer", "year-round"],
+      "storageInstructions": {
+        "en": "Refrigerate and use within 1 week, or freeze for up to 3 months",
+        "es": "Refrigerar y usar dentro de 1 semana, o congelar hasta 3 meses",
+        "fr": "Réfrigérer et utiliser dans la semaine, ou congeler jusqu'à 3 mois"
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_057",
+          "quantity": 2,
+          "unit": "cup",
+          "notes": { "en": "Fresh basil leaves, packed", "es": "Hojas de albahaca fresca, empacadas", "fr": "Feuilles de basilic frais, tassées" }
+        },
+        {
+          "ingredientId": "ing_006",
+          "quantity": 3,
+          "unit": "cloves",
+          "notes": { "en": "Peeled", "es": "Pelados", "fr": "Épluchés" }
+        },
+        {
+          "ingredientId": "ing_034",
+          "quantity": 0.5,
+          "unit": "cup",
+          "notes": { "en": "Freshly grated", "es": "Recién rallado", "fr": "Fraîchement râpé" }
+        },
+        { "ingredientId": "ing_003", "quantity": 0.5, "unit": "cup" }
+      ],
+      "preparationNotes": {
+        "en": "Blend basil, garlic, and pine nuts (1/3 cup, toasted) in a food processor. Slowly add olive oil while processing. Stir in Parmesan and season with salt to taste.",
+        "es": "Mezclar la albahaca, el ajo y los piñones (1/3 taza, tostados) en un procesador de alimentos. Agregar lentamente el aceite de oliva mientras se procesa. Incorporar el parmesano y sazonar con sal al gusto.",
+        "fr": "Mélanger le basilic, l'ail et les pignons (1/3 tasse, grillés) dans un robot culinaire. Ajouter lentement l'huile d'olive pendant le traitement. Incorporer le parmesan et assaisonner de sel au goût."
+      },
+      "yield": { "quantity": 1, "unit": "cup" }
+    },
+    {
+      "id": "ing_102",
+      "name": {
+        "en": "Béchamel Sauce",
+        "es": "Salsa Bechamel",
+        "fr": "Sauce Béchamel"
+      },
+      "description": {
+        "en": "A classic French white sauce made from butter, flour, and milk. The base for many dishes including lasagna, gratins, and mac and cheese.",
+        "es": "Una clásica salsa blanca francesa hecha de mantequilla, harina y leche. La base para muchos platos incluyendo lasaña, gratinados y macarrones con queso.",
+        "fr": "Une sauce blanche française classique faite de beurre, farine et lait. La base de nombreux plats dont les lasagnes, gratins et macaronis au fromage."
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 1.0,
+      "currency": "USD",
+      "region": "French",
+      "tags": {
+        "glutenFree": false,
+        "vegan": false,
+        "vegetarian": true,
+        "dairyFree": false,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": ["cashew cream sauce", "cauliflower cream sauce"],
+      "seasonality": ["year-round"],
+      "storageInstructions": {
+        "en": "Refrigerate and use within 3-4 days. Cover surface with plastic wrap to prevent skin formation.",
+        "es": "Refrigerar y usar dentro de 3-4 días. Cubrir la superficie con film transparente para evitar que se forme costra.",
+        "fr": "Réfrigérer et utiliser dans les 3-4 jours. Couvrir la surface de film plastique pour éviter la formation d'une peau."
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_046",
+          "quantity": 3,
+          "unit": "tbsp",
+          "notes": { "en": "Unsalted butter", "es": "Mantequilla sin sal", "fr": "Beurre non salé" }
+        },
+        {
+          "ingredientId": "ing_026",
+          "quantity": 3,
+          "unit": "tbsp",
+          "notes": { "en": "All-purpose flour", "es": "Harina de trigo", "fr": "Farine tout usage" }
+        },
+        {
+          "ingredientId": "ing_047",
+          "quantity": 2,
+          "unit": "cup",
+          "notes": { "en": "Whole milk, warmed", "es": "Leche entera, tibia", "fr": "Lait entier, tiède" }
+        }
+      ],
+      "preparationNotes": {
+        "en": "Melt butter in a saucepan over medium heat. Whisk in flour and cook for 1-2 minutes. Gradually add warm milk while whisking constantly. Cook until thickened, about 5-7 minutes. Season with salt and white pepper to taste.",
+        "es": "Derretir la mantequilla en una cacerola a fuego medio. Incorporar la harina batiendo y cocinar 1-2 minutos. Agregar gradualmente la leche tibia mientras se bate constantemente. Cocinar hasta espesar, unos 5-7 minutos. Sazonar con sal y pimienta blanca al gusto.",
+        "fr": "Faire fondre le beurre dans une casserole à feu moyen. Incorporer la farine en fouettant et cuire 1-2 minutes. Ajouter progressivement le lait tiède en fouettant constamment. Cuire jusqu'à épaississement, environ 5-7 minutes. Assaisonner de sel et poivre blanc au goût."
+      },
+      "yield": { "quantity": 2, "unit": "cup" }
+    },
+    {
+      "id": "ing_103",
+      "name": {
+        "en": "Pico de Gallo",
+        "es": "Pico de Gallo",
+        "fr": "Pico de Gallo"
+      },
+      "description": {
+        "en": "A fresh Mexican salsa made with diced tomatoes, onions, cilantro, jalapeños, and lime juice. Perfect for tacos, chips, and grilled meats.",
+        "es": "Una salsa mexicana fresca hecha con tomates picados, cebollas, cilantro, jalapeños y jugo de limón. Perfecta para tacos, totopos y carnes a la parrilla.",
+        "fr": "Une salsa mexicaine fraîche faite de tomates coupées en dés, oignons, coriandre, jalapeños et jus de citron vert. Parfait pour les tacos, chips et viandes grillées."
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 2.0,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": ["salsa verde", "mango salsa"],
+      "seasonality": ["summer", "year-round"],
+      "storageInstructions": {
+        "en": "Refrigerate and use within 2-3 days for best freshness",
+        "es": "Refrigerar y usar dentro de 2-3 días para mejor frescura",
+        "fr": "Réfrigérer et utiliser dans les 2-3 jours pour une fraîcheur optimale"
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_005",
+          "quantity": 4,
+          "unit": "piece",
+          "notes": { "en": "Ripe tomatoes, diced", "es": "Tomates maduros, picados", "fr": "Tomates mûres, en dés" }
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 0.5,
+          "unit": "piece",
+          "notes": { "en": "White or red onion, finely diced", "es": "Cebolla blanca o roja, finamente picada", "fr": "Oignon blanc ou rouge, finement coupé en dés" }
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 2,
+          "unit": "tbsp",
+          "notes": { "en": "Fresh lime/lemon juice", "es": "Jugo de limón fresco", "fr": "Jus de citron vert/citron frais" }
+        }
+      ],
+      "preparationNotes": {
+        "en": "Combine diced tomatoes and onion in a bowl. Add 1/2 cup fresh cilantro (chopped), 1-2 jalapeños (seeded and minced), lime juice, and salt to taste. Toss to combine. Let sit for 15-30 minutes before serving to allow flavors to meld.",
+        "es": "Combinar tomates y cebolla picados en un tazón. Agregar 1/2 taza de cilantro fresco (picado), 1-2 jalapeños (sin semillas y picados), jugo de limón y sal al gusto. Mezclar. Dejar reposar 15-30 minutos antes de servir para que los sabores se integren.",
+        "fr": "Combiner les tomates et l'oignon en dés dans un bol. Ajouter 1/2 tasse de coriandre fraîche (hachée), 1-2 jalapeños (épépinés et émincés), jus de citron vert et sel au goût. Mélanger. Laisser reposer 15-30 minutes avant de servir pour permettre aux saveurs de se mélanger."
+      },
+      "yield": { "quantity": 2.5, "unit": "cup" }
+    },
+    {
+      "id": "ing_104",
+      "name": {
+        "en": "Chimichurri",
+        "es": "Chimichurri",
+        "fr": "Chimichurri"
+      },
+      "description": {
+        "en": "An Argentinian herb sauce made with parsley, garlic, olive oil, oregano, and red wine vinegar. Excellent with grilled meats and vegetables.",
+        "es": "Una salsa argentina de hierbas hecha con perejil, ajo, aceite de oliva, orégano y vinagre de vino tinto. Excelente con carnes y verduras a la parrilla.",
+        "fr": "Une sauce argentine aux herbes à base de persil, d'ail, d'huile d'olive, d'origan et de vinaigre de vin rouge. Excellent avec les viandes et légumes grillés."
+      },
+      "category": "pantry",
+      "unit": "tbsp",
+      "avgPrice": 1.0,
+      "currency": "USD",
+      "region": "South American",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": ["pesto", "salsa verde"],
+      "seasonality": ["year-round"],
+      "storageInstructions": {
+        "en": "Refrigerate for up to 2 weeks. The flavor improves after a day.",
+        "es": "Refrigerar hasta 2 semanas. El sabor mejora después de un día.",
+        "fr": "Réfrigérer jusqu'à 2 semaines. La saveur s'améliore après un jour."
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_006",
+          "quantity": 4,
+          "unit": "cloves",
+          "notes": { "en": "Minced garlic", "es": "Ajo picado", "fr": "Ail émincé" }
+        },
+        { "ingredientId": "ing_003", "quantity": 0.5, "unit": "cup", "notes": { "en": "Olive oil", "es": "Aceite de oliva", "fr": "Huile d'olive" } },
+        { "ingredientId": "ing_056", "quantity": 2, "unit": "tbsp", "notes": { "en": "Dried oregano", "es": "Orégano seco", "fr": "Origan séché" } },
+        { "ingredientId": "ing_099", "quantity": 2, "unit": "tbsp", "notes": { "en": "Red wine or balsamic vinegar", "es": "Vinagre de vino tinto o balsámico", "fr": "Vinaigre de vin rouge ou balsamique" } },
+        { "ingredientId": "ing_021", "quantity": 0.5, "unit": "tsp", "notes": { "en": "Red pepper flakes, optional", "es": "Hojuelas de pimiento rojo, opcional", "fr": "Flocons de piment rouge, optionnel" } }
+      ],
+      "preparationNotes": {
+        "en": "Combine 1 cup fresh parsley (finely chopped), garlic, oregano, and red pepper flakes in a bowl. Whisk in olive oil and vinegar. Season with salt to taste. Best if made ahead and refrigerated overnight.",
+        "es": "Combinar 1 taza de perejil fresco (finamente picado), ajo, orégano y hojuelas de pimiento rojo en un tazón. Incorporar batiendo el aceite de oliva y el vinagre. Sazonar con sal al gusto. Mejor si se prepara con anticipación y se refrigera durante la noche.",
+        "fr": "Combiner 1 tasse de persil frais (finement haché), l'ail, l'origan et les flocons de piment rouge dans un bol. Incorporer l'huile d'olive et le vinaigre au fouet. Assaisonner de sel au goût. Meilleur s'il est préparé à l'avance et réfrigéré toute la nuit."
+      },
+      "yield": { "quantity": 0.75, "unit": "cup" }
+    },
+    {
+      "id": "ing_105",
+      "name": {
+        "en": "Guacamole",
+        "es": "Guacamole",
+        "fr": "Guacamole"
+      },
+      "description": {
+        "en": "A creamy Mexican dip made from ripe avocados, lime juice, onions, cilantro, and seasonings. A versatile condiment for Mexican dishes.",
+        "es": "Un dip cremoso mexicano hecho de aguacates maduros, jugo de limón, cebollas, cilantro y condimentos. Un condimento versátil para platillos mexicanos.",
+        "fr": "Une trempette mexicaine crémeuse à base d'avocats mûrs, de jus de citron vert, d'oignons, de coriandre et d'assaisonnements. Un condiment polyvalent pour les plats mexicains."
+      },
+      "category": "pantry",
+      "unit": "cup",
+      "avgPrice": 3.0,
+      "currency": "USD",
+      "region": "Mexican",
+      "tags": {
+        "glutenFree": true,
+        "vegan": true,
+        "vegetarian": true,
+        "dairyFree": true,
+        "nutFree": true,
+        "kosher": true,
+        "halal": true
+      },
+      "alternatives": ["avocado crema", "white bean dip"],
+      "seasonality": ["year-round"],
+      "storageInstructions": {
+        "en": "Best served immediately. If storing, press plastic wrap directly onto surface and refrigerate for up to 1 day.",
+        "es": "Mejor servir inmediatamente. Si se guarda, presionar film transparente directamente sobre la superficie y refrigerar hasta 1 día.",
+        "fr": "Meilleur servi immédiatement. Si vous le conservez, pressez le film plastique directement sur la surface et réfrigérez jusqu'à 1 jour."
+      },
+      "isComposite": true,
+      "components": [
+        {
+          "ingredientId": "ing_014",
+          "quantity": 3,
+          "unit": "piece",
+          "notes": { "en": "Ripe avocados, pitted and mashed", "es": "Aguacates maduros, sin hueso y machacados", "fr": "Avocats mûrs, dénoyautés et écrasés" }
+        },
+        {
+          "ingredientId": "ing_010",
+          "quantity": 2,
+          "unit": "tbsp",
+          "notes": { "en": "Fresh lime/lemon juice", "es": "Jugo de limón fresco", "fr": "Jus de citron vert/citron frais" }
+        },
+        {
+          "ingredientId": "ing_008",
+          "quantity": 0.25,
+          "unit": "piece",
+          "notes": { "en": "Onion, finely diced", "es": "Cebolla, finamente picada", "fr": "Oignon, finement coupé en dés" }
+        }
+      ],
+      "preparationNotes": {
+        "en": "Mash avocados to desired consistency. Mix in lime juice, onion, 2 tbsp fresh cilantro (chopped), and 1 jalapeño (seeded, minced, optional). Season with salt to taste.",
+        "es": "Machacar los aguacates hasta la consistencia deseada. Mezclar con jugo de limón, cebolla, 2 cdas de cilantro fresco (picado), y 1 jalapeño (sin semillas, picado, opcional). Sazonar con sal al gusto.",
+        "fr": "Écraser les avocats à la consistance désirée. Mélanger le jus de citron vert, l'oignon, 2 c. à soupe de coriandre fraîche (hachée) et 1 jalapeño (épépiné, émincé, optionnel). Assaisonner de sel au goût."
+      },
+      "yield": { "quantity": 2, "unit": "cup" }
     }
   ]
 }
