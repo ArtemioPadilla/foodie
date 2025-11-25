@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" fill="none">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="400" fill="url(#bgGradient)"/>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="350" r="150" fill="white" opacity="0.05"/>
+  <circle cx="1100" cy="50" r="200" fill="white" opacity="0.05"/>
+  <circle cx="900" cy="380" r="100" fill="white" opacity="0.03"/>
+
+  <!-- Chef Hat Icon -->
+  <g transform="translate(150, 100)">
+    <!-- Hat top -->
+    <circle cx="64" cy="64" r="48" fill="white" opacity="0.9"/>
+    <circle cx="128" cy="48" r="56" fill="white"/>
+    <circle cx="192" cy="64" r="48" fill="white" opacity="0.9"/>
+    <!-- Hat band -->
+    <rect x="32" y="96" width="192" height="24" rx="4" fill="white"/>
+    <!-- Hat base -->
+    <path d="M 32 120 L 32 180 Q 32 200 52 200 L 204 200 Q 224 200 224 180 L 224 120 Z" fill="white" opacity="0.95"/>
+  </g>
+
+  <!-- App name -->
+  <text x="480" y="180" font-family="system-ui, -apple-system, sans-serif" font-size="96" font-weight="bold" fill="white">Foodie</text>
+
+  <!-- Tagline -->
+  <text x="480" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="white" opacity="0.9">Your Personal Meal Planning Assistant</text>
+
+  <!-- Feature icons row -->
+  <g transform="translate(480, 280)" fill="white" opacity="0.7">
+    <!-- Recipe icon -->
+    <rect x="0" y="0" width="24" height="30" rx="3"/>
+    <rect x="4" y="6" width="16" height="2" rx="1"/>
+    <rect x="4" y="12" width="12" height="2" rx="1"/>
+    <rect x="4" y="18" width="14" height="2" rx="1"/>
+    <text x="32" y="22" font-size="16">Recipes</text>
+
+    <!-- Planner icon -->
+    <g transform="translate(130, 0)">
+      <rect x="0" y="0" width="28" height="28" rx="4" fill="none" stroke="white" stroke-width="2"/>
+      <line x1="0" y1="10" x2="28" y2="10" stroke="white" stroke-width="2"/>
+      <line x1="8" y1="0" x2="8" y2="10" stroke="white" stroke-width="2"/>
+      <line x1="20" y1="0" x2="20" y2="10" stroke="white" stroke-width="2"/>
+      <text x="36" y="22" font-size="16">Meal Plans</text>
+    </g>
+
+    <!-- Shopping icon -->
+    <g transform="translate(280, 0)">
+      <path d="M4 8 L8 28 L28 28 L32 8 Z" fill="none" stroke="white" stroke-width="2"/>
+      <line x1="12" y1="8" x2="12" y2="0" stroke="white" stroke-width="2"/>
+      <line x1="24" y1="8" x2="24" y2="0" stroke="white" stroke-width="2"/>
+      <text x="40" y="22" font-size="16">Shopping Lists</text>
+    </g>
+  </g>
+</svg>

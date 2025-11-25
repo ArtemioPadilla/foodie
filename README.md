@@ -2,7 +2,7 @@
 
 A comprehensive, multilingual Progressive Web Application for meal planning, recipe management, and shopping list generation.
 
-![Foodie Banner](https://via.placeholder.com/1200x400/10b981/ffffff?text=Foodie+Meal+Planner)
+![Foodie Banner](public/images/banner.svg)
 
 ## ✨ Features
 
