@@ -183,7 +183,7 @@ export const PlannerControls: React.FC<PlannerControlsProps> = ({
             {t('planner.shareTitle', 'Share Meal Plan')}
           </h3>
 
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
             {t(
               'planner.shareDescription',
               'Generate a shareable link that others can use to view or copy your meal plan.'
@@ -204,7 +204,7 @@ export const PlannerControls: React.FC<PlannerControlsProps> = ({
             </div>
           ) : (
             <div className="text-center py-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
                 {t('planner.noShareToken', 'No share link generated yet. Save your plan first.')}
               </p>
               <Button variant="primary" onClick={handleSave}>

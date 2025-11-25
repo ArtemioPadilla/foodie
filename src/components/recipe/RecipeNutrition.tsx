@@ -76,7 +76,7 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
           Nutrition Facts
         </h2>
-        <span className="text-sm text-gray-600 dark:text-gray-400">
+        <span className="text-sm text-gray-700 dark:text-gray-300">
           Per serving ({nutrition.servingSize})
         </span>
       </div>
@@ -96,11 +96,11 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
           >
             <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {item.value}
-              <span className="text-sm font-normal text-gray-600 dark:text-gray-400 ml-1">
+              <span className="text-sm font-normal text-gray-700 dark:text-gray-300 ml-1">
                 {item.unit}
               </span>
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {item.label}
             </div>
 
@@ -120,13 +120,13 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
       {/* Additional Info */}
       <div className="pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-2 gap-4 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400">Sodium</span>
+          <span className="text-gray-700 dark:text-gray-300">Sodium</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
             {scaleValue(nutrition.sodium)} mg
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-400">Cholesterol</span>
+          <span className="text-gray-700 dark:text-gray-300">Cholesterol</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
             {scaleValue(nutrition.cholesterol)} mg
           </span>
@@ -134,7 +134,7 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
       </div>
 
       {/* Disclaimer */}
-      <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-600 dark:text-gray-400">
+      <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
         * Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be
         higher or lower depending on your calorie needs.
       </div>

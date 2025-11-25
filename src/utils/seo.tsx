@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import type { Recipe, RecipeIngredient, RecipeInstruction } from '@/types';
 
 export interface SEOProps {
   title?: string;
@@ -107,7 +108,7 @@ export function useSEO({
 /**
  * Generate structured data (JSON-LD) for recipes
  */
-export function generateRecipeStructuredData(recipe: any) {
+export function generateRecipeStructuredData(recipe: Recipe) {
   return {
     '@context': 'https://schema.org/',
     '@type': 'Recipe',
@@ -124,7 +125,7 @@ export function generateRecipeStructuredData(recipe: any) {
     totalTime: `PT${recipe.totalTime}M`,
     keywords: recipe.tags?.join(', '),
     recipeYield: `${recipe.servings} servings`,
-    recipeCategory: recipe.category,
+    recipeCategory: recipe.type,
     recipeCuisine: recipe.cuisine,
     nutrition: {
       '@type': 'NutritionInformation',
@@ -136,10 +137,10 @@ export function generateRecipeStructuredData(recipe: any) {
       sugarContent: `${recipe.nutrition.sugar}g`,
       sodiumContent: `${recipe.nutrition.sodium}mg`,
     },
-    recipeIngredient: recipe.ingredients.map((ing: any) =>
+    recipeIngredient: recipe.ingredients.map((ing: RecipeIngredient) =>
       `${ing.quantity} ${ing.unit} ${ing.ingredientId}`
     ),
-    recipeInstructions: recipe.instructions.map((step: any) => ({
+    recipeInstructions: recipe.instructions.map((step: RecipeInstruction) => ({
       '@type': 'HowToStep',
       text: step.text.en,
     })),
@@ -154,7 +155,7 @@ export function generateRecipeStructuredData(recipe: any) {
 /**
  * Inject structured data script into page
  */
-export function injectStructuredData(data: any) {
+export function injectStructuredData(data: Record<string, unknown>) {
   const scriptId = 'structured-data';
   let script = document.getElementById(scriptId) as HTMLScriptElement;
 

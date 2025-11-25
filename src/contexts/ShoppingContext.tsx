@@ -129,6 +129,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useShopping = () => {
   const context = useContext(ShoppingContext);
   if (!context) {

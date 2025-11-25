@@ -130,7 +130,7 @@ export const TimingsStep: React.FC<TimingsStepProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {t('contribute.timingsInfo', 'Timing & Servings')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'contribute.timingsInfoDescription',
               'Specify how long your recipe takes and how many servings it makes'
@@ -156,12 +156,12 @@ export const TimingsStep: React.FC<TimingsStepProps> = ({
                   max="1440"
                   error={errors.prepTime}
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                   {t('contribute.minutes', 'minutes')}
                 </div>
               </div>
               {data.prepTime > 0 && !errors.prepTime && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-700 dark:text-gray-300">
                   {formatTimeDisplay(data.prepTime)}
                 </p>
               )}
@@ -184,12 +184,12 @@ export const TimingsStep: React.FC<TimingsStepProps> = ({
                   max="1440"
                   error={errors.cookTime}
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                   {t('contribute.minutes', 'minutes')}
                 </div>
               </div>
               {data.cookTime > 0 && !errors.cookTime && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-700 dark:text-gray-300">
                   {formatTimeDisplay(data.cookTime)}
                 </p>
               )}
@@ -215,17 +215,17 @@ export const TimingsStep: React.FC<TimingsStepProps> = ({
                   max="1440"
                   error={errors.restTime}
                 />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 dark:text-gray-400 pointer-events-none">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-700 dark:text-gray-300 pointer-events-none">
                   {t('contribute.minutes', 'minutes')}
                 </div>
               </div>
               {data.restTime !== undefined && data.restTime > 0 && !errors.restTime && (
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="text-xs text-gray-700 dark:text-gray-300">
                   {formatTimeDisplay(data.restTime)}
                 </p>
               )}
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">
               {t(
                 'contribute.restTimeHint',
                 'Time to cool, set, marinate, or rest before serving'
@@ -249,7 +249,7 @@ export const TimingsStep: React.FC<TimingsStepProps> = ({
                 error={errors.servings}
               />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">
               {t('contribute.servingsHint', 'Number of people this recipe serves')}
             </p>
           </div>

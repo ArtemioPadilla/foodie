@@ -10,7 +10,7 @@ export default function ShoppingListPage() {
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
           {t('shopping.title')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-700 dark:text-gray-300">
           {t('shopping.subtitle', 'Manage your shopping list and check off items as you shop.')}
         </p>
       </div>

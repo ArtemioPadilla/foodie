@@ -36,11 +36,11 @@ export default function ProfilePage() {
       <>
         <div className="container-custom py-12">
           <div className="max-w-md mx-auto text-center">
-            <User className="h-24 w-24 text-gray-500 dark:text-gray-400 mx-auto mb-6" />
+            <User className="h-24 w-24 text-gray-700 dark:text-gray-300 mx-auto mb-6" />
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               {t('profile.signInRequired', 'Sign In Required')}
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
+            <p className="text-gray-700 dark:text-gray-300 mb-8">
               {t('profile.signInDescription', 'Sign in to access your profile, favorites, and meal plans.')}
             </p>
             <div className="space-y-3">
@@ -85,7 +85,7 @@ export default function ProfilePage() {
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
           {t('profile.title')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-700 dark:text-gray-300">
           {t('profile.subtitle', 'Manage your account settings and preferences.')}
         </p>
       </div>
@@ -111,11 +111,11 @@ export default function ProfilePage() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                 {user.displayName}
               </h2>
-              <div className="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
+              <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300 mb-4">
                 <Mail className="w-4 h-4" />
                 <span className="text-sm">{user.email}</span>
               </div>
-              <div className="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-400 text-xs">
+              <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-300 text-xs">
                 <Calendar className="w-3 h-3" />
                 <span>
                   {t('profile.memberSince', 'Member since')}{' '}
@@ -134,7 +134,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Heart className="w-4 h-4 text-red-500" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
                     {t('profile.favorites', 'Favorites')}
                   </span>
                 </div>
@@ -180,15 +180,15 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3">
                   {theme === 'dark' ? (
-                    <Moon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <Moon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   ) : (
-                    <Sun className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                    <Sun className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   )}
                   <div>
                     <div className="font-medium text-gray-900 dark:text-white">
                       {t('settings.theme', 'Theme')}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">
                       {theme === 'dark' ? t('settings.darkMode', 'Dark Mode') : t('settings.lightMode', 'Light Mode')}
                     </div>
                   </div>
@@ -204,12 +204,12 @@ export default function ProfilePage() {
               {/* Language */}
               <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3">
-                  <Globe className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                  <Globe className="w-5 h-5 text-gray-700 dark:text-gray-300" />
                   <div>
                     <div className="font-medium text-gray-900 dark:text-white">
                       {t('settings.language', 'Language')}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm text-gray-700 dark:text-gray-300">
                       {language === 'en' && 'English'}
                       {language === 'es' && 'Español'}
                       {language === 'fr' && 'Français'}
@@ -244,7 +244,7 @@ export default function ProfilePage() {
                   <div className="font-medium text-gray-900 dark:text-white">
                     {t('settings.defaultServings', 'Default Servings')}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
                     {user.preferences.defaultServings} {t('common.servings', 'servings')}
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export default function ProfilePage() {
                       </span>
                     ))
                   ) : (
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-sm text-gray-700 dark:text-gray-300">
                       {t('settings.noDietaryRestrictions', 'No dietary restrictions set')}
                     </span>
                   )}
@@ -302,7 +302,7 @@ export default function ProfilePage() {
 
             {favoriteRecipeObjects.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-700 dark:text-gray-300">
                   {t('profile.noFavorites', 'No favorite recipes yet. Start exploring!')}
                 </p>
                 <Button
@@ -333,7 +333,7 @@ export default function ProfilePage() {
                       <div className="font-medium text-gray-900 dark:text-white truncate">
                         {recipe.name[language as keyof typeof recipe.name] || recipe.name.en}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <div className="text-sm text-gray-700 dark:text-gray-300">
                         {recipe.totalTime} {t('common.minutes', 'min')}
                       </div>
                     </div>

@@ -70,7 +70,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </h2>
             </div>
 
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-gray-700 dark:text-gray-300 mb-4">
               We're sorry, but something unexpected happened. Please try again or contact
               support if the problem persists.
             </p>

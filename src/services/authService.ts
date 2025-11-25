@@ -77,20 +77,21 @@ export async function signIn(credentials: SignInCredentials): Promise<AuthResult
       success: true,
       user,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Sign in error:', error);
 
     let errorMessage = 'Failed to sign in. Please try again.';
 
-    if (error?.code === 'auth/user-not-found') {
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode === 'auth/user-not-found') {
       errorMessage = 'No account found with this email.';
-    } else if (error?.code === 'auth/wrong-password') {
+    } else if (errorCode === 'auth/wrong-password') {
       errorMessage = 'Incorrect password.';
-    } else if (error?.code === 'auth/invalid-email') {
+    } else if (errorCode === 'auth/invalid-email') {
       errorMessage = 'Invalid email address.';
-    } else if (error?.code === 'auth/user-disabled') {
+    } else if (errorCode === 'auth/user-disabled') {
       errorMessage = 'This account has been disabled.';
-    } else if (error?.code === 'auth/too-many-requests') {
+    } else if (errorCode === 'auth/too-many-requests') {
       errorMessage = 'Too many failed attempts. Please try again later.';
     }
 
@@ -124,16 +125,17 @@ export async function signUp(data: SignUpData): Promise<AuthResult> {
       success: true,
       user,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Sign up error:', error);
 
     let errorMessage = 'Failed to create account. Please try again.';
 
-    if (error?.code === 'auth/email-already-in-use') {
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode === 'auth/email-already-in-use') {
       errorMessage = 'An account with this email already exists.';
-    } else if (error?.code === 'auth/invalid-email') {
+    } else if (errorCode === 'auth/invalid-email') {
       errorMessage = 'Invalid email address.';
-    } else if (error?.code === 'auth/weak-password') {
+    } else if (errorCode === 'auth/weak-password') {
       errorMessage = 'Password is too weak. Use at least 6 characters.';
     }
 
@@ -165,14 +167,15 @@ export async function signInGoogle(): Promise<AuthResult> {
       success: true,
       user,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Google sign in error:', error);
 
     let errorMessage = 'Failed to sign in with Google.';
 
-    if (error?.code === 'auth/popup-closed-by-user') {
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode === 'auth/popup-closed-by-user') {
       errorMessage = 'Sign in cancelled.';
-    } else if (error?.code === 'auth/popup-blocked') {
+    } else if (errorCode === 'auth/popup-blocked') {
       errorMessage = 'Popup blocked. Please allow popups for this site.';
     }
 
@@ -212,14 +215,15 @@ export async function signInGitHub(): Promise<AuthResult> {
       success: true,
       user,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('GitHub sign in error:', error);
 
     let errorMessage = 'Failed to sign in with GitHub.';
 
-    if (error?.code === 'auth/popup-closed-by-user') {
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode === 'auth/popup-closed-by-user') {
       errorMessage = 'Sign in cancelled.';
-    } else if (error?.code === 'auth/popup-blocked') {
+    } else if (errorCode === 'auth/popup-blocked') {
       errorMessage = 'Popup blocked. Please allow popups for this site.';
     }
 
@@ -248,14 +252,15 @@ export async function resetPassword(email: string): Promise<AuthResult> {
     return {
       success: true,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Password reset error:', error);
 
     let errorMessage = 'Failed to send password reset email.';
 
-    if (error?.code === 'auth/user-not-found') {
+    const errorCode = (error as { code?: string })?.code;
+    if (errorCode === 'auth/user-not-found') {
       errorMessage = 'No account found with this email.';
-    } else if (error?.code === 'auth/invalid-email') {
+    } else if (errorCode === 'auth/invalid-email') {
       errorMessage = 'Invalid email address.';
     }
 

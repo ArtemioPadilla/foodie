@@ -28,6 +28,22 @@ export const RecipeTimer: React.FC<RecipeTimerProps> = ({
     setHasStarted(false);
   }, [duration]);
 
+  const playNotificationSound = useCallback(() => {
+    // Play browser notification sound
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Timer Complete!', {
+        body: stepName ? `${stepName} is done!` : 'Your timer has finished.',
+        icon: '/icons/icon-192x192.png',
+      });
+    }
+
+    // Play audio sound (optional)
+    const audio = new Audio('/notification.mp3');
+    audio.play().catch(() => {
+      // Ignore if audio can't play
+    });
+  }, [stepName]);
+
   // Timer countdown
   useEffect(() => {
     if (!isRunning || secondsLeft <= 0) return;
@@ -44,23 +60,7 @@ export const RecipeTimer: React.FC<RecipeTimerProps> = ({
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, secondsLeft]);
-
-  const playNotificationSound = useCallback(() => {
-    // Play browser notification sound
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Timer Complete!', {
-        body: stepName ? `${stepName} is done!` : 'Your timer has finished.',
-        icon: '/icons/icon-192x192.png',
-      });
-    }
-
-    // Play audio sound (optional)
-    const audio = new Audio('/notification.mp3');
-    audio.play().catch(() => {
-      // Ignore if audio can't play
-    });
-  }, [stepName]);
+  }, [isRunning, secondsLeft, playNotificationSound]);
 
   const handleStart = () => {
     if (!hasStarted) setHasStarted(true);
@@ -124,7 +124,7 @@ export const RecipeTimer: React.FC<RecipeTimerProps> = ({
                   ? 'text-green-500'
                   : isRunning
                   ? 'text-emerald-500'
-                  : 'text-gray-400 dark:text-gray-600'
+                  : 'text-gray-700 dark:text-gray-600'
               )}
               strokeLinecap="round"
             />
@@ -142,7 +142,7 @@ export const RecipeTimer: React.FC<RecipeTimerProps> = ({
             >
               {formatTime(secondsLeft)}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {duration} min total
             </div>
           </div>
@@ -154,7 +154,7 @@ export const RecipeTimer: React.FC<RecipeTimerProps> = ({
             <p className="text-lg font-semibold text-green-600 dark:text-green-400">
               Time's up!
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               Your timer has finished
             </p>
           </div>

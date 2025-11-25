@@ -59,8 +59,8 @@ const UNIT_CONVERSIONS: Record<string, { base: string; factor: number }> = {
   // Volume
   'tsp': { base: 'tbsp', factor: 1/3 },
   'teaspoon': { base: 'tbsp', factor: 1/3 },
-  'tbsp': { base: 'tbsp', factor: 1 },
-  'tablespoon': { base: 'tbsp', factor: 1 },
+  'tbsp': { base: 'cup', factor: 1/16 },
+  'tablespoon': { base: 'cup', factor: 1/16 },
   'cup': { base: 'cup', factor: 1 },
   'ml': { base: 'cup', factor: 1/240 },
   'l': { base: 'cup', factor: 4.22 },

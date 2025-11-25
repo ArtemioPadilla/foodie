@@ -33,6 +33,9 @@ dist-ssr
 # Testing
 coverage
 .nyc_output
+playwright-report
+test-results
+.lighthouseci
 
 # PWA
 dev-dist
@@ -47,3 +50,7 @@ build
 
 # Snyk Security Extension - AI Rules (auto-generated)
 .github/instructions/snyk_rules.instructions.md
+
+# act (GitHub Actions local runner)
+.act-*
+/tmp/artifacts

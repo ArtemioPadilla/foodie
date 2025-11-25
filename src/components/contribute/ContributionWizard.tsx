@@ -128,7 +128,7 @@ export const ContributionWizard: React.FC<ContributionWizardProps> = ({
     },
   ];
 
-  const handleFieldChange = (field: string, value: any) => {
+  const handleFieldChange = (field: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -264,7 +264,7 @@ export const ContributionWizard: React.FC<ContributionWizardProps> = ({
           <button
             type="button"
             onClick={onCancel}
-            className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            className="text-sm text-gray-700 hover:text-gray-800 dark:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             {t('common.cancel', 'Cancel')}
           </button>

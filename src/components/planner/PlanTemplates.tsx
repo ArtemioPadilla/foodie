@@ -138,14 +138,14 @@ export const PlanTemplates: React.FC<PlanTemplatesProps> = ({ className, onSelec
                   {template.name.en || template.name.es || template.name.fr}
                 </h3>
                 {template.description && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                     {template.description.en || template.description.es || template.description.fr}
                   </p>
                 )}
               </div>
 
               {/* Stats */}
-              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

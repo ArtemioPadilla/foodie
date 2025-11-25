@@ -185,7 +185,7 @@ export const ListControls: React.FC<ListControlsProps> = ({
         </div>
 
         {/* Stats */}
-        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-4 text-sm text-gray-700 dark:text-gray-300">
           <div>
             {t('shopping.totalItems', 'Total items')}: <span className="font-semibold">{totalItems}</span>
           </div>

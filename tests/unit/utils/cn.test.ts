@@ -26,8 +26,9 @@ describe('cn utility', () => {
     expect(cn({ class1: true, class2: false, class3: true })).toBe('class1 class3');
   });
 
-  it('removes duplicate classes', () => {
-    expect(cn('class1', 'class2', 'class1')).toBe('class2 class1');
+  it('handles duplicate non-conflicting classes', () => {
+    // tailwind-merge preserves duplicate non-conflicting classes
+    expect(cn('class1', 'class2', 'class1')).toBe('class1 class2 class1');
   });
 
   it('handles undefined and null values', () => {

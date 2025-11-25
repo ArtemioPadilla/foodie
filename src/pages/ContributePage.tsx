@@ -30,7 +30,7 @@ export default function ContributePage() {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {t('contribute.thankYou', 'Thank You!')}
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
             {t('contribute.submissionSuccess', 'Your recipe has been submitted and will be reviewed shortly. Check your GitHub for the pull request.')}
           </p>
           <div className="flex gap-4 justify-center">
@@ -61,7 +61,7 @@ export default function ContributePage() {
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
           {t('contribute.title')}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-gray-700 dark:text-gray-300">
           {t('contribute.subtitle', 'Share your favorite recipes with the community through a simple step-by-step process.')}
         </p>
       </div>

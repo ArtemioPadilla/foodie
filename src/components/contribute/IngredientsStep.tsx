@@ -130,7 +130,7 @@ export const IngredientsStep: React.FC<IngredientsStepProps> = ({
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {t('contribute.ingredients', 'Ingredients')}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
               {t(
                 'contribute.ingredientsDescription',
                 'List all ingredients needed for your recipe'
@@ -160,7 +160,7 @@ export const IngredientsStep: React.FC<IngredientsStepProps> = ({
           {data.ingredients.length === 0 ? (
             <div className="p-8 text-center bg-gray-50 dark:bg-gray-800 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
               <svg
-                className="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500 mb-3"
+                className="w-12 h-12 mx-auto text-gray-700 dark:text-gray-500 mb-3"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -172,7 +172,7 @@ export const IngredientsStep: React.FC<IngredientsStepProps> = ({
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
               </svg>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
                 {t('contribute.noIngredientsYet', 'No ingredients added yet')}
               </p>
               <Button variant="secondary" onClick={handleAddIngredient} size="sm">

@@ -93,7 +93,7 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({
         'disabled:pointer-events-none disabled:opacity-50',
         isActive
           ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm'
-          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100',
+          : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100',
         className
       )}
     >

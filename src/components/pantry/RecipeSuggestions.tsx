@@ -117,7 +117,7 @@ export const RecipeSuggestions: React.FC<RecipeSuggestionsProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {t('pantry.recipeSuggestions', 'Recipe Suggestions')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'pantry.basedOnPantry',
               'Based on {count} items in your pantry',
@@ -154,7 +154,7 @@ export const RecipeSuggestions: React.FC<RecipeSuggestionsProps> = ({
               {/* Match Details */}
               <div className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 dark:text-gray-400">
+                  <span className="text-gray-700 dark:text-gray-300">
                     {t('pantry.haveIngredients', 'You have')}:
                   </span>
                   <span className="font-semibold text-emerald-600 dark:text-emerald-400">
@@ -164,7 +164,7 @@ export const RecipeSuggestions: React.FC<RecipeSuggestionsProps> = ({
 
                 {missingIngredients.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    <p className="text-xs text-gray-700 dark:text-gray-300 mb-1">
                       {t('pantry.missing', 'Missing')}:
                     </p>
                     <div className="flex flex-wrap gap-1">

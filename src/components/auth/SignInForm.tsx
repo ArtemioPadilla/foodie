@@ -34,8 +34,9 @@ export const SignInForm: React.FC<SignInFormProps> = ({
 
     try {
       await onSubmit(email, password);
-    } catch (err: any) {
-      setLocalError(err?.message || t('auth.signInError', 'Failed to sign in'));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('auth.signInError', 'Failed to sign in');
+      setLocalError(message);
     }
   };
 

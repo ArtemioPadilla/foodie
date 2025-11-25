@@ -18,7 +18,7 @@ export default function Footer() {
                 {t('app.name')}
               </span>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+            <p className="text-gray-700 dark:text-gray-300 text-sm">
               {t('app.tagline')}
             </p>
           </div>
@@ -32,7 +32,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/recipes"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
                   {t('nav.recipes')}
                 </Link>
@@ -40,7 +40,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/planner"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
                   {t('nav.planner')}
                 </Link>
@@ -48,7 +48,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/contribute"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
                   {t('nav.contribute')}
                 </Link>
@@ -67,7 +67,7 @@ export default function Footer() {
                   href="https://github.com/artemiopadilla/foodie"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
                   Documentation
                 </a>
@@ -77,7 +77,7 @@ export default function Footer() {
                   href="https://github.com/artemiopadilla/foodie/issues"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
                   Report an Issue
                 </a>
@@ -87,7 +87,7 @@ export default function Footer() {
                   href="https://github.com/artemiopadilla/foodie/blob/main/CONTRIBUTING.md"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
+                  className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
                   Contributing
                 </a>
@@ -105,14 +105,14 @@ export default function Footer() {
                 href="https://github.com/artemiopadilla/foodie"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400"
                 aria-label="GitHub"
               >
                 <Github className="h-5 w-5" />
               </a>
               <a
                 href="mailto:foodie@example.com"
-                className="text-gray-600 dark:text-gray-400 hover:text-primary-500 dark:hover:text-primary-400"
+                className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400"
                 aria-label="Email"
               >
                 <Mail className="h-5 w-5" />
@@ -124,16 +124,16 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               © {currentYear} Foodie. All rights reserved.
             </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
               Generated with{' '}
               <a
                 href="https://claude.ai/claude-code"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-500 hover:text-primary-600"
+                className="text-primary-700 hover:text-primary-800"
               >
                 Claude Code
               </a>

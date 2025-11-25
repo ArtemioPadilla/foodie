@@ -39,7 +39,7 @@ export const ServingsAdjuster: React.FC<ServingsAdjusterProps> = ({
 
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <span className="text-sm text-gray-600 dark:text-gray-400">
+      <span className="text-sm text-gray-700 dark:text-gray-300">
         {t('planner.servings', 'Servings')}:
       </span>
 
@@ -78,7 +78,7 @@ export const ServingsAdjuster: React.FC<ServingsAdjusterProps> = ({
         </Button>
       </div>
 
-      <span className="text-xs text-gray-500 dark:text-gray-500">
+      <span className="text-xs text-gray-700 dark:text-gray-300">
         ({min}-{max})
       </span>
     </div>

@@ -26,7 +26,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
     >
       <Spinner size={size} />
       {message && (
-        <p className="text-gray-600 dark:text-gray-400 text-center">{message}</p>
+        <p className="text-gray-700 dark:text-gray-300 text-center">{message}</p>
       )}
     </div>
   );

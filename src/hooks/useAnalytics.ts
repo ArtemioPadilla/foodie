@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
-    dataLayer?: any[];
+    gtag?: (...args: unknown[]) => void;
+    dataLayer?: unknown[];
   }
 }
 
@@ -18,7 +18,7 @@ declare global {
  */
 export function useAnalytics() {
   const location = useLocation();
-  const GA_MEASUREMENT_ID = (import.meta as any).env?.VITE_GA_MEASUREMENT_ID;
+  const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 
   useEffect(() => {
     if (!GA_MEASUREMENT_ID || !window.gtag) {
@@ -34,7 +34,7 @@ export function useAnalytics() {
   // Event tracking functions
   const trackEvent = (
     eventName: string,
-    eventParams?: Record<string, any>
+    eventParams?: Record<string, unknown>
   ) => {
     if (window.gtag) {
       window.gtag('event', eventName, eventParams);

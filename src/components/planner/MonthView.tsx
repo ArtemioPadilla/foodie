@@ -152,7 +152,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
         {weekDays.map((day) => (
           <div
             key={day}
-            className="p-2 text-center text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase"
+            className="p-2 text-center text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase"
           >
             {day}
           </div>
@@ -167,11 +167,11 @@ export const MonthView: React.FC<MonthViewProps> = ({
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-500 rounded" />
-            <span className="text-gray-600 dark:text-gray-400">{t('common.today', 'Today')}</span>
+            <span className="text-gray-700 dark:text-gray-300">{t('common.today', 'Today')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-blue-50 dark:bg-blue-900/20 border border-gray-200 dark:border-gray-700 rounded" />
-            <span className="text-gray-600 dark:text-gray-400">
+            <span className="text-gray-700 dark:text-gray-300">
               {t('planner.hasMeals', 'Has meals')}
             </span>
           </div>

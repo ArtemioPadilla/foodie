@@ -73,7 +73,7 @@ export function calculateMealPlanCost(
 
 export function calculateDailyNutrition(
   recipes: Recipe[],
-  dayMeals: any
+  dayMeals: Record<string, unknown>
 ): {
   calories: number;
   protein: number;
@@ -89,13 +89,14 @@ export function calculateDailyNutrition(
     fiber: 0,
   };
 
-  Object.values(dayMeals).forEach((meal: any) => {
+  Object.values(dayMeals).forEach((meal: unknown) => {
     if (Array.isArray(meal)) {
       // Handle snacks
-      meal.forEach(snack => {
-        const recipe = recipes.find(r => r.id === snack.recipeId);
+      meal.forEach((snack: unknown) => {
+        const snackData = snack as { recipeId: string; servings: number };
+        const recipe = recipes.find(r => r.id === snackData.recipeId);
         if (recipe) {
-          const scaleFactor = snack.servings / recipe.servings;
+          const scaleFactor = snackData.servings / recipe.servings;
           totals.calories += recipe.nutrition.calories * scaleFactor;
           totals.protein += recipe.nutrition.protein * scaleFactor;
           totals.carbs += recipe.nutrition.carbs * scaleFactor;
@@ -104,9 +105,10 @@ export function calculateDailyNutrition(
         }
       });
     } else if (meal) {
-      const recipe = recipes.find(r => r.id === meal.recipeId);
+      const mealData = meal as { recipeId: string; servings: number };
+      const recipe = recipes.find(r => r.id === mealData.recipeId);
       if (recipe) {
-        const scaleFactor = meal.servings / recipe.servings;
+        const scaleFactor = mealData.servings / recipe.servings;
         totals.calories += recipe.nutrition.calories * scaleFactor;
         totals.protein += recipe.nutrition.protein * scaleFactor;
         totals.carbs += recipe.nutrition.carbs * scaleFactor;

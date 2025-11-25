@@ -40,7 +40,7 @@ export const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({
           Instructions
         </h2>
         {totalTime > 0 && (
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
@@ -149,7 +149,7 @@ export const RecipeInstructions: React.FC<RecipeInstructionsProps> = ({
       {completedSteps.size > 0 && (
         <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-gray-600 dark:text-gray-400">Progress</span>
+            <span className="text-gray-700 dark:text-gray-300">Progress</span>
             <span className="font-medium text-emerald-600 dark:text-emerald-400">
               {completedSteps.size} / {recipe.instructions.length} steps completed
             </span>

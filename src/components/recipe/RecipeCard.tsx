@@ -66,7 +66,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 line-clamp-1">
             {name}
           </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 mt-1">
             {description}
           </p>
         </div>
@@ -86,7 +86,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
         </div>
 
         {/* Meta Info */}
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
           <div className="flex items-center gap-4">
             {/* Time */}
             <div className="flex items-center gap-1">
@@ -139,19 +139,19 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.nutrition.calories}
                 </div>
-                <div className="text-gray-600 dark:text-gray-400">cal</div>
+                <div className="text-gray-700 dark:text-gray-300">cal</div>
               </div>
               <div className="text-center">
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.nutrition.protein}g
                 </div>
-                <div className="text-gray-600 dark:text-gray-400">protein</div>
+                <div className="text-gray-700 dark:text-gray-300">protein</div>
               </div>
               <div className="text-center">
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.nutrition.carbs}g
                 </div>
-                <div className="text-gray-600 dark:text-gray-400">carbs</div>
+                <div className="text-gray-700 dark:text-gray-300">carbs</div>
               </div>
             </div>
           </div>

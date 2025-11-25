@@ -132,7 +132,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
             {t('contribute.basicInfo', 'Basic Information')}
           </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'contribute.basicInfoDescription',
               'Enter the basic details about your recipe'
@@ -190,7 +190,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                   'bg-white dark:bg-gray-800',
                   'border-gray-300 dark:border-gray-600',
                   'text-gray-900 dark:text-gray-100',
-                  'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                  'placeholder:text-gray-700 dark:placeholder:text-gray-400',
                   'focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-600',
                   errors.descriptionEn &&
                     'border-red-500 dark:border-red-500 focus:ring-red-500'
@@ -216,7 +216,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 'bg-white dark:bg-gray-800',
                 'border-gray-300 dark:border-gray-600',
                 'text-gray-900 dark:text-gray-100',
-                'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                'placeholder:text-gray-700 dark:placeholder:text-gray-400',
                 'focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-600'
               )}
             />
@@ -234,7 +234,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
                 'bg-white dark:bg-gray-800',
                 'border-gray-300 dark:border-gray-600',
                 'text-gray-900 dark:text-gray-100',
-                'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                'placeholder:text-gray-700 dark:placeholder:text-gray-400',
                 'focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-600'
               )}
             />
@@ -292,7 +292,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             placeholder="https://example.com/my-recipe-image.jpg"
             error={errors.imageUrl}
           />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">
             {t(
               'contribute.imageUrlHint',
               'Provide a URL to an image of your finished dish'

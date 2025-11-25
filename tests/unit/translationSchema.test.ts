@@ -7,7 +7,7 @@ describe('Translation File Schema Validation', () => {
   /**
    * Recursively get all keys from a nested object
    */
-  const getAllKeys = (obj: any, prefix = ''): string[] => {
+  const getAllKeys = (obj: Record<string, unknown>, prefix = ''): string[] => {
     let keys: string[] = [];
 
     for (const key in obj) {
@@ -108,7 +108,7 @@ describe('Translation File Schema Validation', () => {
   });
 
   describe('Empty String Validation', () => {
-    const checkNoEmptyStrings = (obj: any, path = '', lang = ''): string[] => {
+    const checkNoEmptyStrings = (obj: Record<string, unknown>, path = '', lang = ''): string[] => {
       const emptyPaths: string[] = [];
 
       for (const key in obj) {
@@ -187,7 +187,7 @@ describe('Translation File Schema Validation', () => {
   });
 
   describe('Translation Value Types', () => {
-    const checkValueTypes = (obj: any, path = ''): { path: string; type: string }[] => {
+    const checkValueTypes = (obj: Record<string, unknown>, path = ''): { path: string; type: string }[] => {
       const invalidTypes: { path: string; type: string }[] = [];
 
       for (const key in obj) {

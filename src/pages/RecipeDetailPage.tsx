@@ -43,7 +43,7 @@ export default function RecipeDetailPage() {
         <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           {getTranslated(recipe.name)}
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400">
+        <p className="text-lg text-gray-700 dark:text-gray-300">
           {getTranslated(recipe.description)}
         </p>
       </div>
@@ -53,7 +53,7 @@ export default function RecipeDetailPage() {
         <div className="flex items-center space-x-2">
           <Clock className="h-5 w-5 text-primary-500" />
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-700 dark:text-gray-300">
               {t('recipe.totalTime')}
             </div>
             <div className="font-semibold text-gray-900 dark:text-white">
@@ -65,7 +65,7 @@ export default function RecipeDetailPage() {
         <div className="flex items-center space-x-2">
           <Users className="h-5 w-5 text-primary-500" />
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-700 dark:text-gray-300">
               {t('recipe.servings')}
             </div>
             <div className="font-semibold text-gray-900 dark:text-white">
@@ -77,7 +77,7 @@ export default function RecipeDetailPage() {
         <div className="flex items-center space-x-2">
           <ChefHat className="h-5 w-5 text-primary-500" />
           <div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-700 dark:text-gray-300">
               {t('recipe.difficulty')}
             </div>
             <div className="font-semibold text-gray-900 dark:text-white capitalize">
@@ -119,7 +119,7 @@ export default function RecipeDetailPage() {
           <div className="space-y-6">
             {recipe.instructions.map(instruction => (
               <div key={instruction.step} className="flex space-x-4">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-500 text-white flex items-center justify-center font-semibold">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-700 text-white flex items-center justify-center font-semibold">
                   {instruction.step}
                 </div>
                 <div className="flex-1">
@@ -127,7 +127,7 @@ export default function RecipeDetailPage() {
                     {getTranslated(instruction.text)}
                   </p>
                   {instruction.time && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">
                       ~{instruction.time} {t('common.minutes')}
                     </p>
                   )}
@@ -144,25 +144,25 @@ export default function RecipeDetailPage() {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Calories</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Calories</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.calories}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Protein</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Protein</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.protein}g
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Carbs</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Carbs</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.carbs}g
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Fat</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Fat</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.fat}g
                   </div>

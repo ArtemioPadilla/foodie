@@ -93,7 +93,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
         </div>
 
         {/* Quantity */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
           {isEditingQuantity ? (
             <div className="flex items-center gap-1">
               <Input
@@ -152,7 +152,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
 
         {/* Expiration Date */}
         {item.expirationDate && (
-          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <div className="mt-1 text-xs text-gray-700 dark:text-gray-300">
             {daysUntilExpiration !== null && daysUntilExpiration >= 0 ? (
               <span>
                 {t('pantry.expiresIn', 'Expires in')} {daysUntilExpiration}{' '}
@@ -175,7 +175,7 @@ export const PantryItem: React.FC<PantryItemProps> = ({
             e.stopPropagation();
             onRemove();
           }}
-          className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+          className="p-2 text-gray-700 hover:text-red-600 dark:text-gray-700 dark:hover:text-red-400 transition-colors"
           aria-label={t('common.remove', 'Remove')}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

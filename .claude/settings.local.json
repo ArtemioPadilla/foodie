@@ -1,7 +1,19 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(find:*)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "Bash(npx @lhci/cli@0.15.0 autorun:*)",
+      "Bash(jq:*)",
+      "Bash(make act:list:*)",
+      "Bash(make typecheck:*)",
+      "Bash(npm run lint:*)",
+      "Bash(cat:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(act:*)",
+      "Bash(make act:test:*)"
     ],
     "deny": [],
     "ask": []
