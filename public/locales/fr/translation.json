@@ -8,14 +8,16 @@
     "recipes": "Recettes",
     "ingredients": "Ingrédients",
     "planner": "Planificateur",
-    "shopping": "Liste de Courses",
+    "shopping": "Courses",
     "pantry": "Garde-Manger",
     "contribute": "Contribuer",
     "profile": "Profil",
     "signIn": "Se Connecter",
     "signOut": "Se Déconnecter",
     "userMenu": "Menu utilisateur",
-    "toggleMenu": "Basculer le menu"
+    "toggleMenu": "Basculer le menu",
+    "browse": "Parcourir",
+    "plan": "Planifier"
   },
   "common": {
     "loading": "Chargement...",

@@ -8,14 +8,16 @@
     "recipes": "Recetas",
     "ingredients": "Ingredientes",
     "planner": "Planificador",
-    "shopping": "Lista de Compras",
+    "shopping": "Compras",
     "pantry": "Despensa",
     "contribute": "Contribuir",
     "profile": "Perfil",
     "signIn": "Iniciar Sesión",
     "signOut": "Cerrar Sesión",
     "userMenu": "Menú de usuario",
-    "toggleMenu": "Alternar menú"
+    "toggleMenu": "Alternar menú",
+    "browse": "Explorar",
+    "plan": "Planificar"
   },
   "common": {
     "loading": "Cargando...",
