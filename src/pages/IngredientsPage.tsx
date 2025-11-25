@@ -4,7 +4,7 @@ import { useIngredients } from '@contexts/IngredientContext';
 import { useRecipes } from '@contexts/RecipeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { Link } from 'react-router-dom';
-import { Search, X, ChefHat, Clock, Users, Star } from 'lucide-react';
+import { Search, X, ChefHat, Clock, Users, Star, Info, Layers } from 'lucide-react';
 import { cn } from '@utils/cn';
 import { Recipe, Ingredient } from '@/types';
 
@@ -221,40 +221,58 @@ export default function IngredientsPage() {
                     {ings.map((ingredient) => {
                       const isSelected = selectedIngredients.has(ingredient.id);
                       return (
-                        <button
+                        <div
                           key={ingredient.id}
-                          onClick={() => toggleIngredient(ingredient.id)}
                           className={cn(
-                            'p-3 rounded-lg border-2 text-left transition-all',
+                            'p-3 rounded-lg border-2 text-left transition-all relative',
                             isSelected
                               ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30'
                               : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
                           )}
                         >
-                          <span
-                            className={cn(
-                              'text-sm font-medium',
-                              isSelected
-                                ? 'text-emerald-800 dark:text-emerald-200'
-                                : 'text-gray-900 dark:text-white'
-                            )}
+                          {/* Selection button */}
+                          <button
+                            onClick={() => toggleIngredient(ingredient.id)}
+                            className="w-full text-left"
                           >
-                            {getTranslated(ingredient.name)}
-                          </span>
-                          {/* Dietary Tags */}
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {ingredient.tags.vegan && (
-                              <span className="text-xs px-1 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
-                                V
-                              </span>
-                            )}
-                            {ingredient.tags.glutenFree && (
-                              <span className="text-xs px-1 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded">
-                                GF
-                              </span>
-                            )}
-                          </div>
-                        </button>
+                            <span
+                              className={cn(
+                                'text-sm font-medium',
+                                isSelected
+                                  ? 'text-emerald-800 dark:text-emerald-200'
+                                  : 'text-gray-900 dark:text-white'
+                              )}
+                            >
+                              {getTranslated(ingredient.name)}
+                            </span>
+                            {/* Dietary Tags */}
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {ingredient.tags.vegan && (
+                                <span className="text-xs px-1 py-0.5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded">
+                                  V
+                                </span>
+                              )}
+                              {ingredient.tags.glutenFree && (
+                                <span className="text-xs px-1 py-0.5 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 rounded">
+                                  GF
+                                </span>
+                              )}
+                              {ingredient.isComposite && (
+                                <span className="text-xs px-1 py-0.5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded flex items-center gap-0.5">
+                                  <Layers className="h-3 w-3" />
+                                </span>
+                              )}
+                            </div>
+                          </button>
+                          {/* Info link to detail page */}
+                          <Link
+                            to={`/ingredients/${ingredient.id}`}
+                            className="absolute top-2 right-2 p-1 text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                            title={t('ingredient.viewDetails', 'View details')}
+                          >
+                            <Info className="h-4 w-4" />
+                          </Link>
+                        </div>
                       );
                     })}
                   </div>

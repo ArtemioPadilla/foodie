@@ -573,6 +573,7 @@
     "seasonality": "Seasonality",
     "alternatives": "Alternatives",
     "viewIngredient": "View ingredient",
+    "viewDetails": "View details",
     "notFound": "Ingredient Not Found",
     "notFoundDescription": "The ingredient you are looking for does not exist.",
     "backToIngredients": "Back to Ingredients",

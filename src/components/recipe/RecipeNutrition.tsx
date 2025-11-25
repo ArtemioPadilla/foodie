@@ -19,59 +19,62 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  if (!recipe.nutrition) {
-    return null;
-  }
-
   const scaleFactor = servings / recipe.servings;
   const nutrition = recipe.nutrition;
 
   const scaleValue = (value: number) => Math.round(value * scaleFactor);
 
-  const nutritionItems = useMemo(() => [
-    {
-      label: t('nutrition.calories'),
-      value: scaleValue(nutrition.calories),
-      unit: '',
-      color: 'bg-red-500',
-      max: 2000,
-    },
-    {
-      label: t('nutrition.protein'),
-      value: scaleValue(nutrition.protein),
-      unit: 'g',
-      color: 'bg-blue-500',
-      max: 50,
-    },
-    {
-      label: t('nutrition.carbs'),
-      value: scaleValue(nutrition.carbs),
-      unit: 'g',
-      color: 'bg-yellow-500',
-      max: 300,
-    },
-    {
-      label: t('nutrition.fat'),
-      value: scaleValue(nutrition.fat),
-      unit: 'g',
-      color: 'bg-purple-500',
-      max: 70,
-    },
-    {
-      label: t('nutrition.fiber'),
-      value: scaleValue(nutrition.fiber),
-      unit: 'g',
-      color: 'bg-green-500',
-      max: 30,
-    },
-    {
-      label: t('nutrition.sugar'),
-      value: scaleValue(nutrition.sugar),
-      unit: 'g',
-      color: 'bg-pink-500',
-      max: 50,
-    },
-  ], [t, nutrition, scaleFactor]);
+  const nutritionItems = useMemo(() => {
+    if (!nutrition) return [];
+    return [
+      {
+        label: t('nutrition.calories'),
+        value: Math.round(nutrition.calories * scaleFactor),
+        unit: '',
+        color: 'bg-red-500',
+        max: 2000,
+      },
+      {
+        label: t('nutrition.protein'),
+        value: Math.round(nutrition.protein * scaleFactor),
+        unit: 'g',
+        color: 'bg-blue-500',
+        max: 50,
+      },
+      {
+        label: t('nutrition.carbs'),
+        value: Math.round(nutrition.carbs * scaleFactor),
+        unit: 'g',
+        color: 'bg-yellow-500',
+        max: 300,
+      },
+      {
+        label: t('nutrition.fat'),
+        value: Math.round(nutrition.fat * scaleFactor),
+        unit: 'g',
+        color: 'bg-purple-500',
+        max: 70,
+      },
+      {
+        label: t('nutrition.fiber'),
+        value: Math.round(nutrition.fiber * scaleFactor),
+        unit: 'g',
+        color: 'bg-green-500',
+        max: 30,
+      },
+      {
+        label: t('nutrition.sugar'),
+        value: Math.round(nutrition.sugar * scaleFactor),
+        unit: 'g',
+        color: 'bg-pink-500',
+        max: 50,
+      },
+    ];
+  }, [t, nutrition, scaleFactor]);
+
+  if (!recipe.nutrition) {
+    return null;
+  }
 
   return (
     <Card className={cn('', className)}>
