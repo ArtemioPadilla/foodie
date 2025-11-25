@@ -91,11 +91,8 @@ export const PantryInventory: React.FC<PantryInventoryProps> = ({ className }) =
           </div>
 
           <EmptyState
-            title={t('pantry.emptyPantry', 'Pantry is Empty')}
-            description={t(
-              'pantry.emptyDescription',
-              'Start tracking your ingredients by adding items to your pantry'
-            )}
+            title={t('pantry.emptyPantry')}
+            description={t('pantry.emptyPantryDescription')}
             action={{
               label: t('pantry.addFirstItem', 'Add First Item'),
               onClick: () => setShowAddModal(true),

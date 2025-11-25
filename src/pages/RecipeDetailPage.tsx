@@ -121,7 +121,7 @@ export default function RecipeDetailPage() {
                 >
                   <span className="text-primary-500 mt-1">•</span>
                   <span>
-                    {ing.quantity} {ing.unit} {getIngredientName(ing.ingredientId)}
+                    {ing.quantity} {t(`units.${ing.unit}`, ing.unit)} {getIngredientName(ing.ingredientId)}
                     {ing.preparation && ` (${ing.preparation})`}
                   </span>
                 </li>

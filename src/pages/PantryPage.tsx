@@ -11,7 +11,7 @@ export default function PantryPage() {
           {t('pantry.title')}
         </h1>
         <p className="text-gray-700 dark:text-gray-300">
-          {t('pantry.subtitle', 'Track your pantry inventory and get notified when items are expiring.')}
+          {t('pantry.description')}
         </p>
       </div>
 
