@@ -8,7 +8,8 @@ describe('RecipeCard Integration', () => {
     render(<RecipeCard recipe={mockRecipe} />);
 
     expect(screen.getByText(mockRecipe.name.en)).toBeInTheDocument();
-    expect(screen.getByText(`${mockRecipe.prepTime + mockRecipe.cookTime} min`)).toBeInTheDocument();
+    // Time is rendered as "35 min" combined in a span
+    expect(screen.getByText(/35\s+min/)).toBeInTheDocument();
     expect(screen.getByText(mockRecipe.servings.toString())).toBeInTheDocument();
   });
 
@@ -47,6 +48,7 @@ describe('RecipeCard Integration', () => {
 
   it('displays difficulty level', () => {
     render(<RecipeCard recipe={mockRecipe} />);
-    expect(screen.getByText(mockRecipe.difficulty)).toBeInTheDocument();
+    // Difficulty is translated via i18n (recipe.difficulty_easy -> "Easy")
+    expect(screen.getByText('Easy')).toBeInTheDocument();
   });
 });

@@ -42,6 +42,7 @@ i18n.use(initReactI18next).init({
         'common.next': 'Next',
         'common.previous': 'Previous',
         'common.close': 'Close',
+        'common.minutesAbbr': 'min',
 
         // Recipe
         'recipe.ingredients': 'Ingredients',
@@ -52,6 +53,9 @@ i18n.use(initReactI18next).init({
         'recipe.servings': 'Servings',
         'recipe.difficulty': 'Difficulty',
         'recipe.cuisine': 'Cuisine',
+        'recipe.difficulty_easy': 'Easy',
+        'recipe.difficulty_medium': 'Medium',
+        'recipe.difficulty_hard': 'Hard',
 
         // Recipes
         'recipes.title': 'Recipes',
