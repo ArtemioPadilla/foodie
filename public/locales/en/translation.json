@@ -7,15 +7,17 @@
     "home": "Home",
     "recipes": "Recipes",
     "ingredients": "Ingredients",
-    "planner": "Meal Planner",
-    "shopping": "Shopping List",
+    "planner": "Planner",
+    "shopping": "Shopping",
     "pantry": "Pantry",
     "contribute": "Contribute",
     "profile": "Profile",
     "signIn": "Sign In",
     "signOut": "Sign Out",
     "userMenu": "User menu",
-    "toggleMenu": "Toggle menu"
+    "toggleMenu": "Toggle menu",
+    "browse": "Browse",
+    "plan": "Plan"
   },
   "common": {
     "loading": "Loading...",
