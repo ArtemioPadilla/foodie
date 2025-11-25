@@ -17,7 +17,7 @@ export default function PlannerPage() {
           {t('planner.title')}
         </h1>
         <p className="text-gray-700 dark:text-gray-300">
-          {t('planner.subtitle', 'Plan your meals for the week and generate shopping lists automatically.')}
+          {t('planner.description')}
         </p>
       </div>
 

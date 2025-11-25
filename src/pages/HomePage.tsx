@@ -8,26 +8,26 @@ export default function HomePage() {
   const features = [
     {
       icon: ChefHat,
-      title: 'Browse Recipes',
-      description: 'Discover delicious recipes from cuisines around the world',
+      title: t('home.feature1Title'),
+      description: t('home.feature1Description'),
       link: '/recipes',
     },
     {
       icon: Calendar,
-      title: 'Plan Your Meals',
-      description: 'Create weekly meal plans with drag-and-drop simplicity',
+      title: t('home.feature2Title'),
+      description: t('home.feature2Description'),
       link: '/planner',
     },
     {
       icon: ShoppingCart,
-      title: 'Shopping Lists',
-      description: 'Auto-generate organized shopping lists from your meal plans',
+      title: t('home.feature3Title'),
+      description: t('home.feature3Description'),
       link: '/shopping',
     },
     {
       icon: Package,
-      title: 'Manage Pantry',
-      description: 'Track ingredients and get recipe suggestions based on what you have',
+      title: t('home.feature4Title'),
+      description: t('home.feature4Description'),
       link: '/pantry',
     },
   ];
@@ -49,13 +49,13 @@ export default function HomePage() {
                 to="/recipes"
                 className="px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg"
               >
-                Browse Recipes
+                {t('home.browseRecipes')}
               </Link>
               <Link
                 to="/planner"
                 className="px-8 py-3 bg-primary-700 text-white rounded-lg font-semibold hover:bg-primary-700 transition-colors border-2 border-white"
               >
-                Create Meal Plan
+                {t('home.createMealPlan')}
               </Link>
             </div>
           </div>
@@ -66,7 +66,7 @@ export default function HomePage() {
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="container-custom">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-            Everything You Need for Meal Planning
+            {t('home.everythingYouNeed')}
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => {
@@ -104,21 +104,21 @@ export default function HomePage() {
                 <ChefHat className="h-12 w-12 text-primary-500" />
               </div>
               <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">100+</div>
-              <div className="text-gray-700 dark:text-gray-300">Recipes Available</div>
+              <div className="text-gray-700 dark:text-gray-300">{t('home.recipesAvailable')}</div>
             </div>
             <div>
               <div className="flex justify-center mb-4">
                 <Star className="h-12 w-12 text-accent-500" />
               </div>
               <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">4.8</div>
-              <div className="text-gray-700 dark:text-gray-300">Average Rating</div>
+              <div className="text-gray-700 dark:text-gray-300">{t('home.averageRating')}</div>
             </div>
             <div>
               <div className="flex justify-center mb-4">
                 <TrendingUp className="h-12 w-12 text-primary-500" />
               </div>
               <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">3+</div>
-              <div className="text-gray-700 dark:text-gray-300">Languages Supported</div>
+              <div className="text-gray-700 dark:text-gray-300">{t('home.languagesSupported')}</div>
             </div>
           </div>
         </div>
@@ -128,16 +128,16 @@ export default function HomePage() {
       <section className="py-20 bg-primary-700">
         <div className="container-custom text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Ready to Start Planning?
+            {t('home.readyToStart')}
           </h2>
           <p className="text-xl text-white mb-8 max-w-2xl mx-auto">
-            Join thousands of users who are simplifying their meal planning with Foodie
+            {t('home.joinUsers')}
           </p>
           <Link
             to="/contribute"
             className="inline-block px-8 py-3 bg-white text-primary-700 rounded-lg font-semibold hover:bg-primary-50 transition-colors shadow-lg"
           >
-            Contribute a Recipe
+            {t('home.contributeRecipe')}
           </Link>
         </div>
       </section>

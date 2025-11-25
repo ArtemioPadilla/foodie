@@ -2,6 +2,11 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
+// Import translations synchronously to ensure they're available before render
+import enTranslations from '../public/locales/en/translation.json';
+import esTranslations from '../public/locales/es/translation.json';
+import frTranslations from '../public/locales/fr/translation.json';
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -16,13 +21,13 @@ i18n
 
     resources: {
       en: {
-        translation: {},
+        translation: enTranslations,
       },
       es: {
-        translation: {},
+        translation: esTranslations,
       },
       fr: {
-        translation: {},
+        translation: frTranslations,
       },
     },
 
@@ -31,27 +36,5 @@ i18n
       caches: ['localStorage'],
     },
   });
-
-// Load translations dynamically
-const loadTranslations = async (lang: string) => {
-  try {
-    const response = await fetch(`${import.meta.env.BASE_URL}locales/${lang}/translation.json`);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    const translations = await response.json();
-    i18n.addResourceBundle(lang, 'translation', translations, true, true);
-  } catch (error) {
-    // Only log errors in development
-    if (import.meta.env.DEV) {
-      console.error(`Failed to load translations for ${lang}:`, error);
-    }
-  }
-};
-
-// Load all supported languages
-['en', 'es', 'fr'].forEach(lang => {
-  loadTranslations(lang);
-});
 
 export default i18n;
