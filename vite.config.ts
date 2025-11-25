@@ -157,7 +157,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
-    target: 'es2015',
+    target: 'es2020',
     minify: 'terser',
     terserOptions: {
       compress: {
@@ -175,7 +175,7 @@ export default defineConfig({
             if (id.includes('firebase')) {
               return 'firebase-vendor';
             }
-            if (id.includes('framer-motion') || id.includes('lucide-react') || id.includes('recharts')) {
+            if (id.includes('lucide-react')) {
               return 'ui-vendor';
             }
             if (id.includes('react-dnd')) {

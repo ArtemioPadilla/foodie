@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useRecipes } from '@contexts/RecipeContext';
 import { useLanguage } from '@contexts/LanguageContext';
@@ -6,11 +7,27 @@ import { Clock, Users, ChefHat, ArrowLeft } from 'lucide-react';
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { getRecipeById } = useRecipes();
+  const { getRecipeById, loading, initialized, initializeRecipes } = useRecipes();
   const { getTranslated } = useLanguage();
   const { t } = useTranslation();
 
+  // Initialize recipes when page loads
+  useEffect(() => {
+    initializeRecipes();
+  }, [initializeRecipes]);
+
   const recipe = getRecipeById(id || '');
+
+  // Show loading while initializing
+  if (loading || !initialized) {
+    return (
+      <div className="container-custom py-12">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!recipe) {
     return (

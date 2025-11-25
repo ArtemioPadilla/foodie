@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useRecipes } from '@contexts/RecipeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
@@ -5,7 +6,12 @@ import { Link } from 'react-router-dom';
 import { Clock, Users, Star } from 'lucide-react';
 
 export default function RecipesPage() {
-  const { filteredRecipes, loading, searchRecipes } = useRecipes();
+  const { filteredRecipes, loading, initializeRecipes, searchRecipes } = useRecipes();
+
+  // Initialize recipes when page loads
+  useEffect(() => {
+    initializeRecipes();
+  }, [initializeRecipes]);
   const { getTranslated } = useLanguage();
   const { t } = useTranslation();
 
