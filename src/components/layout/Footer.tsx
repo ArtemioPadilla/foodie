@@ -26,7 +26,7 @@ export default function Footer() {
           {/* Quick Links */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-              Quick Links
+              {t('footer.quickLinks')}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -59,7 +59,7 @@ export default function Footer() {
           {/* Resources */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-              Resources
+              {t('footer.resources')}
             </h3>
             <ul className="space-y-2">
               <li>
@@ -69,7 +69,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
-                  Documentation
+                  {t('footer.documentation')}
                 </a>
               </li>
               <li>
@@ -79,7 +79,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
-                  Report an Issue
+                  {t('footer.reportIssue')}
                 </a>
               </li>
               <li>
@@ -89,7 +89,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 text-sm"
                 >
-                  Contributing
+                  {t('footer.contributing')}
                 </a>
               </li>
             </ul>
@@ -98,7 +98,7 @@ export default function Footer() {
           {/* Connect */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-              Connect
+              {t('footer.connect')}
             </h3>
             <div className="flex space-x-4">
               <a
@@ -125,10 +125,10 @@ export default function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              © {currentYear} Foodie. All rights reserved.
+              © {currentYear} Foodie. {t('footer.allRightsReserved')}
             </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              Generated with{' '}
+              {t('footer.generatedWith')}{' '}
               <a
                 href="https://claude.ai/claude-code"
                 target="_blank"

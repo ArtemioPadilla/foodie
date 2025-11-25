@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Select, SelectOption } from '@components/common';
 import { cn } from '@utils/cn';
 
@@ -19,30 +20,32 @@ export interface RecipeSorterProps {
   className?: string;
 }
 
-const sortOptions: SelectOption[] = [
-  { value: 'name-asc', label: 'Name (A-Z)' },
-  { value: 'name-desc', label: 'Name (Z-A)' },
-  { value: 'time-asc', label: 'Time (Shortest first)' },
-  { value: 'time-desc', label: 'Time (Longest first)' },
-  { value: 'rating-desc', label: 'Rating (Highest first)' },
-  { value: 'rating-asc', label: 'Rating (Lowest first)' },
-  { value: 'difficulty-asc', label: 'Difficulty (Easy first)' },
-  { value: 'difficulty-desc', label: 'Difficulty (Hard first)' },
-  { value: 'recent', label: 'Recently added' },
-];
-
 export const RecipeSorter: React.FC<RecipeSorterProps> = ({
   value,
   onChange,
   className,
 }) => {
+  const { t } = useTranslation();
+
+  const sortOptions: SelectOption[] = useMemo(() => [
+    { value: 'name-asc', label: t('recipe.sortNameAsc') },
+    { value: 'name-desc', label: t('recipe.sortNameDesc') },
+    { value: 'time-asc', label: t('recipe.sortTimeAsc') },
+    { value: 'time-desc', label: t('recipe.sortTimeDesc') },
+    { value: 'rating-desc', label: t('recipe.sortRatingDesc') },
+    { value: 'rating-asc', label: t('recipe.sortRatingAsc') },
+    { value: 'difficulty-asc', label: t('recipe.sortDifficultyAsc') },
+    { value: 'difficulty-desc', label: t('recipe.sortDifficultyDesc') },
+    { value: 'recent', label: t('recipe.sortRecent') },
+  ], [t]);
+
   return (
     <div className={cn('flex items-center gap-2', className)}>
       <label
         htmlFor="recipe-sort"
         className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap"
       >
-        Sort by:
+        {t('common.sortBy')}
       </label>
       <Select
         id="recipe-sort"

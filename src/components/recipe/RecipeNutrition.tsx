@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Recipe } from '@/types';
 import { Card } from '@components/common';
 import { cn } from '@utils/cn';
@@ -16,6 +17,8 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
   className,
   showChart = true,
 }) => {
+  const { t } = useTranslation();
+
   if (!recipe.nutrition) {
     return null;
   }
@@ -25,65 +28,65 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
 
   const scaleValue = (value: number) => Math.round(value * scaleFactor);
 
-  const nutritionItems = [
+  const nutritionItems = useMemo(() => [
     {
-      label: 'Calories',
+      label: t('nutrition.calories'),
       value: scaleValue(nutrition.calories),
       unit: '',
       color: 'bg-red-500',
       max: 2000,
     },
     {
-      label: 'Protein',
+      label: t('nutrition.protein'),
       value: scaleValue(nutrition.protein),
       unit: 'g',
       color: 'bg-blue-500',
       max: 50,
     },
     {
-      label: 'Carbs',
+      label: t('nutrition.carbs'),
       value: scaleValue(nutrition.carbs),
       unit: 'g',
       color: 'bg-yellow-500',
       max: 300,
     },
     {
-      label: 'Fat',
+      label: t('nutrition.fat'),
       value: scaleValue(nutrition.fat),
       unit: 'g',
       color: 'bg-purple-500',
       max: 70,
     },
     {
-      label: 'Fiber',
+      label: t('nutrition.fiber'),
       value: scaleValue(nutrition.fiber),
       unit: 'g',
       color: 'bg-green-500',
       max: 30,
     },
     {
-      label: 'Sugar',
+      label: t('nutrition.sugar'),
       value: scaleValue(nutrition.sugar),
       unit: 'g',
       color: 'bg-pink-500',
       max: 50,
     },
-  ];
+  ], [t, nutrition, scaleFactor]);
 
   return (
     <Card className={cn('', className)}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-          Nutrition Facts
+          {t('nutrition.title')}
         </h2>
         <span className="text-sm text-gray-700 dark:text-gray-300">
-          Per serving ({nutrition.servingSize})
+          {t('nutrition.perServing', { size: nutrition.servingSize })}
         </span>
       </div>
 
       {servings !== recipe.servings && (
         <div className="mb-4 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-sm text-emerald-700 dark:text-emerald-300">
-          Values scaled for {servings} servings
+          {t('nutrition.scaledValues', { servings })}
         </div>
       )}
 
@@ -120,13 +123,13 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
       {/* Additional Info */}
       <div className="pt-4 border-t border-gray-200 dark:border-gray-700 grid grid-cols-2 gap-4 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-700 dark:text-gray-300">Sodium</span>
+          <span className="text-gray-700 dark:text-gray-300">{t('nutrition.sodium')}</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
             {scaleValue(nutrition.sodium)} mg
           </span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-700 dark:text-gray-300">Cholesterol</span>
+          <span className="text-gray-700 dark:text-gray-300">{t('nutrition.cholesterol')}</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
             {scaleValue(nutrition.cholesterol)} mg
           </span>
@@ -135,8 +138,7 @@ export const RecipeNutrition: React.FC<RecipeNutritionProps> = ({
 
       {/* Disclaimer */}
       <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg text-xs text-gray-700 dark:text-gray-300">
-        * Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be
-        higher or lower depending on your calorie needs.
+        {t('nutrition.disclaimer')}
       </div>
     </Card>
   );

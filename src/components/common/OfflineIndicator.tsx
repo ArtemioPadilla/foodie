@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { WifiOff } from 'lucide-react';
 
 /**
@@ -6,6 +7,7 @@ import { WifiOff } from 'lucide-react';
  * Uses navigator.onLine and online/offline events
  */
 export const OfflineIndicator = () => {
+  const { t } = useTranslation();
   const [isOnline, setIsOnline] = useState(true);
   const [showBanner, setShowBanner] = useState(false);
 
@@ -54,8 +56,8 @@ export const OfflineIndicator = () => {
           {!isOnline && <WifiOff className="h-5 w-5" />}
           <p className="text-sm font-medium">
             {isOnline
-              ? '✓ Connection restored'
-              : 'You are offline. Some features may be limited.'}
+              ? `✓ ${t('offline.connectionRestored')}`
+              : t('offline.youAreOffline')}
           </p>
         </div>
       </div>

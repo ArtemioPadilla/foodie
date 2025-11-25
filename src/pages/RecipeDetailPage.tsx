@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useRecipes } from '@contexts/RecipeContext';
 import { useLanguage } from '@contexts/LanguageContext';
+import { useIngredients } from '@contexts/IngredientContext';
 import { useTranslation } from 'react-i18next';
 import { Clock, Users, ChefHat, ArrowLeft } from 'lucide-react';
 
@@ -9,6 +10,7 @@ export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { getRecipeById, loading, initialized, initializeRecipes } = useRecipes();
   const { getTranslated } = useLanguage();
+  const { getIngredientName } = useIngredients();
   const { t } = useTranslation();
 
   // Initialize recipes when page loads
@@ -34,10 +36,10 @@ export default function RecipeDetailPage() {
       <div className="container-custom py-12">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Recipe Not Found
+            {t('recipe.notFound')}
           </h1>
           <Link to="/recipes" className="btn-primary">
-            Back to Recipes
+            {t('recipe.backToRecipes')}
           </Link>
         </div>
       </div>
@@ -52,7 +54,7 @@ export default function RecipeDetailPage() {
         className="inline-flex items-center space-x-2 text-primary-600 dark:text-primary-400 hover:underline mb-6"
       >
         <ArrowLeft className="h-4 w-4" />
-        <span>Back to Recipes</span>
+        <span>{t('recipe.backToRecipes')}</span>
       </Link>
 
       {/* Recipe Header */}
@@ -119,7 +121,7 @@ export default function RecipeDetailPage() {
                 >
                   <span className="text-primary-500 mt-1">•</span>
                   <span>
-                    {ing.quantity} {ing.unit} {ing.ingredientId}
+                    {ing.quantity} {ing.unit} {getIngredientName(ing.ingredientId)}
                     {ing.preparation && ` (${ing.preparation})`}
                   </span>
                 </li>
@@ -161,25 +163,25 @@ export default function RecipeDetailPage() {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Calories</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">{t('nutrition.calories')}</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.calories}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Protein</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">{t('nutrition.protein')}</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.protein}g
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Carbs</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">{t('nutrition.carbs')}</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.carbs}g
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Fat</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">{t('nutrition.fat')}</div>
                   <div className="text-lg font-semibold text-gray-900 dark:text-white">
                     {recipe.nutrition.fat}g
                   </div>

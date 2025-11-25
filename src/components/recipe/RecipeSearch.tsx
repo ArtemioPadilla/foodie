@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@components/common';
 import { cn } from '@utils/cn';
 
@@ -13,10 +14,12 @@ export interface RecipeSearchProps {
 export const RecipeSearch: React.FC<RecipeSearchProps> = ({
   value,
   onChange,
-  placeholder = 'Search recipes...',
+  placeholder,
   className,
   debounceMs = 300,
 }) => {
+  const { t } = useTranslation();
+  const searchPlaceholder = placeholder ?? t('recipe.search');
   const [localValue, setLocalValue] = useState(value);
 
   // Debounce the onChange callback
@@ -46,7 +49,7 @@ export const RecipeSearch: React.FC<RecipeSearchProps> = ({
         type="search"
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
-        placeholder={placeholder}
+        placeholder={searchPlaceholder}
         leftIcon={
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -62,7 +65,7 @@ export const RecipeSearch: React.FC<RecipeSearchProps> = ({
             <button
               onClick={handleClear}
               className="text-gray-700 hover:text-gray-700 dark:text-gray-700 dark:hover:text-gray-200"
-              aria-label="Clear search"
+              aria-label={t('common.clearSearch')}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

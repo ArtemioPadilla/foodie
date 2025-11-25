@@ -17,7 +17,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
   className,
   showNutrition = false,
 }) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentLang = i18n.language as 'en' | 'es' | 'fr';
 
   const name = recipe.name[currentLang] || recipe.name.en;
@@ -54,7 +54,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
             }
             size="sm"
           >
-            {recipe.difficulty}
+            {t(`recipe.difficulty_${recipe.difficulty}`)}
           </Badge>
         </div>
       </div>
@@ -98,7 +98,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>{recipe.totalTime} min</span>
+              <span>{recipe.totalTime} {t('common.minutesAbbr')}</span>
             </div>
 
             {/* Servings */}
@@ -139,19 +139,19 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.nutrition.calories}
                 </div>
-                <div className="text-gray-700 dark:text-gray-300">cal</div>
+                <div className="text-gray-700 dark:text-gray-300">{t('common.caloriesAbbr')}</div>
               </div>
               <div className="text-center">
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.nutrition.protein}g
                 </div>
-                <div className="text-gray-700 dark:text-gray-300">protein</div>
+                <div className="text-gray-700 dark:text-gray-300">{t('common.protein')}</div>
               </div>
               <div className="text-center">
                 <div className="font-semibold text-gray-900 dark:text-gray-100">
                   {recipe.nutrition.carbs}g
                 </div>
-                <div className="text-gray-700 dark:text-gray-300">carbs</div>
+                <div className="text-gray-700 dark:text-gray-300">{t('common.carbs')}</div>
               </div>
             </div>
           </div>

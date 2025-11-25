@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Spinner } from './Spinner';
 import { cn } from '@utils/cn';
 
@@ -10,11 +11,13 @@ export interface LoadingStateProps {
 }
 
 export const LoadingState: React.FC<LoadingStateProps> = ({
-  message = 'Loading...',
+  message,
   size = 'lg',
   fullScreen = false,
   className,
 }) => {
+  const { t } = useTranslation();
+  const displayMessage = message ?? t('common.loading');
   return (
     <div
       className={cn(
@@ -25,8 +28,8 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
       )}
     >
       <Spinner size={size} />
-      {message && (
-        <p className="text-gray-700 dark:text-gray-300 text-center">{message}</p>
+      {displayMessage && (
+        <p className="text-gray-700 dark:text-gray-300 text-center">{displayMessage}</p>
       )}
     </div>
   );
