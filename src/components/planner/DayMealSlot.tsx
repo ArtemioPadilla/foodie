@@ -12,6 +12,7 @@ export interface DayMealSlotProps {
   className?: string;
   onRemove?: () => void;
   onClick?: () => void;
+  onAddClick?: () => void;
 }
 
 /**
@@ -25,6 +26,7 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
   className,
   onRemove,
   onClick,
+  onAddClick,
 }) => {
   const { i18n, t } = useTranslation();
   const currentLang = i18n.language as 'en' | 'es' | 'fr';
@@ -63,9 +65,12 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
 
         {/* Recipe Content or Empty State */}
         {isEmpty ? (
-          <div className="py-6 text-center">
+          <button
+            onClick={onAddClick}
+            className="w-full py-6 text-center group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+          >
             <svg
-              className="mx-auto h-12 w-12 text-gray-700 dark:text-gray-400"
+              className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 group-hover:text-primary-500 transition-colors"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -77,10 +82,10 @@ export const DayMealSlot: React.FC<DayMealSlotProps> = ({
                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"
               />
             </svg>
-            <p className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-              {t('planner.dragRecipeHere', 'Drag a recipe here')}
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              {t('planner.addRecipe', 'Add Recipe')}
             </p>
-          </div>
+          </button>
         ) : (
           <div className="space-y-3">
             {/* Recipe Image */}

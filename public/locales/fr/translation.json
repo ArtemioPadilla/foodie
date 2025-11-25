@@ -6,6 +6,7 @@
   "nav": {
     "home": "Accueil",
     "recipes": "Recettes",
+    "ingredients": "Ingrédients",
     "planner": "Planificateur",
     "shopping": "Liste de Courses",
     "pantry": "Garde-Manger",
@@ -150,6 +151,10 @@
     "weekView": "Vue Hebdomadaire",
     "monthView": "Vue Mensuelle",
     "dragRecipe": "Glissez les recettes ici",
+    "addRecipe": "Ajouter une Recette",
+    "browseAndSelect": "Parcourez les recettes et ajoutez-en une à votre plan de repas",
+    "selectRecipe": "Sélectionnez une recette",
+    "addRecipeToSlot": "Ajouter une recette à {{day}} - {{meal}}",
     "breakfast": "Petit-déjeuner",
     "lunch": "Déjeuner",
     "dinner": "Dîner",
@@ -363,6 +368,18 @@
     "pantry": "Garde-Manger",
     "spices": "Épices et Herbes"
   },
+  "ingredients": {
+    "title": "Parcourir les Ingrédients",
+    "description": "Sélectionnez des ingrédients pour trouver des recettes que vous pouvez préparer",
+    "search": "Rechercher des ingrédients...",
+    "allCategories": "Toutes les Catégories",
+    "selected": "Sélectionnés",
+    "clearSelection": "Tout effacer",
+    "selectToFindRecipes": "Sélectionnez des ingrédients pour trouver des recettes",
+    "recipesWithSelected": "Recettes que Vous Pouvez Préparer",
+    "noMatchingRecipes": "Aucune recette ne correspond à votre sélection",
+    "ingredientsMatch": "ingrédients"
+  },
   "nutrition": {
     "title": "Valeurs Nutritionnelles",
     "perServing": "Par portion ({{size}})",
@@ -430,5 +447,14 @@
     "tsp": "c. à c.",
     "l": "L",
     "ml": "ml"
+  },
+  "days": {
+    "monday": "Lundi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi",
+    "thursday": "Jeudi",
+    "friday": "Vendredi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche"
   }
 }

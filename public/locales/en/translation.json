@@ -6,6 +6,7 @@
   "nav": {
     "home": "Home",
     "recipes": "Recipes",
+    "ingredients": "Ingredients",
     "planner": "Meal Planner",
     "shopping": "Shopping List",
     "pantry": "Pantry",
@@ -150,6 +151,10 @@
     "weekView": "Week View",
     "monthView": "Month View",
     "dragRecipe": "Drag recipes here",
+    "addRecipe": "Add Recipe",
+    "browseAndSelect": "Browse recipes and add one to your meal plan",
+    "selectRecipe": "Select a recipe",
+    "addRecipeToSlot": "Add recipe to {{day}} - {{meal}}",
     "breakfast": "Breakfast",
     "lunch": "Lunch",
     "dinner": "Dinner",
@@ -363,6 +368,18 @@
     "pantry": "Pantry",
     "spices": "Spices & Herbs"
   },
+  "ingredients": {
+    "title": "Browse Ingredients",
+    "description": "Select ingredients to find recipes you can make",
+    "search": "Search ingredients...",
+    "allCategories": "All Categories",
+    "selected": "Selected",
+    "clearSelection": "Clear all",
+    "selectToFindRecipes": "Select ingredients to find recipes",
+    "recipesWithSelected": "Recipes You Can Make",
+    "noMatchingRecipes": "No recipes match your selection",
+    "ingredientsMatch": "ingredients"
+  },
   "nutrition": {
     "title": "Nutrition Facts",
     "perServing": "Per serving ({{size}})",
@@ -430,5 +447,14 @@
     "tsp": "tsp",
     "l": "L",
     "ml": "ml"
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
   }
 }

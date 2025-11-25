@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MealPlan, Recipe } from '@/types';
 import { DroppableSlot } from './DroppableSlot';
+import { RecipePickerModal } from './RecipePickerModal';
 import { usePlanner } from '@contexts/PlannerContext';
 import { useRecipes } from '@contexts/RecipeContext';
 import { Card } from '@components/common';
@@ -17,6 +18,12 @@ export interface WeekViewProps {
 /**
  * Week view calendar with 7-day grid and meal slots
  */
+interface SelectedSlot {
+  dayIndex: number;
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snacks';
+  dayName: string;
+}
+
 export const WeekView: React.FC<WeekViewProps> = ({
   plan,
   startDate = new Date(),
@@ -26,6 +33,9 @@ export const WeekView: React.FC<WeekViewProps> = ({
   const { t } = useTranslation();
   const { addRecipeToPlan, removeRecipeFromPlan } = usePlanner();
   const { getRecipeById } = useRecipes();
+
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
 
   const dayNames = useMemo(() => {
     return [
@@ -52,6 +62,19 @@ export const WeekView: React.FC<WeekViewProps> = ({
 
   const handleRemove = (dayIndex: number, mealType: string) => {
     removeRecipeFromPlan(dayIndex, mealType);
+  };
+
+  const handleAddClick = (dayIndex: number, mealType: 'breakfast' | 'lunch' | 'dinner' | 'snacks', dayName: string) => {
+    setSelectedSlot({ dayIndex, mealType, dayName });
+    setIsPickerOpen(true);
+  };
+
+  const handleRecipeSelect = (recipe: Recipe, servings: number) => {
+    if (selectedSlot) {
+      addRecipeToPlan(selectedSlot.dayIndex, selectedSlot.mealType, recipe.id, servings);
+    }
+    setIsPickerOpen(false);
+    setSelectedSlot(null);
   };
 
   return (
@@ -101,6 +124,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
                           ? () => onSlotClick?.(dayIndex, mealType, meal.recipeId)
                           : undefined
                       }
+                      onAddClick={() => handleAddClick(dayIndex, mealType, dayNames[dayIndex])}
                     />
                   );
                 })}
@@ -118,6 +142,18 @@ export const WeekView: React.FC<WeekViewProps> = ({
           );
         })}
       </div>
+
+      {/* Recipe Picker Modal */}
+      <RecipePickerModal
+        isOpen={isPickerOpen}
+        onClose={() => {
+          setIsPickerOpen(false);
+          setSelectedSlot(null);
+        }}
+        onSelect={handleRecipeSelect}
+        mealType={selectedSlot?.mealType || 'breakfast'}
+        dayName={selectedSlot?.dayName}
+      />
     </div>
   );
 };

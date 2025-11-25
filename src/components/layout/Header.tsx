@@ -6,6 +6,7 @@ import { useLanguage } from '@contexts/LanguageContext';
 import {
   Home,
   ChefHat,
+  Carrot,
   Calendar,
   ShoppingCart,
   Package,
@@ -27,6 +28,7 @@ export default function Header() {
   const navigation = [
     { name: t('nav.home'), href: '/', icon: Home },
     { name: t('nav.recipes'), href: '/recipes', icon: ChefHat },
+    { name: t('nav.ingredients'), href: '/ingredients', icon: Carrot },
     { name: t('nav.planner'), href: '/planner', icon: Calendar },
     { name: t('nav.shopping'), href: '/shopping', icon: ShoppingCart },
     { name: t('nav.pantry'), href: '/pantry', icon: Package },
