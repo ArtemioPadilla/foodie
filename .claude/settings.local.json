@@ -14,7 +14,9 @@
       "Bash(npm run test:run:*)",
       "Bash(act:*)",
       "Bash(make act:test:*)",
-      "Bash(sort:*)"
+      "Bash(sort:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { Recipe } from '@/types';
 import { Card, Checkbox } from '@components/common';
 import { useIngredients } from '@contexts/IngredientContext';
@@ -107,7 +108,13 @@ export const RecipeIngredients: React.FC<RecipeIngredientsProps> = ({
                     {formatted} {t(`units.${convertedUnit}`, convertedUnit)}
                   </span>
                   <span className="text-gray-700 dark:text-gray-300">
-                    {getIngredientName(ingredient.ingredientId)}
+                    <Link
+                      to={`/ingredients/${ingredient.ingredientId}`}
+                      className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {getIngredientName(ingredient.ingredientId)}
+                    </Link>
                     {ingredient.preparation && (
                       <span className="text-gray-700 dark:text-gray-300">
                         {' '}
