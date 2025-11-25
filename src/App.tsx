@@ -4,6 +4,7 @@ import { AppProvider } from '@contexts/AppContext';
 import { RecipeProvider } from '@contexts/RecipeContext';
 import { PlannerProvider } from '@contexts/PlannerContext';
 import { ShoppingProvider } from '@contexts/ShoppingContext';
+import { PantryProvider } from '@contexts/PantryContext';
 import { AuthProvider } from '@contexts/AuthContext';
 import { LanguageProvider } from '@contexts/LanguageContext';
 import { ThemeProvider } from '@contexts/ThemeContext';
@@ -32,6 +33,7 @@ function App() {
             <RecipeProvider>
               <PlannerProvider>
                 <ShoppingProvider>
+                  <PantryProvider>
                   <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
                     <Header />
                     <main className="flex-1">
@@ -55,6 +57,7 @@ function App() {
                     </main>
                     <Footer />
                   </div>
+                  </PantryProvider>
                 </ShoppingProvider>
               </PlannerProvider>
             </RecipeProvider>
