@@ -247,17 +247,37 @@ export interface AppConfig {
 // Filter interfaces
 export interface RecipeFilters {
   search?: string;
-  type?: string[];
-  cuisine?: string[];
-  dietaryTags?: string[];
-  difficulty?: string[];
-  maxPrepTime?: number;
-  maxCookTime?: number;
+  types?: string[];  // Changed from 'type' to 'types' for consistency
+  cuisines?: string[];  // Changed from 'cuisine' to 'cuisines'
+  dietaryLabels?: string[];  // Changed from 'dietaryTags' to 'dietaryLabels'
+  difficulties?: string[];  // Changed from 'difficulty' to 'difficulties'
+  tags?: string[];  // Generic tags
+  maxTime?: number;  // Combined maxPrepTime and maxCookTime
+  maxPrepTime?: number;  // Keep for backward compatibility
+  maxCookTime?: number;  // Keep for backward compatibility
   ingredients?: string[];
 }
 
-// Sort options
-export type SortOption = 'rating' | 'prepTime' | 'cost' | 'newest' | 'popular' | 'name';
+// Sort options - extended to support more granular sorting
+export type SortOption =
+  | 'rating-desc'
+  | 'rating-asc'
+  | 'time-asc'
+  | 'time-desc'
+  | 'name-asc'
+  | 'name-desc'
+  | 'difficulty-asc'
+  | 'difficulty-desc'
+  | 'recent'
+  | 'popular'
+  | 'cost-asc'
+  | 'cost-desc'
+  // Legacy options for backward compatibility
+  | 'rating'
+  | 'prepTime'
+  | 'cost'
+  | 'newest'
+  | 'name';
 
 // API Response types
 export interface ApiResponse<T> {
@@ -288,4 +308,72 @@ export interface RecipeReview {
   helpful: number;
   createdAt: string;
   updatedAt?: string;
+}
+
+// Food Tracking interfaces
+export interface TrackingEntry {
+  id: string;
+  date: string;
+  time: string;
+  mealType: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'beverage';
+  recipeId?: string;
+  ingredientId?: string;
+  beverageId?: string;
+  customName?: MultiLangText;
+  quantity: number;
+  unit: string;
+  servings?: number;
+  nutrition: NutritionInfo;
+  notes?: string;
+  loggedAt: string;
+  fromMealPlan?: boolean;
+  mealPlanId?: string;
+}
+
+export interface DailyTracking {
+  date: string;
+  entries: TrackingEntry[];
+  totals: NutritionInfo;
+  goalProgress: GoalProgress;
+}
+
+export interface NutritionGoals {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  sodium?: number;
+  sugar?: number;
+  water?: number;
+}
+
+export interface GoalProgress {
+  calories: { consumed: number; goal: number; remaining: number; percentage: number };
+  protein: { consumed: number; goal: number; remaining: number; percentage: number };
+  carbs: { consumed: number; goal: number; remaining: number; percentage: number };
+  fat: { consumed: number; goal: number; remaining: number; percentage: number };
+  fiber: { consumed: number; goal: number; remaining: number; percentage: number };
+  water?: { consumed: number; goal: number; remaining: number; percentage: number };
+}
+
+export interface Beverage {
+  id: string;
+  name: MultiLangText;
+  category: 'water' | 'coffee' | 'tea' | 'juice' | 'soda' | 'alcohol' | 'milk' | 'other';
+  nutrition: NutritionInfo;
+  defaultUnit: string;
+  defaultQuantity: number;
+  imageUrl?: string;
+  isAlcoholic: boolean;
+  caffeine?: number;
+}
+
+export interface PeriodSummary {
+  startDate: string;
+  endDate: string;
+  days: DailyTracking[];
+  averages: NutritionInfo;
+  totals: NutritionInfo;
+  streakDays: number;
 }

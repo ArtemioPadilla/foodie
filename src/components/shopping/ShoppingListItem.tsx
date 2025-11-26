@@ -52,6 +52,7 @@ export const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
 
   return (
     <div
+      data-testid="shopping-item"
       className={cn(
         'flex items-start gap-3 p-3 rounded-lg transition-colors',
         item.checked && 'bg-gray-100 dark:bg-gray-800 opacity-70',

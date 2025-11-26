@@ -28,6 +28,7 @@ export const RecipeCard: React.FC<RecipeCardProps> = ({
 
   return (
     <Card
+      data-testid="recipe-card"
       hoverable={!!onClick}
       onClick={onClick}
       className={cn('overflow-hidden', className)}

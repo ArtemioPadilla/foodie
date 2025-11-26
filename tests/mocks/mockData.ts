@@ -1,4 +1,4 @@
-import { Recipe, Ingredient, MealPlan, ShoppingListItem } from '@types';
+import { Recipe, Ingredient, MealPlan, ShoppingListItem, Beverage, TrackingEntry, NutritionGoals } from '@types';
 
 export const mockIngredient: Ingredient = {
   id: 'ingredient-1',
@@ -180,5 +180,130 @@ export const mockShoppingList: ShoppingListItem[] = [
     amount: 2,
     unit: 'tbsp',
     category: 'pantry',
+  },
+];
+
+// Tracking-related mocks
+export const mockBeverage: Beverage = {
+  id: 'bev_water',
+  name: {
+    en: 'Water',
+    es: 'Agua',
+    fr: 'Eau',
+  },
+  category: 'water',
+  nutrition: {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    fiber: 0,
+    sugar: 0,
+    sodium: 0,
+  },
+  defaultUnit: 'ml',
+  defaultQuantity: 250,
+  isAlcoholic: false,
+};
+
+export const mockBeverages: Beverage[] = [
+  mockBeverage,
+  {
+    ...mockBeverage,
+    id: 'bev_coffee',
+    name: {
+      en: 'Coffee',
+      es: 'Café',
+      fr: 'Café',
+    },
+    category: 'coffee',
+    nutrition: {
+      calories: 2,
+      protein: 0.3,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 5,
+    },
+    caffeine: 95,
+  },
+];
+
+export const mockNutritionGoals: NutritionGoals = {
+  calories: 2000,
+  protein: 50,
+  carbs: 250,
+  fat: 70,
+  fiber: 25,
+  water: 2000,
+};
+
+export const mockTrackingEntry: TrackingEntry = {
+  id: 'entry-1',
+  date: '2025-01-25',
+  time: '12:00:00',
+  mealType: 'lunch',
+  recipeId: 'recipe-1',
+  quantity: 2,
+  unit: 'servings',
+  servings: 2,
+  nutrition: {
+    calories: 500,
+    protein: 25,
+    carbs: 60,
+    fat: 15,
+    fiber: 8,
+    sugar: 5,
+    sodium: 400,
+  },
+  loggedAt: '2025-01-25T12:00:00.000Z',
+};
+
+export const mockTrackingEntries: TrackingEntry[] = [
+  mockTrackingEntry,
+  {
+    ...mockTrackingEntry,
+    id: 'entry-2',
+    date: '2025-01-25',
+    time: '08:00:00',
+    mealType: 'breakfast',
+    ingredientId: 'ingredient-1',
+    recipeId: undefined,
+    quantity: 150,
+    unit: 'g',
+    servings: 1,
+    nutrition: {
+      calories: 250,
+      protein: 40,
+      carbs: 0,
+      fat: 8,
+      fiber: 0,
+      sugar: 0,
+      sodium: 100,
+    },
+    loggedAt: '2025-01-25T08:00:00.000Z',
+  },
+  {
+    ...mockTrackingEntry,
+    id: 'entry-3',
+    date: '2025-01-25',
+    time: '10:30:00',
+    mealType: 'beverage',
+    beverageId: 'bev_water',
+    recipeId: undefined,
+    quantity: 250,
+    unit: 'ml',
+    servings: undefined,
+    nutrition: {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      sugar: 0,
+      sodium: 0,
+    },
+    loggedAt: '2025-01-25T10:30:00.000Z',
   },
 ];

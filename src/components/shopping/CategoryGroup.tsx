@@ -35,7 +35,7 @@ export const CategoryGroup: React.FC<CategoryGroupProps> = ({
   const allChecked = checkedCount === totalCount;
 
   return (
-    <div className={cn('border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden', className)}>
+    <div data-testid="category-group" className={cn('border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden', className)}>
       {/* Category Header */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}

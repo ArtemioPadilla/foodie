@@ -25,7 +25,7 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [filters, setFiltersState] = useState<RecipeFilters>({});
-  const [sortBy, setSortByState] = useState<SortOption>('rating');
+  const [sortBy, setSortByState] = useState<SortOption>('rating-desc');
   const [favoriteRecipes, setFavoriteRecipes] = useState<string[]>(() => {
     const stored = localStorage.getItem('favoriteRecipes');
     return stored ? JSON.parse(stored) : [];
@@ -70,31 +70,46 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
       );
     }
 
-    // Apply type filter
-    if (filters.type && filters.type.length > 0) {
-      filtered = filtered.filter(recipe => filters.type!.includes(recipe.type));
+    // Apply type filter (support both 'type' and 'types')
+    const types = filters.types || [];
+    if (types.length > 0) {
+      filtered = filtered.filter(recipe => types.includes(recipe.type));
     }
 
-    // Apply cuisine filter
-    if (filters.cuisine && filters.cuisine.length > 0) {
+    // Apply cuisine filter (support both 'cuisine' and 'cuisines')
+    const cuisines = filters.cuisines || [];
+    if (cuisines.length > 0) {
       filtered = filtered.filter(recipe =>
-        recipe.cuisine.some(c => filters.cuisine!.includes(c))
+        recipe.cuisine.some(c => cuisines.includes(c))
       );
     }
 
-    // Apply dietary tags filter
-    if (filters.dietaryTags && filters.dietaryTags.length > 0) {
+    // Apply dietary labels filter (support both 'dietaryTags' and 'dietaryLabels')
+    const dietaryLabels = filters.dietaryLabels || [];
+    if (dietaryLabels.length > 0) {
       filtered = filtered.filter(recipe =>
-        filters.dietaryTags!.some(tag => recipe.tags.includes(tag))
+        dietaryLabels.some(label => recipe.tags.includes(label))
       );
     }
 
-    // Apply difficulty filter
-    if (filters.difficulty && filters.difficulty.length > 0) {
-      filtered = filtered.filter(recipe => filters.difficulty!.includes(recipe.difficulty));
+    // Apply difficulty filter (support both 'difficulty' and 'difficulties')
+    const difficulties = filters.difficulties || [];
+    if (difficulties.length > 0) {
+      filtered = filtered.filter(recipe => difficulties.includes(recipe.difficulty));
     }
 
-    // Apply time filters
+    // Apply tags filter
+    if (filters.tags && filters.tags.length > 0) {
+      filtered = filtered.filter(recipe =>
+        filters.tags!.some(tag => recipe.tags.includes(tag))
+      );
+    }
+
+    // Apply time filters (support both maxTime and specific maxPrepTime/maxCookTime)
+    if (filters.maxTime) {
+      filtered = filtered.filter(recipe => recipe.totalTime <= filters.maxTime!);
+    }
+
     if (filters.maxPrepTime) {
       filtered = filtered.filter(recipe => recipe.prepTime <= filters.maxPrepTime!);
     }
@@ -106,16 +121,37 @@ export const RecipeProvider = ({ children }: { children: ReactNode }) => {
     // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
+        // New detailed sort options
+        case 'rating-desc':
         case 'rating':
           return b.rating - a.rating;
+        case 'rating-asc':
+          return a.rating - b.rating;
+        case 'time-asc':
         case 'prepTime':
-          return a.prepTime - b.prepTime;
+          return a.totalTime - b.totalTime;
+        case 'time-desc':
+          return b.totalTime - a.totalTime;
+        case 'name-asc':
+        case 'name':
+          return a.name.en.localeCompare(b.name.en);
+        case 'name-desc':
+          return b.name.en.localeCompare(a.name.en);
+        case 'difficulty-asc': {
+          const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
+          return (difficultyOrder[a.difficulty as keyof typeof difficultyOrder] || 0) -
+                 (difficultyOrder[b.difficulty as keyof typeof difficultyOrder] || 0);
+        }
+        case 'difficulty-desc': {
+          const difficultyOrder = { hard: 1, medium: 2, easy: 3 };
+          return (difficultyOrder[a.difficulty as keyof typeof difficultyOrder] || 0) -
+                 (difficultyOrder[b.difficulty as keyof typeof difficultyOrder] || 0);
+        }
+        case 'recent':
         case 'newest':
           return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime();
         case 'popular':
           return b.reviewCount - a.reviewCount;
-        case 'name':
-          return a.name.en.localeCompare(b.name.en);
         default:
           return 0;
       }

@@ -136,7 +136,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
   };
 
   return (
-    <Card className={cn('space-y-4', className)}>
+    <Card data-testid="month-view" className={cn('space-y-4', className)}>
       {/* Month Header */}
       <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{monthName}</h2>

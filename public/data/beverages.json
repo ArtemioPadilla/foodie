@@ -1,0 +1,757 @@
+[
+  {
+    "id": "bev_water",
+    "name": { "en": "Water", "es": "Agua", "fr": "Eau" },
+    "category": "water",
+    "nutrition": {
+      "servingSize": "250ml",
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 0,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 250,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_sparkling_water",
+    "name": { "en": "Sparkling Water", "es": "Agua con Gas", "fr": "Eau Gazeuse" },
+    "category": "water",
+    "nutrition": {
+      "servingSize": "250ml",
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 10,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 250,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_coffee_black",
+    "name": { "en": "Black Coffee", "es": "Café Negro", "fr": "Café Noir" },
+    "category": "coffee",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 2,
+      "protein": 0.3,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 5,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 95
+  },
+  {
+    "id": "bev_coffee_latte",
+    "name": { "en": "Latte", "es": "Café con Leche", "fr": "Café au Lait" },
+    "category": "coffee",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 120,
+      "protein": 6,
+      "carbs": 11,
+      "fat": 6,
+      "fiber": 0,
+      "sugar": 10,
+      "sodium": 95,
+      "cholesterol": 25
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false,
+    "caffeine": 75
+  },
+  {
+    "id": "bev_coffee_cappuccino",
+    "name": { "en": "Cappuccino", "es": "Capuchino", "fr": "Cappuccino" },
+    "category": "coffee",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 80,
+      "protein": 4,
+      "carbs": 6,
+      "fat": 4,
+      "fiber": 0,
+      "sugar": 5,
+      "sodium": 55,
+      "cholesterol": 15
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 75
+  },
+  {
+    "id": "bev_coffee_espresso",
+    "name": { "en": "Espresso", "es": "Café Expreso", "fr": "Espresso" },
+    "category": "coffee",
+    "nutrition": {
+      "servingSize": "30ml",
+      "calories": 3,
+      "protein": 0.1,
+      "carbs": 0.5,
+      "fat": 0.2,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 5,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 30,
+    "isAlcoholic": false,
+    "caffeine": 63
+  },
+  {
+    "id": "bev_coffee_cold_brew",
+    "name": { "en": "Cold Brew Coffee", "es": "Café Frío", "fr": "Café Froid" },
+    "category": "coffee",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 5,
+      "protein": 0.3,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 10,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false,
+    "caffeine": 200
+  },
+  {
+    "id": "bev_tea_black",
+    "name": { "en": "Black Tea", "es": "Té Negro", "fr": "Thé Noir" },
+    "category": "tea",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 2,
+      "protein": 0,
+      "carbs": 0.7,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 7,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 47
+  },
+  {
+    "id": "bev_tea_green",
+    "name": { "en": "Green Tea", "es": "Té Verde", "fr": "Thé Vert" },
+    "category": "tea",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 2,
+      "protein": 0.5,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 2,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 29
+  },
+  {
+    "id": "bev_tea_herbal",
+    "name": { "en": "Herbal Tea", "es": "Té de Hierbas", "fr": "Tisane" },
+    "category": "tea",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 2,
+      "protein": 0,
+      "carbs": 0.5,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 5,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 0
+  },
+  {
+    "id": "bev_tea_iced",
+    "name": { "en": "Iced Tea", "es": "Té Helado", "fr": "Thé Glacé" },
+    "category": "tea",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 90,
+      "protein": 0,
+      "carbs": 24,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 23,
+      "sodium": 10,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false,
+    "caffeine": 25
+  },
+  {
+    "id": "bev_juice_orange",
+    "name": { "en": "Orange Juice", "es": "Jugo de Naranja", "fr": "Jus d'Orange" },
+    "category": "juice",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 112,
+      "protein": 1.7,
+      "carbs": 26,
+      "fat": 0.5,
+      "fiber": 0.5,
+      "sugar": 21,
+      "sodium": 2,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_juice_apple",
+    "name": { "en": "Apple Juice", "es": "Jugo de Manzana", "fr": "Jus de Pomme" },
+    "category": "juice",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 114,
+      "protein": 0.3,
+      "carbs": 28,
+      "fat": 0.3,
+      "fiber": 0.5,
+      "sugar": 24,
+      "sodium": 10,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_juice_cranberry",
+    "name": { "en": "Cranberry Juice", "es": "Jugo de Arándano", "fr": "Jus de Canneberge" },
+    "category": "juice",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 116,
+      "protein": 0.4,
+      "carbs": 31,
+      "fat": 0.1,
+      "fiber": 0.3,
+      "sugar": 30,
+      "sodium": 5,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_juice_tomato",
+    "name": { "en": "Tomato Juice", "es": "Jugo de Tomate", "fr": "Jus de Tomate" },
+    "category": "juice",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 41,
+      "protein": 1.8,
+      "carbs": 10,
+      "fat": 0.1,
+      "fiber": 1,
+      "sugar": 7,
+      "sodium": 654,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_soda_cola",
+    "name": { "en": "Cola", "es": "Cola", "fr": "Cola" },
+    "category": "soda",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 140,
+      "protein": 0,
+      "carbs": 39,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 39,
+      "sodium": 40,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false,
+    "caffeine": 34
+  },
+  {
+    "id": "bev_soda_diet_cola",
+    "name": { "en": "Diet Cola", "es": "Cola Light", "fr": "Cola Light" },
+    "category": "soda",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 0,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 40,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false,
+    "caffeine": 46
+  },
+  {
+    "id": "bev_soda_lemon_lime",
+    "name": { "en": "Lemon-Lime Soda", "es": "Refresco de Limón", "fr": "Soda Citron-Lime" },
+    "category": "soda",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 140,
+      "protein": 0,
+      "carbs": 38,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 38,
+      "sodium": 40,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_energy_drink",
+    "name": { "en": "Energy Drink", "es": "Bebida Energética", "fr": "Boisson Énergisante" },
+    "category": "soda",
+    "nutrition": {
+      "servingSize": "250ml",
+      "calories": 110,
+      "protein": 1,
+      "carbs": 28,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 27,
+      "sodium": 105,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 250,
+    "isAlcoholic": false,
+    "caffeine": 80
+  },
+  {
+    "id": "bev_beer",
+    "name": { "en": "Beer", "es": "Cerveza", "fr": "Bière" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 153,
+      "protein": 1.6,
+      "carbs": 13,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 14,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_beer_light",
+    "name": { "en": "Light Beer", "es": "Cerveza Light", "fr": "Bière Légère" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 103,
+      "protein": 0.9,
+      "carbs": 6,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 14,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_wine_red",
+    "name": { "en": "Red Wine", "es": "Vino Tinto", "fr": "Vin Rouge" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "150ml",
+      "calories": 125,
+      "protein": 0.1,
+      "carbs": 4,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 6,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 150,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_wine_white",
+    "name": { "en": "White Wine", "es": "Vino Blanco", "fr": "Vin Blanc" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "150ml",
+      "calories": 121,
+      "protein": 0.1,
+      "carbs": 4,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 1,
+      "sodium": 7,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 150,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_vodka",
+    "name": { "en": "Vodka", "es": "Vodka", "fr": "Vodka" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "45ml",
+      "calories": 97,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 1,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 45,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_whiskey",
+    "name": { "en": "Whiskey", "es": "Whisky", "fr": "Whisky" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "45ml",
+      "calories": 105,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 1,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 45,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_margarita",
+    "name": { "en": "Margarita", "es": "Margarita", "fr": "Margarita" },
+    "category": "alcohol",
+    "nutrition": {
+      "servingSize": "120ml",
+      "calories": 168,
+      "protein": 0,
+      "carbs": 14,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 11,
+      "sodium": 7,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 120,
+    "isAlcoholic": true
+  },
+  {
+    "id": "bev_milk_whole",
+    "name": { "en": "Whole Milk", "es": "Leche Entera", "fr": "Lait Entier" },
+    "category": "milk",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 149,
+      "protein": 7.7,
+      "carbs": 12,
+      "fat": 8,
+      "fiber": 0,
+      "sugar": 12,
+      "sodium": 105,
+      "cholesterol": 24
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_milk_skim",
+    "name": { "en": "Skim Milk", "es": "Leche Desnatada", "fr": "Lait Écrémé" },
+    "category": "milk",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 83,
+      "protein": 8.3,
+      "carbs": 12,
+      "fat": 0.2,
+      "fiber": 0,
+      "sugar": 12,
+      "sodium": 103,
+      "cholesterol": 5
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_milk_almond",
+    "name": { "en": "Almond Milk", "es": "Leche de Almendra", "fr": "Lait d'Amande" },
+    "category": "milk",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 30,
+      "protein": 1,
+      "carbs": 1,
+      "fat": 2.5,
+      "fiber": 0.5,
+      "sugar": 0,
+      "sodium": 170,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_milk_soy",
+    "name": { "en": "Soy Milk", "es": "Leche de Soja", "fr": "Lait de Soja" },
+    "category": "milk",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 80,
+      "protein": 7,
+      "carbs": 4,
+      "fat": 4,
+      "fiber": 1,
+      "sugar": 1,
+      "sodium": 90,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_milk_oat",
+    "name": { "en": "Oat Milk", "es": "Leche de Avena", "fr": "Lait d'Avoine" },
+    "category": "milk",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 120,
+      "protein": 3,
+      "carbs": 16,
+      "fat": 5,
+      "fiber": 2,
+      "sugar": 7,
+      "sodium": 100,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_milk_coconut",
+    "name": { "en": "Coconut Milk", "es": "Leche de Coco", "fr": "Lait de Coco" },
+    "category": "milk",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 45,
+      "protein": 0,
+      "carbs": 1,
+      "fat": 4.5,
+      "fiber": 0,
+      "sugar": 0,
+      "sodium": 45,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_smoothie_berry",
+    "name": { "en": "Berry Smoothie", "es": "Batido de Bayas", "fr": "Smoothie aux Baies" },
+    "category": "other",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 200,
+      "protein": 5,
+      "carbs": 40,
+      "fat": 2,
+      "fiber": 4,
+      "sugar": 30,
+      "sodium": 80,
+      "cholesterol": 5
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_protein_shake",
+    "name": { "en": "Protein Shake", "es": "Batido de Proteína", "fr": "Shake Protéiné" },
+    "category": "other",
+    "nutrition": {
+      "servingSize": "250ml",
+      "calories": 150,
+      "protein": 25,
+      "carbs": 8,
+      "fat": 2,
+      "fiber": 1,
+      "sugar": 4,
+      "sodium": 200,
+      "cholesterol": 50
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 250,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_sports_drink",
+    "name": { "en": "Sports Drink", "es": "Bebida Deportiva", "fr": "Boisson de Sport" },
+    "category": "other",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 80,
+      "protein": 0,
+      "carbs": 21,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 14,
+      "sodium": 165,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_kombucha",
+    "name": { "en": "Kombucha", "es": "Kombucha", "fr": "Kombucha" },
+    "category": "other",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 30,
+      "protein": 0,
+      "carbs": 7,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 4,
+      "sodium": 10,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 15
+  },
+  {
+    "id": "bev_hot_chocolate",
+    "name": { "en": "Hot Chocolate", "es": "Chocolate Caliente", "fr": "Chocolat Chaud" },
+    "category": "other",
+    "nutrition": {
+      "servingSize": "240ml",
+      "calories": 192,
+      "protein": 9,
+      "carbs": 27,
+      "fat": 6,
+      "fiber": 2,
+      "sugar": 24,
+      "sodium": 110,
+      "cholesterol": 20
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 240,
+    "isAlcoholic": false,
+    "caffeine": 5
+  },
+  {
+    "id": "bev_ginger_ale",
+    "name": { "en": "Ginger Ale", "es": "Refresco de Jengibre", "fr": "Soda au Gingembre" },
+    "category": "soda",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 124,
+      "protein": 0,
+      "carbs": 32,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 32,
+      "sodium": 25,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false
+  },
+  {
+    "id": "bev_root_beer",
+    "name": { "en": "Root Beer", "es": "Cerveza de Raíz", "fr": "Bière de Racine" },
+    "category": "soda",
+    "nutrition": {
+      "servingSize": "350ml",
+      "calories": 152,
+      "protein": 0,
+      "carbs": 39,
+      "fat": 0,
+      "fiber": 0,
+      "sugar": 39,
+      "sodium": 48,
+      "cholesterol": 0
+    },
+    "defaultUnit": "ml",
+    "defaultQuantity": 350,
+    "isAlcoholic": false
+  }
+]
