@@ -68,7 +68,7 @@ export const MealPlannerCalendar: React.FC<MealPlannerCalendarProps> = ({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className={cn('space-y-6', className)}>
+      <div data-testid="calendar-view" className={cn('space-y-6', className)}>
         {/* Controls */}
         <PlannerControls startDate={startDate} onDateChange={setStartDate} />
 

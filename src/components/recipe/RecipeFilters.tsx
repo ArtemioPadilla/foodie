@@ -11,19 +11,11 @@ import {
   Badge,
 } from '@components/common';
 import { cn } from '@utils/cn';
-
-export interface RecipeFilterOptions {
-  types?: string[];
-  cuisines?: string[];
-  difficulties?: string[];
-  dietaryLabels?: string[];
-  maxTime?: number;
-  tags?: string[];
-}
+import type { RecipeFilters as RecipeFilterType } from '@/types';
 
 export interface RecipeFiltersProps {
-  filters: RecipeFilterOptions;
-  onChange: (filters: RecipeFilterOptions) => void;
+  filters: RecipeFilterType;
+  onChange: (filters: RecipeFilterType) => void;
   availableTypes?: string[];
   availableCuisines?: string[];
   availableTags?: string[];

@@ -155,7 +155,9 @@
     "day": "day",
     "days": "days",
     "match": "match",
-    "update": "Update"
+    "update": "Update",
+    "hideFilters": "Hide Filters",
+    "showFilters": "Show Filters"
   },
   "errors": {
     "somethingWentWrong": "Something went wrong",
@@ -230,7 +232,11 @@
     "glutenFree": "Gluten Free",
     "dairyFree": "Dairy Free",
     "lowCarb": "Low Carb",
-    "scaledForServings": "Scaled for {{servings}} servings"
+    "scaledForServings": "Scaled for {{servings}} servings",
+    "resultsCount": "{{count}} recipes found",
+    "removeFromFavorites": "Remove from favorites",
+    "favorited": "Favorited",
+    "startTimer": "Start Timer"
   },
   "planner": {
     "title": "Meal Planner",

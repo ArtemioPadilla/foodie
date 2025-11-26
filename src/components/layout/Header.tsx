@@ -189,6 +189,7 @@ export default function Header() {
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Language Selector */}
             <select
+              data-testid="language-selector"
               value={language}
               onChange={e => changeLanguage(e.target.value)}
               className="hidden sm:block px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500"

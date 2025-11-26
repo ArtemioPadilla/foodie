@@ -155,7 +155,9 @@
     "day": "día",
     "days": "días",
     "match": "coincidencia",
-    "update": "Actualizar"
+    "update": "Actualizar",
+    "hideFilters": "Ocultar Filtros",
+    "showFilters": "Mostrar Filtros"
   },
   "errors": {
     "somethingWentWrong": "Algo salió mal",
@@ -230,7 +232,11 @@
     "glutenFree": "Sin Gluten",
     "dairyFree": "Sin Lácteos",
     "lowCarb": "Bajo en Carbohidratos",
-    "scaledForServings": "Escalado para {{servings}} porciones"
+    "scaledForServings": "Escalado para {{servings}} porciones",
+    "resultsCount": "{{count}} recetas encontradas",
+    "removeFromFavorites": "Quitar de favoritos",
+    "favorited": "Favorita",
+    "startTimer": "Iniciar Temporizador"
   },
   "planner": {
     "title": "Planificador de Comidas",

@@ -93,7 +93,7 @@ export const WeekView: React.FC<WeekViewProps> = ({
   };
 
   return (
-    <div className={cn('space-y-4', className)}>
+    <div data-testid="week-view" className={cn('space-y-4', className)}>
       {/* Week Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
         {plan.days.map((day, dayIndex) => {
