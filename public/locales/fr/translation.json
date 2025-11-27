@@ -157,7 +157,10 @@
     "match": "correspondance",
     "update": "Mettre à jour",
     "hideFilters": "Masquer les Filtres",
-    "showFilters": "Afficher les Filtres"
+    "showFilters": "Afficher les Filtres",
+    "note": "Remarque",
+    "backToHome": "Retour à l'Accueil",
+    "today": "Aujourd'hui"
   },
   "errors": {
     "somethingWentWrong": "Une erreur s'est produite",
@@ -278,7 +281,26 @@
     "description": "Planifiez vos repas de la semaine et générez automatiquement des listes de courses.",
     "noPlanDescription": "Créez un plan de repas pour commencer à organiser vos repas hebdomadaires.",
     "helpTitle": "Comment utiliser",
-    "helpText": "Glissez les recettes de la liste vers les créneaux de repas. Cliquez sur un repas pour voir les détails de la recette. Utilisez les commandes ci-dessus pour enregistrer, partager ou ajuster votre plan."
+    "helpText": "Glissez les recettes de la liste vers les créneaux de repas. Cliquez sur un repas pour voir les détails de la recette. Utilisez les commandes ci-dessus pour enregistrer, partager ou ajuster votre plan.",
+    "estimatedCost": "Coût Estimé",
+    "costNotAvailable": "Données de coût indisponibles",
+    "costPerDay": "~{{cost}}$ par jour",
+    "shareLink": "Lien de Partage",
+    "generateShareLink": "Générer un Lien de Partage",
+    "shareText": "Découvrez mon plan de repas: {{name}}",
+    "shareNote": "Toute personne ayant ce lien peut voir votre plan de repas. Elle ne pourra pas le modifier.",
+    "shareVia": "Partager via...",
+    "planSharedToCloud": "Plan synchronisé avec le cloud avec succès",
+    "cloudSyncFailed": "Synchronisation cloud non disponible. Le lien fonctionnera localement.",
+    "syncingToCloud": "Synchronisation avec le cloud...",
+    "cloudSynced": "Synchronisé avec le cloud",
+    "planNotFound": "Plan Non Trouvé",
+    "planNotFoundDesc": "Ce plan de repas n'existe pas ou n'est plus disponible.",
+    "createYourOwn": "Créer Votre Propre Plan",
+    "viewingSharedPlan": "Vous consultez un plan de repas partagé",
+    "loadedFromCloud": "Chargé depuis le cloud",
+    "confirmClear": "Êtes-vous sûr de vouloir effacer ce plan?",
+    "templates": "Modèles"
   },
   "shopping": {
     "title": "Liste de Courses",
@@ -326,7 +348,15 @@
     "checked": "Cochés",
     "remaining": "Restants",
     "usedIn": "Utilisé dans",
-    "addNotes": "Ajouter des notes..."
+    "addNotes": "Ajouter des notes...",
+    "addCustomItem": "Ajouter un Article Personnalisé",
+    "itemName": "Nom de l'Article",
+    "itemNamePlaceholder": "ex., Lait, Pain, Œufs",
+    "notesPlaceholder": "Ajouter des notes ou préférences...",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "notes": "Notes",
+    "allCategories": "Toutes les Catégories"
   },
   "pantry": {
     "title": "Mon Garde-Manger",
@@ -642,7 +672,19 @@
     "selectToFindRecipes": "Sélectionnez des ingrédients pour trouver des recettes",
     "recipesWithSelected": "Recettes que Vous Pouvez Préparer",
     "noMatchingRecipes": "Aucune recette ne correspond à votre sélection",
-    "ingredientsMatch": "ingrédients"
+    "ingredientsMatch": "ingrédients",
+    "managePrices": "Gérer les Prix des Ingrédients",
+    "customPricesCount": "{{count}} prix personnalisés",
+    "searchIngredients": "Rechercher des ingrédients...",
+    "showCustomOnly": "Afficher uniquement les prix personnalisés",
+    "resetAll": "Tout Réinitialiser",
+    "noResults": "Aucun ingrédient trouvé",
+    "noCustomPrices": "Aucun prix personnalisé",
+    "custom": "Personnalisé",
+    "invalidPrice": "Veuillez entrer un prix valide supérieur à 0",
+    "confirmResetAll": "Réinitialiser tous les prix par défaut ? Cela ne peut pas être annulé.",
+    "resetToDefault": "Réinitialiser par défaut",
+    "noPrice": "Pas de prix"
   },
   "ingredient": {
     "composite": "Composé",
@@ -772,5 +814,19 @@
     "friday": "Vendredi",
     "saturday": "Samedi",
     "sunday": "Dimanche"
+  },
+  "categories": {
+    "produce": "Fruits et Légumes",
+    "meatPoultry": "Viandes et Volailles",
+    "seafood": "Fruits de Mer",
+    "dairyEggs": "Produits Laitiers et Œufs",
+    "bakery": "Boulangerie",
+    "grainsPasta": "Céréales et Pâtes",
+    "pantry": "Garde-Manger",
+    "spices": "Épices et Assaisonnements",
+    "oilsCondiments": "Huiles et Condiments",
+    "beverages": "Boissons",
+    "frozen": "Surgelés",
+    "other": "Autre"
   }
 }

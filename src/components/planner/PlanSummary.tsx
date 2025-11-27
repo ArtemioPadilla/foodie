@@ -30,12 +30,16 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
       if (day.meals.breakfast) {
         totalMeals++;
         const recipe = getRecipeById(day.meals.breakfast.recipeId);
-        if (recipe?.nutrition) {
+        if (recipe?.nutrition && recipe.servings > 0) {
           const scaleFactor = day.meals.breakfast.servings / recipe.servings;
-          totalCalories += recipe.nutrition.calories * scaleFactor;
-          totalProtein += recipe.nutrition.protein * scaleFactor;
-          totalCarbs += recipe.nutrition.carbs * scaleFactor;
-          totalFat += recipe.nutrition.fat * scaleFactor;
+          if (Number.isFinite(scaleFactor)) {
+            totalCalories += (recipe.nutrition.calories || 0) * scaleFactor;
+            totalProtein += (recipe.nutrition.protein || 0) * scaleFactor;
+            totalCarbs += (recipe.nutrition.carbs || 0) * scaleFactor;
+            totalFat += (recipe.nutrition.fat || 0) * scaleFactor;
+          }
+        }
+        if (recipe?.ingredients) {
           recipe.ingredients.forEach((ing) => uniqueIngredients.add(ing.ingredientId));
         }
       }
@@ -44,12 +48,16 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
       if (day.meals.lunch) {
         totalMeals++;
         const recipe = getRecipeById(day.meals.lunch.recipeId);
-        if (recipe?.nutrition) {
+        if (recipe?.nutrition && recipe.servings > 0) {
           const scaleFactor = day.meals.lunch.servings / recipe.servings;
-          totalCalories += recipe.nutrition.calories * scaleFactor;
-          totalProtein += recipe.nutrition.protein * scaleFactor;
-          totalCarbs += recipe.nutrition.carbs * scaleFactor;
-          totalFat += recipe.nutrition.fat * scaleFactor;
+          if (Number.isFinite(scaleFactor)) {
+            totalCalories += (recipe.nutrition.calories || 0) * scaleFactor;
+            totalProtein += (recipe.nutrition.protein || 0) * scaleFactor;
+            totalCarbs += (recipe.nutrition.carbs || 0) * scaleFactor;
+            totalFat += (recipe.nutrition.fat || 0) * scaleFactor;
+          }
+        }
+        if (recipe?.ingredients) {
           recipe.ingredients.forEach((ing) => uniqueIngredients.add(ing.ingredientId));
         }
       }
@@ -58,12 +66,16 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
       if (day.meals.dinner) {
         totalMeals++;
         const recipe = getRecipeById(day.meals.dinner.recipeId);
-        if (recipe?.nutrition) {
+        if (recipe?.nutrition && recipe.servings > 0) {
           const scaleFactor = day.meals.dinner.servings / recipe.servings;
-          totalCalories += recipe.nutrition.calories * scaleFactor;
-          totalProtein += recipe.nutrition.protein * scaleFactor;
-          totalCarbs += recipe.nutrition.carbs * scaleFactor;
-          totalFat += recipe.nutrition.fat * scaleFactor;
+          if (Number.isFinite(scaleFactor)) {
+            totalCalories += (recipe.nutrition.calories || 0) * scaleFactor;
+            totalProtein += (recipe.nutrition.protein || 0) * scaleFactor;
+            totalCarbs += (recipe.nutrition.carbs || 0) * scaleFactor;
+            totalFat += (recipe.nutrition.fat || 0) * scaleFactor;
+          }
+        }
+        if (recipe?.ingredients) {
           recipe.ingredients.forEach((ing) => uniqueIngredients.add(ing.ingredientId));
         }
       }
@@ -73,12 +85,16 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
         day.meals.snacks.forEach((snack) => {
           totalMeals++;
           const recipe = getRecipeById(snack.recipeId);
-          if (recipe?.nutrition) {
+          if (recipe?.nutrition && recipe.servings > 0) {
             const scaleFactor = snack.servings / recipe.servings;
-            totalCalories += recipe.nutrition.calories * scaleFactor;
-            totalProtein += recipe.nutrition.protein * scaleFactor;
-            totalCarbs += recipe.nutrition.carbs * scaleFactor;
-            totalFat += recipe.nutrition.fat * scaleFactor;
+            if (Number.isFinite(scaleFactor)) {
+              totalCalories += (recipe.nutrition.calories || 0) * scaleFactor;
+              totalProtein += (recipe.nutrition.protein || 0) * scaleFactor;
+              totalCarbs += (recipe.nutrition.carbs || 0) * scaleFactor;
+              totalFat += (recipe.nutrition.fat || 0) * scaleFactor;
+            }
+          }
+          if (recipe?.ingredients) {
             recipe.ingredients.forEach((ing) => uniqueIngredients.add(ing.ingredientId));
           }
         });
@@ -160,13 +176,31 @@ export const PlanSummary: React.FC<PlanSummaryProps> = ({ plan, className }) => 
         </div>
 
         {/* Estimated Cost */}
-        <div className="text-center">
+        <div className="text-center" data-testid="total-cost">
           <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-            ${summary.estimatedCost.toFixed(2)}
+            {summary.estimatedCost && summary.estimatedCost > 0 ? (
+              <>
+                ${summary.estimatedCost.toFixed(2)}
+                <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">
+                  {plan.currency || 'USD'}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {t('planner.costNotAvailable')}
+              </span>
+            )}
           </div>
           <div className="text-sm text-gray-700 dark:text-gray-300 mt-1">
             {t('planner.estimatedCost', 'Est. Cost')}
           </div>
+          {summary.estimatedCost && summary.estimatedCost > 0 && (
+            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              {t('planner.costPerDay', {
+                cost: (summary.estimatedCost / plan.days.length).toFixed(2)
+              })}
+            </div>
+          )}
         </div>
       </div>
 

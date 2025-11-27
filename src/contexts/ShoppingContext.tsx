@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import type { ShoppingListItem, MealPlan, MealSlot, Recipe } from '@/types';
+import { safeGetItem, safeSetItem } from '@utils/storage';
 
 interface ShoppingContextType {
   shoppingList: ShoppingListItem[];
@@ -18,12 +19,11 @@ const ShoppingContext = createContext<ShoppingContextType | undefined>(undefined
 
 export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
-    const stored = localStorage.getItem('shoppingList');
-    return stored ? JSON.parse(stored) : [];
+    return safeGetItem<ShoppingListItem[]>('shoppingList', []);
   });
 
   const saveToLocalStorage = (list: ShoppingListItem[]) => {
-    localStorage.setItem('shoppingList', JSON.stringify(list));
+    safeSetItem('shoppingList', list);
   };
 
   const addItem = (item: Omit<ShoppingListItem, 'checked'>) => {

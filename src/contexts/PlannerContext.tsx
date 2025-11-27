@@ -1,5 +1,9 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import type { MealPlan } from '@/types';
+import { calculatePlanCost } from '@utils/costCalculations';
+import { useRecipes } from './RecipeContext';
+import { safeGetItem, safeSetItem } from '@utils/storage';
+import { useIngredients } from './IngredientContext';
 
 interface PlannerContextType {
   currentPlan: MealPlan | null;
@@ -17,10 +21,30 @@ interface PlannerContextType {
 const PlannerContext = createContext<PlannerContextType | undefined>(undefined);
 
 export const PlannerProvider = ({ children }: { children: ReactNode }) => {
+  const { getRecipeById } = useRecipes();
+  const { getIngredientPrice } = useIngredients();
   const [currentPlan, setCurrentPlan] = useState<MealPlan | null>(() => {
-    const stored = localStorage.getItem('currentMealPlan');
-    return stored ? JSON.parse(stored) : null;
+    return safeGetItem<MealPlan | null>('currentMealPlan', null);
   });
+
+  // Calculate cost using useMemo to avoid infinite loops
+  // Memoize based on plan structure (days), not the entire plan object
+  const estimatedCost = useMemo(() => {
+    if (!currentPlan) return 0;
+    return calculatePlanCost(currentPlan, getRecipeById, getIngredientPrice);
+  }, [currentPlan?.days, currentPlan?.id, getRecipeById, getIngredientPrice]);
+
+  // Update plan with calculated cost only when it changes
+  useEffect(() => {
+    if (!currentPlan) return;
+
+    // Only update if cost changed to avoid infinite loops
+    if (currentPlan.estimatedCost !== estimatedCost) {
+      const updatedPlan = { ...currentPlan, estimatedCost };
+      setCurrentPlan(updatedPlan);
+      safeSetItem('currentMealPlan', updatedPlan);
+    }
+  }, [estimatedCost]); // Only depend on estimatedCost, not currentPlan
 
   const createPlan = (plan: Partial<MealPlan>) => {
     const newPlan: MealPlan = {
@@ -41,14 +65,14 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
       isPublic: false,
     };
     setCurrentPlan(newPlan);
-    localStorage.setItem('currentMealPlan', JSON.stringify(newPlan));
+    safeSetItem('currentMealPlan', newPlan);
   };
 
   const updatePlan = (updates: Partial<MealPlan>) => {
     if (!currentPlan) return;
     const updated = { ...currentPlan, ...updates };
     setCurrentPlan(updated);
-    localStorage.setItem('currentMealPlan', JSON.stringify(updated));
+    safeSetItem('currentMealPlan', updated);
   };
 
   const addRecipeToPlan = (
@@ -59,6 +83,25 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     if (!currentPlan) return;
 
+    // Validate mealType
+    const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+    if (!validMealTypes.includes(mealType)) {
+      console.warn(`Invalid meal type: ${mealType}. Must be one of: ${validMealTypes.join(', ')}`);
+      return;
+    }
+
+    // Validate dayIndex
+    if (dayIndex < 0 || dayIndex >= currentPlan.days.length) {
+      console.warn(`Invalid day index: ${dayIndex}. Must be between 0 and ${currentPlan.days.length - 1}`);
+      return;
+    }
+
+    // Validate servings
+    if (servings <= 0) {
+      console.warn(`Invalid servings: ${servings}. Must be greater than 0`);
+      return;
+    }
+
     const updatedDays = [...currentPlan.days];
     const day = updatedDays[dayIndex];
 
@@ -68,15 +111,30 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
       }
       day.meals.snacks.push({ recipeId, servings });
     } else {
+      // Safe to use type assertion after validation
       (day.meals as Record<string, unknown>)[mealType] = { recipeId, servings };
     }
 
-    setCurrentPlan({ ...currentPlan, days: updatedDays });
-    localStorage.setItem('currentMealPlan', JSON.stringify({ ...currentPlan, days: updatedDays }));
+    const updated = { ...currentPlan, days: updatedDays };
+    setCurrentPlan(updated);
+    safeSetItem('currentMealPlan', updated);
   };
 
   const removeRecipeFromPlan = (dayIndex: number, mealType: string) => {
     if (!currentPlan) return;
+
+    // Validate mealType
+    const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+    if (!validMealTypes.includes(mealType)) {
+      console.warn(`Invalid meal type: ${mealType}. Must be one of: ${validMealTypes.join(', ')}`);
+      return;
+    }
+
+    // Validate dayIndex
+    if (dayIndex < 0 || dayIndex >= currentPlan.days.length) {
+      console.warn(`Invalid day index: ${dayIndex}. Must be between 0 and ${currentPlan.days.length - 1}`);
+      return;
+    }
 
     const updatedDays = [...currentPlan.days];
     const day = updatedDays[dayIndex];
@@ -84,16 +142,18 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
     if (mealType === 'snacks') {
       day.meals.snacks = [];
     } else {
+      // Safe to use type assertion after validation
       delete day.meals[mealType as keyof typeof day.meals];
     }
 
-    setCurrentPlan({ ...currentPlan, days: updatedDays });
-    localStorage.setItem('currentMealPlan', JSON.stringify({ ...currentPlan, days: updatedDays }));
+    const updated = { ...currentPlan, days: updatedDays };
+    setCurrentPlan(updated);
+    safeSetItem('currentMealPlan', updated);
   };
 
   const savePlan = () => {
     if (!currentPlan) return;
-    const savedPlans = JSON.parse(localStorage.getItem('savedMealPlans') || '[]');
+    const savedPlans = safeGetItem<MealPlan[]>('savedMealPlans', []);
     const existingIndex = savedPlans.findIndex((p: MealPlan) => p.id === currentPlan.id);
 
     if (existingIndex >= 0) {
@@ -102,15 +162,15 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
       savedPlans.push(currentPlan);
     }
 
-    localStorage.setItem('savedMealPlans', JSON.stringify(savedPlans));
+    safeSetItem('savedMealPlans', savedPlans);
   };
 
   const loadPlan = (planId: string) => {
-    const savedPlans = JSON.parse(localStorage.getItem('savedMealPlans') || '[]');
+    const savedPlans = safeGetItem<MealPlan[]>('savedMealPlans', []);
     const plan = savedPlans.find((p: MealPlan) => p.id === planId);
     if (plan) {
       setCurrentPlan(plan);
-      localStorage.setItem('currentMealPlan', JSON.stringify(plan));
+      safeSetItem('currentMealPlan', plan);
     }
   };
 
@@ -128,8 +188,9 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
       meals: JSON.parse(JSON.stringify(updatedDays[dayIndex].meals)),
     };
 
-    setCurrentPlan({ ...currentPlan, days: updatedDays });
-    localStorage.setItem('currentMealPlan', JSON.stringify({ ...currentPlan, days: updatedDays }));
+    const updated = { ...currentPlan, days: updatedDays };
+    setCurrentPlan(updated);
+    safeSetItem('currentMealPlan', updated);
   };
 
   const adjustGlobalServings = (servings: number) => {

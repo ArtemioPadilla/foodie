@@ -1,0 +1,452 @@
+{
+  "tomato": {
+    "price": 2.49,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "lettuce": {
+    "price": 2.99,
+    "unit": "head",
+    "currency": "USD"
+  },
+  "onion": {
+    "price": 1.29,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "garlic": {
+    "price": 0.79,
+    "unit": "head",
+    "currency": "USD"
+  },
+  "potato": {
+    "price": 0.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "carrot": {
+    "price": 1.49,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "bell_pepper": {
+    "price": 1.99,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "cucumber": {
+    "price": 1.29,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "spinach": {
+    "price": 3.99,
+    "unit": "bunch",
+    "currency": "USD"
+  },
+  "broccoli": {
+    "price": 2.49,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "apple": {
+    "price": 1.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "banana": {
+    "price": 0.69,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "lemon": {
+    "price": 0.79,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "lime": {
+    "price": 0.59,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "avocado": {
+    "price": 1.49,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "cilantro": {
+    "price": 1.29,
+    "unit": "bunch",
+    "currency": "USD"
+  },
+  "parsley": {
+    "price": 1.49,
+    "unit": "bunch",
+    "currency": "USD"
+  },
+  "chicken": {
+    "price": 4.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "chicken_breast": {
+    "price": 5.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "chicken_thigh": {
+    "price": 3.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "ground_beef": {
+    "price": 6.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "beef": {
+    "price": 9.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "pork": {
+    "price": 4.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "bacon": {
+    "price": 7.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "sausage": {
+    "price": 5.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "turkey": {
+    "price": 4.49,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "salmon": {
+    "price": 14.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "tuna": {
+    "price": 12.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "shrimp": {
+    "price": 11.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "cod": {
+    "price": 9.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "tilapia": {
+    "price": 7.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "milk": {
+    "price": 3.99,
+    "unit": "gallon",
+    "currency": "USD"
+  },
+  "eggs": {
+    "price": 4.29,
+    "unit": "dozen",
+    "currency": "USD"
+  },
+  "butter": {
+    "price": 4.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "cheese": {
+    "price": 5.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "cheddar_cheese": {
+    "price": 6.49,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "parmesan_cheese": {
+    "price": 12.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "mozzarella_cheese": {
+    "price": 5.49,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "yogurt": {
+    "price": 4.99,
+    "unit": "32oz",
+    "currency": "USD"
+  },
+  "greek_yogurt": {
+    "price": 5.99,
+    "unit": "32oz",
+    "currency": "USD"
+  },
+  "cream": {
+    "price": 3.99,
+    "unit": "pint",
+    "currency": "USD"
+  },
+  "heavy_cream": {
+    "price": 4.49,
+    "unit": "pint",
+    "currency": "USD"
+  },
+  "sour_cream": {
+    "price": 2.99,
+    "unit": "16oz",
+    "currency": "USD"
+  },
+  "bread": {
+    "price": 3.49,
+    "unit": "loaf",
+    "currency": "USD"
+  },
+  "tortillas": {
+    "price": 3.99,
+    "unit": "pack",
+    "currency": "USD"
+  },
+  "bagel": {
+    "price": 0.89,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "croissant": {
+    "price": 1.99,
+    "unit": "piece",
+    "currency": "USD"
+  },
+  "rice": {
+    "price": 2.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "pasta": {
+    "price": 1.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "spaghetti": {
+    "price": 1.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "penne": {
+    "price": 2.29,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "quinoa": {
+    "price": 5.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "oats": {
+    "price": 3.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "flour": {
+    "price": 3.49,
+    "unit": "5lb",
+    "currency": "USD"
+  },
+  "sugar": {
+    "price": 2.99,
+    "unit": "4lb",
+    "currency": "USD"
+  },
+  "salt": {
+    "price": 1.29,
+    "unit": "26oz",
+    "currency": "USD"
+  },
+  "canned_tomatoes": {
+    "price": 1.99,
+    "unit": "28oz",
+    "currency": "USD"
+  },
+  "tomato_paste": {
+    "price": 0.99,
+    "unit": "6oz",
+    "currency": "USD"
+  },
+  "tomato_sauce": {
+    "price": 1.49,
+    "unit": "15oz",
+    "currency": "USD"
+  },
+  "beans": {
+    "price": 1.29,
+    "unit": "15oz",
+    "currency": "USD"
+  },
+  "black_beans": {
+    "price": 1.29,
+    "unit": "15oz",
+    "currency": "USD"
+  },
+  "chickpeas": {
+    "price": 1.49,
+    "unit": "15oz",
+    "currency": "USD"
+  },
+  "peanut_butter": {
+    "price": 4.99,
+    "unit": "16oz",
+    "currency": "USD"
+  },
+  "honey": {
+    "price": 6.99,
+    "unit": "12oz",
+    "currency": "USD"
+  },
+  "nuts": {
+    "price": 8.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "almonds": {
+    "price": 9.99,
+    "unit": "lb",
+    "currency": "USD"
+  },
+  "black_pepper": {
+    "price": 4.99,
+    "unit": "4oz",
+    "currency": "USD"
+  },
+  "cumin": {
+    "price": 3.99,
+    "unit": "2oz",
+    "currency": "USD"
+  },
+  "paprika": {
+    "price": 3.49,
+    "unit": "2oz",
+    "currency": "USD"
+  },
+  "oregano": {
+    "price": 2.99,
+    "unit": "1oz",
+    "currency": "USD"
+  },
+  "basil": {
+    "price": 2.99,
+    "unit": "1oz",
+    "currency": "USD"
+  },
+  "thyme": {
+    "price": 3.49,
+    "unit": "1oz",
+    "currency": "USD"
+  },
+  "rosemary": {
+    "price": 3.49,
+    "unit": "1oz",
+    "currency": "USD"
+  },
+  "cinnamon": {
+    "price": 4.49,
+    "unit": "2oz",
+    "currency": "USD"
+  },
+  "chili_powder": {
+    "price": 3.99,
+    "unit": "2oz",
+    "currency": "USD"
+  },
+  "olive_oil": {
+    "price": 9.99,
+    "unit": "25oz",
+    "currency": "USD"
+  },
+  "vegetable_oil": {
+    "price": 5.99,
+    "unit": "48oz",
+    "currency": "USD"
+  },
+  "soy_sauce": {
+    "price": 3.49,
+    "unit": "10oz",
+    "currency": "USD"
+  },
+  "vinegar": {
+    "price": 2.49,
+    "unit": "16oz",
+    "currency": "USD"
+  },
+  "balsamic_vinegar": {
+    "price": 5.99,
+    "unit": "16oz",
+    "currency": "USD"
+  },
+  "mustard": {
+    "price": 2.99,
+    "unit": "12oz",
+    "currency": "USD"
+  },
+  "ketchup": {
+    "price": 2.99,
+    "unit": "20oz",
+    "currency": "USD"
+  },
+  "mayonnaise": {
+    "price": 4.99,
+    "unit": "30oz",
+    "currency": "USD"
+  },
+  "water": {
+    "price": 1.29,
+    "unit": "gallon",
+    "currency": "USD"
+  },
+  "coffee": {
+    "price": 8.99,
+    "unit": "12oz",
+    "currency": "USD"
+  },
+  "tea": {
+    "price": 4.99,
+    "unit": "20bags",
+    "currency": "USD"
+  },
+  "juice": {
+    "price": 3.99,
+    "unit": "64oz",
+    "currency": "USD"
+  },
+  "frozen_vegetables": {
+    "price": 2.49,
+    "unit": "16oz",
+    "currency": "USD"
+  },
+  "frozen_berries": {
+    "price": 4.99,
+    "unit": "16oz",
+    "currency": "USD"
+  },
+  "ice_cream": {
+    "price": 5.99,
+    "unit": "48oz",
+    "currency": "USD"
+  }
+}

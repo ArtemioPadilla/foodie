@@ -1,6 +1,19 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import type { Ingredient } from '@/types';
 import { useLanguage } from './LanguageContext';
+import { safeGetItem, safeSetItem } from '@utils/storage';
+
+/**
+ * Ingredient Price Data
+ */
+interface IngredientPrice {
+  price: number; // Price per unit
+  unit: string; // Unit for pricing
+  currency: string;
+}
+
+type DefaultPrices = Record<string, IngredientPrice>;
+type CustomPrices = Record<string, number>;
 
 interface IngredientContextType {
   ingredients: Ingredient[];
@@ -8,6 +21,14 @@ interface IngredientContextType {
   getIngredientById: (id: string) => Ingredient | undefined;
   getIngredientName: (id: string) => string;
   getIngredientsByCategory: (category: string) => Ingredient[];
+  // Pricing methods
+  getIngredientPrice: (ingredientId: string) => number | undefined;
+  setIngredientPrice: (ingredientId: string, price: number) => void;
+  resetIngredientPrice: (ingredientId: string) => void;
+  resetAllPrices: () => void;
+  isCustomPrice: (ingredientId: string) => boolean;
+  hasCompleteData: (ingredientIds: string[]) => boolean;
+  getPriceDataCoverage: (ingredientIds: string[]) => number;
 }
 
 const IngredientContext = createContext<IngredientContextType | undefined>(undefined);
@@ -15,6 +36,8 @@ const IngredientContext = createContext<IngredientContextType | undefined>(undef
 export const IngredientProvider = ({ children }: { children: ReactNode }) => {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [defaultPrices, setDefaultPrices] = useState<DefaultPrices>({});
+  const [customPrices, setCustomPrices] = useState<CustomPrices>({});
   const { getTranslated } = useLanguage();
 
   // Load ingredients
@@ -38,6 +61,31 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
     loadIngredients();
   }, []);
 
+  // Load default ingredient prices
+  useEffect(() => {
+    async function loadDefaultPrices() {
+      try {
+        const response = await fetch(`${import.meta.env.BASE_URL}data/ingredient-prices.json`);
+        if (!response.ok) throw new Error('Failed to load prices');
+        const data: DefaultPrices = await response.json();
+        setDefaultPrices(data);
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('Could not load ingredient prices:', error);
+        }
+        setDefaultPrices({});
+      }
+    }
+
+    loadDefaultPrices();
+  }, []);
+
+  // Load custom prices from localStorage
+  useEffect(() => {
+    const stored = safeGetItem<CustomPrices>('customIngredientPrices', {});
+    setCustomPrices(stored);
+  }, []);
+
   const getIngredientById = (id: string): Ingredient | undefined => {
     return ingredients.find(ing => ing.id === id);
   };
@@ -52,6 +100,79 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
     return ingredients.filter(ing => ing.category === category);
   };
 
+  // Get price for an ingredient (custom overrides default)
+  const getIngredientPrice = useCallback(
+    (ingredientId: string): number | undefined => {
+      const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+
+      // Check custom prices first
+      if (customPrices[cleanId] !== undefined) {
+        return customPrices[cleanId];
+      }
+
+      // Fall back to default prices
+      return defaultPrices[cleanId]?.price;
+    },
+    [customPrices, defaultPrices]
+  );
+
+  // Set custom price
+  const setIngredientPrice = useCallback((ingredientId: string, price: number) => {
+    const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+
+    setCustomPrices((prev) => {
+      const updated = { ...prev, [cleanId]: price };
+      safeSetItem('customIngredientPrices', updated);
+      return updated;
+    });
+  }, []);
+
+  // Reset single ingredient to default
+  const resetIngredientPrice = useCallback((ingredientId: string) => {
+    const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+
+    setCustomPrices((prev) => {
+      const updated = { ...prev };
+      delete updated[cleanId];
+      safeSetItem('customIngredientPrices', updated);
+      return updated;
+    });
+  }, []);
+
+  // Reset all to defaults
+  const resetAllPrices = useCallback(() => {
+    setCustomPrices({});
+    safeSetItem('customIngredientPrices', {});
+  }, []);
+
+  // Check if price is custom
+  const isCustomPrice = useCallback(
+    (ingredientId: string): boolean => {
+      const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+      return customPrices[cleanId] !== undefined;
+    },
+    [customPrices]
+  );
+
+  // Check if all ingredients have price data
+  const hasCompleteData = useCallback(
+    (ingredientIds: string[]): boolean => {
+      return ingredientIds.every((id) => getIngredientPrice(id) !== undefined);
+    },
+    [getIngredientPrice]
+  );
+
+  // Get percentage of ingredients with price data
+  const getPriceDataCoverage = useCallback(
+    (ingredientIds: string[]): number => {
+      if (ingredientIds.length === 0) return 0;
+
+      const withPrices = ingredientIds.filter((id) => getIngredientPrice(id) !== undefined).length;
+      return (withPrices / ingredientIds.length) * 100;
+    },
+    [getIngredientPrice]
+  );
+
   return (
     <IngredientContext.Provider
       value={{
@@ -60,6 +181,13 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
         getIngredientById,
         getIngredientName,
         getIngredientsByCategory,
+        getIngredientPrice,
+        setIngredientPrice,
+        resetIngredientPrice,
+        resetAllPrices,
+        isCustomPrice,
+        hasCompleteData,
+        getPriceDataCoverage,
       }}
     >
       {children}

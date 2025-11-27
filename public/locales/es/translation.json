@@ -157,7 +157,10 @@
     "match": "coincidencia",
     "update": "Actualizar",
     "hideFilters": "Ocultar Filtros",
-    "showFilters": "Mostrar Filtros"
+    "showFilters": "Mostrar Filtros",
+    "note": "Nota",
+    "backToHome": "Volver al Inicio",
+    "today": "Hoy"
   },
   "errors": {
     "somethingWentWrong": "Algo salió mal",
@@ -278,7 +281,26 @@
     "description": "Planifica tus comidas de la semana y genera listas de compras automáticamente.",
     "noPlanDescription": "Crea un plan de comidas para empezar a organizar tus comidas semanales.",
     "helpTitle": "Cómo usar",
-    "helpText": "Arrastra recetas de la lista a los espacios de comida. Haz clic en una comida para ver los detalles de la receta. Usa los controles de arriba para guardar, compartir o ajustar tu plan."
+    "helpText": "Arrastra recetas de la lista a los espacios de comida. Haz clic en una comida para ver los detalles de la receta. Usa los controles de arriba para guardar, compartir o ajustar tu plan.",
+    "estimatedCost": "Costo Estimado",
+    "costNotAvailable": "Datos de costo no disponibles",
+    "costPerDay": "~${{cost}} por día",
+    "shareLink": "Enlace para Compartir",
+    "generateShareLink": "Generar Enlace para Compartir",
+    "shareText": "Mira mi plan de comidas: {{name}}",
+    "shareNote": "Cualquiera con este enlace puede ver tu plan de comidas. No podrán editarlo.",
+    "shareVia": "Compartir vía...",
+    "planSharedToCloud": "Plan sincronizado con la nube exitosamente",
+    "cloudSyncFailed": "Sincronización en la nube no disponible. El enlace funcionará localmente.",
+    "syncingToCloud": "Sincronizando con la nube...",
+    "cloudSynced": "Sincronizado en la nube",
+    "planNotFound": "Plan No Encontrado",
+    "planNotFoundDesc": "Este plan de comidas no existe o ya no está disponible.",
+    "createYourOwn": "Crear Tu Propio Plan",
+    "viewingSharedPlan": "Estás viendo un plan de comidas compartido",
+    "loadedFromCloud": "Cargado desde la nube",
+    "confirmClear": "¿Estás seguro de que quieres limpiar este plan?",
+    "templates": "Plantillas"
   },
   "shopping": {
     "title": "Lista de Compras",
@@ -326,7 +348,15 @@
     "checked": "Marcados",
     "remaining": "Restantes",
     "usedIn": "Usado en",
-    "addNotes": "Agregar notas..."
+    "addNotes": "Agregar notas...",
+    "addCustomItem": "Añadir Artículo Personalizado",
+    "itemName": "Nombre del Artículo",
+    "itemNamePlaceholder": "ej., Leche, Pan, Huevos",
+    "notesPlaceholder": "Añadir notas o preferencias...",
+    "quantity": "Cantidad",
+    "unit": "Unidad",
+    "notes": "Notas",
+    "allCategories": "Todas las Categorías"
   },
   "pantry": {
     "title": "Mi Despensa",
@@ -642,7 +672,19 @@
     "selectToFindRecipes": "Selecciona ingredientes para encontrar recetas",
     "recipesWithSelected": "Recetas que Puedes Hacer",
     "noMatchingRecipes": "Ninguna receta coincide con tu selección",
-    "ingredientsMatch": "ingredientes"
+    "ingredientsMatch": "ingredientes",
+    "managePrices": "Gestionar Precios de Ingredientes",
+    "customPricesCount": "{{count}} precios personalizados",
+    "searchIngredients": "Buscar ingredientes...",
+    "showCustomOnly": "Mostrar solo precios personalizados",
+    "resetAll": "Restablecer Todo",
+    "noResults": "No se encontraron ingredientes",
+    "noCustomPrices": "No hay precios personalizados",
+    "custom": "Personalizado",
+    "invalidPrice": "Por favor ingrese un precio válido mayor que 0",
+    "confirmResetAll": "¿Restablecer todos los precios a los valores predeterminados? Esto no se puede deshacer.",
+    "resetToDefault": "Restablecer al predeterminado",
+    "noPrice": "Sin precio"
   },
   "ingredient": {
     "composite": "Compuesto",
@@ -772,5 +814,19 @@
     "friday": "Viernes",
     "saturday": "Sábado",
     "sunday": "Domingo"
+  },
+  "categories": {
+    "produce": "Frutas y Verduras",
+    "meatPoultry": "Carnes y Aves",
+    "seafood": "Mariscos",
+    "dairyEggs": "Lácteos y Huevos",
+    "bakery": "Panadería",
+    "grainsPasta": "Granos y Pasta",
+    "pantry": "Despensa",
+    "spices": "Especias y Condimentos",
+    "oilsCondiments": "Aceites y Salsas",
+    "beverages": "Bebidas",
+    "frozen": "Congelados",
+    "other": "Otros"
   }
 }

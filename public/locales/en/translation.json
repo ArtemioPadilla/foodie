@@ -157,7 +157,10 @@
     "match": "match",
     "update": "Update",
     "hideFilters": "Hide Filters",
-    "showFilters": "Show Filters"
+    "showFilters": "Show Filters",
+    "note": "Note",
+    "backToHome": "Back to Home",
+    "today": "Today"
   },
   "errors": {
     "somethingWentWrong": "Something went wrong",
@@ -278,7 +281,26 @@
     "description": "Plan your meals for the week and generate shopping lists automatically.",
     "noPlanDescription": "Create a meal plan to start organizing your weekly meals.",
     "helpTitle": "How to use",
-    "helpText": "Drag recipes from the recipe list to meal slots. Click on a meal to view recipe details. Use the controls above to save, share, or adjust your plan."
+    "helpText": "Drag recipes from the recipe list to meal slots. Click on a meal to view recipe details. Use the controls above to save, share, or adjust your plan.",
+    "estimatedCost": "Estimated Cost",
+    "costNotAvailable": "Cost data unavailable",
+    "costPerDay": "~${{cost}} per day",
+    "shareLink": "Share Link",
+    "generateShareLink": "Generate Share Link",
+    "shareText": "Check out my meal plan: {{name}}",
+    "shareNote": "Anyone with this link can view your meal plan. They won't be able to edit it.",
+    "shareVia": "Share via...",
+    "planSharedToCloud": "Plan synced to cloud successfully",
+    "cloudSyncFailed": "Cloud sync unavailable. Link will work locally.",
+    "syncingToCloud": "Syncing to cloud...",
+    "cloudSynced": "Cloud synced",
+    "planNotFound": "Plan Not Found",
+    "planNotFoundDesc": "This meal plan doesn't exist or is no longer available.",
+    "createYourOwn": "Create Your Own Plan",
+    "viewingSharedPlan": "You're viewing a shared meal plan",
+    "loadedFromCloud": "Loaded from cloud",
+    "confirmClear": "Are you sure you want to clear this plan?",
+    "templates": "Templates"
   },
   "shopping": {
     "title": "Shopping List",
@@ -326,7 +348,15 @@
     "checked": "Checked",
     "remaining": "Remaining",
     "usedIn": "Used in",
-    "addNotes": "Add notes..."
+    "addNotes": "Add notes...",
+    "addCustomItem": "Add Custom Item",
+    "itemName": "Item Name",
+    "itemNamePlaceholder": "e.g., Milk, Bread, Eggs",
+    "notesPlaceholder": "Add notes or preferences...",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "notes": "Notes",
+    "allCategories": "All Categories"
   },
   "pantry": {
     "title": "My Pantry",
@@ -642,7 +672,19 @@
     "selectToFindRecipes": "Select ingredients to find recipes",
     "recipesWithSelected": "Recipes You Can Make",
     "noMatchingRecipes": "No recipes match your selection",
-    "ingredientsMatch": "ingredients"
+    "ingredientsMatch": "ingredients",
+    "managePrices": "Manage Ingredient Prices",
+    "customPricesCount": "{{count}} custom prices set",
+    "searchIngredients": "Search ingredients...",
+    "showCustomOnly": "Show custom prices only",
+    "resetAll": "Reset All",
+    "noResults": "No ingredients found",
+    "noCustomPrices": "No custom prices set",
+    "custom": "Custom",
+    "invalidPrice": "Please enter a valid price greater than 0",
+    "confirmResetAll": "Reset all prices to defaults? This cannot be undone.",
+    "resetToDefault": "Reset to default",
+    "noPrice": "No price"
   },
   "ingredient": {
     "composite": "Composite",
@@ -772,5 +814,19 @@
     "friday": "Friday",
     "saturday": "Saturday",
     "sunday": "Sunday"
+  },
+  "categories": {
+    "produce": "Produce",
+    "meatPoultry": "Meat & Poultry",
+    "seafood": "Seafood",
+    "dairyEggs": "Dairy & Eggs",
+    "bakery": "Bakery",
+    "grainsPasta": "Grains & Pasta",
+    "pantry": "Pantry Staples",
+    "spices": "Spices & Seasonings",
+    "oilsCondiments": "Oils & Condiments",
+    "beverages": "Beverages",
+    "frozen": "Frozen Foods",
+    "other": "Other"
   }
 }

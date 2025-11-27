@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Input, Select, Modal } from '@components/common';
 import { ExportOptions } from './ExportOptions';
 import { cn } from '@utils/cn';
+import { getAllCategories } from '@constants/categories';
 
 export interface ListControlsProps {
   searchQuery: string;
@@ -11,6 +12,8 @@ export interface ListControlsProps {
   onToggleShowChecked: () => void;
   sortBy: 'category' | 'name' | 'checked';
   onSortChange: (sort: 'category' | 'name' | 'checked') => void;
+  categoryFilter: string;
+  onCategoryFilterChange: (category: string) => void;
   onClearAll: () => void;
   onClearChecked: () => void;
   totalItems: number;
@@ -28,6 +31,8 @@ export const ListControls: React.FC<ListControlsProps> = ({
   onToggleShowChecked,
   sortBy,
   onSortChange,
+  categoryFilter,
+  onCategoryFilterChange,
   onClearAll,
   onClearChecked,
   totalItems,
@@ -36,6 +41,14 @@ export const ListControls: React.FC<ListControlsProps> = ({
 }) => {
   const { t } = useTranslation();
   const [showExportModal, setShowExportModal] = useState(false);
+
+  const categoryOptions = [
+    { value: 'all', label: t('shopping.allCategories', 'All Categories') },
+    ...getAllCategories().map((cat) => ({
+      value: cat.value,
+      label: t(cat.label),
+    })),
+  ];
 
   const handleClearAll = () => {
     if (window.confirm(t('shopping.confirmClearAll', 'Clear entire shopping list?'))) {
@@ -67,6 +80,16 @@ export const ListControls: React.FC<ListControlsProps> = ({
               placeholder={t('shopping.searchPlaceholder', 'Search items...')}
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
+          {/* Category Filter */}
+          <div className="w-48">
+            <Select
+              value={categoryFilter}
+              onChange={(e) => onCategoryFilterChange(e.target.value)}
+              options={categoryOptions}
               className="w-full"
             />
           </div>
