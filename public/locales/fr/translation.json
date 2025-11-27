@@ -300,7 +300,9 @@
     "viewingSharedPlan": "Vous consultez un plan de repas partagé",
     "loadedFromCloud": "Chargé depuis le cloud",
     "confirmClear": "Êtes-vous sûr de vouloir effacer ce plan?",
-    "templates": "Modèles"
+    "templates": "Modèles",
+    "sharedPlanReadOnly": "Ceci est une vue en lecture seule d'un plan de repas partagé. Pour créer votre propre plan de repas ou apporter des modifications, rendez-vous sur la page du Planificateur de Repas.",
+    "mealPlan": "Plan de Repas"
   },
   "shopping": {
     "title": "Liste de Courses",

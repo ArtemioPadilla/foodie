@@ -300,7 +300,9 @@
     "viewingSharedPlan": "You're viewing a shared meal plan",
     "loadedFromCloud": "Loaded from cloud",
     "confirmClear": "Are you sure you want to clear this plan?",
-    "templates": "Templates"
+    "templates": "Templates",
+    "sharedPlanReadOnly": "This is a read-only view of a shared meal plan. To create your own meal plan or make changes, go to the Meal Planner page.",
+    "mealPlan": "Meal Plan"
   },
   "shopping": {
     "title": "Shopping List",

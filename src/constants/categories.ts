@@ -164,8 +164,10 @@ export const INGREDIENT_CATEGORY_MAP: Record<string, ShoppingCategory> = {
  * Returns the category if found in mapping, otherwise returns 'other'
  */
 export function getIngredientCategory(ingredientId: string): ShoppingCategory {
-  // Remove any custom_ prefix and timestamp for custom items
-  const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+  // Remove any custom_ prefix and UUID for custom items
+  // Note: This uses a simplified regex that handles UUIDs (which contain hyphens)
+  // Pattern: custom_{uuid}_{name} -> {name}
+  const cleanId = ingredientId.replace(/^custom_[a-f0-9-]+_/i, '');
 
   return INGREDIENT_CATEGORY_MAP[cleanId] || SHOPPING_CATEGORIES.OTHER;
 }

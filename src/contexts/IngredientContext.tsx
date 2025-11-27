@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 import type { Ingredient } from '@/types';
 import { useLanguage } from './LanguageContext';
 import { safeGetItem, safeSetItem } from '@utils/storage';
+import { cleanIngredientId } from '@utils/ingredientUtils';
 
 /**
  * Ingredient Price Data
@@ -23,6 +24,7 @@ interface IngredientContextType {
   getIngredientsByCategory: (category: string) => Ingredient[];
   // Pricing methods
   getIngredientPrice: (ingredientId: string) => number | undefined;
+  getIngredientCurrency: (ingredientId: string) => string;
   setIngredientPrice: (ingredientId: string, price: number) => void;
   resetIngredientPrice: (ingredientId: string) => void;
   resetAllPrices: () => void;
@@ -103,7 +105,7 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
   // Get price for an ingredient (custom overrides default)
   const getIngredientPrice = useCallback(
     (ingredientId: string): number | undefined => {
-      const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+      const cleanId = cleanIngredientId(ingredientId);
 
       // Check custom prices first
       if (customPrices[cleanId] !== undefined) {
@@ -116,9 +118,26 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
     [customPrices, defaultPrices]
   );
 
-  // Set custom price
+  // Get currency for an ingredient
+  const getIngredientCurrency = useCallback(
+    (ingredientId: string): string => {
+      const cleanId = cleanIngredientId(ingredientId);
+
+      // Get currency from default prices, fallback to 'USD'
+      return defaultPrices[cleanId]?.currency || 'USD';
+    },
+    [defaultPrices]
+  );
+
+  // Set custom price with validation
   const setIngredientPrice = useCallback((ingredientId: string, price: number) => {
-    const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+    // Validate price
+    if (!Number.isFinite(price) || price <= 0) {
+      console.warn(`Invalid price: ${price}. Price must be a positive number.`);
+      return;
+    }
+
+    const cleanId = cleanIngredientId(ingredientId);
 
     setCustomPrices((prev) => {
       const updated = { ...prev, [cleanId]: price };
@@ -129,7 +148,7 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
 
   // Reset single ingredient to default
   const resetIngredientPrice = useCallback((ingredientId: string) => {
-    const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+    const cleanId = cleanIngredientId(ingredientId);
 
     setCustomPrices((prev) => {
       const updated = { ...prev };
@@ -148,7 +167,7 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
   // Check if price is custom
   const isCustomPrice = useCallback(
     (ingredientId: string): boolean => {
-      const cleanId = ingredientId.replace(/^custom_\d+_/, '');
+      const cleanId = cleanIngredientId(ingredientId);
       return customPrices[cleanId] !== undefined;
     },
     [customPrices]
@@ -182,6 +201,7 @@ export const IngredientProvider = ({ children }: { children: ReactNode }) => {
         getIngredientName,
         getIngredientsByCategory,
         getIngredientPrice,
+        getIngredientCurrency,
         setIngredientPrice,
         resetIngredientPrice,
         resetAllPrices,

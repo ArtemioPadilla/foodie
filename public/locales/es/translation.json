@@ -300,7 +300,9 @@
     "viewingSharedPlan": "Estás viendo un plan de comidas compartido",
     "loadedFromCloud": "Cargado desde la nube",
     "confirmClear": "¿Estás seguro de que quieres limpiar este plan?",
-    "templates": "Plantillas"
+    "templates": "Plantillas",
+    "sharedPlanReadOnly": "Esta es una vista de solo lectura de un plan de comidas compartido. Para crear tu propio plan de comidas o hacer cambios, ve a la página del Planificador de Comidas.",
+    "mealPlan": "Plan de Comidas"
   },
   "shopping": {
     "title": "Lista de Compras",

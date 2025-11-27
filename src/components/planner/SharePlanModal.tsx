@@ -4,6 +4,7 @@ import { Copy, Share2, Check, CloudUpload } from 'lucide-react';
 import type { MealPlan } from '@/types';
 import { sharePlanToFirebase } from '@services/firebaseService';
 import { useToast } from '@components/common/Toast';
+import { useLanguage } from '@contexts/LanguageContext';
 
 interface SharePlanModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function SharePlanModal({
   shareToken
 }: SharePlanModalProps) {
   const { t } = useTranslation();
+  const { getTranslated } = useLanguage();
   const toast = useToast();
   const [copied, setCopied] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
@@ -78,9 +80,10 @@ export function SharePlanModal({
   const handleWebShare = async () => {
     if (navigator.share && plan) {
       try {
+        const planName = getTranslated(plan.name);
         await navigator.share({
-          title: plan.name.en,
-          text: t('planner.shareText', { name: plan.name.en }),
+          title: planName,
+          text: t('planner.shareText', { name: planName }),
           url: shareUrl,
         });
       } catch (err) {

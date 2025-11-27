@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import type { MealPlan } from '@/types';
 import { calculatePlanCost } from '@utils/costCalculations';
 import { useRecipes } from './RecipeContext';
@@ -46,7 +46,7 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [estimatedCost]); // Only depend on estimatedCost, not currentPlan
 
-  const createPlan = (plan: Partial<MealPlan>) => {
+  const createPlan = useCallback((plan: Partial<MealPlan>) => {
     const newPlan: MealPlan = {
       id: `plan_${Date.now()}`,
       name: plan.name || { en: 'New Plan', es: 'Nuevo Plan', fr: 'Nouveau Plan' },
@@ -66,156 +66,181 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
     };
     setCurrentPlan(newPlan);
     safeSetItem('currentMealPlan', newPlan);
-  };
+  }, []);
 
-  const updatePlan = (updates: Partial<MealPlan>) => {
-    if (!currentPlan) return;
-    const updated = { ...currentPlan, ...updates };
-    setCurrentPlan(updated);
-    safeSetItem('currentMealPlan', updated);
-  };
+  const updatePlan = useCallback((updates: Partial<MealPlan>) => {
+    setCurrentPlan(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, ...updates };
+      safeSetItem('currentMealPlan', updated);
+      return updated;
+    });
+  }, []);
 
-  const addRecipeToPlan = (
+  const addRecipeToPlan = useCallback((
     dayIndex: number,
     mealType: string,
     recipeId: string,
     servings: number
   ) => {
-    if (!currentPlan) return;
+    setCurrentPlan(prev => {
+      if (!prev) return null;
 
-    // Validate mealType
-    const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
-    if (!validMealTypes.includes(mealType)) {
-      console.warn(`Invalid meal type: ${mealType}. Must be one of: ${validMealTypes.join(', ')}`);
-      return;
-    }
-
-    // Validate dayIndex
-    if (dayIndex < 0 || dayIndex >= currentPlan.days.length) {
-      console.warn(`Invalid day index: ${dayIndex}. Must be between 0 and ${currentPlan.days.length - 1}`);
-      return;
-    }
-
-    // Validate servings
-    if (servings <= 0) {
-      console.warn(`Invalid servings: ${servings}. Must be greater than 0`);
-      return;
-    }
-
-    const updatedDays = [...currentPlan.days];
-    const day = updatedDays[dayIndex];
-
-    if (mealType === 'snacks') {
-      if (!day.meals.snacks) {
-        day.meals.snacks = [];
+      // Validate mealType
+      const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+      if (!validMealTypes.includes(mealType)) {
+        console.warn(`Invalid meal type: ${mealType}. Must be one of: ${validMealTypes.join(', ')}`);
+        return prev;
       }
-      day.meals.snacks.push({ recipeId, servings });
-    } else {
-      // Safe to use type assertion after validation
-      (day.meals as Record<string, unknown>)[mealType] = { recipeId, servings };
-    }
 
-    const updated = { ...currentPlan, days: updatedDays };
-    setCurrentPlan(updated);
-    safeSetItem('currentMealPlan', updated);
-  };
+      // Validate dayIndex
+      if (dayIndex < 0 || dayIndex >= prev.days.length) {
+        console.warn(`Invalid day index: ${dayIndex}. Must be between 0 and ${prev.days.length - 1}`);
+        return prev;
+      }
 
-  const removeRecipeFromPlan = (dayIndex: number, mealType: string) => {
-    if (!currentPlan) return;
+      // Validate servings
+      if (servings <= 0) {
+        console.warn(`Invalid servings: ${servings}. Must be greater than 0`);
+        return prev;
+      }
 
-    // Validate mealType
-    const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
-    if (!validMealTypes.includes(mealType)) {
-      console.warn(`Invalid meal type: ${mealType}. Must be one of: ${validMealTypes.join(', ')}`);
-      return;
-    }
+      const updatedDays = [...prev.days];
+      const day = updatedDays[dayIndex];
 
-    // Validate dayIndex
-    if (dayIndex < 0 || dayIndex >= currentPlan.days.length) {
-      console.warn(`Invalid day index: ${dayIndex}. Must be between 0 and ${currentPlan.days.length - 1}`);
-      return;
-    }
+      if (mealType === 'snacks') {
+        if (!day.meals.snacks) {
+          day.meals.snacks = [];
+        }
+        day.meals.snacks.push({ recipeId, servings });
+      } else {
+        // Type-safe assignment after validation
+        day.meals[mealType as 'breakfast' | 'lunch' | 'dinner'] = { recipeId, servings };
+      }
 
-    const updatedDays = [...currentPlan.days];
-    const day = updatedDays[dayIndex];
+      const updated = { ...prev, days: updatedDays };
+      safeSetItem('currentMealPlan', updated);
+      return updated;
+    });
+  }, []);
 
-    if (mealType === 'snacks') {
-      day.meals.snacks = [];
-    } else {
-      // Safe to use type assertion after validation
-      delete day.meals[mealType as keyof typeof day.meals];
-    }
+  const removeRecipeFromPlan = useCallback((dayIndex: number, mealType: string) => {
+    setCurrentPlan(prev => {
+      if (!prev) return null;
 
-    const updated = { ...currentPlan, days: updatedDays };
-    setCurrentPlan(updated);
-    safeSetItem('currentMealPlan', updated);
-  };
+      // Validate mealType
+      const validMealTypes = ['breakfast', 'lunch', 'dinner', 'snacks'];
+      if (!validMealTypes.includes(mealType)) {
+        console.warn(`Invalid meal type: ${mealType}. Must be one of: ${validMealTypes.join(', ')}`);
+        return prev;
+      }
 
-  const savePlan = () => {
-    if (!currentPlan) return;
-    const savedPlans = safeGetItem<MealPlan[]>('savedMealPlans', []);
-    const existingIndex = savedPlans.findIndex((p: MealPlan) => p.id === currentPlan.id);
+      // Validate dayIndex
+      if (dayIndex < 0 || dayIndex >= prev.days.length) {
+        console.warn(`Invalid day index: ${dayIndex}. Must be between 0 and ${prev.days.length - 1}`);
+        return prev;
+      }
 
-    if (existingIndex >= 0) {
-      savedPlans[existingIndex] = currentPlan;
-    } else {
-      savedPlans.push(currentPlan);
-    }
+      const updatedDays = [...prev.days];
+      const day = updatedDays[dayIndex];
 
-    safeSetItem('savedMealPlans', savedPlans);
-  };
+      if (mealType === 'snacks') {
+        day.meals.snacks = [];
+      } else {
+        delete day.meals[mealType as 'breakfast' | 'lunch' | 'dinner'];
+      }
 
-  const loadPlan = (planId: string) => {
+      const updated = { ...prev, days: updatedDays };
+      safeSetItem('currentMealPlan', updated);
+      return updated;
+    });
+  }, []);
+
+  const savePlan = useCallback(() => {
+    setCurrentPlan(prev => {
+      if (!prev) return null;
+      const savedPlans = safeGetItem<MealPlan[]>('savedMealPlans', []);
+      const existingIndex = savedPlans.findIndex((p: MealPlan) => p.id === prev.id);
+
+      if (existingIndex >= 0) {
+        savedPlans[existingIndex] = prev;
+      } else {
+        savedPlans.push(prev);
+      }
+
+      safeSetItem('savedMealPlans', savedPlans);
+      return prev;
+    });
+  }, []);
+
+  const loadPlan = useCallback((planId: string) => {
     const savedPlans = safeGetItem<MealPlan[]>('savedMealPlans', []);
     const plan = savedPlans.find((p: MealPlan) => p.id === planId);
     if (plan) {
       setCurrentPlan(plan);
       safeSetItem('currentMealPlan', plan);
     }
-  };
+  }, []);
 
-  const clearPlan = () => {
+  const clearPlan = useCallback(() => {
     setCurrentPlan(null);
-    localStorage.removeItem('currentMealPlan');
-  };
+    safeSetItem('currentMealPlan', null);
+  }, []);
 
-  const duplicateDay = (dayIndex: number, targetDayIndex: number) => {
-    if (!currentPlan) return;
+  const duplicateDay = useCallback((dayIndex: number, targetDayIndex: number) => {
+    setCurrentPlan(prev => {
+      if (!prev) return null;
 
-    const updatedDays = [...currentPlan.days];
-    updatedDays[targetDayIndex] = {
-      ...updatedDays[targetDayIndex],
-      meals: JSON.parse(JSON.stringify(updatedDays[dayIndex].meals)),
-    };
+      const updatedDays = [...prev.days];
+      updatedDays[targetDayIndex] = {
+        ...updatedDays[targetDayIndex],
+        meals: JSON.parse(JSON.stringify(updatedDays[dayIndex].meals)),
+      };
 
-    const updated = { ...currentPlan, days: updatedDays };
-    setCurrentPlan(updated);
-    safeSetItem('currentMealPlan', updated);
-  };
+      const updated = { ...prev, days: updatedDays };
+      safeSetItem('currentMealPlan', updated);
+      return updated;
+    });
+  }, []);
 
-  const adjustGlobalServings = (servings: number) => {
-    if (!currentPlan) return;
-    updatePlan({ servings });
-  };
+  const adjustGlobalServings = useCallback((servings: number) => {
+    setCurrentPlan(prev => {
+      if (!prev) return null;
+      const updated = { ...prev, servings };
+      safeSetItem('currentMealPlan', updated);
+      return updated;
+    });
+  }, []);
 
-  return (
-    <PlannerContext.Provider
-      value={{
-        currentPlan,
-        createPlan,
-        updatePlan,
-        addRecipeToPlan,
-        removeRecipeFromPlan,
-        savePlan,
-        loadPlan,
-        clearPlan,
-        duplicateDay,
-        adjustGlobalServings,
-      }}
-    >
-      {children}
-    </PlannerContext.Provider>
+  // Memoize provider value to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({
+      currentPlan,
+      createPlan,
+      updatePlan,
+      addRecipeToPlan,
+      removeRecipeFromPlan,
+      savePlan,
+      loadPlan,
+      clearPlan,
+      duplicateDay,
+      adjustGlobalServings,
+    }),
+    [
+      currentPlan,
+      createPlan,
+      updatePlan,
+      addRecipeToPlan,
+      removeRecipeFromPlan,
+      savePlan,
+      loadPlan,
+      clearPlan,
+      duplicateDay,
+      adjustGlobalServings,
+    ]
   );
+
+  return <PlannerContext.Provider value={value}>{children}</PlannerContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

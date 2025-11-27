@@ -17,7 +17,7 @@ interface AddItemModalProps {
 export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
   const { t } = useTranslation();
   const toast = useToast();
-  const [ingredientId, setIngredientId] = useState('');
+  const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [unit, setUnit] = useState('piece');
   const [category, setCategory] = useState<ShoppingCategory>(SHOPPING_CATEGORIES.OTHER);
@@ -28,7 +28,7 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ingredientId.trim()) return;
+    if (!itemName.trim()) return;
 
     // Validate quantity
     const parsedQuantity = parseFloat(quantity);
@@ -43,7 +43,7 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
       : `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     onAdd({
-      ingredientId: `custom_${uniqueId}_${ingredientId.toLowerCase().replace(/\s+/g, '_')}`,
+      ingredientId: `custom_${uniqueId}_${itemName.toLowerCase().replace(/\s+/g, '_')}`,
       quantity: parsedQuantity,
       unit,
       category,
@@ -52,7 +52,7 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
     });
 
     // Reset form
-    setIngredientId('');
+    setItemName('');
     setQuantity('1');
     setUnit('piece');
     setCategory(SHOPPING_CATEGORIES.OTHER);
@@ -85,8 +85,8 @@ export function AddItemModal({ isOpen, onClose, onAdd }: AddItemModalProps) {
             </label>
             <input
               type="text"
-              value={ingredientId}
-              onChange={(e) => setIngredientId(e.target.value)}
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
               className="input w-full"
               required
               data-testid="item-name-input"

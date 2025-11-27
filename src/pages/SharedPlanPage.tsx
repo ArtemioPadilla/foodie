@@ -5,13 +5,18 @@ import { ArrowLeft, Cloud } from 'lucide-react';
 import type { MealPlan } from '@/types';
 import { getSharedPlanFromFirebase } from '@services/firebaseService';
 import { safeGetItem } from '@utils/storage';
+import { useLanguage } from '@contexts/LanguageContext';
+import { PlanSummary } from '@components/planner/PlanSummary';
+import { WeekView } from '@components/planner/WeekView';
 
 export default function SharedPlanPage() {
   const { token } = useParams<{ token: string }>();
   const { t } = useTranslation();
+  const { getTranslated } = useLanguage();
   const [plan, setPlan] = useState<MealPlan | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadedFromCloud, setLoadedFromCloud] = useState(false);
+  const [startDate] = useState(new Date());
 
   useEffect(() => {
     async function loadSharedPlan() {
@@ -62,6 +67,9 @@ export default function SharedPlanPage() {
       <div className="container-custom py-12">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400" aria-live="polite">
+            {t('common.loading', 'Loading...')}
+          </p>
         </div>
       </div>
     );
@@ -106,17 +114,44 @@ export default function SharedPlanPage() {
         </div>
       </div>
 
-      <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-8">
-        {plan.name.en}
-      </h1>
-
-      {/* Display plan content here - reuse existing components */}
-      {/* For MVP, show a simplified view */}
-      <div className="card p-6">
-        <p className="text-gray-600 dark:text-gray-400">
-          {plan.description.en}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          {getTranslated(plan.name)}
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+          {getTranslated(plan.description)}
         </p>
-        {/* TODO: Add MealPlannerCalendar component in read-only mode */}
+      </div>
+
+      {/* Plan Summary */}
+      <div className="mb-8">
+        <PlanSummary plan={plan} />
+      </div>
+
+      {/* Weekly View - Read-Only */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+          {t('planner.mealPlan', 'Meal Plan')}
+        </h2>
+        <div className="card p-6">
+          <WeekView
+            plan={plan}
+            startDate={startDate}
+          />
+        </div>
+      </div>
+
+      {/* Information note */}
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+        <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+          {t('common.note', 'Note')}
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          {t('planner.sharedPlanReadOnly', 'This is a read-only view of a shared meal plan. To create your own meal plan or make changes, go to the Meal Planner page.')}
+        </p>
+        <Link to="/planner" className="btn-primary inline-block">
+          {t('planner.createYourOwn', 'Create Your Own Plan')}
+        </Link>
       </div>
     </div>
   );

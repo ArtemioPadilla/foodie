@@ -16,7 +16,9 @@ export function PriceManagementModal({ isOpen, onClose }: PriceManagementModalPr
   const toast = useToast();
   const {
     ingredients,
+    loading,
     getIngredientPrice,
+    getIngredientCurrency,
     setIngredientPrice,
     resetIngredientPrice,
     resetAllPrices,
@@ -27,6 +29,21 @@ export function PriceManagementModal({ isOpen, onClose }: PriceManagementModalPr
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [filterCustomOnly, setFilterCustomOnly] = useState(false);
+
+  // Helper to format price with currency symbol
+  const formatPrice = (price: number, currency: string): string => {
+    const currencySymbols: Record<string, string> = {
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      JPY: '¥',
+      CAD: 'C$',
+      AUD: 'A$',
+      MXN: '$',
+    };
+    const symbol = currencySymbols[currency] || currency;
+    return `${symbol}${price.toFixed(2)}`;
+  };
 
   // Filter and search ingredients
   const filteredIngredients = useMemo(() => {
@@ -81,6 +98,22 @@ export function PriceManagementModal({ isOpen, onClose }: PriceManagementModalPr
   const customPriceCount = ingredients.filter((ing) => isCustomPrice(ing.id)).length;
 
   if (!isOpen) return null;
+
+  // Show loading state while ingredients are being fetched
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              {t('common.loading', 'Loading ingredients...')}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -161,6 +194,7 @@ export function PriceManagementModal({ isOpen, onClose }: PriceManagementModalPr
             <div className="space-y-2">
               {filteredIngredients.map((ingredient) => {
                 const price = getIngredientPrice(ingredient.id);
+                const currency = getIngredientCurrency(ingredient.id);
                 const isCustom = isCustomPrice(ingredient.id);
                 const isEditing = editingId === ingredient.id;
 
@@ -225,7 +259,7 @@ export function PriceManagementModal({ isOpen, onClose }: PriceManagementModalPr
                           <div className="text-right">
                             {price !== undefined ? (
                               <span className="font-semibold text-gray-900 dark:text-white">
-                                ${price.toFixed(2)}
+                                {formatPrice(price, currency)}
                               </span>
                             ) : (
                               <span className="text-sm text-gray-500 dark:text-gray-400">

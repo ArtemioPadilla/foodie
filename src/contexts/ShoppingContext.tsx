@@ -1,6 +1,9 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useMemo, ReactNode, useCallback } from 'react';
 import type { ShoppingListItem, MealPlan, MealSlot, Recipe } from '@/types';
 import { safeGetItem, safeSetItem } from '@utils/storage';
+import { getIngredientCategory } from '@constants/categories';
+import { useIngredients } from './IngredientContext';
+import { useLanguage } from './LanguageContext';
 
 interface ShoppingContextType {
   shoppingList: ShoppingListItem[];
@@ -18,6 +21,8 @@ interface ShoppingContextType {
 const ShoppingContext = createContext<ShoppingContextType | undefined>(undefined);
 
 export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
+  const { getIngredientById } = useIngredients();
+  const { getTranslated } = useLanguage();
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
     return safeGetItem<ShoppingListItem[]>('shoppingList', []);
   });
@@ -145,6 +150,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
                   quantity: scaledQuantity,
                   unit: ingredient.unit,
                   usedIn: [recipeName],
+                  category: getIngredientCategory(ingredient.ingredientId),
                 });
               }
               return;
@@ -155,6 +161,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
               quantity: scaledQuantity,
               unit: ingredient.unit,
               usedIn: [recipeName],
+              category: getIngredientCategory(ingredient.ingredientId),
             });
           }
         });
@@ -199,42 +206,67 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const exportList = (format: 'text' | 'json' | 'csv'): string => {
+    // Helper to get ingredient display name
+    const getIngredientName = (ingredientId: string): string => {
+      const ingredient = getIngredientById(ingredientId);
+      return ingredient ? getTranslated(ingredient.name) : ingredientId;
+    };
+
     switch (format) {
       case 'json':
         return JSON.stringify(shoppingList, null, 2);
       case 'csv': {
         const headers = 'Ingredient,Quantity,Unit,Category,Notes\n';
         const rows = shoppingList
-          .map(item => `${item.ingredientId},${item.quantity},${item.unit},${item.category || ''},"${item.notes || ''}"`)
+          .map(item => {
+            const name = getIngredientName(item.ingredientId);
+            const escapedName = `"${name.replace(/"/g, '""')}"`;
+            const escapedNotes = `"${(item.notes || '').replace(/"/g, '""')}"`;
+            return `${escapedName},"${item.quantity}","${item.unit}","${item.category || ''}",${escapedNotes}`;
+          })
           .join('\n');
         return headers + rows;
       }
       case 'text':
       default:
         return shoppingList
-          .map(item => `${item.checked ? '✓' : '☐'} ${item.quantity} ${item.unit} ${item.ingredientId}`)
+          .map(item => {
+            const name = getIngredientName(item.ingredientId);
+            return `${item.checked ? '✓' : '☐'} ${item.quantity} ${item.unit} ${name}`;
+          })
           .join('\n');
     }
   };
 
-  return (
-    <ShoppingContext.Provider
-      value={{
-        shoppingList,
-        addItem,
-        removeItem,
-        toggleItem,
-        updateQuantity,
-        updateNotes,
-        clearList,
-        clearChecked,
-        generateFromPlan,
-        exportList,
-      }}
-    >
-      {children}
-    </ShoppingContext.Provider>
+  // Memoize provider value to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({
+      shoppingList,
+      addItem,
+      removeItem,
+      toggleItem,
+      updateQuantity,
+      updateNotes,
+      clearList,
+      clearChecked,
+      generateFromPlan,
+      exportList,
+    }),
+    [
+      shoppingList,
+      addItem,
+      removeItem,
+      toggleItem,
+      updateQuantity,
+      updateNotes,
+      clearList,
+      clearChecked,
+      generateFromPlan,
+      exportList,
+    ]
   );
+
+  return <ShoppingContext.Provider value={value}>{children}</ShoppingContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
