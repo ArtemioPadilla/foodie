@@ -13,48 +13,49 @@ import type { ShoppingListItem } from '@types';
 
 describe('shoppingService', () => {
   describe('getIngredientCategory', () => {
-    it('categorizes chicken as Meat & Poultry', () => {
-      expect(getIngredientCategory('chicken-breast')).toBe('Meat & Poultry');
-      expect(getIngredientCategory('CHICKEN-thighs')).toBe('Meat & Poultry');
+    it('categorizes chicken as meat-poultry', () => {
+      expect(getIngredientCategory('chicken_breast')).toBe('meat-poultry');
+      expect(getIngredientCategory('chicken_thigh')).toBe('meat-poultry');
+      expect(getIngredientCategory('chicken')).toBe('meat-poultry');
     });
 
-    it('categorizes fish as Seafood', () => {
-      expect(getIngredientCategory('salmon-fillet')).toBe('Seafood');
-      expect(getIngredientCategory('shrimp')).toBe('Seafood');
+    it('categorizes fish as seafood', () => {
+      expect(getIngredientCategory('salmon')).toBe('seafood');
+      expect(getIngredientCategory('shrimp')).toBe('seafood');
     });
 
     it('categorizes dairy items correctly', () => {
-      expect(getIngredientCategory('milk-whole')).toBe('Dairy & Eggs');
-      expect(getIngredientCategory('cheddar-cheese')).toBe('Dairy & Eggs');
-      expect(getIngredientCategory('eggs-large')).toBe('Dairy & Eggs');
+      expect(getIngredientCategory('milk')).toBe('dairy-eggs');
+      expect(getIngredientCategory('cheddar_cheese')).toBe('dairy-eggs');
+      expect(getIngredientCategory('eggs')).toBe('dairy-eggs');
     });
 
     it('categorizes produce correctly', () => {
-      expect(getIngredientCategory('tomato-roma')).toBe('Produce');
-      expect(getIngredientCategory('onion-yellow')).toBe('Produce');
-      expect(getIngredientCategory('garlic-fresh')).toBe('Produce');
+      expect(getIngredientCategory('tomato')).toBe('produce');
+      expect(getIngredientCategory('onion')).toBe('produce');
+      expect(getIngredientCategory('garlic')).toBe('produce');
     });
 
     it('categorizes grains and bakery correctly', () => {
-      expect(getIngredientCategory('bread-whole-wheat')).toBe('Bakery');
-      expect(getIngredientCategory('white-rice')).toBe('Grains & Pasta');
-      expect(getIngredientCategory('pasta-penne')).toBe('Grains & Pasta');
+      expect(getIngredientCategory('bread')).toBe('bakery');
+      expect(getIngredientCategory('rice')).toBe('grains-pasta');
+      expect(getIngredientCategory('penne')).toBe('grains-pasta');
     });
 
     it('categorizes pantry items correctly', () => {
-      expect(getIngredientCategory('olive-oil')).toBe('Oils & Condiments');
-      expect(getIngredientCategory('soy-sauce')).toBe('Oils & Condiments');
-      expect(getIngredientCategory('salt-kosher')).toBe('Spices & Seasonings');
+      expect(getIngredientCategory('olive_oil')).toBe('oils-condiments');
+      expect(getIngredientCategory('soy_sauce')).toBe('oils-condiments');
+      expect(getIngredientCategory('black_pepper')).toBe('spices');
     });
 
-    it('returns Other for unknown ingredients', () => {
-      expect(getIngredientCategory('unknown-ingredient')).toBe('Other');
-      expect(getIngredientCategory('xyz-123')).toBe('Other');
+    it('returns other for unknown ingredients', () => {
+      expect(getIngredientCategory('unknown_ingredient')).toBe('other');
+      expect(getIngredientCategory('xyz_123')).toBe('other');
     });
 
-    it('is case insensitive', () => {
-      expect(getIngredientCategory('CHICKEN-BREAST')).toBe('Meat & Poultry');
-      expect(getIngredientCategory('ChIcKeN')).toBe('Meat & Poultry');
+    it('performs exact case-sensitive lookup', () => {
+      expect(getIngredientCategory('chicken')).toBe('meat-poultry');
+      expect(getIngredientCategory('CHICKEN')).toBe('other'); // Not in map, returns 'other'
     });
   });
 

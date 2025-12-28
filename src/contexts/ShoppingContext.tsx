@@ -1,5 +1,9 @@
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useMemo, ReactNode, useCallback } from 'react';
 import type { ShoppingListItem, MealPlan, MealSlot, Recipe } from '@/types';
+import { safeGetItem, safeSetItem } from '@utils/storage';
+import { getIngredientCategory } from '@constants/categories';
+import { useIngredients } from './IngredientContext';
+import { useLanguage } from './LanguageContext';
 
 interface ShoppingContextType {
   shoppingList: ShoppingListItem[];
@@ -17,16 +21,17 @@ interface ShoppingContextType {
 const ShoppingContext = createContext<ShoppingContextType | undefined>(undefined);
 
 export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
+  const { getIngredientById } = useIngredients();
+  const { getTranslated } = useLanguage();
   const [shoppingList, setShoppingList] = useState<ShoppingListItem[]>(() => {
-    const stored = localStorage.getItem('shoppingList');
-    return stored ? JSON.parse(stored) : [];
+    return safeGetItem<ShoppingListItem[]>('shoppingList', []);
   });
 
   const saveToLocalStorage = (list: ShoppingListItem[]) => {
-    localStorage.setItem('shoppingList', JSON.stringify(list));
+    safeSetItem('shoppingList', list);
   };
 
-  const addItem = (item: Omit<ShoppingListItem, 'checked'>) => {
+  const addItem = useCallback((item: Omit<ShoppingListItem, 'checked'>) => {
     setShoppingList(prev => {
       const existing = prev.find(i => i.ingredientId === item.ingredientId);
 
@@ -44,17 +49,17 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(newList);
       return newList;
     });
-  };
+  }, []);
 
-  const removeItem = (ingredientId: string) => {
+  const removeItem = useCallback((ingredientId: string) => {
     setShoppingList(prev => {
       const filtered = prev.filter(item => item.ingredientId !== ingredientId);
       saveToLocalStorage(filtered);
       return filtered;
     });
-  };
+  }, []);
 
-  const toggleItem = (ingredientId: string) => {
+  const toggleItem = useCallback((ingredientId: string) => {
     setShoppingList(prev => {
       const updated = prev.map(item =>
         item.ingredientId === ingredientId ? { ...item, checked: !item.checked } : item
@@ -62,9 +67,9 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
-  const updateQuantity = (ingredientId: string, quantity: number) => {
+  const updateQuantity = useCallback((ingredientId: string, quantity: number) => {
     setShoppingList(prev => {
       const updated = prev.map(item =>
         item.ingredientId === ingredientId ? { ...item, quantity } : item
@@ -72,7 +77,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
   const updateNotes = useCallback((ingredientId: string, notes: string) => {
     setShoppingList(prev => {
@@ -84,18 +89,18 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const clearList = () => {
+  const clearList = useCallback(() => {
     setShoppingList([]);
     localStorage.removeItem('shoppingList');
-  };
+  }, []);
 
-  const clearChecked = () => {
+  const clearChecked = useCallback(() => {
     setShoppingList(prev => {
       const filtered = prev.filter(item => !item.checked);
       saveToLocalStorage(filtered);
       return filtered;
     });
-  };
+  }, []);
 
   const generateFromPlan = useCallback((plan: MealPlan, recipes: Recipe[]) => {
     // Create a map for quick recipe lookup
@@ -145,6 +150,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
                   quantity: scaledQuantity,
                   unit: ingredient.unit,
                   usedIn: [recipeName],
+                  category: getIngredientCategory(ingredient.ingredientId),
                 });
               }
               return;
@@ -155,6 +161,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
               quantity: scaledQuantity,
               unit: ingredient.unit,
               usedIn: [recipeName],
+              category: getIngredientCategory(ingredient.ingredientId),
             });
           }
         });
@@ -198,43 +205,68 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     saveToLocalStorage(newShoppingList);
   }, []);
 
-  const exportList = (format: 'text' | 'json' | 'csv'): string => {
+  const exportList = useCallback((format: 'text' | 'json' | 'csv'): string => {
+    // Helper to get ingredient display name
+    const getIngredientName = (ingredientId: string): string => {
+      const ingredient = getIngredientById(ingredientId);
+      return ingredient ? getTranslated(ingredient.name) : ingredientId;
+    };
+
     switch (format) {
       case 'json':
         return JSON.stringify(shoppingList, null, 2);
       case 'csv': {
         const headers = 'Ingredient,Quantity,Unit,Category,Notes\n';
         const rows = shoppingList
-          .map(item => `${item.ingredientId},${item.quantity},${item.unit},${item.category || ''},"${item.notes || ''}"`)
+          .map(item => {
+            const name = getIngredientName(item.ingredientId);
+            const escapedName = `"${name.replace(/"/g, '""')}"`;
+            const escapedNotes = `"${(item.notes || '').replace(/"/g, '""')}"`;
+            return `${escapedName},"${item.quantity}","${item.unit}","${item.category || ''}",${escapedNotes}`;
+          })
           .join('\n');
         return headers + rows;
       }
       case 'text':
       default:
         return shoppingList
-          .map(item => `${item.checked ? '✓' : '☐'} ${item.quantity} ${item.unit} ${item.ingredientId}`)
+          .map(item => {
+            const name = getIngredientName(item.ingredientId);
+            return `${item.checked ? '✓' : '☐'} ${item.quantity} ${item.unit} ${name}`;
+          })
           .join('\n');
     }
-  };
+  }, [shoppingList, getIngredientById, getTranslated]);
 
-  return (
-    <ShoppingContext.Provider
-      value={{
-        shoppingList,
-        addItem,
-        removeItem,
-        toggleItem,
-        updateQuantity,
-        updateNotes,
-        clearList,
-        clearChecked,
-        generateFromPlan,
-        exportList,
-      }}
-    >
-      {children}
-    </ShoppingContext.Provider>
+  // Memoize provider value to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({
+      shoppingList,
+      addItem,
+      removeItem,
+      toggleItem,
+      updateQuantity,
+      updateNotes,
+      clearList,
+      clearChecked,
+      generateFromPlan,
+      exportList,
+    }),
+    [
+      shoppingList,
+      addItem,
+      removeItem,
+      toggleItem,
+      updateQuantity,
+      updateNotes,
+      clearList,
+      clearChecked,
+      generateFromPlan,
+      exportList,
+    ]
   );
+
+  return <ShoppingContext.Provider value={value}>{children}</ShoppingContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components

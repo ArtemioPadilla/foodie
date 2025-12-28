@@ -1,56 +1,5 @@
 import { MealPlan, Recipe, ShoppingListItem } from '@/types';
-
-/**
- * Category mapping for ingredients
- */
-const CATEGORY_MAP: Record<string, string> = {
-  // Proteins
-  chicken: 'Meat & Poultry',
-  beef: 'Meat & Poultry',
-  pork: 'Meat & Poultry',
-  fish: 'Seafood',
-  salmon: 'Seafood',
-  shrimp: 'Seafood',
-  eggs: 'Dairy & Eggs',
-  tofu: 'Protein',
-
-  // Dairy
-  milk: 'Dairy & Eggs',
-  cheese: 'Dairy & Eggs',
-  yogurt: 'Dairy & Eggs',
-  butter: 'Dairy & Eggs',
-  cream: 'Dairy & Eggs',
-
-  // Produce
-  tomato: 'Produce',
-  onion: 'Produce',
-  garlic: 'Produce',
-  lettuce: 'Produce',
-  carrot: 'Produce',
-  potato: 'Produce',
-  bell: 'Produce',
-  pepper: 'Produce',
-  spinach: 'Produce',
-  broccoli: 'Produce',
-
-  // Grains & Bakery
-  bread: 'Bakery',
-  rice: 'Grains & Pasta',
-  pasta: 'Grains & Pasta',
-  flour: 'Baking',
-  tortilla: 'Bakery',
-
-  // Pantry
-  oil: 'Oils & Condiments',
-  olive: 'Oils & Condiments',
-  vinegar: 'Oils & Condiments',
-  soy: 'Oils & Condiments',
-  salt: 'Spices & Seasonings',
-  sugar: 'Baking',
-
-  // Default
-  default: 'Other',
-};
+import { getIngredientCategory as getCategoryFromMap } from '@constants/categories';
 
 /**
  * Unit conversion factors to standardize quantities
@@ -89,17 +38,10 @@ const UNIT_CONVERSIONS: Record<string, { base: string; factor: number }> = {
 
 /**
  * Determine category for an ingredient
+ * @deprecated Use getCategoryFromMap from @constants/categories instead
  */
 export function getIngredientCategory(ingredientId: string): string {
-  const lowerIngredient = ingredientId.toLowerCase();
-
-  for (const [keyword, category] of Object.entries(CATEGORY_MAP)) {
-    if (lowerIngredient.includes(keyword)) {
-      return category;
-    }
-  }
-
-  return CATEGORY_MAP.default;
+  return getCategoryFromMap(ingredientId);
 }
 
 /**

@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Plus } from 'lucide-react';
 import { useShopping } from '@contexts/ShoppingContext';
 import { CategoryGroup } from './CategoryGroup';
 import { ListControls } from './ListControls';
 import { EmptyState } from '@components/common';
 import { groupByCategory } from '@services/shoppingService';
 import { cn } from '@utils/cn';
+import { AddItemModal } from './AddItemModal';
 
 export interface ShoppingListProps {
   className?: string;
@@ -21,6 +23,8 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
     toggleItem,
     removeItem,
     updateQuantity,
+    updateNotes,
+    addItem,
     clearList,
     clearChecked,
   } = useShopping();
@@ -28,10 +32,17 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showChecked, setShowChecked] = useState(true);
   const [sortBy, setSortBy] = useState<'category' | 'name' | 'checked'>('category');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Filter items
   const filteredItems = useMemo(() => {
     let items = [...shoppingList];
+
+    // Category filter
+    if (categoryFilter !== 'all') {
+      items = items.filter((item) => item.category === categoryFilter);
+    }
 
     // Search filter
     if (searchQuery) {
@@ -50,7 +61,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
     }
 
     return items;
-  }, [shoppingList, searchQuery, showChecked]);
+  }, [shoppingList, categoryFilter, searchQuery, showChecked]);
 
   // Sort items
   const sortedItems = useMemo(() => {
@@ -80,12 +91,6 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
   const checkedItems = shoppingList.filter((item) => item.checked).length;
   const progress = totalItems > 0 ? (checkedItems / totalItems) * 100 : 0;
 
-  // Handle notes update (add to ShoppingContext if needed)
-  const handleUpdateNotes = (_ingredientId: string, _notes: string) => {
-    // This would need to be added to ShoppingContext
-    // TODO: Implement notes update in ShoppingContext
-  };
-
   if (totalItems === 0) {
     return (
       <div className={cn('', className)}>
@@ -110,11 +115,23 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
         onToggleShowChecked={() => setShowChecked(!showChecked)}
         sortBy={sortBy}
         onSortChange={setSortBy}
+        categoryFilter={categoryFilter}
+        onCategoryFilterChange={setCategoryFilter}
         onClearAll={clearList}
         onClearChecked={clearChecked}
         totalItems={totalItems}
         checkedItems={checkedItems}
       />
+
+      {/* Add Item Button */}
+      <button
+        onClick={() => setIsAddModalOpen(true)}
+        className="btn-primary flex items-center gap-2 w-full sm:w-auto"
+        data-testid="add-item-button"
+      >
+        <Plus className="h-5 w-5" />
+        {t('shopping.addItem')}
+      </button>
 
       {/* Progress Bar */}
       <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
@@ -146,7 +163,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
               onToggleItem={toggleItem}
               onRemoveItem={removeItem}
               onUpdateQuantity={updateQuantity}
-              onUpdateNotes={handleUpdateNotes}
+              onUpdateNotes={updateNotes}
             />
           ))}
         </div>
@@ -161,7 +178,7 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
                   onToggleItem={toggleItem}
                   onRemoveItem={removeItem}
                   onUpdateQuantity={updateQuantity}
-                  onUpdateNotes={handleUpdateNotes}
+                  onUpdateNotes={updateNotes}
                   defaultCollapsed={false}
                 />
               </div>
@@ -177,6 +194,13 @@ export const ShoppingList: React.FC<ShoppingListProps> = ({ className }) => {
           description={t('shopping.tryDifferentSearch', 'Try a different search term')}
         />
       )}
+
+      {/* Add Item Modal */}
+      <AddItemModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAdd={addItem}
+      />
     </div>
   );
 };

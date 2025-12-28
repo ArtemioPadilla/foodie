@@ -4,10 +4,11 @@ import { useRecipes } from '@contexts/RecipeContext';
 import { useLanguage } from '@contexts/LanguageContext';
 import { useIngredients } from '@contexts/IngredientContext';
 import { useTranslation } from 'react-i18next';
-import { Clock, ChefHat, ArrowLeft, Heart, Timer } from 'lucide-react';
+import { Clock, ChefHat, ArrowLeft, Heart, Timer, DollarSign } from 'lucide-react';
 import { RecipeScaler } from '@components/recipe/RecipeScaler';
 import { RecipeTimer } from '@components/recipe/RecipeTimer';
 import { Button } from '@components/common';
+import { PriceManagementModal } from '@components/common/PriceManagementModal';
 
 export default function RecipeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,7 @@ export default function RecipeDetailPage() {
   const [timerOpen, setTimerOpen] = useState(false);
   const [activeTimerDuration, setActiveTimerDuration] = useState(0);
   const [activeTimerStep, setActiveTimerStep] = useState('');
+  const [priceModalOpen, setPriceModalOpen] = useState(false);
 
   // Initialize recipes when page loads
   useEffect(() => {
@@ -151,6 +153,17 @@ export default function RecipeDetailPage() {
                 </span>
               )}
             </div>
+
+            {/* Price Management Button */}
+            <div className="mb-4">
+              <button
+                onClick={() => setPriceModalOpen(true)}
+                className="btn-secondary w-full text-sm flex items-center justify-center gap-2"
+              >
+                <DollarSign className="h-4 w-4" />
+                {t('ingredients.managePrices', 'Manage Prices')}
+              </button>
+            </div>
             <ul className="space-y-2" data-testid="ingredients-list">
               {recipe.ingredients.map((ing, index) => {
                 const scaleFactor = currentServings !== null ? currentServings / recipe.servings : 1;
@@ -258,6 +271,12 @@ export default function RecipeDetailPage() {
         duration={activeTimerDuration}
         stepName={activeTimerStep}
         data-testid="recipe-timer"
+      />
+
+      {/* Price Management Modal */}
+      <PriceManagementModal
+        isOpen={priceModalOpen}
+        onClose={() => setPriceModalOpen(false)}
       />
     </div>
   );

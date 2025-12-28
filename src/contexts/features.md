@@ -1,0 +1,63 @@
+- Manejo nutriologo y sus clientes
+    - Para nutriologo
+        - Ver clientes
+        - Administrar clientes y dietas sugeridas
+            - CRUD cliente
+            - CRUD dietas sugeridas
+        - Tabla de equivalencias
+            - entre alimentos grupos 
+            - entre porciones
+        - Recomendaciones generales
+        - Que sea app (PWA para app movil con):
+            - Notificaciones
+            - Recordatorios
+            - Sincronizacion con app movil
+            - Manejo de datos offline
+        - Tracking de clientes y dietas
+            - Ver el tracking del cliente
+                - Información nutricional
+                - Cumplimiento de dieta (grafica por grupo de alimento con función x = macros consumidad y función y = macros recomendadas)
+                - Fotos
+                - Tracking de dietas
+                    - Segumiento de alimentos consumidos
+                        - Grupos Alimenticios
+                        - Macronutrientes
+            - Calculo de porciones de grupo alimenticio (Formulas nutricionales a partir de datos como peso, edad, tamaño)
+                    
+    - Para clientes
+        - CRUD perfil
+        - Ver dieta
+        - Ver tabla de equivalencias
+        - Ver recomendaciones
+        - Registrar alimentos consumidos y su cantidad
+        - Ver Dieta recomendada por nutriologo
+        - PWA para app movil con:
+            - Notificaciones
+            - Recordatorios
+            - Sincronizacion con app movil
+            - Manejo de datos offline
+        - Tracking
+            - Dieta
+                - Registrar y ver alimentos
+            - Progreso
+                - Peso / Altura
+                - Detalles de composición temporal
+                - Avanzado:
+                    - Identificar alimentos con IA
+                        - Tamaño
+                        - Tipo de alimento(s)
+                            - Macros
+                            - Calorías
+                        - Feedback de usuario
+                    - Compras de alimentos sugeridos (con los cuales se cumple la dieta)
+                        -  Monetización de app con empresas productoras 
+    - Integración con google fit, bitbit, amazon fitness, otras apps de fitness
+    - Historia clínicos
+    - Otros expertos de la salud
+    - Mercado experto de la salud y clientes
+        - Cualquier tipo de expertos en la red
+    - Mercado general 
+        - Recomendaciones por distancia, tipo de experto, etc
+
+                        
+

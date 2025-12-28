@@ -11,6 +11,7 @@ import { PantryProvider } from '@contexts/PantryContext';
 import { AuthProvider } from '@contexts/AuthContext';
 import { LanguageProvider } from '@contexts/LanguageContext';
 import { ThemeProvider } from '@contexts/ThemeContext';
+import { ToastProvider } from '@components/common/Toast';
 
 // Layout (not lazy loaded as they're needed immediately)
 import Header from '@components/layout/Header';
@@ -30,21 +31,23 @@ const ProgressPage = lazy(() => import('@pages/ProgressPage'));
 const ContributePage = lazy(() => import('@pages/ContributePage'));
 const PantryPage = lazy(() => import('@pages/PantryPage'));
 const ProfilePage = lazy(() => import('@pages/ProfilePage'));
+const SharedPlanPage = lazy(() => import('@pages/SharedPlanPage'));
 const NotFoundPage = lazy(() => import('@pages/NotFoundPage'));
 
 function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <AuthProvider>
-          <AppProvider>
-            <RecipeProvider>
-              <IngredientProvider>
-                <BeverageProvider>
-                  <TrackingProvider>
-                    <PlannerProvider>
-                      <ShoppingProvider>
-                        <PantryProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <AppProvider>
+              <RecipeProvider>
+                <IngredientProvider>
+                  <BeverageProvider>
+                    <TrackingProvider>
+                      <PlannerProvider>
+                        <ShoppingProvider>
+                          <PantryProvider>
                   <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900">
                     <Header />
                     <main className="flex-1">
@@ -67,6 +70,7 @@ function App() {
                           <Route path="/contribute" element={<ContributePage />} />
                           <Route path="/pantry" element={<PantryPage />} />
                           <Route path="/profile" element={<ProfilePage />} />
+                          <Route path="/shared/plan/:token" element={<SharedPlanPage />} />
                           <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                       </Suspense>
@@ -82,6 +86,7 @@ function App() {
             </RecipeProvider>
           </AppProvider>
         </AuthProvider>
+      </ToastProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

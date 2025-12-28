@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePlanner } from '@contexts/PlannerContext';
 import { Button, Modal } from '@components/common';
 import { ServingsAdjuster } from './ServingsAdjuster';
 import { PlanTemplates } from './PlanTemplates';
+import { SharePlanModal } from './SharePlanModal';
+import { generateShareToken } from '@utils/tokenGenerator';
 import { cn } from '@utils/cn';
 
 export interface PlannerControlsProps {
@@ -21,9 +23,18 @@ export const PlannerControls: React.FC<PlannerControlsProps> = ({
   className,
 }) => {
   const { t } = useTranslation();
-  const { currentPlan, savePlan, clearPlan } = usePlanner();
+  const { currentPlan, savePlan, clearPlan, updatePlan } = usePlanner();
   const [showTemplates, setShowTemplates] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const previousTokenRef = useRef<string | undefined>();
+
+  // Auto-save when share token is generated
+  useEffect(() => {
+    if (currentPlan?.shareToken && previousTokenRef.current !== currentPlan.shareToken) {
+      previousTokenRef.current = currentPlan.shareToken;
+      savePlan();
+    }
+  }, [currentPlan?.shareToken, savePlan]);
 
   const handlePrevWeek = () => {
     const newDate = new Date(startDate);
@@ -50,11 +61,11 @@ export const PlannerControls: React.FC<PlannerControlsProps> = ({
     setShowShareModal(true);
   };
 
-  const handleCopyShareLink = () => {
-    if (currentPlan?.shareToken) {
-      const shareUrl = `${window.location.origin}/plans/${currentPlan.shareToken}`;
-      navigator.clipboard.writeText(shareUrl);
-      // Could show toast notification
+  const handleGenerateShareLink = () => {
+    if (currentPlan && !currentPlan.shareToken) {
+      const token = generateShareToken();
+      updatePlan({ shareToken: token, isPublic: true });
+      // Auto-save handled by useEffect above
     }
   };
 
@@ -176,44 +187,14 @@ export const PlannerControls: React.FC<PlannerControlsProps> = ({
         <PlanTemplates onSelect={() => setShowTemplates(false)} />
       </Modal>
 
-      {/* Share Modal */}
-      <Modal isOpen={showShareModal} onClose={() => setShowShareModal(false)} size="md">
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {t('planner.shareTitle', 'Share Meal Plan')}
-          </h3>
-
-          <p className="text-sm text-gray-700 dark:text-gray-300">
-            {t(
-              'planner.shareDescription',
-              'Generate a shareable link that others can use to view or copy your meal plan.'
-            )}
-          </p>
-
-          {currentPlan?.shareToken ? (
-            <div className="space-y-3">
-              <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-                <code className="text-sm text-gray-900 dark:text-gray-100 break-all">
-                  {`${window.location.origin}/plans/${currentPlan.shareToken}`}
-                </code>
-              </div>
-
-              <Button variant="primary" fullWidth onClick={handleCopyShareLink}>
-                {t('common.copyLink', 'Copy Link')}
-              </Button>
-            </div>
-          ) : (
-            <div className="text-center py-4">
-              <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-                {t('planner.noShareToken', 'No share link generated yet. Save your plan first.')}
-              </p>
-              <Button variant="primary" onClick={handleSave}>
-                {t('common.save', 'Save Plan')}
-              </Button>
-            </div>
-          )}
-        </div>
-      </Modal>
+      {/* Share Plan Modal */}
+      <SharePlanModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        plan={currentPlan}
+        onGenerateToken={handleGenerateShareLink}
+        shareToken={currentPlan?.shareToken}
+      />
     </>
   );
 };
