@@ -31,7 +31,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     safeSetItem('shoppingList', list);
   };
 
-  const addItem = (item: Omit<ShoppingListItem, 'checked'>) => {
+  const addItem = useCallback((item: Omit<ShoppingListItem, 'checked'>) => {
     setShoppingList(prev => {
       const existing = prev.find(i => i.ingredientId === item.ingredientId);
 
@@ -49,17 +49,17 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(newList);
       return newList;
     });
-  };
+  }, []);
 
-  const removeItem = (ingredientId: string) => {
+  const removeItem = useCallback((ingredientId: string) => {
     setShoppingList(prev => {
       const filtered = prev.filter(item => item.ingredientId !== ingredientId);
       saveToLocalStorage(filtered);
       return filtered;
     });
-  };
+  }, []);
 
-  const toggleItem = (ingredientId: string) => {
+  const toggleItem = useCallback((ingredientId: string) => {
     setShoppingList(prev => {
       const updated = prev.map(item =>
         item.ingredientId === ingredientId ? { ...item, checked: !item.checked } : item
@@ -67,9 +67,9 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
-  const updateQuantity = (ingredientId: string, quantity: number) => {
+  const updateQuantity = useCallback((ingredientId: string, quantity: number) => {
     setShoppingList(prev => {
       const updated = prev.map(item =>
         item.ingredientId === ingredientId ? { ...item, quantity } : item
@@ -77,7 +77,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
       saveToLocalStorage(updated);
       return updated;
     });
-  };
+  }, []);
 
   const updateNotes = useCallback((ingredientId: string, notes: string) => {
     setShoppingList(prev => {
@@ -89,18 +89,18 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     });
   }, []);
 
-  const clearList = () => {
+  const clearList = useCallback(() => {
     setShoppingList([]);
     localStorage.removeItem('shoppingList');
-  };
+  }, []);
 
-  const clearChecked = () => {
+  const clearChecked = useCallback(() => {
     setShoppingList(prev => {
       const filtered = prev.filter(item => !item.checked);
       saveToLocalStorage(filtered);
       return filtered;
     });
-  };
+  }, []);
 
   const generateFromPlan = useCallback((plan: MealPlan, recipes: Recipe[]) => {
     // Create a map for quick recipe lookup
@@ -205,7 +205,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
     saveToLocalStorage(newShoppingList);
   }, []);
 
-  const exportList = (format: 'text' | 'json' | 'csv'): string => {
+  const exportList = useCallback((format: 'text' | 'json' | 'csv'): string => {
     // Helper to get ingredient display name
     const getIngredientName = (ingredientId: string): string => {
       const ingredient = getIngredientById(ingredientId);
@@ -236,7 +236,7 @@ export const ShoppingProvider = ({ children }: { children: ReactNode }) => {
           })
           .join('\n');
     }
-  };
+  }, [shoppingList, getIngredientById, getTranslated]);
 
   // Memoize provider value to prevent unnecessary re-renders
   const value = useMemo(

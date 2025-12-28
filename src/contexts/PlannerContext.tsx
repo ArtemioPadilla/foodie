@@ -32,6 +32,7 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
   const estimatedCost = useMemo(() => {
     if (!currentPlan) return 0;
     return calculatePlanCost(currentPlan, getRecipeById, getIngredientPrice);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally using currentPlan?.days and currentPlan?.id instead of currentPlan to prevent infinite loops
   }, [currentPlan?.days, currentPlan?.id, getRecipeById, getIngredientPrice]);
 
   // Update plan with calculated cost only when it changes
@@ -44,7 +45,8 @@ export const PlannerProvider = ({ children }: { children: ReactNode }) => {
       setCurrentPlan(updatedPlan);
       safeSetItem('currentMealPlan', updatedPlan);
     }
-  }, [estimatedCost]); // Only depend on estimatedCost, not currentPlan
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally excluding currentPlan to prevent infinite loops; we read it inside but only want to trigger on estimatedCost change
+  }, [estimatedCost]);
 
   const createPlan = useCallback((plan: Partial<MealPlan>) => {
     const newPlan: MealPlan = {

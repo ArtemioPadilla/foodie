@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, Share2, Check, CloudUpload } from 'lucide-react';
 import type { MealPlan } from '@/types';
@@ -30,18 +30,7 @@ export function SharePlanModal({
   const [uploadingToCloud, setUploadingToCloud] = useState(false);
   const [cloudSynced, setCloudSynced] = useState(false);
 
-  useEffect(() => {
-    if (shareToken) {
-      const baseUrl = window.location.origin;
-      const url = `${baseUrl}/shared/plan/${shareToken}`;
-      setShareUrl(url);
-
-      // Auto-upload to Firebase when share token is generated
-      handleUploadToFirebase();
-    }
-  }, [shareToken]);
-
-  const handleUploadToFirebase = async () => {
+  const handleUploadToFirebase = useCallback(async () => {
     if (!plan || !shareToken || cloudSynced || uploadingToCloud) return;
 
     setUploadingToCloud(true);
@@ -59,7 +48,18 @@ export function SharePlanModal({
     } finally {
       setUploadingToCloud(false);
     }
-  };
+  }, [plan, shareToken, cloudSynced, uploadingToCloud, toast, t]);
+
+  useEffect(() => {
+    if (shareToken) {
+      const baseUrl = window.location.origin;
+      const url = `${baseUrl}/shared/plan/${shareToken}`;
+      setShareUrl(url);
+
+      // Auto-upload to Firebase when share token is generated
+      handleUploadToFirebase();
+    }
+  }, [shareToken, handleUploadToFirebase]);
 
   const handleCopyLink = async () => {
     try {

@@ -255,7 +255,8 @@ export async function getSharedPlanFromFirebase(shareToken: string): Promise<Mea
 
     if (planSnap.exists()) {
       const data = planSnap.data();
-      // Remove server timestamp before returning
+      // Remove server timestamp before returning (sharedAt is intentionally discarded)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { sharedAt, ...planData } = data;
       return planData as MealPlan;
     }
