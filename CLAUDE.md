@@ -84,6 +84,6 @@ new site will introduce itself as Foodie.
 
 - Roadmap (canonical): `docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md`
 - Principles / ethics: `docs/PRINCIPLES.md`, `docs/ETHICS.md`
-- Decisions: `docs/decisions/` (ADRs; roadmap Issue 009 adds 0001 migration strategy, 0002 local-data stakeholders)
+- Decisions: `docs/decisions/` — Foodie ADRs `0001-foodie-inceptor-migration.md` (D1–D14) and `0002-local-first-user-data.md` (localStorage keys, stakeholders, export/clear); the other `000N-*.md` are Inceptor's inherited ADRs
 - Components: `docs/COMPONENTS.md`, `docs/component-catalog.md`
 - Setup: `SETUP.md` · Contributing: `CONTRIBUTING.md`
