@@ -100,9 +100,9 @@ grep -rE "from ['\"]@ark-ui/react['\"]"       src/                && echo "FAIL:
 
 If any FAIL appears, REJECT.
 
-> **Exception**: `legacy/` is the frozen SPA and is excluded from these scans
-> (`grep … src/` never enters it); Issue 008 deletes it. Never scan or fix
-> `legacy/`.
+> **Note**: the frozen legacy SPA lives only on `main` (and the `legacy`
+> branch/tag) since Issue 008 removed the `legacy/` working copy; these scans
+> only ever cover `src/`. Never "fix" legacy code — it is the reference.
 
 Foodie-specific greps (same REJECT rule):
 
@@ -262,8 +262,8 @@ REJECTED — return to forja for fix
 
 The product is **Foodie**, an offline-first meal-planning app (recipes,
 ingredients, planner, shopping list, pantry, food diary) in EN/ES/FR. The legacy
-React 18 + Vite SPA is frozen under `legacy/` (read-only; also
-`git show main:<path>`) and is the behavioural reference for every port.
+React 18 + Vite SPA is frozen on `main` (read-only; `git show main:<path>` or
+`git show legacy:<path>`) and is the behavioural reference for every port.
 Domain facts you must verify:
 
 - **Canonical plan**: `docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md` — 48 issues, decisions D1–D14, route → page

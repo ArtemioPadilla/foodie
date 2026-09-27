@@ -121,14 +121,6 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
-    server: {
-      fs: {
-        // legacy/ is the frozen Vite SPA kept read-only for the migration
-        // (roadmap Issue 002 → removed in Issue 008). Never serve it from the
-        // Astro dev server.
-        deny: ['legacy/**'],
-      },
-    },
   },
   output: 'static',
 });

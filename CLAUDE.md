@@ -4,8 +4,9 @@ Foodie is an offline-first meal-planning web app (trilingual EN/ES/FR recipe and
 ingredient catalog, weekly planner, consolidated shopping list, pantry, food
 diary) being rebuilt **template-first on Inceptor**: the Astro 5 + React 19
 islands template now lives at the repo root, the legacy React 18 + Vite SPA is
-frozen under `legacy/` (and on `main`, which keeps deploying it until the
-cutover), and every feature is ported issue by issue into the new stack on the
+frozen on `main` (which keeps deploying it until the cutover; read it with
+`git show main:src/<path>` — the `legacy/` working copy was removed in roadmap
+Issue 008), and every feature is ported issue by issue into the new stack on the
 integration branch `inceptor`. **The canonical plan is
 [`docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md`](docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md)**
 — 48 issues in 7 phases with decisions (D1–D14), target architecture, route →

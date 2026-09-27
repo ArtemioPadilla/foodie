@@ -83,8 +83,8 @@ validation — that is centinela's role.
 
 The product is **Foodie**, an offline-first meal-planning app (recipes,
 ingredients, planner, shopping list, pantry, food diary) in EN/ES/FR. The legacy
-React 18 + Vite SPA is frozen under `legacy/` (read-only; also
-`git show main:<path>`) and is the behavioural reference for every port.
+React 18 + Vite SPA is frozen on `main` (read-only; `git show main:<path>` or
+`git show legacy:<path>`) and is the behavioural reference for every port.
 Domain facts you must honor:
 
 - **Canonical plan**: `docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md` — 48 issues, decisions D1–D14, route → page

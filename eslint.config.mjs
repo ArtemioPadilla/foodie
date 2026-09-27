@@ -154,9 +154,6 @@ export default [
       'test-results/**',
       '.astro/**',
       'node_modules/**',
-      // Frozen legacy Vite SPA kept for reference during the migration
-      // (roadmap Issue 002, removed in Issue 008) — has its own toolchain.
-      'legacy/**',
       // Config files that are not typed via tsconfig — parsed without
       // type-aware rules to avoid requiring a separate tsconfig for tooling.
       'playwright.config.ts',

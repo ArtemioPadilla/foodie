@@ -39,8 +39,9 @@ repository has **two live lines of development**:
   milestones `v0.1`…`v1.0` classify the work (created by
   `scripts/create-issues.sh`, roadmap Issue 007).
 - Reading legacy code from the `inceptor` branch: `git show main:src/<path>`
-  (or `git show legacy:src/<path>`); while Phase 0 is in progress a read-only
-  copy also lives under `legacy/` (removed in roadmap Issue 008).
+  (or `git show legacy:src/<path>`). The read-only `legacy/` working copy was
+  removed in roadmap Issue 008; the legacy phase reports and changelog are
+  archived under `docs/archive/legacy-vite/`.
 
 ### After the cutover
 

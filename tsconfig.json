@@ -22,5 +22,5 @@
   },
   "include": ["src/**/*"],
   // Legacy Vite SPA kept read-only for the migration (roadmap Issue 002 → removed in 008).
-  "exclude": ["legacy/**", "node_modules", "dist"]
+  "exclude": ["node_modules", "dist"]
 }

@@ -9,9 +9,7 @@ export default defineConfig({
   },
   test: {
     include: ['src/**/*.test.{ts,tsx}'],
-    // legacy/ holds the frozen Vite SPA (roadmap Issue 002); its tests run
-    // under their own toolchain and must never be collected here.
-    exclude: ['**/node_modules/**', '**/dist/**', 'legacy/**'],
+    exclude: ['**/node_modules/**', '**/dist/**'],
     // Globals: true gives RTL automatic afterEach cleanup (it hooks via
     // global `afterEach`). Without this, multiple `render()` calls in the
     // same test file leak DOM into each other.
