@@ -4,14 +4,22 @@
  */
 import {
   BeverageSchema,
+  CategorySchema,
+  IngredientSchema,
   MealPlanSchema,
   NutritionInfoSchema,
   RecipeSchema,
+  RecipeSubmissionSchema,
+  ShoppingListItemSchema,
   TrackingEntrySchema,
   type Beverage,
+  type Category,
+  type Ingredient,
   type MealPlan,
   type NutritionInfo,
   type Recipe,
+  type RecipeSubmission,
+  type ShoppingListItem,
   type TrackingEntry,
 } from '@/schemas';
 
@@ -64,6 +72,85 @@ export function makeRecipe(overrides: Partial<Recipe> = {}): Recipe {
     dateAdded: '2025-01-01',
     rating: 4.5,
     reviewCount: 10,
+    ...overrides,
+  });
+}
+
+export function makeIngredient(overrides: Partial<Ingredient> = {}): Ingredient {
+  return IngredientSchema.parse({
+    id: 'ing_001',
+    name: { en: 'Chicken Breast', es: 'Pechuga de Pollo', fr: 'Poitrine de Poulet' },
+    category: 'protein',
+    unit: 'piece',
+    avgPrice: 3,
+    currency: 'USD',
+    region: 'global',
+    tags: {
+      glutenFree: true,
+      vegan: false,
+      vegetarian: false,
+      dairyFree: true,
+      nutFree: true,
+      kosher: false,
+      halal: true,
+    },
+    alternatives: [],
+    seasonality: [],
+    storageInstructions: {
+      en: 'Refrigerate at 4°C or below',
+      es: 'Refrigerar a 4°C o menos',
+      fr: 'Réfrigérer à 4°C ou moins',
+    },
+    ...overrides,
+  });
+}
+
+export function makeShoppingItem(overrides: Partial<ShoppingListItem> = {}): ShoppingListItem {
+  return ShoppingListItemSchema.parse({
+    ingredientId: 'ing_001',
+    quantity: 1.5,
+    unit: 'lb',
+    checked: false,
+    usedIn: ['rec_001'],
+    notes: '',
+    category: 'protein',
+    ...overrides,
+  });
+}
+
+/** `categories.json → ingredientCategories` as shipped. */
+export const mockIngredientCategories: Category[] = [
+  ['protein', 'Proteins', 'Proteínas', 'Protéines'],
+  ['vegetables', 'Vegetables', 'Verduras', 'Légumes'],
+  ['fruits', 'Fruits', 'Frutas', 'Fruits'],
+  ['grains', 'Grains', 'Granos', 'Céréales'],
+  ['dairy', 'Dairy', 'Lácteos', 'Produits Laitiers'],
+  ['pantry', 'Pantry', 'Despensa', 'Garde-Manger'],
+  ['spices', 'Spices & Herbs', 'Especias y Hierbas', 'Épices et Herbes'],
+].map(([id, en, es, fr]) => CategorySchema.parse({ id, name: { en, es, fr } }));
+
+/** A schema-valid contribution form (legacy `validationService.test.ts` fixture). */
+export function makeRecipeSubmission(overrides: Partial<RecipeSubmission> = {}): RecipeSubmission {
+  return RecipeSubmissionSchema.parse({
+    nameEn: 'Test Recipe',
+    nameEs: 'Receta de Prueba',
+    nameFr: 'Recette de Test',
+    descriptionEn: 'A test recipe with sufficient description length for validation',
+    descriptionEs: 'Una receta de prueba con suficiente longitud de descripción',
+    descriptionFr: 'Une recette de test avec une description suffisamment longue',
+    cuisine: 'american',
+    mealType: 'dinner',
+    difficulty: 'easy',
+    prepTime: 15,
+    cookTime: 30,
+    servings: 4,
+    ingredients: [{ ingredientId: 'ing-1', quantity: 2, unit: 'cup', optional: false }],
+    instructions: ['Step 1: Preheat the oven to 350°F', 'Step 2: Mix all ingredients together'],
+    calories: 200,
+    protein: 10,
+    carbohydrates: 30,
+    fat: 5,
+    imageUrl: '',
     ...overrides,
   });
 }

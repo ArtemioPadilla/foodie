@@ -39,3 +39,4 @@ export * from './pantry';
 export * from './goals';
 export * from './tracking';
 export * from './preferences';
+export * from './recipe-submission';
