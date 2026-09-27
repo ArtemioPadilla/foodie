@@ -9,6 +9,14 @@ export const UNIT_SYSTEMS = ['metric', 'imperial', 'auto'] as const;
 export const UnitSystemSchema = z.enum(UNIT_SYSTEMS);
 export type UnitSystem = z.infer<typeof UnitSystemSchema>;
 
+/**
+ * What the user *asked* for. `system` follows `prefers-color-scheme`; the
+ * resolved `light`/`dark` lives in `stores/theme.ts` (`localStorage['theme']`).
+ */
+export const THEME_PREFERENCES = ['light', 'dark', 'system'] as const;
+export const ThemePreferenceSchema = z.enum(THEME_PREFERENCES);
+export type ThemePreference = z.infer<typeof ThemePreferenceSchema>;
+
 export const UserPreferencesSchema = z.object({
   /** BCP-47-ish tag as stored by legacy i18next (`en`, `es`, `fr`, `en-US`…). */
   language: z.string(),

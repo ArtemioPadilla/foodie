@@ -42,3 +42,50 @@ export function formatDate(
   const bcp47 = locale === 'es' ? 'es-419' : locale;
   return new Intl.DateTimeFormat(bcp47, opts).format(date);
 }
+
+// ── Date keys (Foodie tracking / planner) ────────────────────────────────────
+//
+// Persisted records (`TrackingEntry.date`, planner dates) use a plain
+// `YYYY-MM-DD` key in the user's LOCAL calendar day, so an entry logged at
+// 23:30 belongs to today, not to tomorrow-in-UTC (the legacy
+// `toISOString().split('T')[0]` had that off-by-one). Roadmap Issue 013 —
+// replaces `getToday()` / `getCurrentTime()` from `TrackingContext`.
+
+/** `YYYY-MM-DD` in the local time zone. */
+export function toDateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/** Today's `YYYY-MM-DD` (local). */
+export function todayKey(now: Date = new Date()): string {
+  return toDateKey(now);
+}
+
+/** Parse a `YYYY-MM-DD` key into a local-midnight `Date`. */
+export function parseDateKey(key: string): Date {
+  const [y, m, d] = key.split('-').map(Number);
+  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
+}
+
+/** `HH:mm:ss` in the local time zone (legacy `getCurrentTime()` format). */
+export function toTimeKey(date: Date): string {
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  const ss = String(date.getSeconds()).padStart(2, '0');
+  return `${hh}:${mm}:${ss}`;
+}
+
+/** Current local time as `HH:mm:ss`. */
+export function nowTimeKey(now: Date = new Date()): string {
+  return toTimeKey(now);
+}
+
+/** Add `days` (may be negative) to a `YYYY-MM-DD` key. */
+export function addDaysToKey(key: string, days: number): string {
+  const date = parseDateKey(key);
+  date.setDate(date.getDate() + days);
+  return toDateKey(date);
+}

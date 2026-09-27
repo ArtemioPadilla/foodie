@@ -62,12 +62,13 @@ All new keys use the `foodie:` prefix so they are distinguishable from the
 inherited ones and from third-party libraries sharing the origin
 (`artemiopadilla.github.io`).
 
-| Key                       | Issue                         | Contents                                                                                                         | Category                |
-| ------------------------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------- |
-| `foodie:locale`           | 004                           | explicit locale choice (`en`/`es`/`fr`) so the `/` redirect runs once                                            | UI preference           |
-| `foodie:privacy-ack`      | 007 (template `PrivacyToast`) | boolean, dismissed the privacy notice                                                                            | UI preference           |
-| `foodie:contribute-draft` | 038                           | in-progress recipe submission (the form's own fields; **the contributor's name is optional and never required**) | Draft content           |
-| `foodie:custom-prices`    | 041                           | per-ingredient price overrides `{ [ingredientId]: number }` + currency                                           | Behavioural (anonymous) |
+| Key                       | Issue                         | Contents                                                                                                                                            | Category                              |
+| ------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `foodie:locale`           | 004                           | explicit locale choice (`en`/`es`/`fr`) so the `/` redirect runs once                                                                               | UI preference                         |
+| `foodie:privacy-ack`      | 007 (template `PrivacyToast`) | boolean, dismissed the privacy notice                                                                                                               | UI preference                         |
+| `foodie:contribute-draft` | 038                           | in-progress recipe submission (the form's own fields; **the contributor's name is optional and never required**)                                    | Draft content                         |
+| `foodie:custom-prices`    | 041                           | per-ingredient price overrides `{ [ingredientId]: number }` + currency                                                                              | Behavioural (anonymous)               |
+| `foodie:preferences`      | 013                           | guest `UserPreferences` (unit system, dietary restrictions, allergies, theme choice); Issue 037 migrates it to `user-preferences-${uid}` on sign-in | **Health-adjacent** (allergies, diet) |
 
 Template stores already present and unchanged: `theme` (shared with legacy
 key 1), TanStack Query's IDB cache (`idb-keyval`, catalog JSON only — public

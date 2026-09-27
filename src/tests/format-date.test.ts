@@ -38,3 +38,38 @@ describe('formatDate', () => {
     }
   });
 });
+
+// ── Date keys (roadmap Issue 013: replaces TrackingContext getToday/getCurrentTime) ──
+import { addDaysToKey, nowTimeKey, parseDateKey, toDateKey, todayKey, toTimeKey } from '../lib/format-date';
+
+describe('date keys', () => {
+  const local = new Date(2025, 0, 31, 23, 5, 9); // Jan 31 2025 23:05:09 local time
+
+  it('toDateKey uses the LOCAL calendar day, zero-padded', () => {
+    expect(toDateKey(local)).toBe('2025-01-31');
+    expect(toDateKey(new Date(2025, 2, 5))).toBe('2025-03-05');
+  });
+
+  it('todayKey / nowTimeKey default to now but accept an injected clock', () => {
+    expect(todayKey(local)).toBe('2025-01-31');
+    expect(nowTimeKey(local)).toBe('23:05:09');
+    expect(todayKey()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(nowTimeKey()).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+  });
+
+  it('toTimeKey is HH:mm:ss', () => {
+    expect(toTimeKey(new Date(2025, 0, 1, 7, 3, 0))).toBe('07:03:00');
+  });
+
+  it('parseDateKey round-trips at local midnight', () => {
+    const d = parseDateKey('2025-01-31');
+    expect([d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()]).toEqual([2025, 0, 31, 0]);
+    expect(toDateKey(d)).toBe('2025-01-31');
+  });
+
+  it('addDaysToKey crosses month and year boundaries in both directions', () => {
+    expect(addDaysToKey('2025-01-31', 1)).toBe('2025-02-01');
+    expect(addDaysToKey('2025-01-01', -1)).toBe('2024-12-31');
+    expect(addDaysToKey('2024-02-28', 1)).toBe('2024-02-29');
+  });
+});
