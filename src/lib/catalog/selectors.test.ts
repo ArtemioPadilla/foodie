@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { makeIngredient, makeRecipe, mockBeverages } from '@/tests/fixtures/foodie-domain';
 import {
+  dietaryTagKey,
   filterRecipes,
   getBeverageById,
   getBeveragesByCategory,
@@ -8,6 +9,7 @@ import {
   getRecipeById,
   getRecipesByIngredient,
   pickLang,
+  recipeHasDietaryTag,
   searchBeverages,
   searchRecipes,
   sortRecipes,
@@ -112,6 +114,9 @@ const tacos = makeRecipe({
   totalTime: 35,
   difficulty: 'medium',
   tags: ['gluten-free', 'high-protein'],
+  // Explicit flags: the fixture default marks everything vegetarian, and since
+  // roadmap Issue 017 `filterRecipes` matches dietary flags too.
+  dietaryLabels: { glutenFree: true, vegetarian: false, vegan: false, dairyFree: true, lowCarb: false, keto: false, paleo: false },
   rating: 4.8,
   reviewCount: 40,
   dateAdded: '2025-03-01',
@@ -198,13 +203,26 @@ describe('filterRecipes', () => {
     expect(filterRecipes(recipes, { difficulties: ['easy', 'hard'] })).toHaveLength(2);
   });
 
-  it('matches dietaryLabels and tags against the recipe tags (any-of)', () => {
+  it('matches dietaryLabels and tags against the recipe tags or flags (any-of)', () => {
     expect(filterRecipes(recipes, { dietaryLabels: ['vegetarian'] }).map((r) => r.id)).toEqual([
       'rec_001',
       'rec_003',
     ]);
     expect(filterRecipes(recipes, { tags: ['comfort-food', 'high-protein'] })).toHaveLength(2);
     expect(filterRecipes(recipes, { tags: ['keto'] })).toEqual([]);
+  });
+
+  it('matches dietaryLabels against the dietaryLabels flags too (roadmap Issue 017)', () => {
+    // `eggs` has glutenFree: true but is not tagged 'gluten-free'; the data
+    // marks 26 recipes dairyFree without a single 'dairy-free' tag.
+    expect(dietaryTagKey('gluten-free')).toBe('glutenFree');
+    expect(dietaryTagKey('vegan')).toBe('vegan');
+    expect(recipeHasDietaryTag(eggs, 'gluten-free')).toBe(true);
+    expect(recipeHasDietaryTag(eggs, 'vegan')).toBe(false);
+    expect(filterRecipes(recipes, { dietaryLabels: ['gluten-free'] }).map((r) => r.id)).toContain(
+      'rec_001',
+    );
+    expect(filterRecipes(recipes, { dietaryLabels: ['kosher'] })).toEqual([]);
   });
 
   it('caps total, prep and cook time', () => {

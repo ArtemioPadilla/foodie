@@ -5,7 +5,7 @@
 
 Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entry here is rendered live at `/gallery`.
 
-**Total:** 25 gallery entries across 15 categories.
+**Total:** 27 gallery entries across 16 categories.
 
 **Legend**
 
@@ -109,7 +109,14 @@ Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entr
 |---|---|---|---|
 | **ErrorBoundary** | ✅ stable | Throw an error inside an island — get a pre-filled GitHub issue with stack trace, component path, URL, and UA. | [`src/components/islands/ErrorBoundary.tsx`](../src/components/islands/ErrorBoundary.tsx) |
 
-## 15. Generative AI
+## 15. Foodie domain
+
+| Component | Status | Summary | Source |
+|---|---|---|---|
+| **Recipe card** | 🔵 beta | Catalog card of the Foodie domain: meal-type placeholder art (or lazy image), dietary badges, time, servings, difficulty and rating — grid and list views, plus its skeleton. | [`src/components/domain/RecipeCard.tsx`](../src/components/domain/RecipeCard.tsx) |
+| **Dietary badges** | 🔵 beta | The true flags of a recipe’s dietaryLabels as localised badges with a "+N" overflow — used by RecipeCard and the recipe detail. | [`src/components/domain/DietaryBadges.tsx`](../src/components/domain/DietaryBadges.tsx) |
+
+## 16. Generative AI
 
 | Component | Status | Summary | Source |
 |---|---|---|---|

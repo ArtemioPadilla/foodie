@@ -98,10 +98,32 @@ export function searchRecipes(
 }
 
 /**
+ * `categories.dietaryTags` id → `Recipe.dietaryLabels` key
+ * (`'gluten-free'` → `'glutenFree'`, `'vegan'` → `'vegan'`).
+ */
+export function dietaryTagKey(tagId: string): string {
+  return tagId.replace(/-([a-z0-9])/g, (_, c: string) => c.toUpperCase());
+}
+
+/**
+ * True when the recipe carries the dietary tag either as a free-form `tags`
+ * entry (legacy behaviour) or as a `true` flag in `dietaryLabels` — the data
+ * marks `dairyFree: true` on 26 recipes while no recipe is tagged
+ * `dairy-free`, so a tags-only match (legacy) silently returned nothing.
+ */
+export function recipeHasDietaryTag(recipe: Recipe, tagId: string): boolean {
+  if (recipe.tags.includes(tagId)) return true;
+  const flags = recipe.dietaryLabels as Record<string, boolean | undefined>;
+  return flags[dietaryTagKey(tagId)] === true;
+}
+
+/**
  * Apply `RecipeFilters` (every set filter must match). Ported from
- * `RecipeContext`: `dietaryLabels` and `tags` match the recipe `tags` array
- * (any of), `cuisines` any-of, `types`/`difficulties` exact, `maxTime` caps
- * `totalTime`; `ingredients` keeps recipes using at least one listed id.
+ * `RecipeContext`: `dietaryLabels` match the recipe `tags` array OR the
+ * `dietaryLabels` flags (any of — see `recipeHasDietaryTag`), `tags` the
+ * `tags` array (any of), `cuisines` any-of, `types`/`difficulties` exact,
+ * `maxTime` caps `totalTime`; `ingredients` keeps recipes using at least one
+ * listed id.
  */
 export function filterRecipes(
   recipes: ReadonlyArray<Recipe>,
@@ -113,7 +135,7 @@ export function filterRecipes(
   if (types?.length) result = result.filter((r) => types.includes(r.type));
   if (cuisines?.length) result = result.filter((r) => r.cuisine.some((c) => cuisines.includes(c)));
   if (dietaryLabels?.length) {
-    result = result.filter((r) => dietaryLabels.some((label) => r.tags.includes(label)));
+    result = result.filter((r) => dietaryLabels.some((label) => recipeHasDietaryTag(r, label)));
   }
   if (difficulties?.length) result = result.filter((r) => difficulties.includes(r.difficulty));
   if (tags?.length) result = result.filter((r) => tags.some((tag) => r.tags.includes(tag)));

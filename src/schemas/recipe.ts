@@ -129,3 +129,30 @@ export const RecipeFiltersSchema = z.object({
   ingredients: z.array(z.string()).optional(),
 });
 export type RecipeFilters = z.infer<typeof RecipeFiltersSchema>;
+
+// ── RecipeBrowser URL state (roadmap Issue 017) ──────────────────────────────
+
+export const RECIPE_VIEWS = ['grid', 'list'] as const;
+export const RecipeViewSchema = z.enum(RECIPE_VIEWS);
+export type RecipeView = z.infer<typeof RecipeViewSchema>;
+
+/**
+ * Everything the `/recipes/` browser keeps in the URL query string
+ * (`?q=&type=&cuisine=&diet=&difficulty=&time=&favorites=1&sort=&view=`).
+ * Parsed/serialised by `lib/domain/recipe-browser.ts`; a cross-boundary type,
+ * hence a Zod schema (Inceptor rule). `dietaryTags` are `categories.dietaryTags`
+ * ids (`gluten-free`), matched against `Recipe.dietaryLabels` and `tags`.
+ */
+export const RecipeBrowserStateSchema = z.object({
+  search: z.string(),
+  types: z.array(z.string()),
+  cuisines: z.array(z.string()),
+  dietaryTags: z.array(z.string()),
+  difficulties: z.array(z.string()),
+  /** Minutes; caps `totalTime`. */
+  maxTime: z.number().positive().optional(),
+  favoritesOnly: z.boolean(),
+  sort: SortOptionSchema,
+  view: RecipeViewSchema,
+});
+export type RecipeBrowserState = z.infer<typeof RecipeBrowserStateSchema>;

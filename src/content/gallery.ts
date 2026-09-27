@@ -24,7 +24,7 @@ export interface GalleryEntry {
   /**
    * Category bucket on the index page.
    */
-  category: 'primitives' | 'forms' | 'advanced' | 'compound' | 'overlays' | 'disclosure' | 'feedback' | 'data' | 'charts' | 'motion' | 'pwa' | 'navmenu' | 'extras' | 'gen-ai' | 'reporting';
+  category: 'primitives' | 'forms' | 'advanced' | 'compound' | 'overlays' | 'disclosure' | 'feedback' | 'data' | 'charts' | 'motion' | 'pwa' | 'navmenu' | 'extras' | 'gen-ai' | 'reporting' | 'domain';
   /**
    * Optional install command for shadcn-style components.
    * If omitted, the gallery omits the install section.
@@ -318,6 +318,28 @@ export const galleryManifest: GalleryEntry[] = [
     category: 'data',
     island: 'ShowcaseDownloadTrigger',
   },
+  // Foodie domain components (roadmap Issue 017) — src/components/domain/
+  {
+    slug: 'recipe-card',
+    name: 'Recipe card',
+    summary:
+      'Catalog card of the Foodie domain: meal-type placeholder art (or lazy image), dietary badges, time, servings, difficulty and rating — grid and list views, plus its skeleton.',
+    source: 'src/components/domain/RecipeCard.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseRecipeCard',
+    hydration: 'client:visible',
+  },
+  {
+    slug: 'dietary-badges',
+    name: 'Dietary badges',
+    summary:
+      'The true flags of a recipe’s dietaryLabels as localised badges with a "+N" overflow — used by RecipeCard and the recipe detail.',
+    source: 'src/components/domain/DietaryBadges.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseRecipeCard',
+  },
 ];
 
 export function getByCategory(category: GalleryEntry['category']): GalleryEntry[] {
@@ -340,6 +362,7 @@ export const categoryLabels: Record<GalleryEntry['category'], string> = {
   extras: 'Extras & data-viz',
   'gen-ai': 'Generative AI',
   reporting: 'Issue reporting',
+  domain: 'Foodie domain',
 };
 
 export const categoryOrder: GalleryEntry['category'][] = [
@@ -357,4 +380,5 @@ export const categoryOrder: GalleryEntry['category'][] = [
   'pwa',
   'extras',
   'reporting',
+  'domain',
 ];

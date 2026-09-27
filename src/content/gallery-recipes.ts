@@ -17,6 +17,36 @@ export interface GalleryRecipe {
 }
 
 export const galleryRecipes: Record<string, GalleryRecipe> = {
+  'recipe-card': {
+    lang: 'tsx',
+    code: `import { RecipeCard } from '@/components/domain/RecipeCard';
+import { withBase } from '@/lib/href';
+import { localizedRoute, type Locale } from '@/i18n';
+import type { Recipe } from '@/schemas';
+
+export function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang: Locale }) {
+  return (
+    <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+      {recipes.map((recipe) => (
+        <li key={recipe.id} className="flex">
+          <RecipeCard
+            recipe={recipe}
+            lang={lang}
+            href={withBase(localizedRoute(\`/recipes/\${recipe.id}/\`, lang))}
+            className="w-full"
+          />
+        </li>
+      ))}
+    </ul>
+  );
+}`,
+  },
+  'dietary-badges': {
+    lang: 'tsx',
+    code: `import { DietaryBadges } from '@/components/domain/DietaryBadges';
+
+<DietaryBadges labels={recipe.dietaryLabels} lang="es" max={3} />`,
+  },
   primitives: {
     lang: 'tsx',
     code: `import { Button } from '@/components/ui/button';

@@ -38,6 +38,7 @@ import ShowcaseErrorBoundary from '../../components/islands/ShowcaseErrorBoundar
 import ShowcaseSplitter from '../../components/islands/ShowcaseSplitter';
 import ShowcaseActionBar from '../../components/islands/ShowcaseActionBar';
 import ShowcaseDownloadTrigger from '../../components/islands/ShowcaseDownloadTrigger';
+import ShowcaseRecipeCard from '../../components/islands/ShowcaseRecipeCard';
 
 export async function getStaticPaths() {
   return galleryManifest.map((entry) => ({
@@ -159,6 +160,7 @@ const propsTables = extractPropsForSource(entry.source, repoRoot);
           {entry.island === 'ShowcaseSplitter' && <ShowcaseSplitter client:visible />}
           {entry.island === 'ShowcaseActionBar' && <ShowcaseActionBar client:visible />}
           {entry.island === 'ShowcaseDownloadTrigger' && <ShowcaseDownloadTrigger client:visible />}
+          {entry.island === 'ShowcaseRecipeCard' && <ShowcaseRecipeCard client:visible />}
         </div>
         <div class="dark rounded-lg border border-border bg-background p-6 text-foreground">
           <p class="mb-4 text-xs uppercase tracking-wide text-muted-foreground">Dark</p>
@@ -186,6 +188,7 @@ const propsTables = extractPropsForSource(entry.source, repoRoot);
           {entry.island === 'ShowcaseSplitter' && <ShowcaseSplitter client:visible />}
           {entry.island === 'ShowcaseActionBar' && <ShowcaseActionBar client:visible />}
           {entry.island === 'ShowcaseDownloadTrigger' && <ShowcaseDownloadTrigger client:visible />}
+          {entry.island === 'ShowcaseRecipeCard' && <ShowcaseRecipeCard client:visible />}
         </div>
       </div>
     </section>

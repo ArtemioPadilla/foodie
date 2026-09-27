@@ -1,7 +1,23 @@
 ---
-// Placeholder until the section is migrated (roadmap Issue 005). Replace this
-// wrapper with the real page; keep the ES/FR twins in step (route-parity).
-import ComingSoon from '@/components/pages/ComingSoon.astro';
+/**
+ * `/recipes/` wrapper for `fr` (roadmap Issue 017). The page body lives in
+ * `components/pages/Recipes.astro`; this file owns the layout metadata for
+ * this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Recipes from '@/components/pages/Recipes.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'fr' as const;
+const alternates = hreflangAlternates('/recipes/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
 ---
 
-<ComingSoon lang="fr" route="/recipes/" section="recipes" />
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'recipe.title')}`}
+  description={t(lang, 'recipe.browseDescription')}
+  lang={lang}
+  alternates={alternates}
+>
+  <Recipes lang={lang} />
+</BaseLayout>

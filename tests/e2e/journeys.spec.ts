@@ -16,7 +16,7 @@ import { test, expect } from '@playwright/test';
 
 const SECTIONS = ['recipes', 'ingredients', 'planner', 'shopping', 'pantry', 'tracking', 'contribute'] as const;
 
-test('landing loads and the "Browse recipes" CTA reaches the /recipes/ placeholder', async ({ page }) => {
+test('landing loads and the "Browse recipes" CTA reaches the /recipes/ browser', async ({ page }) => {
   await page.goto('./');
 
   await expect(page.locator('main h1').first()).toBeVisible();
@@ -27,11 +27,33 @@ test('landing loads and the "Browse recipes" CTA reaches the /recipes/ placehold
   await cta.click();
 
   await page.waitForURL(/\/recipes\/$/);
-  // The section is not migrated yet: the coming-soon body renders with the
-  // section name in its heading and a way back home.
-  await expect(page.locator('main[data-page="coming-soon"]')).toHaveAttribute('data-section', 'recipes');
-  await expect(page.locator('main h1')).toContainText(/recipes/i);
-  await expect(page.getByRole('link', { name: /back to home/i })).toBeVisible();
+  // Roadmap Issue 017: the real page renders the RecipeBrowser island — the
+  // heading is static, the search box hydrates, and the catalog cards follow.
+  await expect(page.locator('main[data-page="recipes"] h1')).toContainText(/recipes/i);
+  await expect(page.getByTestId('recipe-search')).toBeVisible();
+  await expect(page.getByTestId('recipe-card').first()).toBeVisible();
+});
+
+test('the recipe browser keeps its filters in the URL and applies them from it', async ({ page }) => {
+  await page.goto('./recipes/?type=breakfast&sort=time-asc');
+
+  const results = page.getByTestId('recipe-results');
+  await expect(results).toBeVisible();
+  const cards = page.getByTestId('recipe-card');
+  const withFilter = await cards.count();
+  expect(withFilter).toBeGreaterThan(0);
+  await expect(page.getByTestId('active-filter-count')).toHaveText('1');
+
+  // Typing a search narrows the list and lands in `?q=`.
+  await page.getByTestId('recipe-search').fill('zzzz-no-such-recipe');
+  await expect(page.getByTestId('empty-filtered')).toBeVisible();
+  await expect(page).toHaveURL(/q=zzzz-no-such-recipe/);
+
+  // "Clear filters" resets to the full catalog and cleans the URL.
+  await page.getByTestId('reset-all').click();
+  await expect(page.getByTestId('empty-filtered')).toHaveCount(0);
+  expect(await cards.count()).toBeGreaterThan(withFilter);
+  await expect(page).not.toHaveURL(/type=|q=/);
 });
 
 test('the language switcher keeps the current route (EN → ES → FR)', async ({ page }) => {
