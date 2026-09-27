@@ -115,3 +115,220 @@ describe('i18n', () => {
     });
   });
 });
+
+// ── Foodie dictionaries (roadmap Issue 015, D7) ─────────────────────────────
+// Port of legacy `tests/unit/i18n.test.ts` (13), `tests/unit/translationSchema.test.ts`
+// (19) and `scripts/validateTranslationSync.js`, now against the typed
+// `src/i18n/{en,es,fr}.ts` dictionaries that absorbed `public/locales/*/translation.json`.
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { getTranslated, type Locale } from '../i18n';
+
+const ROOT = resolve(__dirname, '../..');
+const DICTIONARY_FILES: Record<Locale, string> = {
+  en: 'src/i18n/en.ts',
+  es: 'src/i18n/es.ts',
+  fr: 'src/i18n/fr.ts',
+};
+
+/** `{{name}}` placeholders of a value, sorted, so locales can be compared. */
+function placeholdersOf(value: string): string[] {
+  return [...value.matchAll(/\{\{\s*([\w.-]+)\s*\}\}/g)].map((m) => m[1]!).sort();
+}
+
+/** Resolve a dot-path leaf in a dictionary (undefined when missing). */
+function leaf(locale: Locale, key: string): unknown {
+  return key.split('.').reduce<unknown>((cur, part) => {
+    return cur && typeof cur === 'object' ? (cur as Record<string, unknown>)[part] : undefined;
+  }, dictionaries[locale]);
+}
+
+/**
+ * Keys per top-level group as written in the source file — a literal duplicate
+ * (`save: 'Save', … save: 'Guardar'`) is a `tsc` error (TS1117) *and* is
+ * reported here by name, mirroring `validateTranslationSync.js#checkDuplicates`.
+ */
+function duplicateKeysInSource(locale: Locale): string[] {
+  const src = readFileSync(resolve(ROOT, DICTIONARY_FILES[locale]), 'utf8');
+  const duplicates: string[] = [];
+  const groups = new Set<string>();
+  const groupRe = /^ {2}(\w+): \{\n([\s\S]*?)^ {2}\},\n/gm;
+  let m: RegExpExecArray | null;
+  while ((m = groupRe.exec(src))) {
+    const group = m[1]!;
+    if (groups.has(group)) duplicates.push(group);
+    groups.add(group);
+    const seen = new Set<string>();
+    for (const line of m[2]!.split('\n')) {
+      const km = line.match(/^ {4}'?([\w-]+)'?:/);
+      if (!km) continue;
+      if (seen.has(km[1]!)) duplicates.push(`${group}.${km[1]}`);
+      seen.add(km[1]!);
+    }
+  }
+  return duplicates;
+}
+
+describe('Foodie dictionaries (legacy translation.json → src/i18n)', () => {
+  const enKeys = collectLeafKeys(dictionaries.en).sort();
+
+  describe('translation loading', () => {
+    it('resolves the app name and tagline in every locale', () => {
+      expect(t('en', 'app.name')).toBe('Foodie');
+      expect(t('es', 'app.name')).toBe('Foodie');
+      expect(t('fr', 'app.name')).toBe('Foodie');
+      expect(t('en', 'app.tagline')).toBe('Your Personal Meal Planning Assistant');
+      expect(t('es', 'app.tagline')).toBe('Tu Asistente Personal de Planificación de Comidas');
+      expect(t('fr', 'app.tagline')).toBe('Votre Assistant Personnel de Planification de Repas');
+    });
+
+    it('translates navigation items in the three locales', () => {
+      expect(t('en', 'nav.recipes')).toBe('Recipes');
+      expect(t('en', 'nav.shopping')).toBe('Shopping');
+      expect(t('en', 'nav.pantry')).toBe('Pantry');
+      expect(t('en', 'nav.contribute')).toBe('Contribute');
+      expect(t('es', 'nav.recipes')).toBe('Recetas');
+      expect(t('es', 'nav.planner')).toBe('Planificador');
+      expect(t('fr', 'nav.recipes')).toBe('Recettes');
+      expect(t('fr', 'nav.planner')).toBe('Planificateur');
+    });
+
+    it('supports exactly three languages', () => {
+      expect(Object.keys(dictionaries).sort()).toEqual(['en', 'es', 'fr']);
+    });
+  });
+
+  describe('translation key validation', () => {
+    const sampleKeys = [
+      'app.name',
+      'app.tagline',
+      'nav.home',
+      'common.save',
+      'common.cancel',
+      'common.delete',
+      'common.edit',
+      'recipe.ingredients',
+      'recipe.instructions',
+      'recipe.prepTime',
+      'recipe.cookTime',
+    ];
+
+    it('never returns the key itself for known keys, in any locale', () => {
+      for (const locale of LOCALES) {
+        for (const key of sampleKeys) {
+          const value = t(locale, key);
+          expect(value, `${locale}:${key}`).not.toBe(key);
+          expect(value, `${locale}:${key}`).not.toMatch(/^[a-z]+\.[a-zA-Z]+$/);
+          expect(value.length).toBeGreaterThan(0);
+        }
+      }
+    });
+
+    it('returns the raw key for unknown keys (i18next semantics)', () => {
+      expect(t('en', 'this.key.does.not.exist')).toBe('this.key.does.not.exist');
+      expect(t('fr', 'this.key.does.not.exist')).toBe('this.key.does.not.exist');
+    });
+  });
+
+  describe('schema: parity, duplicates, empties, types', () => {
+    it('keeps the 29 legacy groups plus the template groups', () => {
+      const legacyGroups = [
+        'app', 'nav', 'tracking', 'goals', 'progress', 'common', 'errors', 'recipe', 'planner',
+        'shopping', 'pantry', 'contribute', 'profile', 'auth', 'filter', 'dietary', 'cuisine',
+        'tags', 'category', 'ingredients', 'ingredient', 'season', 'nutrition', 'footer',
+        'offline', 'accessibility', 'home', 'units', 'days',
+      ];
+      for (const locale of LOCALES) {
+        for (const group of legacyGroups) {
+          expect(dictionaries[locale], `${locale}.${group}`).toHaveProperty(group);
+        }
+      }
+      // 716 legacy leaves minus the 26 keys the template already defined, plus
+      // the template's own keys — never fewer than the legacy catalog of strings.
+      expect(enKeys.length).toBeGreaterThanOrEqual(716);
+    });
+
+    it('has identical key structures and counts in all languages', () => {
+      const esKeys = collectLeafKeys(dictionaries.es).sort();
+      const frKeys = collectLeafKeys(dictionaries.fr).sort();
+      expect(esKeys).toEqual(enKeys);
+      expect(frKeys).toEqual(enKeys);
+      expect(esKeys.length).toBe(enKeys.length);
+      expect(frKeys.length).toBe(enKeys.length);
+    });
+
+    for (const locale of LOCALES) {
+      it(`${locale}: has no duplicate keys`, () => {
+        const keys = collectLeafKeys(dictionaries[locale]);
+        expect(new Set(keys).size).toBe(keys.length);
+        expect(duplicateKeysInSource(locale)).toEqual([]);
+      });
+
+      it(`${locale}: has no empty or non-string leaf values`, () => {
+        const problems = collectLeafKeys(dictionaries[locale]).filter((key) => {
+          const value = leaf(locale, key);
+          return typeof value !== 'string' || value.trim() === '';
+        });
+        expect(problems, `Empty/non-string values in ${locale}: ${problems.join(', ')}`).toEqual([]);
+      });
+    }
+
+    it('has every critical key in all languages', () => {
+      const critical = [
+        'app.name', 'app.tagline', 'nav.home', 'nav.recipes', 'nav.planner', 'nav.shopping',
+        'nav.pantry', 'nav.contribute', 'common.save', 'common.cancel', 'common.delete',
+        'common.loading', 'common.error',
+      ];
+      for (const locale of LOCALES) {
+        for (const key of critical) {
+          expect(typeof leaf(locale, key), `${locale}:${key}`).toBe('string');
+        }
+      }
+    });
+
+    it('uses the same {{placeholders}} for each key in the three locales', () => {
+      const mismatches: string[] = [];
+      for (const key of enKeys) {
+        const expected = placeholdersOf(leaf('en', key) as string);
+        for (const locale of LOCALES) {
+          const actual = placeholdersOf(leaf(locale, key) as string);
+          if (actual.join(',') !== expected.join(',')) {
+            mismatches.push(`${locale}:${key} has {{${actual}}} vs en {{${expected}}}`);
+          }
+        }
+      }
+      expect(mismatches).toEqual([]);
+    });
+
+    it('pairs every <key>_plural with its singular key', () => {
+      const plurals = enKeys.filter((k) => k.endsWith('_plural'));
+      expect(plurals.length).toBeGreaterThan(0);
+      for (const plural of plurals) {
+        expect(enKeys, `${plural} without singular`).toContain(plural.replace(/_plural$/, ''));
+      }
+    });
+
+    it('resolves the legacy hyphenated keys (tags, season) through t()', () => {
+      expect(t('en', 'tags.gluten-free')).toBe('Gluten Free');
+      expect(t('fr', 'season.year-round')).not.toBe('season.year-round');
+    });
+  });
+
+  describe('getTranslated (catalog MultiLangText)', () => {
+    const water = { en: 'Water', es: 'Agua', fr: 'Eau' };
+
+    it('returns the requested language', () => {
+      expect(getTranslated(water, 'en')).toBe('Water');
+      expect(getTranslated(water, 'es')).toBe('Agua');
+      expect(getTranslated(water, 'fr')).toBe('Eau');
+    });
+
+    it('falls back to English when the variant is blank', () => {
+      expect(getTranslated({ ...water, es: '' }, 'es')).toBe('Water');
+    });
+  });
+
+  it('public/locales/ (i18next runtime files) is gone', () => {
+    expect(existsSync(resolve(ROOT, 'public/locales'))).toBe(false);
+  });
+});

@@ -12,7 +12,7 @@ Retrieve the original with `git show main:scripts/<name>` if needed.
 | `checkDuplicates.js` | Duplicate recipe ids / English names | `scripts/check-duplicates.mjs`, run inside `src/tests/catalog-schema.test.ts` |
 | `validateJSON.js` | ajv JSON-schema validation of recipes/ingredients | Zod schemas in `src/schemas/` + content collections (`src/content.config.ts`), enforced by `catalog-schema.test.ts` and `astro build` |
 | `validateTranslations.js` | EN/ES/FR present in every recipe text | `MultiLangTextSchema` (all three locales required, non-blank) + the translation walk in `catalog-schema.test.ts` |
-| `validateTranslationSync.js` | Key parity across `public/locales/*/translation.json` | `src/i18n/*.json` typed as `typeof en` (roadmap Issue 015) |
+| `validateTranslationSync.js` | Key parity across `public/locales/*/translation.json` | `src/i18n/{en,es,fr}.ts` typed as `typeof en` + `src/tests/i18n.test.ts` (roadmap Issue 015) |
 | `populate-data.mjs`, `bulk-populate.mjs`, `add-batch-{2,3,4}.mjs`, `generate-recipes.mjs` | One-off seeds that produced the current `public/data/*.json` | None — the catalog is hand-edited via PR (see `docs/recipes/catalog-data.md`) |
 | `generate-icons.mjs` | PWA icons with `sharp` | `scripts/generate-brand-assets.mjs` |
 | `optimizeImages.js` | Batch image compression with `sharp` | Astro `<Image />` / build-time optimisation |

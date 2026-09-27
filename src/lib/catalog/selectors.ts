@@ -4,12 +4,14 @@
  * They take the catalog arrays explicitly so they work in islands (from
  * `useCatalog()`), in Astro pages (from `getCollection`) and in tests.
  */
-import type { Beverage, Locale, MultiLangText } from '@/schemas';
+import { getTranslated } from '@/i18n';
+import type { Beverage, Locale } from '@/schemas';
 
-/** Text in `lang`, falling back to English (Issue 015 moves this to `src/i18n`). */
-export function pickLang(text: MultiLangText, lang: Locale): string {
-  return text[lang] || text.en;
-}
+/**
+ * @deprecated Alias kept for Issue 013 callers — the canonical helper is
+ * `getTranslated(text, lang)` in `src/i18n` (roadmap Issue 015).
+ */
+export const pickLang = getTranslated;
 
 export function getBeverageById(
   beverages: ReadonlyArray<Beverage>,
@@ -33,5 +35,5 @@ export function searchBeverages(
 ): Beverage[] {
   const term = query.trim().toLowerCase();
   if (!term) return [...beverages];
-  return beverages.filter((b) => pickLang(b.name, lang).toLowerCase().includes(term));
+  return beverages.filter((b) => getTranslated(b.name, lang).toLowerCase().includes(term));
 }

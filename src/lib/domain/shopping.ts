@@ -4,7 +4,7 @@
  * normalisation, category resolution/grouping, text/CSV/WhatsApp exports).
  */
 import type { Category, Ingredient, Locale, MealPlan, MealSlot, Recipe, ShoppingListItem } from '@/schemas';
-import { pickLang } from '@/lib/catalog/selectors';
+import { getTranslated } from '@/i18n';
 
 export type ShoppingExportFormat = 'text' | 'json' | 'csv' | 'whatsapp';
 
@@ -72,7 +72,7 @@ export function getCategoryLabel(
 ): string {
   const id = categoryId || OTHER_CATEGORY;
   const category = categories.find((c) => c.id === id);
-  if (category) return pickLang(category.name, lang);
+  if (category) return getTranslated(category.name, lang);
   return id.charAt(0).toUpperCase() + id.slice(1);
 }
 

@@ -1,3 +1,4 @@
+import type { MultiLangText } from '@/schemas/multi-lang-text';
 import { en } from './en';
 import { es } from './es';
 import { fr } from './fr';
@@ -190,4 +191,22 @@ export function collectLeafKeys(obj: unknown, prefix = ''): string[] {
   return Object.entries(obj as Record<string, unknown>).flatMap(([k, v]) =>
     collectLeafKeys(v, prefix ? `${prefix}.${k}` : k),
   );
+}
+
+/**
+ * Pick the `lang` variant of a catalog `MultiLangText` (recipe names, ingredient
+ * descriptions, category labels…), falling back to English when that variant is
+ * missing or blank. Port of the legacy `LanguageContext.getTranslated` (roadmap
+ * Issue 015): the dictionary handles UI strings via `t()`; catalog text is
+ * already trilingual in `public/data/*.json` and only needs selecting.
+ *
+ * Islands receive `lang` as a prop and pass it through — never read
+ * `navigator.language` here (see docs/recipes/i18n-islands.md).
+ *
+ * @example
+ * getTranslated({ en: 'Water', es: 'Agua', fr: 'Eau' }, 'fr') // "Eau"
+ * getTranslated({ en: 'Water', es: '', fr: 'Eau' }, 'es')     // "Water"
+ */
+export function getTranslated(text: MultiLangText, lang: Locale): string {
+  return text[lang] || text[DEFAULT_LOCALE];
 }

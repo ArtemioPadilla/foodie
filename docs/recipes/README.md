@@ -12,6 +12,7 @@ código vivo del demo — son recetas: copia lo que necesites a tu proyecto.
 | [supabase-migrations-ci.md](./supabase-migrations-ci.md) | Aplicar migraciones de DB e inyectar env públicas por GitHub Actions |
 | [catalog-data.md](./catalog-data.md) | **Foodie**: catálogo `public/data/*.json` como content collections validadas con Zod; cómo añadir una receta (JSON → PR → `validate-recipe-pr.yml`) |
 | [state.md](./state.md) | **Foodie**: estado entre islas con nanostores (`useStore`, acciones puras, `persistentAtom`) y por qué no React Context |
+| [i18n-islands.md](./i18n-islands.md) | **Foodie**: i18n en islas — `lang` por prop, `t(lang, key, params)`, `getTranslated(text, lang)`, nunca `navigator.language` en render |
 
 Principio transversal: **el extractor/servicio es stateless; el frontend escribe
 en la DB con la sesión del usuario + RLS** → no se usa la service key en ningún
