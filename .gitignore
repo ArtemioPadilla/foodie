@@ -1,56 +1,38 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Environment variables
+# Environment secrets — never commit real secrets
 .env
-.env.local
-.env.production.local
-.env.development.local
-.env.test.local
+.env.*
+# …but the committed example file must NOT be ignored (it carries no secrets)
+!.env.example
 
-# Testing
-coverage
-.nyc_output
-playwright-report
-test-results
-.lighthouseci
+# Build outputs
+node_modules/
+dist/
+.astro/
+.cache/
 
-# PWA
-dev-dist
-sw.js
-sw.js.map
-workbox-*.js
-workbox-*.js.map
+# Logs (any .log file — including firebase-debug.log, npm-debug.log, etc.)
+*.log
+logs/
 
-# Build
-build
-.cache
+# Test / CI artifacts
+test-results/
+playwright-report/
+.lighthouseci/
+coverage/
 
-# Snyk Security Extension - AI Rules (auto-generated)
-.github/instructions/snyk_rules.instructions.md
+# vibe-test harness scratch dir (scripts/vibe-test/score.ts) — per-run
+# temp files it always cleans up itself, but ignore the parent in case a
+# run is killed mid-flight
+.vibe-test-tmp/
 
-# act (GitHub Actions local runner)
-.act-*
-/tmp/artifacts
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/settings.json
+
+# Stray local files that sneaked into the working tree during development
+image002.png
+names.md

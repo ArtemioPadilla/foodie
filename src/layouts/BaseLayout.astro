@@ -1,0 +1,188 @@
+---
+import '../styles/global.css';
+import FeedbackFAB from '../components/common/FeedbackFAB.astro';
+import SiteHeader from '../components/common/SiteHeader.astro';
+import SiteFooter from '../components/common/SiteFooter.astro';
+import { SITE } from '../lib/site-meta';
+import { jsonLd as serializeJsonLd } from '../lib/json-ld';
+import OfflineBanner from '../components/islands/OfflineBanner';
+import HydrationCanary from '../components/islands/HydrationCanary';
+import InstallButton from '../components/islands/InstallButton';
+import UpdateToast from '../components/islands/UpdateToast';
+import PrivacyToast from '../components/islands/PrivacyToast';
+import { withBase } from '../lib/href';
+import { flags } from '../lib/flags';
+
+interface AlternateLink {
+  /** BCP-47 locale (e.g. 'en', 'es') or 'x-default' */
+  hreflang: string;
+  /** Absolute URL for that locale's equivalent page */
+  href: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: 'es' | 'en';
+  /** Hreflang alternates. When provided, emitted as <link rel="alternate">.
+   *  Pass at least en + es + x-default for bilingual pages.
+   *  Pages that don't pass this prop get no hreflang tags (safe default). */
+  alternates?: AlternateLink[];
+  /** JSON-LD blocks (schema.org). Each object is emitted as its own
+   *  <script type="application/ld+json"> — the structured identity agents
+   *  and search engines read. See src/lib/site-meta.ts for the source values. */
+  jsonLd?: Record<string, unknown>[];
+}
+
+const {
+  title = 'My App',
+  // Default to the site's real positioning line (src/lib/site-meta.ts) —
+  // pages that forget to pass a description must not introduce the site as
+  // boilerplate filler (this default is also what /llms.txt leads with).
+  description = SITE.description,
+  lang = 'en',
+  alternates,
+  jsonLd = [],
+} = Astro.props;
+
+// Canonical URL — derived from Astro.site + Astro.url.pathname so it always
+// reflects the live origin and the current subpath (e.g. /inceptor/gallery/).
+// Falls back gracefully when Astro.site is not set (local dev without --site).
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : null;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <!--
+      Zero-flash theme script: runs synchronously before first paint.
+      Reads localStorage.theme; falls back to prefers-color-scheme on
+      first visit. is:inline prevents Astro from deferring this as a
+      module, which is required for it to execute before the browser
+      renders any content.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isDark = stored === 'dark' || (stored === null && prefersDark);
+          if (isDark) document.documentElement.classList.add('dark');
+        } catch (_) {
+          // localStorage / matchMedia unavailable — leave default (light)
+        }
+      })();
+    </script>
+    <!--
+      Wire the @vite-pwa/astro virtual module into our Nano Stores so the
+      UpdateToast appears when a new SW is ready. This must be a module
+      script (no is:inline) so the @/* alias resolves at build time.
+      Placed after the theme script so the critical theme-flash prevention
+      runs first.
+    -->
+    <script>
+      import { initPwaRegister } from '@/lib/pwa-register';
+      import { initSentry } from '@/lib/sentry';
+      import { initAnalytics } from '@/lib/analytics';
+      initPwaRegister();
+      // Skeleton init — no-op unless the corresponding PUBLIC_FLAG_* env vars
+      // are set. See src/lib/sentry.ts and src/lib/analytics.ts.
+      void initSentry();
+      initAnalytics();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    {/* color-scheme: tells the browser's chrome (scrollbars, form controls,
+        etc.) which mode it is in, matching the CSS color-scheme on :root/.dark.
+        This prevents unstyled light scrollbars from showing in dark mode. */}
+    <meta name="color-scheme" content="light dark" />
+    {/* Canonical URL prevents duplicate-content penalties when the page is
+        accessible under multiple paths (e.g. trailing-slash variants). */}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {/* Hreflang alternates — only emitted when the caller provides them,
+        so pages that have no i18n equivalent don't emit bogus tags. */}
+    {alternates && alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    {/* Type system: Fraunces (display) + Hanken Grotesk (body) + JetBrains Mono.
+        preconnect + display=swap so text paints immediately in the fallback. */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/favicon.ico')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
+    <meta name="theme-color" content="#10b981" />
+    {/* Open Graph + Twitter Card — base-aware absolute URL to the OG image */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(withBase('/og-image.png'), Astro.site ?? 'https://artemiop.com').toString()} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(withBase('/og-image.png'), Astro.site ?? 'https://artemiop.com').toString()} />
+    {/* Agent-first index of the site (llmstxt.org convention). Generated at
+        build from the content collections — see src/pages/llms.txt.ts. */}
+    <link rel="alternate" type="text/plain" title="llms.txt" href={withBase('/llms.txt')} />
+    {/* JSON-LD structured data — the identity agents/search engines parse.
+        Blocks are provided per page; values come from src/lib/site-meta.ts. */}
+    {jsonLd.map((block) => (
+      <script type="application/ld+json" set:html={serializeJsonLd(block)} />
+    ))}
+  </head>
+  <body class="relative min-h-screen bg-background text-foreground antialiased" style="view-transition-name: body-bg">
+    {/* Skip-to-content link — WCAG 2.4.1 requirement. Visually hidden until
+        focused (sr-only focus:not-sr-only). Targets #main-content which is
+        added to the <main> element on pages within the file boundary.
+        On pages that lack the id, the anchor still works (just no scroll). */}
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:shadow-lg focus:outline-none"
+    >
+      Skip to content
+    </a>
+    <SiteHeader />
+    <slot />
+    <SiteFooter />
+    <FeedbackFAB lang={lang} />
+    <!--
+      OfflineBanner is mounted with client:idle so the online/offline event
+      listeners are live as soon as the browser finishes loading, without
+      blocking first paint. position: fixed means it doesn't affect layout.
+    -->
+    <OfflineBanner client:idle />
+    <!--
+      HydrationCanary: listens for React hydration-mismatch error signatures
+      and writes a pre-filled GitHub issue URL to sessionStorage so the FAB
+      can surface it. Renders nothing; mounted with client:idle to avoid
+      blocking first paint.
+    -->
+    <HydrationCanary client:idle />
+    <!--
+      InstallButton: appears when `beforeinstallprompt` fires (Chromium only).
+      Stays invisible on Safari/Firefox — no extra conditional needed.
+      UpdateToast: appears when a new SW is waiting; the Reload button
+      skip-waits + reloads. Both use client:idle for the same reason as
+      OfflineBanner — no need to block first paint.
+    -->
+    <InstallButton client:idle />
+    <UpdateToast client:idle />
+    <!--
+      PrivacyToast: first-load ethics disclosure (Epic 12). Tells users that
+      diagnostics stay local and only leave the device if they open an issue.
+      Shown once per browser, then suppressed via localStorage. Gated behind
+      a feature flag (on by default); client:idle so it never blocks paint.
+    -->
+    {flags.privacyToast && <PrivacyToast client:idle />}
+  </body>
+</html>

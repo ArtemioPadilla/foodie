@@ -1,0 +1,66 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    ignore:
+      # Astro 6 is peer-capped out by @vite-pwa/astro@1.2.0 (supports astro
+      # ^1–^5 only). Ignore the astro/@astrojs/* major bumps until the PWA plugin
+      # ships Astro 6 support — otherwise dependabot re-proposes a CI-failing
+      # group PR every release (see closed #74, #80, #87, ADR 0004).
+      # Wildcard entry covers all current and future @astrojs/* packages in one rule.
+      - dependency-name: "astro"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@astrojs/*"
+        update-types: ["version-update:semver-major"]
+      # typescript@7 is peer-capped out by @astrojs/check@0.9.9 -> @astrojs/
+      # language-server -> @volar/kit (peer typescript ^5||^6). It's grouped
+      # under "tooling" below, so a bare typescript-major bump reliably breaks
+      # the whole group's npm ci (see closed #236).
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # eslint@10 is peer-capped out by eslint-plugin-jsx-a11y@6.10.2 (peer
+      # eslint ^3..^9). Ignore until jsx-a11y ships an eslint-10-compatible
+      # release (see closed #219).
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # @tanstack/react-table@9 removes/renames APIs data-table.tsx depends
+      # on directly (getIsSomeRowsSelected, toggleAllRowsSelected,
+      # getIsSelected, toggleSelected, toggleExpanded, getIsExpanded, the
+      # VisibilityState export, column-pinning generics) — a real, verified
+      # tsc failure, not a peer-dep resolution issue. It's grouped under
+      # "tanstack" below with @tanstack/react-query and @tanstack/react-virtual
+      # (which bump safely), so a bare major-bump ignore is needed to stop the
+      # group from reliably shipping a broken PR every release (see closed #239).
+      # A deliberate, scoped v9 migration is future work, not a drive-by bump.
+      - dependency-name: "@tanstack/react-table"
+        update-types: ["version-update:semver-major"]
+    groups:
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      tooling:
+        patterns:
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "vitest"
+          - "typescript"
+          - "prettier"
+    commit-message:
+      prefix: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci

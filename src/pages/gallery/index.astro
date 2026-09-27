@@ -1,0 +1,147 @@
+---
+import { withBase } from '@/lib/href';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  galleryManifest,
+  categoryLabels,
+  categoryOrder,
+  getByCategory,
+} from '../../content/gallery';
+
+// Import every gallery island statically so Astro can wire hydration.
+// (Dynamic lookups via a registry don't work for `client:*` directives.)
+import ShowcaseSimples from '../../components/islands/ShowcaseSimples';
+import ShowcaseFormControls from '../../components/islands/ShowcaseFormControls';
+import ShowcaseOverlays from '../../components/islands/ShowcaseOverlays';
+import ShowcaseDisclosure from '../../components/islands/ShowcaseDisclosure';
+import ShowcaseFeedback from '../../components/islands/ShowcaseFeedback';
+import ShowcaseAdvanced from '../../components/islands/ShowcaseAdvanced';
+import ShowcaseInputPrimitives from '../../components/islands/ShowcaseInputPrimitives';
+import ShowcaseNav from '../../components/islands/ShowcaseNav';
+import ShowcaseExtras from '../../components/islands/ShowcaseExtras';
+import ShowcaseDialog from '../../components/islands/ShowcaseDialog';
+import ShowcaseDropdown from '../../components/islands/ShowcaseDropdown';
+import ShowcaseTabs from '../../components/islands/ShowcaseTabs';
+import ShowcaseToast from '../../components/islands/ShowcaseToast';
+import ShowcaseForm from '../../components/islands/ShowcaseForm';
+import ShowcaseFieldType from '../../components/islands/ShowcaseFieldType';
+import ShowcaseDataTable from '../../components/islands/ShowcaseDataTable';
+import ShowcaseKpis from '../../components/islands/ShowcaseKpis';
+import ShowcaseCharts from '../../components/islands/ShowcaseCharts';
+import MotionDemo from '../../components/islands/MotionDemo';
+import ShowcasePWA from '../../components/islands/ShowcasePWA';
+import ShowcaseErrorBoundary from '../../components/islands/ShowcaseErrorBoundary';
+import ShowcaseSplitter from '../../components/islands/ShowcaseSplitter';
+import ShowcaseActionBar from '../../components/islands/ShowcaseActionBar';
+import ShowcaseDownloadTrigger from '../../components/islands/ShowcaseDownloadTrigger';
+
+// Counts derived from the manifest so the header stays self-maintaining.
+const populatedCategoryCount = categoryOrder.filter((cat) => getByCategory(cat).length > 0).length;
+---
+
+<BaseLayout title="Component gallery" description="Every component in this scaffold, rendered live.">
+  {/* id="main-content" targets the skip-to-content link in BaseLayout */}
+  <main id="main-content" class="mx-auto max-w-6xl px-5 py-12">
+    <header class="mb-12">
+      <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">The kit</p>
+      <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-foreground" style="view-transition-name: page-title">
+        Component gallery
+      </h1>
+      <p class="mt-3 max-w-2xl text-muted-foreground">
+        All {galleryManifest.length} components across {populatedCategoryCount} categories, rendered live in the
+        current theme. Toggle the theme in the header to see any of them flip. Open a component for
+        its light + dark side-by-side, variant matrix and source.
+      </p>
+    </header>
+
+    {
+      categoryOrder.map((cat) => {
+        const entries = getByCategory(cat);
+        if (entries.length === 0) return null;
+        return (
+          <section class="mb-14">
+            <h2 class="mb-5 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-primary">
+              {categoryLabels[cat]}
+              <span class="h-px flex-1 bg-border" />
+            </h2>
+            <div class="space-y-6">
+              {entries.map((entry) => (
+                <article class="overflow-hidden rounded-xl border border-border bg-card">
+                  <div class="flex items-center justify-between gap-3 border-b border-border px-5 py-3">
+                    <div class="flex items-center gap-2.5">
+                      <h3 class="font-semibold text-foreground">
+                        <a href={withBase(`/gallery/${entry.slug}/`)} class="transition-colors hover:text-primary">
+                          {entry.name}
+                        </a>
+                      </h3>
+                      <span
+                        class:list={[
+                          'rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide',
+                          entry.status === 'stable' &&
+                            'border-primary/30 bg-primary/10 text-primary',
+                          entry.status === 'beta' &&
+                            'border-yellow-500/40 bg-yellow-500/15 text-yellow-600 dark:text-yellow-300',
+                          entry.status === 'experimental' &&
+                            'border-orange-500/40 bg-orange-500/15 text-orange-600 dark:text-orange-300',
+                        ]}
+                      >
+                        {entry.status}
+                      </span>
+                    </div>
+                    <a
+                      href={withBase(`/gallery/${entry.slug}/`)}
+                      class="shrink-0 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      open →
+                    </a>
+                  </div>
+                  <p class="px-5 pt-4 text-sm text-muted-foreground">{entry.summary}</p>
+                  <div class="p-5">
+                    {entry.island === 'ShowcaseSimples' && <ShowcaseSimples client:visible />}
+                    {entry.island === 'ShowcaseFormControls' && <ShowcaseFormControls client:visible />}
+                    {entry.island === 'ShowcaseOverlays' && <ShowcaseOverlays client:visible />}
+                    {entry.island === 'ShowcaseDisclosure' && <ShowcaseDisclosure client:visible />}
+                    {entry.island === 'ShowcaseFeedback' && <ShowcaseFeedback client:visible />}
+                    {entry.island === 'ShowcaseAdvanced' && <ShowcaseAdvanced client:visible />}
+                    {entry.island === 'ShowcaseInputPrimitives' && <ShowcaseInputPrimitives client:visible />}
+                    {entry.island === 'ShowcaseNav' && <ShowcaseNav client:visible />}
+                    {entry.island === 'ShowcaseExtras' && <ShowcaseExtras client:visible />}
+                    {entry.island === 'ShowcaseDialog' && <ShowcaseDialog client:visible />}
+                    {entry.island === 'ShowcaseDropdown' && <ShowcaseDropdown client:visible />}
+                    {entry.island === 'ShowcaseTabs' && <ShowcaseTabs client:visible />}
+                    {entry.island === 'ShowcaseToast' && <ShowcaseToast client:visible />}
+                    {entry.island === 'ShowcaseForm' && <ShowcaseForm client:visible />}
+                    {entry.island === 'ShowcaseFieldType' && <ShowcaseFieldType client:visible />}
+                    {entry.island === 'ShowcaseDataTable' && <ShowcaseDataTable client:visible />}
+                    {entry.island === 'ShowcaseKpis' && <ShowcaseKpis client:visible />}
+                    {entry.island === 'ShowcaseCharts' && <ShowcaseCharts client:visible />}
+                    {entry.island === 'MotionDemo' && <MotionDemo client:visible />}
+                    {entry.island === 'ShowcasePWA' && <ShowcasePWA client:visible />}
+                    {entry.island === 'ShowcaseErrorBoundary' && <ShowcaseErrorBoundary client:visible />}
+                    {entry.island === 'ShowcaseSplitter' && <ShowcaseSplitter client:visible />}
+                    {entry.island === 'ShowcaseActionBar' && <ShowcaseActionBar client:visible />}
+                    {entry.island === 'ShowcaseDownloadTrigger' && <ShowcaseDownloadTrigger client:visible />}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+
+    <footer class="mt-4 border-t border-border pt-6 text-sm text-muted-foreground">
+      <p>
+        Looking for composed demos? Visit
+        <a href={withBase('/demos/')} class="text-primary underline underline-offset-2 hover:text-primary/80">/demos</a>
+        for full dashboard / data / PWA pages.
+      </p>
+      <p class="mt-1">
+        Building something new? See the
+        <a href={withBase('/docs/building/adding-a-component/')} class="text-primary underline underline-offset-2 hover:text-primary/80">
+          contribution guide
+        </a>.
+      </p>
+    </footer>
+  </main>
+</BaseLayout>

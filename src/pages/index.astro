@@ -1,0 +1,342 @@
+---
+import { withBase } from '@/lib/href';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { galleryManifest, categoryOrder, categoryLabels, getByCategory } from '../content/gallery';
+import StatusBadgeStrip from '@/components/marketing/StatusBadgeStrip.astro';
+import { SITE, REPO_URL } from '@/lib/site-meta';
+
+// ── Honest build-time stats ────────────────────────────────────────────────
+// Pages: count every .astro / .md / .mdx file under src/pages/.
+// import.meta.glob is resolved at build time by Vite — the count always
+// reflects the actual route files at the moment the build ran. Note: this
+// counts files, not emitted HTML routes; dynamic routes ([...slug]) count as
+// one file but may emit many pages. The label says "pages built" which is
+// accurate at the file level.
+const pageFiles = import.meta.glob('./\*\*/\*.{astro,md,mdx}');
+const pageCount = Object.keys(pageFiles).length;
+
+// Test files: count every *.test.* file under src/tests/ and any co-located
+// tests elsewhere in src/. The label says "test files" which is the honest
+// unit — not test cases, which fluctuate per file.
+const testFiles = import.meta.glob('../\*\*/\*.test.{ts,tsx,js,jsx}');
+const testFileCount = Object.keys(testFiles).length;
+
+// componentCount stays as a declared constant — it reflects the number of
+// component primitives under src/components/ui/ which we own (44 files as of
+// this commit). Updated when new components ship.
+const componentCount = 44;
+
+const stats = [
+  // pageCount = files in src/pages/**; see comment above for caveats.
+  { value: String(pageCount), label: 'pages built' },
+  // testFileCount = *.test.{ts,tsx} files in src/**
+  { value: String(testFileCount), label: 'test files' },
+  { value: String(componentCount), label: 'components' },
+  { value: '0 KB', label: 'JS by default' },
+];
+
+// "What's inside" shows a slice of the category grid. Compute the slice and
+// the remainder so the "+N more" note stays accurate as categories are added.
+const VISIBLE_CATEGORIES = 6;
+const populatedCategories = categoryOrder.filter((cat) => getByCategory(cat).length > 0);
+const visibleCategories = populatedCategories.slice(0, VISIBLE_CATEGORIES);
+const hiddenCategoryCount = populatedCategories.length - visibleCategories.length;
+
+const flow = [
+  {
+    title: 'File the issue',
+    body: 'Use a template or run <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.7rem]">npm run new-issue</code>. Diagnostics pre-fill from the FeedbackFAB.',
+  },
+  {
+    title: 'Hand it to <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.7rem]">Claude Code</code>',
+    body: 'prometeo plans, forja implements with a red→green test first, centinela validates the build, types, tests and ethics gate.',
+  },
+  {
+    title: 'PR opens',
+    body: 'Carries the issue reference, sub-agent reports and the 8-item ethics checklist. CI re-validates on every push.',
+  },
+  {
+    title: 'Merge',
+    body: 'The issue closes itself. Visual regression snapshots both <span class="font-mono text-[0.8em]">/gallery</span> and <span class="font-mono text-[0.8em]">/demos</span>.',
+  },
+];
+
+// Hreflang alternates for EN home — links to the ES equivalent and sets the
+// x-default. See BaseLayout for the prop contract.
+const site = 'https://artemiop.com';
+const alternates = [
+  { hreflang: 'en', href: `${site}/inceptor/` },
+  { hreflang: 'es', href: `${site}/inceptor/es/` },
+  { hreflang: 'x-default', href: `${site}/inceptor/` },
+];
+// JSON-LD identity blocks (agents/search engines). Values single-sourced
+// from src/lib/site-meta.ts — re-brand there when instantiating.
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    description: SITE.description,
+    url: new URL(import.meta.env.BASE_URL, Astro.site ?? 'https://artemiop.com').toString(),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    name: SITE.name,
+    description: SITE.description,
+    codeRepository: REPO_URL,
+    license: `https://spdx.org/licenses/${SITE.license}`,
+    programmingLanguage: [...SITE.programmingLanguages],
+    runtimePlatform: 'Astro 5 / React 19',
+  },
+];
+---
+
+<BaseLayout
+  title="Inceptor — issue-driven web scaffold"
+  description={SITE.description}
+  lang="en"
+  alternates={alternates}
+  jsonLd={jsonLd}
+>
+  <!-- ───────────────────────── HERO ───────────────────────── -->
+  <section class="relative overflow-hidden grain">
+    <!-- atmosphere -->
+    <div class="pointer-events-none absolute inset-0 bg-grid mask-fade-b"></div>
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-[600px] glow-emerald"></div>
+
+    <div class="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 px-5 pb-20 pt-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-6 lg:pb-28 lg:pt-20">
+      <!-- copy -->
+      <div>
+        <div class="rise inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1.5 text-xs font-medium tracking-wide text-primary backdrop-blur" style="animation-delay:.02s">
+          <span class="relative flex h-2 w-2">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60"></span>
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
+          </span>
+          <span class="font-mono">inceptor</span>
+          <span class="text-muted-foreground">· issue-driven web scaffold</span>
+        </div>
+
+        <h1
+          class="rise mt-6 font-display text-5xl font-semibold leading-[0.98] tracking-tight text-foreground sm:text-6xl lg:text-7xl"
+          style="view-transition-name: page-title; animation-delay:.08s"
+        >
+          Start every build<br />
+          at <span class="italic text-primary">full speed.</span>
+        </h1>
+
+        {/* Methodology-first subcopy: the loop (issue → PR → merge) and
+            governance mechanical are the differentiators. Stack goes last,
+            demoted to a quiet one-liner. See docs/POSITIONING.md §1. */}
+        <p class="rise mt-6 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg" style="animation-delay:.16s">
+          A governed, agent-orchestrated way of working: every feature travels
+          the same loop — <span class="text-foreground font-medium">issue → Claude triages → PR → merge</span>.
+          Quality and ethics are enforced by the repo, not by discipline.
+        </p>
+
+        {/* npm create command — the primary L0 door per POSITIONING.md §3.
+            Plain <code> block; no JS copy button needed for this read-only snippet. */}
+        <div class="rise mt-5" style="animation-delay:.20s">
+          <code class="inline-block rounded-lg border border-border bg-muted px-4 py-2.5 font-mono text-sm text-foreground select-all">
+            npm create inceptor-app
+          </code>
+        </div>
+
+        <div class="rise mt-8 flex flex-wrap items-center gap-3" style="animation-delay:.24s">
+          <a
+            href={withBase('/docs/start-here/quick-start/')}
+            class="group inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+          >
+            Quick start
+            <span class="transition-transform group-hover:translate-x-0.5">→</span>
+          </a>
+          <a
+            href={withBase('/gallery/')}
+            class="inline-flex items-center gap-2 rounded-xl border border-border bg-card/60 px-6 py-3 text-sm font-semibold text-foreground backdrop-blur transition-colors hover:border-primary/40 hover:bg-accent/50"
+          >
+            Explore the gallery
+          </a>
+        </div>
+
+        <div class="rise mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-muted-foreground" style="animation-delay:.3s">
+          <a href={withBase('/demos/')} class="transition-colors hover:text-primary">/demos</a>
+          <span class="text-border">·</span>
+          <a href={withBase('/docs/')} class="transition-colors hover:text-primary">/docs</a>
+          <span class="text-border">·</span>
+          <a href={withBase('/blog/')} class="transition-colors hover:text-primary">/blog</a>
+          <span class="text-border">·</span>
+          <a href="https://github.com/ArtemioPadilla/inceptor" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-primary">github ↗</a>
+          <span class="text-border">·</span>
+          {/* Stack is table stakes — mentioned once, quietly, at the end. */}
+          <span class="text-muted-foreground/60">Astro 5 · React 19 · Tailwind v4 · Base UI</span>
+        </div>
+      </div>
+
+      <!-- the loop graphic -->
+      <div class="rise relative mx-auto hidden aspect-square w-full max-w-md place-items-center lg:grid" style="animation-delay:.2s">
+        <div class="absolute inset-8 rounded-full glow-emerald opacity-70 blur-2xl"></div>
+        <svg viewBox="0 0 400 400" class="float-slow relative h-full w-full" role="img" aria-label="The Inceptor loop: issue, build, review, merge — repeating.">
+          <defs>
+            <linearGradient id="ig" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="var(--color-primary-400)" />
+              <stop offset="100%" stop-color="var(--color-primary-600)" />
+            </linearGradient>
+            <radialGradient id="core" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--color-primary-400)" />
+              <stop offset="100%" stop-color="var(--color-primary-700)" />
+            </radialGradient>
+          </defs>
+          <!-- orbit -->
+          <g class="spin-slow" style="transform-origin:200px 200px">
+            <circle cx="200" cy="200" r="150" fill="none" stroke="url(#ig)" stroke-width="1.5" stroke-dasharray="4 10" opacity="0.55" />
+            <circle cx="200" cy="50" r="9" fill="url(#ig)" />
+            <circle cx="330" cy="275" r="9" fill="url(#ig)" />
+            <circle cx="70" cy="275" r="9" fill="url(#ig)" />
+          </g>
+          <!-- connecting arcs (the loop) -->
+          <g fill="none" stroke="url(#ig)" stroke-width="2.5" stroke-linecap="round" opacity="0.9">
+            <path d="M200 80 A 120 120 0 0 1 304 260" />
+            <path d="M304 260 A 120 120 0 0 1 96 260" />
+            <path d="M96 260 A 120 120 0 0 1 200 80" />
+          </g>
+          <!-- core spark -->
+          <circle cx="200" cy="200" r="34" fill="url(#core)" />
+          <circle cx="200" cy="200" r="34" fill="none" stroke="var(--color-primary-400)" stroke-width="1" opacity="0.5" />
+          <path d="M200 184 v32 M184 200 h32" stroke="var(--primary-foreground)" stroke-width="3" stroke-linecap="round" opacity="0.85" />
+        </svg>
+        <!-- stage labels -->
+        <span class="absolute left-1/2 top-1 -translate-x-1/2 rounded-md border border-border bg-card/80 px-2 py-0.5 font-mono text-[0.65rem] text-muted-foreground backdrop-blur">issue</span>
+        <span class="absolute bottom-12 right-0 rounded-md border border-border bg-card/80 px-2 py-0.5 font-mono text-[0.65rem] text-muted-foreground backdrop-blur">merge</span>
+        <span class="absolute bottom-12 left-0 rounded-md border border-border bg-card/80 px-2 py-0.5 font-mono text-[0.65rem] text-muted-foreground backdrop-blur">review</span>
+      </div>
+    </div>
+
+    <!-- stat strip -->
+    <div class="relative mx-auto max-w-6xl px-5">
+      <dl class="rise grid grid-cols-2 divide-border rounded-2xl border border-border bg-card/40 backdrop-blur sm:grid-cols-4 sm:divide-x" style="animation-delay:.36s">
+        {stats.map((s) => (
+          <div class="px-6 py-5">
+            <dt class="font-display text-3xl font-semibold text-foreground">{s.value}</dt>
+            <dd class="mt-1 font-mono text-xs uppercase tracking-wider text-muted-foreground">{s.label}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {/* Status badge strip — live CI/Deploy/License shields.
+          Positioned below the stat grid so it reads as "the metrics are live"
+          rather than competing with the stat cards above.
+          See src/components/marketing/StatusBadgeStrip.astro for CLS notes. */}
+      <div class="rise mt-4 flex justify-center" style="animation-delay:.42s">
+        <StatusBadgeStrip />
+      </div>
+    </div>
+  </section>
+
+  {/* id="main-content" targets the skip-to-content link in BaseLayout */}
+  <main id="main-content" class="mx-auto max-w-6xl px-5">
+
+    <!-- ─────────────── HOW IT HAPPENS (moved above "What's inside") ─────────────── -->
+    {/* Per POSITIONING.md §1: lead with the methodology — the loop is the
+        differentiator. "What's inside" (the kit) follows as proof material. */}
+    <section class="py-20 lg:py-24">
+      <div class="relative overflow-hidden rounded-3xl border border-border bg-card p-8 sm:p-12">
+        <div class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 glow-emerald opacity-50 blur-2xl"></div>
+        <div class="relative">
+          <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">The loop</p>
+          <h2 class="mt-2 font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            How a feature ships
+          </h2>
+          <ol class="mt-10 grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2">
+            {flow.map((step, i) => (
+              <li class="flex gap-4">
+                <span class="select-none font-display text-4xl font-semibold leading-none text-primary">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 class="font-semibold text-foreground" set:html={step.title} />
+                  <p class="mt-1.5 text-sm leading-relaxed text-muted-foreground" set:html={step.body} />
+                </div>
+              </li>
+            ))}
+          </ol>
+          <div class="mt-10 flex flex-wrap gap-4">
+            <a href={withBase('/docs/start-here/inceptor-tour/')} class="inline-flex items-center gap-1.5 font-semibold text-primary transition-colors hover:text-primary/80">
+              Read the 60-second tour →
+            </a>
+            {/* Prominent link to the live walkthrough page — see docs/AUDIT-2026-06.md §7 item 2
+                and docs/POSITIONING.md §4. The loop section is the teaser; /how-it-works
+                is the full worked example with a real PR. */}
+            <a
+              href={withBase('/how-it-works/')}
+              class="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2 font-semibold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
+            >
+              See a real run →
+            </a>
+            <a href={withBase('/docs/how-we-work/inceptor/')} class="text-muted-foreground transition-colors hover:text-foreground">
+              Full workflow doc
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-10 text-center text-sm text-muted-foreground">
+        See a bug? Hit the
+        <span class="font-medium text-primary">chat bubble</span>
+        bottom-right — it files a GitHub issue with diagnostics pre-filled.
+      </p>
+    </section>
+
+    <!-- ─────────────── WHAT'S INSIDE ─────────────── -->
+    <section class="pb-20 lg:pb-24">
+      <div class="mb-10 flex items-end justify-between gap-4">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">The kit</p>
+          <h2 class="mt-2 font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">What's inside</h2>
+        </div>
+        <a href={withBase('/gallery/')} class="shrink-0 font-mono text-sm text-muted-foreground transition-colors hover:text-primary">
+          browse all {galleryManifest.length} →
+        </a>
+      </div>
+
+      <ul class="grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        {
+          visibleCategories.map((cat) => {
+            const entries = getByCategory(cat);
+            const first = entries[0];
+            // Categories with zero entries never reach the teaser grid, but
+            // noUncheckedIndexedAccess can't know that — guard explicitly.
+            if (!first) return null;
+            return (
+              <li class="bg-card">
+                <a
+                  href={withBase(`/gallery/${first.slug}/`)}
+                  class="group relative flex h-full flex-col p-6 transition-colors hover:bg-accent/40"
+                >
+                  <span class="absolute inset-x-0 top-0 h-px scale-x-0 bg-primary transition-transform duration-300 group-hover:scale-x-100"></span>
+                  <p class="font-mono text-[0.7rem] uppercase tracking-[0.18em] text-primary">
+                    {categoryLabels[cat]}
+                  </p>
+                  <h3 class="mt-2 text-lg font-semibold text-foreground">
+                    {first.name}
+                  </h3>
+                  <p class="mt-2 text-sm leading-relaxed text-muted-foreground">{first.summary}</p>
+                  <span class="mt-auto pt-4 font-mono text-xs text-muted-foreground">
+                    {entries.length > 1 ? `+${entries.length - 1} more →` : 'view →'}
+                  </span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+
+      {hiddenCategoryCount > 0 && (
+        <p class="mt-5 font-mono text-xs text-muted-foreground">
+          + {hiddenCategoryCount} more {hiddenCategoryCount === 1 ? 'category' : 'categories'} in the
+          <a href={withBase('/gallery/')} class="text-primary underline underline-offset-2 transition-colors hover:text-primary/80"> gallery →</a>
+        </p>
+      )}
+    </section>
+
+  </main>
+</BaseLayout>

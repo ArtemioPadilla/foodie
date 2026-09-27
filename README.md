@@ -1,232 +1,79 @@
-# 🍽️ Foodie - Meal Planning PWA
+# Inceptor
 
-A comprehensive, multilingual Progressive Web Application for meal planning, recipe management, and shopping list generation.
+> An Astro 5 + React 19 starter where every feature ships through a GitHub issue: **issue → Claude Code → PR → merge → deploy.** Batteries-included UI, zero JS by default.
 
-![Foodie Banner](public/images/banner.svg)
+**[Live demo → artemiop.com/inceptor](https://artemiop.com/inceptor/)**
 
-## ✨ Features
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/ArtemioPadilla/inceptor/actions)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+[![Components](https://img.shields.io/badge/components-~44-emerald)](./docs/component-catalog.md)
+[![Deps beyond stack](https://img.shields.io/badge/deps%20beyond%20stack-0-success)](./docs/component-catalog.md)
 
-- 🔍 **Recipe Browser**: Search and filter recipes by cuisine, dietary tags, prep time, and more
-- 📅 **Meal Planner**: Create weekly meal plans with drag-and-drop interface
-- 🛒 **Shopping Lists**: Auto-generate organized shopping lists from meal plans
-- 📦 **Pantry Management**: Track ingredients and get recipe suggestions
-- 🌍 **Multilingual**: Full support for English, Spanish, and French
-- 🌙 **Dark Mode**: Beautiful dark theme for comfortable viewing
-- 📱 **PWA**: Install as an app, works offline
-- 🔐 **User Accounts**: Save favorites and sync across devices (optional Firebase)
-- 🤝 **Community**: GitHub-integrated recipe contribution system
+Inceptor is a production-grade web template built around **Issue-Driven Development**. It ships an islands-architecture Astro site with a full UI kit, a custom docs site, a component gallery, live demos, a blog, and PWA/offline support — and a `FeedbackFAB` that lets real users file pre-filled GitHub issues straight from the running app.
 
-## 🚀 Quick Start
+## What you get
 
-### Prerequisites
+### Stack
 
-- Node.js 20+ and npm
-- Git
+| Package | Role |
+|---|---|
+| **Astro 5** | Islands architecture, ships zero JS by default |
+| **React 19** (`@astrojs/react`) | Only for interactive islands |
+| **Tailwind v4** (`@tailwindcss/vite`) | Styling — no `@astrojs/tailwind` |
+| **Base UI** (`@base-ui-components/react`) | shadcn-compatible primitives (not Radix) |
+| **TanStack Table + Query + Virtual** | DataTable, per-island data, virtualization |
+| **Tremor Raw** (copy-paste) | KPIs, trackers, charts — you own the source |
+| **Motion** (`motion/react`) | Lazy React animations |
+| **PWA** (`@vite-pwa/astro` + Workbox) | Service worker + offline cache |
 
-### Installation
+Everything else (Recharts, Nano Stores, react-hook-form + Zod, lucide, vitest) lives in [`CLAUDE.md`](./CLAUDE.md). No dependencies beyond this curated stack — dependency-free components add zero extra weight.
+
+### ~44 components across 13 gallery categories
+
+Primitives, form controls, advanced inputs, navigation, compound components (Dialog/Tabs/Toast/Form), overlays, disclosure, feedback, DataTable, KPIs, charts, and data-viz extras. Full inventory in [`docs/component-catalog.md`](./docs/component-catalog.md).
+
+### Optional self-hosted backend
+
+Two interchangeable archetypes — **`server-node/`** (Hono, reuses the frontend's Zod schemas) and **`server-flask/`** (Flask + Pydantic) — expose the same `/api/*` contract: contact/newsletter handlers, a token-backed GitHub proxy (lifts the 60 req/h cap), feedback→issue creation, and OpenAPI/Swagger. Entirely opt-in via `PUBLIC_API_BASE`; unset, the site stays fully static. See **[the backend guide](https://artemiop.com/inceptor/docs/building/backend/)** and [ADR 0006](./docs/decisions/0006-self-hosted-backend-archetypes.md).
+
+### Explore it live
+
+- **[Gallery](https://artemiop.com/inceptor/gallery/)** — every component rendered live
+- **[Demos](https://artemiop.com/inceptor/demos/)** — dashboard + data-table in context, plus the [backend API contract](https://artemiop.com/inceptor/demos/api/)
+- **[Docs](https://artemiop.com/inceptor/docs/)** — custom docs site with search
+- **[Blog](https://artemiop.com/inceptor/blog/)** — content-collection example
+
+## Quick start
 
 ```bash
-# Clone the repository
-git clone https://github.com/artemiopadilla/foodie.git
-cd foodie
-
-# Install dependencies
+git clone https://github.com/ArtemioPadilla/inceptor.git
+cd inceptor
 npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
+npm run dev          # http://localhost:4321
 ```
 
-The app will be available at `http://localhost:5173`
+Useful scripts: `npm run build`, `npm run preview`, `npm run check` (typecheck + tests + build), `npm run test`.
 
-## 📦 Tech Stack
+## Deploy
 
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite 5
-- **Styling**: Tailwind CSS
-- **State Management**: React Context API
-- **Internationalization**: i18next
-- **PWA**: vite-plugin-pwa
-- **Icons**: Lucide React
-- **Backend (Optional)**: Firebase (Auth, Firestore, Storage)
-- **Deployment**: GitHub Pages
+Inceptor ships static HTML + a service worker, so any static host works. The default is **GitHub Pages** (repo Settings → Pages → Source: "GitHub Actions"); pushes to `main` deploy automatically. Cloudflare Pages, Netlify, and Vercel guides are in **[`docs/deploy/`](./docs/deploy/)**.
 
-## 📝 Available Scripts
+## How development works
 
-### Using npm
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
-npm test             # Run unit tests
-npm run test:e2e     # Run E2E tests
-```
-
-### Using Makefile (Recommended)
-
-We provide a comprehensive Makefile for easier development and testing:
-
-```bash
-make help            # Show all available commands
-make dev             # Start development server
-make build           # Build for production
-make test:all        # Run all tests
-make validate:all    # Run all validations
-make act:lighthouse  # Run Lighthouse checks locally
-make doctor          # Check environment setup
-```
-
-See [MAKEFILE.md](./MAKEFILE.md) for complete documentation and all available commands.
-
-**Benefits of using Makefile:**
-- Run GitHub Actions locally with `make act:*` commands
-- Pre-push validation to catch CI failures early
-- Convenient shortcuts for common tasks
-- Color-coded output for better readability
-
-## 🏗️ Project Structure
+Every feature starts as a GitHub issue. In a Claude Code session, Claude triages it and drives three project sub-agents — `prometeo` plans, `forja` implements, `centinela` validates — landing a PR against `main` that auto-deploys on merge. The in-app `FeedbackFAB` closes the loop: real users file issues with stack trace, URL, and diagnostics pre-filled.
 
 ```
-foodie/
-├── public/           # Static assets
-│   ├── images/       # Images and icons
-│   └── locales/      # Translation files
-├── src/
-│   ├── components/   # React components
-│   ├── contexts/     # Context providers
-│   ├── hooks/        # Custom hooks
-│   ├── pages/        # Page components
-│   ├── types/        # TypeScript types
-│   ├── utils/        # Utility functions
-│   ├── data/         # JSON data files
-│   └── styles/       # Global styles
-├── .github/
-│   └── workflows/    # CI/CD workflows
-└── scripts/          # Build scripts
+User finds bug → FeedbackFAB → GitHub Issue → Claude Code → PR → Merge → Deploy
 ```
 
-## 🌍 Internationalization
+## Documentation
 
-Foodie supports multiple languages out of the box:
+- [Component catalog](./docs/component-catalog.md) — full inventory + coverage scorecard
+- [Roadmap](./ROADMAP.md) — post-integration follow-ups grouped into epics
+- [Claude Code context](./CLAUDE.md) — repo conventions, stack details, IDD workflow
+- [Contribution & component guide](./docs/COMPONENTS.md) — how to add a component
+- [docs/](./docs/) — principles, ethics, ADRs, component guide, deploy targets
 
-- 🇬🇧 English
-- 🇪🇸 Spanish
-- 🇫🇷 French
+## License
 
-Translation files are located in `public/locales/{lang}/translation.json`.
-
-### Adding a New Language
-
-1. Create translation file: `public/locales/{code}/translation.json`
-2. Add language to supported list in `src/i18n.ts`
-3. Update `MultiLangText` interface in `src/types/index.ts`
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-### Contributing Recipes
-
-Use the in-app recipe contribution wizard at `/contribute`. It will:
-- Guide you through a 7-step process
-- Validate your recipe
-- Generate proper JSON
-- Create a Pull Request automatically
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Run tests: `npm test`
-5. Commit: `git commit -m 'Add amazing feature'`
-6. Push: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
-## 📖 Documentation
-
-- [CLAUDE.md](CLAUDE.md) - Comprehensive technical documentation
-- [Architecture Overview](CLAUDE.md#architecture)
-- [API Documentation](CLAUDE.md#data-model)
-- [Contributing Guide](CONTRIBUTING.md)
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Copy `.env.example` to `.env` and configure:
-
-```env
-# Firebase (optional)
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-
-# GitHub OAuth (optional)
-VITE_GITHUB_CLIENT_ID=your_client_id
-VITE_GITHUB_REPO_OWNER=your_username
-VITE_GITHUB_REPO_NAME=foodie
-```
-
-### Customization
-
-- **Theme Colors**: Edit `tailwind.config.js`
-- **App Config**: Edit `src/data/config.json`
-- **Base Path**: Edit `vite.config.ts` for deployment URL
-
-## 🚀 Deployment
-
-### GitHub Pages
-
-Push to `main` branch triggers automatic deployment via GitHub Actions.
-
-### Custom Domain
-
-1. Add `CNAME` file to `public/` directory
-2. Configure DNS at your domain provider
-3. Enable HTTPS in GitHub Pages settings
-
-## 📊 Performance
-
-- Lighthouse Score: >90 (Performance, Accessibility, Best Practices, SEO)
-- Bundle Size: <500KB (gzipped)
-- Time to Interactive: <3s on 3G
-- Offline Support: Full app shell cached
-
-## 🧪 Testing
-
-```bash
-# Unit tests
-npm test
-
-# E2E tests
-npm run test:e2e
-
-# Coverage
-npm run test:coverage
-```
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
-## 🙏 Acknowledgments
-
-- Built with [Claude Code](https://claude.ai/claude-code) by Anthropic
-- Icons by [Lucide](https://lucide.dev/)
-- UI inspired by modern design systems
-
-## 📧 Support
-
-- **Issues**: [GitHub Issues](https://github.com/artemiopadilla/foodie/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/artemiopadilla/foodie/discussions)
-- **Email**: foodie@example.com
-
----
-
-**Made with ❤️ and Claude Code**
+[MIT](./LICENSE)
