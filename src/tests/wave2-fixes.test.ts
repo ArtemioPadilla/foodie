@@ -79,7 +79,7 @@ describe('audit wave 2 — trust & polish', () => {
       expect(layout).toContain('sr-only');
       // It must appear before SiteHeader in the source (body order)
       const skipIdx = layout.indexOf('href="#main-content"');
-      const headerIdx = layout.indexOf('<SiteHeader />');
+      const headerIdx = layout.indexOf('<SiteHeader');
       expect(skipIdx).toBeLessThan(headerIdx);
     });
   });
@@ -131,15 +131,16 @@ describe('audit wave 2 — trust & polish', () => {
       expect(page).not.toContain('value: "60"');
     });
 
-    it('computes pageCount via import.meta.glob at build time', () => {
-      const page = read('src/pages/index.astro');
-      expect(page).toContain('import.meta.glob');
-      expect(page).toContain('pageCount');
-    });
-
-    it('computes testFileCount via import.meta.glob at build time', () => {
-      const page = read('src/pages/index.astro');
-      expect(page).toContain('testFileCount');
+    // Roadmap Issue 005: the Foodie landing's numbers are catalog counts read
+    // at build time from public/data/*.json (the single source, D6) — never
+    // hardcoded literals.
+    it('computes recipe and ingredient counts from public/data at build time', () => {
+      const home = read('src/components/pages/Home.astro');
+      expect(home).toContain("from '../../../public/data/recipes.json'");
+      expect(home).toContain("from '../../../public/data/ingredients.json'");
+      expect(home).toContain("countOf(recipesData, 'recipes')");
+      expect(home).toContain("countOf(ingredientsData, 'ingredients')");
+      expect(home).not.toMatch(/value: '\d{2,}'/);
     });
 
     it('passes alternates prop to BaseLayout for hreflang', () => {
@@ -172,8 +173,10 @@ describe('audit wave 2 — trust & polish', () => {
     it('uses withBase() for the switcher hrefs', () => {
       const header = read('src/components/common/SiteHeader.astro');
       // Both links must go through withBase for subpath correctness
-      const matches = header.match(/withBase\(['"]\//g) ?? [];
-      // At minimum: home /, /es/, and any nav links
+      // Locale-aware links are withBase(localizedPath(...)); assets are
+      // withBase('/…') — both must go through the helper (roadmap Issue 005).
+      const matches = header.match(/withBase\(/g) ?? [];
+      // At minimum: the wordmark link, the favicon and the section links
       expect(matches.length).toBeGreaterThanOrEqual(2);
     });
   });
@@ -195,19 +198,19 @@ describe('audit wave 2 — trust & polish', () => {
       expect(page).toContain('alternates={alternates}');
     });
 
-    it('is a full-parity page with hero, stats strip, loop section, and kit grid', () => {
+    // Roadmap Issue 005: the landing body moved to components/pages/Home.astro
+    // (hero + honest stats + six feature cards + contribute CTA); every locale
+    // wrapper renders it with its own `lang`, so parity is structural.
+    it('is a thin wrapper over the shared Home body with the ES locale', () => {
       const page = read('src/pages/es/index.astro');
-      // Hero section markers
-      expect(page).toContain('home.ctaPrimary');
-      expect(page).toContain('home.ctaSecondary');
-      // Stats strip
-      expect(page).toContain('home.statPages');
-      expect(page).toContain('StatusBadgeStrip');
-      // Loop section
-      expect(page).toContain('home.loopHeading');
-      // Kit grid
-      expect(page).toContain('home.kitHeading');
-      expect(page).toContain('galleryManifest');
+      expect(page).toContain("import Home from '@/components/pages/Home.astro'");
+      expect(page).toContain("const lang = 'es' as const");
+      expect(page).toContain('<Home lang={lang} />');
+      const home = read('src/components/pages/Home.astro');
+      for (const key of ['home.ctaPrimary', 'home.ctaSecondary', 'home.featuresHeading', 'home.statRecipes', 'home.contributeRecipe']) {
+        expect(home).toContain(key);
+      }
+      expect(home.match(/home\.feature\dTitle/g)).toHaveLength(6);
     });
   });
 

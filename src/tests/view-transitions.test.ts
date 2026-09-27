@@ -11,7 +11,9 @@ const css = readFileSync(
 );
 
 import baseLayout from '../layouts/BaseLayout.astro?raw';
-import index from '../pages/index.astro?raw';
+// Roadmap Issue 005: the landing body (and its page-title marker) lives in the
+// shared Home component; pages/index.astro is a thin locale wrapper.
+import index from '../components/pages/Home.astro?raw';
 import gallery from '../pages/gallery/index.astro?raw';
 import demos from '../pages/demos/index.astro?raw';
 import data from '../pages/demos/data.astro?raw';

@@ -94,20 +94,13 @@ describe('index.astro wave 4 integrations', () => {
     expect(src).not.toContain("withBase('/how-it-works/')");
   });
 
-  it('imports and renders StatusBadgeStrip', () => {
+  // Roadmap Issue 005 replaced the template landing (badge strip, "60-second
+  // tour") with the Foodie one; the wrapper keeps only the agent-readable
+  // JSON-LD and delegates the body to components/pages/Home.astro.
+  it('renders the shared Foodie landing body instead of the template sections', () => {
     const src = read('src/pages/index.astro');
-    expect(src).toContain("import StatusBadgeStrip from '@/components/marketing/StatusBadgeStrip.astro'");
-    expect(src).toContain('<StatusBadgeStrip />');
-  });
-
-  it('still retains "Read the 60-second tour →" link (no regression)', () => {
-    const src = read('src/pages/index.astro');
-    expect(src).toContain('Read the 60-second tour');
-  });
-
-  it('badge strip section contains badge.svg references via the component', () => {
-    // The component reference is enough; we already tested the component itself.
-    const src = read('src/pages/index.astro');
-    expect(src).toContain('StatusBadgeStrip');
+    expect(src).toContain('<Home lang={lang} />');
+    expect(src).not.toContain('StatusBadgeStrip');
+    expect(src).not.toContain('Read the 60-second tour');
   });
 });

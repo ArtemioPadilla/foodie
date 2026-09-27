@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectLocale, localizedPath, t, LOCALES, DEFAULT_LOCALE, collectLeafKeys, dictionaries } from '../i18n';
+import { detectLocale, localizedPath, localizedRoute, t, LOCALES, DEFAULT_LOCALE, collectLeafKeys, dictionaries } from '../i18n';
 
 describe('i18n', () => {
   describe('detectLocale', () => {
@@ -100,6 +100,18 @@ describe('i18n', () => {
       const keys = collectLeafKeys({ nav: { home: 'Home', switchLanguage: 'Español' } });
       expect(keys).toContain('nav.home');
       expect(keys).toContain('nav.switchLanguage');
+    });
+  });
+
+  // ── localizedRoute (roadmap Issue 005) ─────────────────────────────────────
+  describe('localizedRoute', () => {
+    it('always ends with a slash, including the localized roots', () => {
+      expect(localizedRoute('/', 'en')).toBe('/');
+      expect(localizedRoute('/', 'es')).toBe('/es/');
+      expect(localizedRoute('/', 'fr')).toBe('/fr/');
+      expect(localizedRoute('/recipes/', 'es')).toBe('/es/recipes/');
+      expect(localizedRoute('/es/recipes', 'fr')).toBe('/fr/recipes/');
+      expect(localizedRoute('/fr/recipes/', 'en')).toBe('/recipes/');
     });
   });
 });

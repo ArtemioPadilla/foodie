@@ -6,13 +6,14 @@
  * browser console.error or uncaught pageerror is emitted during the page
  * load. See tests/fixtures/console-guard.ts for the allowlist.
  *
- * Route coverage: representative cross-section of the app — home, gallery
- * index, dashboard demo, docs, and one i18n route.
+ * Route coverage: representative cross-section of the app — the landing in
+ * all three locales (roadmap Issue 005), one coming-soon section, gallery
+ * index, dashboard demo and docs.
  */
 
 import { test, expect } from '../fixtures/console-guard';
 
-const ROUTES = ['/', '/gallery/', '/demos/dashboard/', '/docs/', '/es/'] as const;
+const ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/gallery/', '/demos/dashboard/', '/docs/'] as const;
 
 for (const route of ROUTES) {
   test(`smoke — ${route} — no console errors`, async ({ page }) => {

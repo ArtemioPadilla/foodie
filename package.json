@@ -21,6 +21,8 @@
     "tdd": "vitest --watch",
     "test:visual": "playwright test",
     "test:visual:update": "playwright test --update-snapshots",
+    "test:e2e": "playwright test --config playwright.e2e.config.ts",
+    "test:e2e:list": "playwright test --config playwright.e2e.config.ts --list",
     "a11y": "playwright test tests/visual/a11y.spec.ts",
     "keyboard-nav": "playwright test tests/visual/keyboard-nav.spec.ts",
     "ux:check": "vitest run src/tests/ux-contrast.test.ts src/tests/ux-motion.test.ts",

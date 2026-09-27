@@ -36,6 +36,14 @@ export default defineConfig({
       name: 'chromium-dark',
       use: { ...devices['Desktop Chrome'], colorScheme: 'dark' },
     },
+    // Behavioural journeys (tests/e2e) ride along with the visual suite so
+    // `npx playwright test` covers everything; `npm run test:e2e` runs them
+    // alone through playwright.e2e.config.ts (own build + port).
+    {
+      name: 'chromium',
+      testDir: './tests/e2e',
+      use: { ...devices['Desktop Chrome'] },
+    },
   ],
   webServer: {
     // Playwright requires a built artifact; run `npm run build` before

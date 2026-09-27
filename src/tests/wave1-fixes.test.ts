@@ -22,7 +22,10 @@ describe('audit wave 1 — production fixes', () => {
 
   it('a custom 404 page exists so GitHub Pages stops serving its default', () => {
     const page = read('src/pages/404.astro');
-    expect(page).toContain('Page not found');
+    // Roadmap Issue 005: the copy comes from the dictionary (notFound.*) so
+    // the page can offer the way home in every language.
+    expect(page).toContain("t('en', 'notFound.title')");
+    expect(read('src/i18n/en.ts')).toContain("title: 'Page not found'");
     expect(page).toContain('withBase(');
   });
 

@@ -1,62 +1,93 @@
 ---
 /**
  * Global navigation header. Rendered by BaseLayout on every page so the
- * wordmark (→ home) and section links are always reachable — previously
- * most pages had no way back to home or across sections.
+ * wordmark (→ home) and the definitive Foodie sections are always reachable
+ * (roadmap Issue 005): Home · Recipes · Ingredients · Planner · Shopping ·
+ * Pantry · Tracking · Contribute, plus ThemeToggle, LangSwitcher, GlobalSearch
+ * and a named `account` slot that Phase 5 fills with `AccountMenu`.
+ *
+ * Labels and hrefs follow the page locale (detected from the route, never from
+ * the browser), so `/es/recipes/` links stay inside `/es/`. Below `md` the
+ * links collapse into the `MobileNav` island (a `Sheet`).
  */
 import ThemeToggle from './ThemeToggle.astro';
 import { withBase } from '@/lib/href';
 import { REPO_URL } from '@/lib/site-meta';
 import GlobalSearch from '@/components/islands/GlobalSearch';
+import MobileNav from '@/components/islands/MobileNav';
 import LangSwitcher from './LangSwitcher.astro';
+import { detectLocale, localizedPath, localizedRoute, stripBase, t } from '@/i18n';
 
-const nav = [
-  { href: '/gallery/', label: 'Gallery' },
-  { href: '/demos/', label: 'Demos' },
-  { href: '/blocks/', label: 'Blocks' },
-  { href: '/docs/', label: 'Docs' },
-  { href: '/blog/', label: 'Blog' },
-];
+const SECTIONS = [
+  { route: '/', key: 'home' },
+  { route: '/recipes/', key: 'recipes' },
+  { route: '/ingredients/', key: 'ingredients' },
+  { route: '/planner/', key: 'planner' },
+  { route: '/shopping/', key: 'shopping' },
+  { route: '/pantry/', key: 'pantry' },
+  { route: '/tracking/', key: 'tracking' },
+  { route: '/contribute/', key: 'contribute' },
+] as const;
 
-// Mark the active section so the current area is obvious. Compare on the
-// path *after* the base, so it works under /foodie/ too.
-const here = Astro.url.pathname.replace(/\/+$/, '') + '/';
-const isActive = (href: string) => here.includes(href);
+// Compare on the path *after* the base and locale prefix, so the active state
+// works under /foodie/ and inside /es/ or /fr/ alike.
+const route = stripBase(Astro.url.pathname, import.meta.env.BASE_URL);
+const locale = detectLocale(route);
+const here = `${localizedPath(route, 'en').replace(/\/+$/, '')}/`;
+const isActive = (r: string) => (r === '/' ? here === '/' : here.startsWith(r));
+
+const nav = SECTIONS.map((s) => ({
+  href: withBase(localizedRoute(s.route, locale)),
+  label: t(locale, `nav.${s.key}`),
+  active: isActive(s.route),
+}));
+
+const menuLabels = {
+  open: t(locale, 'nav.openMenu'),
+  close: t(locale, 'nav.closeMenu'),
+  title: t(locale, 'nav.menuTitle'),
+  description: t(locale, 'nav.menuDescription'),
+  github: t(locale, 'nav.github'),
+};
 ---
 
 <header class="sticky top-0 z-40 border-b border-border/60 bg-background/75 backdrop-blur-md">
-  <nav class="mx-auto flex max-w-6xl items-center gap-3 px-5 py-2.5">
+  <nav class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5 sm:px-5" aria-label={t(locale, 'nav.main')}>
     <a
-      href={withBase('/')}
+      href={withBase(localizedRoute('/', locale))}
       class="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-foreground"
       aria-label="Foodie — home"
     >
       <img src={withBase('/favicon.svg')} width="20" height="20" alt="" aria-hidden="true" class="rounded-[0.2em] transition-transform group-hover:-rotate-6" />
-      <span class="hidden sm:inline">Foodie</span>
+      <span>Foodie</span>
     </a>
 
-    <div class="ml-auto flex items-center gap-0.5 font-mono text-xs sm:gap-1 sm:text-sm">
+    <!-- Desktop section links -->
+    <div class="ml-auto hidden items-center gap-0.5 font-mono text-xs md:flex lg:gap-1 lg:text-sm">
       {
         nav.map((n) => (
           <a
-            href={withBase(n.href)}
-            aria-current={isActive(n.href) ? 'page' : undefined}
+            href={n.href}
+            aria-current={n.active ? 'page' : undefined}
             class:list={[
-              'rounded-md px-1.5 py-1 transition-colors hover:text-primary sm:px-2',
-              isActive(n.href) ? 'text-primary underline decoration-2 underline-offset-[0.6em]' : 'text-muted-foreground',
+              'rounded-md px-1.5 py-1 transition-colors hover:text-primary lg:px-2',
+              n.active ? 'text-primary underline decoration-2 underline-offset-[0.6em]' : 'text-muted-foreground',
             ]}
           >
             {n.label}
           </a>
         ))
       }
+    </div>
+
+    <div class="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
       <a
         href={REPO_URL}
         target="_blank"
         rel="noopener noreferrer"
-        class="hidden rounded-md px-2 py-1 text-muted-foreground transition-colors hover:text-primary sm:inline"
+        class="hidden rounded-md px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-primary lg:inline lg:text-sm"
       >
-        GitHub ↗
+        {t(locale, 'nav.github')} ↗
       </a>
       {/* EN/ES/FR switcher — keeps the current route via localizedPath().
           The footer has a more prominent version. */}
@@ -66,6 +97,14 @@ const isActive = (href: string) => here.includes(href);
           dialog in one island (compound-component constraint). */}
       <GlobalSearch client:idle />
       <span class="ml-1"><ThemeToggle /></span>
+      {/* Phase 5 (roadmap Issue 036) mounts <AccountMenu client:idle lang={lang} />
+          here through BaseLayout's `account` slot. Empty until then. */}
+      <slot name="account" />
+      {/* Mobile menu — one island wraps the whole Sheet compound so the Base UI
+          Dialog context never crosses an island boundary. */}
+      <span class="md:hidden">
+        <MobileNav client:idle lang={locale} items={nav} repoUrl={REPO_URL} labels={menuLabels} />
+      </span>
     </div>
   </nav>
 </header>

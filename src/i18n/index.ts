@@ -123,6 +123,16 @@ export function localizedPath(pathname: string, target: Locale): string {
 }
 
 /**
+ * `localizedPath()` normalised to the trailing-slash form every static route
+ * is built at (`/es/`, never `/es`): the canonical href for navigation links,
+ * so GitHub Pages never has to redirect and tests can match the route suffix.
+ */
+export function localizedRoute(pathname: string, target: Locale): string {
+  const p = localizedPath(pathname, target);
+  return p.endsWith('/') ? p : `${p}/`;
+}
+
+/**
  * Strip the deploy base from a pathname so locale helpers see site-relative
  * routes: `('/foodie/es/docs/', '/foodie/')` → `/es/docs/`; a root base or a
  * pathname that does not carry the base is returned as-is. Astro's

@@ -25,6 +25,22 @@ describe('Playwright setup', () => {
     expect(cfg).toMatch(/chromium-dark/);
   });
 
+  it('ships a dedicated e2e config (roadmap Issue 005) wired to npm run test:e2e', () => {
+    const cfg = readFileSync(rel('playwright.e2e.config.ts'), 'utf-8');
+    expect(cfg).toMatch(/testDir:\s*'\.\/tests\/e2e'/);
+    expect(cfg).toMatch(/ASTRO_BASE/);
+    expect(cfg).toMatch(/npm run preview/);
+    expect(existsSync(rel('tests/e2e/journeys.spec.ts'))).toBe(true);
+    const pkg = JSON.parse(readFileSync(rel('package.json'), 'utf-8')) as { scripts: Record<string, string> };
+    expect(pkg.scripts['test:e2e']).toContain('playwright.e2e.config.ts');
+    expect(pkg.scripts['test:e2e:list']).toContain('--list');
+  });
+
+  it('the default config also runs the e2e journeys as its own project', () => {
+    const cfg = readFileSync(rel('playwright.config.ts'), 'utf-8');
+    expect(cfg).toMatch(/testDir:\s*'\.\/tests\/e2e'/);
+  });
+
   it('has visual specs for /gallery and /demos/dashboard', () => {
     expect(existsSync(rel('tests/visual/gallery.spec.ts'))).toBe(true);
     expect(existsSync(rel('tests/visual/dashboard.spec.ts'))).toBe(true);

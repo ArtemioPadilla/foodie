@@ -180,7 +180,7 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
     >
       Skip to content
     </a>
-    <SiteHeader />
+    <SiteHeader><slot name="account" slot="account" /></SiteHeader>
     <slot />
     <SiteFooter />
     <FeedbackFAB lang={lang} />
