@@ -2,7 +2,7 @@ import * as React from 'react';
 import ErrorBoundary from './ErrorBoundary';
 
 /** localStorage key persisting the user's acknowledgement of the privacy notice. */
-const ACK_KEY = 'inceptor:privacy-ack';
+const ACK_KEY = 'foodie:privacy-ack';
 
 /**
  * First-load privacy disclosure (ROADMAP Epic 12 — ethics).

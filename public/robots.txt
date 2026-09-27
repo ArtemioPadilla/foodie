@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://artemiop.com/inceptor/sitemap-index.xml
+Sitemap: https://artemiopadilla.github.io/foodie/sitemap-index.xml

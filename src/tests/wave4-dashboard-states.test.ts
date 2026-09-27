@@ -75,7 +75,9 @@ describe('DashboardIsland — inbox-zero empty state', () => {
 // ── 3. View-source links on demo pages ───────────────────────────────────────
 
 describe('view-source links', () => {
-  const GITHUB_BLOB = 'https://github.com/ArtemioPadilla/inceptor/blob/main';
+  // Source links are single-sourced from site-meta.ts (REPO_URL) so a fork or
+  // rebrand never leaves stale links behind.
+  const GITHUB_BLOB = '${REPO_URL}/blob/main';
 
   it('dashboard.astro has a view-source link to itself', () => {
     const src = read('src/pages/demos/dashboard.astro');

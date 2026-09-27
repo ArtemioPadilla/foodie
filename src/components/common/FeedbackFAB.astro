@@ -15,19 +15,17 @@
  *   - i18n es/en
  */
 
+import { SITE } from '@/lib/site-meta';
+
 interface Props {
   lang?: 'es' | 'en';
 }
 
 const { lang = 'es' } = Astro.props;
 
-// Where the feedback issues get filed. To use this scaffold for your own
-// project, set PUBLIC_REPO_SLUG in .env (or your deploy host's env settings)
-// to `<owner>/<repo>` — e.g. `acme/storefront`. Falls back to the template
-// repo only as a sanity default during development.
-const repoSlug =
-  (import.meta.env.PUBLIC_REPO_SLUG as string | undefined) ??
-  'ArtemioPadilla/inceptor';
+// Where the feedback issues get filed — single-sourced from site-meta.ts
+// (honors PUBLIC_REPO_SLUG, defaults to the Foodie repo).
+const repoSlug = SITE.repoSlug;
 const buildSha = import.meta.env.PUBLIC_BUILD_SHA || 'dev';
 const appVersion = import.meta.env.PUBLIC_VERSION || 'dev';
 
@@ -98,7 +96,7 @@ const tr = {
 <!-- FAB button -->
 <div class="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] sm:bottom-6 right-5 z-50 w-12 h-12">
   <button
-    id="inceptor-report-btn"
+    id="foodie-report-btn"
     type="button"
     aria-label={tr.button_label}
     title={tr.button_label}
@@ -117,7 +115,7 @@ const tr = {
     <span class="sr-only">{tr.button_label}</span>
     <!-- Error badge -->
     <span
-      id="inceptor-report-badge"
+      id="foodie-report-badge"
       aria-label={tr.badge_errors_label}
       class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full
              bg-red-600 text-white text-[10px] font-bold
@@ -134,7 +132,7 @@ const tr = {
      top-left (the bug this comment replaces).
      max-h + overflow-auto ensure it stays scrollable on small viewports. -->
 <dialog
-  id="inceptor-report-modal"
+  id="foodie-report-modal"
   data-repo={repoSlug}
   data-lang={lang}
   data-build-sha={buildSha}
@@ -164,7 +162,7 @@ const tr = {
       <h2 class="text-base font-semibold">{tr.modal_title}</h2>
       <button
         type="button"
-        id="inceptor-report-close"
+        id="foodie-report-close"
         aria-label={tr.cancel}
         class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 min-w-[44px] min-h-[44px] flex items-center justify-center transition-colors"
       >
@@ -178,9 +176,9 @@ const tr = {
     <div class="px-5 py-4 space-y-4 overflow-y-auto flex-1">
       <!-- Type -->
       <div>
-        <label for="inceptor-report-type" class="block text-sm font-medium mb-1">{tr.type_label}</label>
+        <label for="foodie-report-type" class="block text-sm font-medium mb-1">{tr.type_label}</label>
         <select
-          id="inceptor-report-type"
+          id="foodie-report-type"
           class="w-full rounded-lg border border-gray-300 dark:border-gray-600
                  bg-white dark:bg-gray-700 px-3 py-2 text-sm
                  focus:outline-none focus:ring-2 focus:ring-primary-500"
@@ -194,10 +192,10 @@ const tr = {
 
       <!-- Title -->
       <div>
-        <label for="inceptor-report-title" class="block text-sm font-medium mb-1">{tr.title_label}</label>
+        <label for="foodie-report-title" class="block text-sm font-medium mb-1">{tr.title_label}</label>
         <input
           type="text"
-          id="inceptor-report-title"
+          id="foodie-report-title"
           maxlength="120"
           placeholder={tr.title_placeholder}
           class="w-full rounded-lg border border-gray-300 dark:border-gray-600
@@ -207,12 +205,12 @@ const tr = {
       </div>
 
       <!-- Similar issues panel — hidden by default, shown after dedupe check -->
-      <div id="inceptor-report-similar" class="hidden rounded-lg border border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20 p-3 space-y-2">
-        <p id="inceptor-report-similar-label" class="text-xs font-semibold text-amber-700 dark:text-amber-300">{tr.similar_issues}</p>
-        <ul id="inceptor-report-similar-list" class="space-y-1 text-xs"></ul>
+      <div id="foodie-report-similar" class="hidden rounded-lg border border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/20 p-3 space-y-2">
+        <p id="foodie-report-similar-label" class="text-xs font-semibold text-amber-700 dark:text-amber-300">{tr.similar_issues}</p>
+        <ul id="foodie-report-similar-list" class="space-y-1 text-xs"></ul>
         <button
           type="button"
-          id="inceptor-report-file-anyway"
+          id="foodie-report-file-anyway"
           class="mt-1 text-xs font-medium text-amber-700 dark:text-amber-300 underline hover:no-underline"
         >
           {tr.file_anyway}
@@ -221,9 +219,9 @@ const tr = {
 
       <!-- Description -->
       <div>
-        <label for="inceptor-report-description" class="block text-sm font-medium mb-1">{tr.description_label}</label>
+        <label for="foodie-report-description" class="block text-sm font-medium mb-1">{tr.description_label}</label>
         <textarea
-          id="inceptor-report-description"
+          id="foodie-report-description"
           rows="4"
           placeholder={tr.description_placeholder}
           class="w-full rounded-lg border border-gray-300 dark:border-gray-600
@@ -233,11 +231,11 @@ const tr = {
       </div>
 
       <!-- Bug-only fields -->
-      <div id="inceptor-report-bug-fields" class="space-y-4">
+      <div id="foodie-report-bug-fields" class="space-y-4">
         <div>
-          <label for="inceptor-report-steps" class="block text-sm font-medium mb-1">{tr.steps_label}</label>
+          <label for="foodie-report-steps" class="block text-sm font-medium mb-1">{tr.steps_label}</label>
           <textarea
-            id="inceptor-report-steps"
+            id="foodie-report-steps"
             rows="3"
             placeholder={tr.steps_placeholder}
             class="w-full rounded-lg border border-gray-300 dark:border-gray-600
@@ -246,9 +244,9 @@ const tr = {
           ></textarea>
         </div>
         <div>
-          <label for="inceptor-report-expected" class="block text-sm font-medium mb-1">{tr.expected_label}</label>
+          <label for="foodie-report-expected" class="block text-sm font-medium mb-1">{tr.expected_label}</label>
           <textarea
-            id="inceptor-report-expected"
+            id="foodie-report-expected"
             rows="2"
             placeholder={tr.expected_placeholder}
             class="w-full rounded-lg border border-gray-300 dark:border-gray-600
@@ -259,13 +257,13 @@ const tr = {
       </div>
 
       <!-- Diagnostics accordion -->
-      <details id="inceptor-report-diagnostics" class="group">
+      <details id="foodie-report-diagnostics" class="group">
         <summary class="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-500 dark:text-gray-400 select-none py-1">
           <svg class="w-3.5 h-3.5 transition-transform group-open:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
           </svg>
           {tr.diagnostics_toggle}
-          <span id="inceptor-report-diag-count"
+          <span id="foodie-report-diag-count"
             class="hidden inline-flex items-center justify-center rounded-full
                    bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300
                    text-[10px] font-bold min-w-[18px] h-[18px] px-1">0</span>
@@ -273,19 +271,19 @@ const tr = {
         <div class="mt-2 space-y-3">
           <div>
             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{tr.diagnostics_env}</p>
-            <pre id="inceptor-report-env"
+            <pre id="foodie-report-env"
               class="text-xs bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700
                      rounded-lg p-2 whitespace-pre-wrap break-all max-h-28 overflow-auto"></pre>
           </div>
           <div>
             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{tr.diagnostics_console}</p>
-            <pre id="inceptor-report-console"
+            <pre id="foodie-report-console"
               class="text-xs bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700
                      rounded-lg p-2 whitespace-pre-wrap break-all max-h-32 overflow-auto"></pre>
           </div>
           <div>
             <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{tr.diagnostics_network}</p>
-            <pre id="inceptor-report-network"
+            <pre id="foodie-report-network"
               class="text-xs bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700
                      rounded-lg p-2 whitespace-pre-wrap break-all max-h-32 overflow-auto"></pre>
           </div>
@@ -299,7 +297,7 @@ const tr = {
                    bg-white dark:bg-gray-800 z-10">
       <button
         type="button"
-        id="inceptor-report-copy"
+        id="foodie-report-copy"
         title={tr.copy_diagnostics}
         class="min-h-[44px] px-3 py-2 rounded-lg text-sm font-medium
                text-gray-600 dark:text-gray-400
@@ -310,12 +308,12 @@ const tr = {
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
         </svg>
-        <span id="inceptor-report-copy-label">{tr.copy_diagnostics}</span>
+        <span id="foodie-report-copy-label">{tr.copy_diagnostics}</span>
       </button>
       <div class="flex items-center gap-2">
         <button
           type="button"
-          id="inceptor-report-cancel"
+          id="foodie-report-cancel"
           class="min-h-[44px] px-4 py-2 rounded-lg text-sm font-medium
                  border border-gray-300 dark:border-gray-600
                  hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -324,7 +322,7 @@ const tr = {
         </button>
         <button
           type="button"
-          id="inceptor-report-submit"
+          id="foodie-report-submit"
           class="min-h-[44px] px-4 py-2 rounded-lg text-sm font-semibold
                  bg-primary-600 hover:bg-primary-700 text-white
                  focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
@@ -340,10 +338,10 @@ const tr = {
 (function () {
   // ── Telemetry capture (runs once at parse time) ──────────────────────
   var W = window;
-  if (!W.__inceptor_diag) {
+  if (!W.__foodie_diag) {
     var MAX = 30;
     var diag = { console: [], network: [], errors: [] };
-    W.__inceptor_diag = diag;
+    W.__foodie_diag = diag;
 
     // Intercept console.error / console.warn
     var origError = console.error.bind(console);
@@ -358,21 +356,21 @@ const tr = {
       diag.console.push({ ts: new Date().toISOString(), level: level, msg: msg.slice(0, 500) });
       if (diag.console.length > MAX) diag.console.shift();
     }
-    console.error = function () { captureLog('error', arguments); origError.apply(console, arguments); W.__inceptor_updateBadge && W.__inceptor_updateBadge(); };
+    console.error = function () { captureLog('error', arguments); origError.apply(console, arguments); W.__foodie_updateBadge && W.__foodie_updateBadge(); };
     console.warn  = function () { captureLog('warn',  arguments); origWarn.apply(console, arguments); };
 
     // Unhandled errors + rejections
     W.addEventListener('error', function (ev) {
       diag.errors.push({ ts: new Date().toISOString(), msg: (ev.message || 'Unknown').slice(0, 300), src: ev.filename ? ev.filename + ':' + ev.lineno : '' });
       if (diag.errors.length > MAX) diag.errors.shift();
-      W.__inceptor_updateBadge && W.__inceptor_updateBadge();
+      W.__foodie_updateBadge && W.__foodie_updateBadge();
     });
     W.addEventListener('unhandledrejection', function (ev) {
       var r = ev.reason;
       var msg = r instanceof Error ? r.message + '\n' + (r.stack || '') : String(r || 'Unhandled rejection');
       diag.errors.push({ ts: new Date().toISOString(), msg: msg.slice(0, 300), src: 'promise' });
       if (diag.errors.length > MAX) diag.errors.shift();
-      W.__inceptor_updateBadge && W.__inceptor_updateBadge();
+      W.__foodie_updateBadge && W.__foodie_updateBadge();
     });
 
     // Fetch network error capture
@@ -386,13 +384,13 @@ const tr = {
           if (!res.ok) {
             diag.network.push({ ts: new Date().toISOString(), method: method.toUpperCase(), url: urlStr.slice(0, 200), status: res.status, statusText: res.statusText || '' });
             if (diag.network.length > MAX) diag.network.shift();
-            W.__inceptor_updateBadge && W.__inceptor_updateBadge();
+            W.__foodie_updateBadge && W.__foodie_updateBadge();
           }
           return res;
         }, function (err) {
           diag.network.push({ ts: new Date().toISOString(), method: method.toUpperCase(), url: urlStr.slice(0, 200), status: 0, statusText: err && err.message ? err.message.slice(0, 100) : 'Network error' });
           if (diag.network.length > MAX) diag.network.shift();
-          W.__inceptor_updateBadge && W.__inceptor_updateBadge();
+          W.__foodie_updateBadge && W.__foodie_updateBadge();
           throw err;
         });
       };
@@ -403,10 +401,10 @@ const tr = {
   // Count only window-level errors (diag.errors) + explicit console.error calls (diag.console).
   // These two sources don't overlap: window 'error' events push to diag.errors,
   // console.error calls push to diag.console. unhandledrejection also goes to diag.errors only.
-  W.__inceptor_updateBadge = function () {
-    var badge = document.getElementById('inceptor-report-badge');
+  W.__foodie_updateBadge = function () {
+    var badge = document.getElementById('foodie-report-badge');
     if (!badge) return;
-    var diag = W.__inceptor_diag;
+    var diag = W.__foodie_diag;
     var windowErrors = diag.errors ? diag.errors.length : 0;
     var consoleErrors = diag.console ? diag.console.filter(function(c){ return c.level === 'error'; }).length : 0;
     var count = windowErrors + consoleErrors;
@@ -472,8 +470,8 @@ const tr = {
   // so DOMContentLoaded fires on every full page load. If ViewTransitions are
   // ever added, replace with: document.addEventListener('astro:page-load', ...)
   document.addEventListener('DOMContentLoaded', function () {
-    var btn     = document.getElementById('inceptor-report-btn');
-    var modal   = document.getElementById('inceptor-report-modal');
+    var btn     = document.getElementById('foodie-report-btn');
+    var modal   = document.getElementById('foodie-report-modal');
     if (!btn || !modal) return;
 
     // Guard: only a plausible owner/repo slug may reach the GitHub URL below
@@ -490,27 +488,27 @@ const tr = {
     // lFileAnyway: the "File anyway" button text is set statically in the HTML
     // template; it is data-l-file-anyway only for potential future dynamic use.
 
-    var typeEl    = document.getElementById('inceptor-report-type');
-    var titleEl   = document.getElementById('inceptor-report-title');
-    var descEl    = document.getElementById('inceptor-report-description');
-    var stepsEl   = document.getElementById('inceptor-report-steps');
-    var expectedEl= document.getElementById('inceptor-report-expected');
-    var bugFields = document.getElementById('inceptor-report-bug-fields');
-    var envBlock  = document.getElementById('inceptor-report-env');
-    var consBlock = document.getElementById('inceptor-report-console');
-    var netBlock  = document.getElementById('inceptor-report-network');
-    var diagCount = document.getElementById('inceptor-report-diag-count');
-    var copyBtn   = document.getElementById('inceptor-report-copy');
-    var copyLabel2= document.getElementById('inceptor-report-copy-label');
-    var submitBtn = document.getElementById('inceptor-report-submit');
-    var cancelBtn = document.getElementById('inceptor-report-cancel');
-    var closeBtn  = document.getElementById('inceptor-report-close');
+    var typeEl    = document.getElementById('foodie-report-type');
+    var titleEl   = document.getElementById('foodie-report-title');
+    var descEl    = document.getElementById('foodie-report-description');
+    var stepsEl   = document.getElementById('foodie-report-steps');
+    var expectedEl= document.getElementById('foodie-report-expected');
+    var bugFields = document.getElementById('foodie-report-bug-fields');
+    var envBlock  = document.getElementById('foodie-report-env');
+    var consBlock = document.getElementById('foodie-report-console');
+    var netBlock  = document.getElementById('foodie-report-network');
+    var diagCount = document.getElementById('foodie-report-diag-count');
+    var copyBtn   = document.getElementById('foodie-report-copy');
+    var copyLabel2= document.getElementById('foodie-report-copy-label');
+    var submitBtn = document.getElementById('foodie-report-submit');
+    var cancelBtn = document.getElementById('foodie-report-cancel');
+    var closeBtn  = document.getElementById('foodie-report-close');
 
     // Duplicate-detection panel elements
-    var similarPanel    = document.getElementById('inceptor-report-similar');
-    var similarLabel    = document.getElementById('inceptor-report-similar-label');
-    var similarList     = document.getElementById('inceptor-report-similar-list');
-    var fileAnywayBtn   = document.getElementById('inceptor-report-file-anyway');
+    var similarPanel    = document.getElementById('foodie-report-similar');
+    var similarLabel    = document.getElementById('foodie-report-similar-label');
+    var similarList     = document.getElementById('foodie-report-similar-list');
+    var fileAnywayBtn   = document.getElementById('foodie-report-file-anyway');
 
     // Track whether the user has dismissed the dedupe panel via "File anyway"
     var dupeAcknowledged = false;
@@ -594,7 +592,7 @@ const tr = {
 
     // Populate diagnostics
     function populateDiagnostics() {
-      var diag = W.__inceptor_diag || { console: [], network: [], errors: [] };
+      var diag = W.__foodie_diag || { console: [], network: [], errors: [] };
 
       // Env block
       if (envBlock) {
@@ -694,7 +692,7 @@ const tr = {
 
         if (!title) { if (titleEl) { titleEl.focus(); } return; }
 
-        var diag = W.__inceptor_diag || { console: [], network: [], errors: [] };
+        var diag = W.__foodie_diag || { console: [], network: [], errors: [] };
         var consEntries = (diag.console || []).concat((diag.errors || []).map(function(e){ return { level:'error', ts:e.ts, msg:e.msg + (e.src ? ' @ '+e.src : '') }; }));
         var diagText = '**Entorno / Environment**\n```json\n' + JSON.stringify({
           url: location.href, userAgent: navigator.userAgent,
@@ -732,7 +730,7 @@ const tr = {
     }
 
     // Initial badge update
-    W.__inceptor_updateBadge();
+    W.__foodie_updateBadge();
   });
 })();
 </script>

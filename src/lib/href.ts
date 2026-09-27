@@ -11,7 +11,7 @@
  * `/<repo>/` (with trailing slash) when `base` is set for the Pages build.
  *
  *   withBase('/gallery/')   → '/gallery/'                     (dev / root)
- *                           → '/inceptor/gallery/'  (Pages)
+ *                           → '/foodie/gallery/'    (Pages)
  *   withBase('/favicon.svg')→ same idea for public assets
  */
 export function withBase(path: string): string {

@@ -10,7 +10,7 @@ import sitemap from '@astrojs/sitemap';
 import { SITE_ORIGIN } from './site.config.mjs';
 
 // Subpath the site is served under. GitHub *project* pages live at
-// `<domain>/<repo>/`, so the Pages build sets ASTRO_BASE=/inceptor
+// `<domain>/<repo>/`, so the Pages build sets ASTRO_BASE=/foodie
 // (see .github/workflows/deploy.yml). Local dev + root deploys leave it unset →
 // base '/'. The trailing slash is normalized by Astro.
 const BASE = process.env.ASTRO_BASE || '/';
@@ -20,8 +20,8 @@ const asset = (p) => `${BASE.replace(/\/$/, '')}/${p.replace(/^\//, '')}`;
 
 export default defineConfig({
   // Production origin — single-sourced from site.config.mjs.
-  // artemiop.com is the custom domain configured on the GitHub Pages account;
-  // this project repo is served at https://artemiop.com/inceptor/.
+  // Foodie is a GitHub project page served at
+  // https://artemiopadilla.github.io/foodie/ (origin + ASTRO_BASE).
   site: SITE_ORIGIN,
   base: BASE,
   // i18n routing — English at root (no prefix), Spanish under /es/.
@@ -66,12 +66,13 @@ export default defineConfig({
         'icons/logo-source.svg',
       ],
       manifest: {
-        name: 'inceptor',
-        short_name: 'Inceptor Template',
-        description:
-          'Astro + React + shadcn + TanStack + Tremor Raw + Motion + PWA — Inceptor scaffold',
+        name: 'Foodie - Meal Planner',
+        short_name: 'Foodie',
+        description: 'Your Personal Meal Planning Assistant',
         theme_color: '#10b981',
-        background_color: '#0a0a0a',
+        background_color: '#ffffff',
+        lang: 'en',
+        categories: ['food', 'lifestyle', 'health'],
         display: 'standalone',
         start_url: BASE,
         scope: BASE,

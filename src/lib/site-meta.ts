@@ -1,17 +1,16 @@
 /**
- * ⚠️ RE-BRAND ON INSTANTIATION — single source of the site's machine-readable
- * identity.
+ * Single source of the site's machine-readable identity (Foodie).
  *
  * Everything an external agent (LLM crawler, search engine, tooling) learns
  * about this site flows from this object: /llms.txt, /llms-full.txt, the
  * JSON-LD blocks (WebSite, SoftwareSourceCode, Article, BreadcrumbList), and
  * the default <meta name="description">.
  *
- * If you are an agent instantiating a project FROM this template (via
- * create-inceptor-app or a fork): update every field below to the new
- * project's identity, or the new site will introduce itself to the world as
- * "Inceptor". `repoSlug` honors PUBLIC_REPO_SLUG so CI/fork setups can
- * override without an edit. See CLAUDE.md § "Agent-readable surface".
+ * RE-BRAND ON INSTANTIATION — this file was re-branded from the upstream
+ * template for Foodie (roadmap Issue 003). If this repo is ever used as the
+ * seed of another project, update every field below or the new site will
+ * introduce itself to the world as "Foodie". `repoSlug` honors
+ * PUBLIC_REPO_SLUG so CI/fork setups can override without an edit.
  */
 
 /**
@@ -23,19 +22,22 @@
  *   string; the vitest in src/tests/site-meta.test.ts and the doctor script
  *   assert they are in sync so a stale one-sided edit is caught immediately.
  *
- * RE-BRAND: update this AND SITE_ORIGIN in /site.config.mjs to your domain.
+ * Foodie is a GitHub *project* page: origin is the github.io user domain and
+ * the `/foodie` subpath comes from ASTRO_BASE (see astro.config.mjs).
  */
-export const SITE_ORIGIN = 'https://artemiop.com';
+export const SITE_ORIGIN = 'https://artemiopadilla.github.io';
 export const SITE = {
   /** Product name as it should appear to agents and search engines. */
-  name: 'Inceptor',
+  name: 'Foodie',
   /** One-line positioning (used as the default meta description). */
-  description:
-    'Issue-driven web template: a governed, agent-orchestrated way of building — ' +
-    'issue → Claude Code → PR → merge → deploy — on Astro 5 + React 19 islands, ' +
-    'with quality and ethics gates enforced by the repo.',
+  description: 'Your Personal Meal Planning Assistant',
+  /** Longer positioning used by /llms.txt and the JSON-LD SoftwareSourceCode block. */
+  longDescription:
+    'Foodie is an offline-first meal planning web app: browse a trilingual (EN/ES/FR) ' +
+    'recipe and ingredient catalog, plan weekly meals, generate consolidated shopping ' +
+    'lists, manage your pantry and track nutrition — with no account required.',
   /** owner/repo on GitHub. */
-  repoSlug: (import.meta.env.PUBLIC_REPO_SLUG as string | undefined) ?? 'ArtemioPadilla/inceptor',
+  repoSlug: (import.meta.env.PUBLIC_REPO_SLUG as string | undefined) ?? 'ArtemioPadilla/foodie',
   /** SPDX license id of the codebase. */
   license: 'MIT',
   /** Languages an agent should expect in the source. */
@@ -45,7 +47,7 @@ export const SITE = {
 /** Absolute repo URL derived from the slug. */
 export const REPO_URL = `https://github.com/${SITE.repoSlug}`;
 
-/** Absolute site origin + base (e.g. https://artemiop.com/inceptor). */
+/** Absolute site origin + base (e.g. https://artemiopadilla.github.io/foodie). */
 export function siteUrl(site: URL | undefined, base: string): string {
   const origin = (site ?? new URL('https://localhost')).origin;
   return `${origin}${base.replace(/\/$/, '')}`;

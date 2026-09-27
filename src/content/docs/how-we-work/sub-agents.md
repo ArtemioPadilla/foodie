@@ -64,5 +64,5 @@ On REJECTED, the routing token drives what happens next:
 - [forja](https://github.com/ArtemioPadilla/inceptor/blob/main/.claude/agents/forja.md)
 - [centinela](https://github.com/ArtemioPadilla/inceptor/blob/main/.claude/agents/centinela.md)
 
-Also see the [Inceptor overview](/docs/how-we-work/inceptor/) for the complete
+Also see the [Inceptor overview](/docs/how-we-work/workflow/) for the complete
 loop description with usage examples.

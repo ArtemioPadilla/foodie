@@ -1,18 +1,14 @@
 ---
 import { withBase } from '@/lib/href';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { t } from '../../i18n';
+import { t, hreflangAlternates } from '../../i18n';
+import { SITE_ORIGIN } from '@/lib/site-meta';
 
 // Hreflang alternates — gallery landing
-const site = 'https://artemiop.com';
-const alternates = [
-  { hreflang: 'en', href: `${site}/inceptor/gallery/` },
-  { hreflang: 'es', href: `${site}/inceptor/es/gallery/` },
-  { hreflang: 'x-default', href: `${site}/inceptor/gallery/` },
-];
+const alternates = hreflangAlternates('/gallery/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
 ---
 
-<BaseLayout title="inceptor — Galería de componentes" lang="es" alternates={alternates}>
+<BaseLayout title="Foodie — Galería de componentes" lang="es" alternates={alternates}>
   <main id="main-content" class="mx-auto max-w-6xl px-4 py-12">
 
     <section class="mb-16 text-center">

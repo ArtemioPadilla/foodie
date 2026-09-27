@@ -54,7 +54,6 @@ const EN_ONLY_ALLOWLIST = new Set([
   '/blog/[...slug]',
   // Utility / reference pages
   '/contact',
-  '/how-it-works',
   '/404',
   // Installable page blocks (ROADMAP Epic 27) — English-only, like /demos
   '/login',

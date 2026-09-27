@@ -80,6 +80,38 @@ export function localizedPath(pathname: string, target: Locale): string {
   return stripped === '/' ? `/${target}` : `/${target}${stripped}`;
 }
 
+/** One `<link rel="alternate" hreflang>` entry (see BaseLayout `alternates`). */
+export interface AlternateLink {
+  /** BCP-47 locale (e.g. 'en', 'es') or 'x-default' */
+  hreflang: string;
+  /** Absolute URL for that locale's equivalent page */
+  href: string;
+}
+
+/**
+ * Build the full hreflang set (every locale + `x-default`) for a route that
+ * exists in all locales. `pathname` is the route *without* base or locale
+ * prefix (`'/'`, `'/docs/'`); `origin` + `base` come from `Astro.site` and
+ * `import.meta.env.BASE_URL`, so the links follow the deploy (GitHub project
+ * page under `/foodie/`, root deploy, local preview) instead of a hardcoded
+ * domain.
+ *
+ * @example
+ * hreflangAlternates('/docs/', 'https://example.org', '/foodie/')
+ * // → en: https://example.org/foodie/docs/, es: …/foodie/es/docs/, x-default: …/foodie/docs/
+ */
+export function hreflangAlternates(pathname: string, origin: string, base = '/'): AlternateLink[] {
+  const prefix = `${origin.replace(/\/$/, '')}${base.replace(/\/$/, '')}`;
+  const url = (locale: Locale) => {
+    const p = localizedPath(pathname, locale);
+    return `${prefix}${p.endsWith('/') ? p : `${p}/`}`;
+  };
+  return [
+    ...LOCALES.map((locale) => ({ hreflang: locale, href: url(locale) })),
+    { hreflang: 'x-default', href: url(DEFAULT_LOCALE) },
+  ];
+}
+
 /**
  * Collect every leaf-node dot-path from a nested object. Used by parity tests
  * to enumerate all translation keys and verify no locale is missing one.

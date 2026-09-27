@@ -8,7 +8,7 @@ import { defineTheme, parseAccentColor } from './define-theme';
  * palette using the same oklch-based approach the shipped emerald palette
  * in src/styles/global.css already uses (fixed, vetted lightness/chroma
  * magnitudes, hue rotated to the caller's accent). No DOM, no build step —
- * plausibly callable from a future `create-inceptor-app` setup script.
+ * plausibly callable from a future project-setup script.
  */
 
 /** Extracts the L component from an `oklch(L C H [/ A])` string. */

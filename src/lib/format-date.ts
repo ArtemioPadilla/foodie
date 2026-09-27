@@ -14,7 +14,7 @@
  *
  * ## Why not dayjs / date-fns?
  * `Intl.DateTimeFormat` is built into every modern runtime, ships zero bytes to
- * the browser, and covers all Inceptor-supported locales without locale data
+ * the browser, and covers all Foodie-supported locales without locale data
  * bundles. We only need human-readable labels, not arithmetic.
  */
 

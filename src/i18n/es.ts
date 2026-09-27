@@ -68,7 +68,7 @@ export const es: typeof en = {
   docsLanding: {
     title: 'Documentación',
     tagline:
-      'Guías, convenciones y decisiones de arquitectura para construir sobre el scaffold de Inceptor.',
+      'Guías, convenciones y decisiones de arquitectura para construir Foodie.',
     cta: 'Leer la documentación',
     // Bridge landing page (es/docs.astro)
     bridgeHeading: 'Documentación compartida',

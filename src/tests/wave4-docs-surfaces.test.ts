@@ -13,7 +13,7 @@ const read = (p: string) => readFileSync(join(repoRoot, p), 'utf-8');
 describe('DocsLayout — edit this page link (#140)', () => {
   it('contains the GitHub edit URL pattern', () => {
     const layout = read('src/layouts/DocsLayout.astro');
-    expect(layout).toContain('github.com/ArtemioPadilla/inceptor/edit/main/src/content/docs/');
+    expect(layout).toContain('${REPO_URL}/edit/main/src/content/docs/');
   });
 
   it('derives the edit URL from the slug prop, not a hardcoded path', () => {

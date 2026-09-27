@@ -44,5 +44,5 @@ Visit `http://localhost:4321/` for the app, `http://localhost:4321/docs/` for th
 ## Next
 
 Read [What you get](/docs/start-here/what-you-get/) for the feature inventory,
-or [The 60-second Inceptor tour](/docs/start-here/inceptor-tour/) to understand the
+or [The 60-second Inceptor tour](/docs/start-here/template-tour/) to understand the
 workflow before you make your first change.

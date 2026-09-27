@@ -70,7 +70,7 @@ export const en = {
   docsLanding: {
     title: 'Documentation',
     tagline:
-      'Guides, conventions, and architecture decisions for building on the Inceptor scaffold.',
+      'Guides, conventions, and architecture decisions for building Foodie.',
     cta: 'Read the docs',
     // Bridge landing page (es/docs.astro)
     bridgeHeading: 'Shared documentation',

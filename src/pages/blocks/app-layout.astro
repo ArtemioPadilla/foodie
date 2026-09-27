@@ -1,4 +1,5 @@
 ---
+import { REPO_URL } from '@/lib/site-meta';
 import { withBase } from '@/lib/href';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlockPreviewToggle from '../../components/gallery/BlockPreviewToggle.astro';
@@ -7,7 +8,7 @@ import blockAppLayoutVariantsSource from '../../components/islands/BlockAppLayou
 ---
 
 <BaseLayout
-  title="App Layout sidebar variants — inceptor"
+  title="App Layout sidebar variants — Foodie"
   description="Two AppLayoutIsland sidebar variants: icon-collapse (a toggleable icon-only rail) and dual (a fixed icon rail plus a secondary contextual sidebar)."
 >
   <main id="main-content" class="mx-auto max-w-5xl px-4 py-12 space-y-10">
@@ -54,7 +55,7 @@ import blockAppLayoutVariantsSource from '../../components/islands/BlockAppLayou
         ← Back to blocks
       </a>
       <a
-        href="https://github.com/ArtemioPadilla/inceptor/blob/main/src/components/islands/AppLayoutIsland.tsx"
+        href={`${REPO_URL}/blob/main/src/components/islands/AppLayoutIsland.tsx`}
         target="_blank"
         rel="noopener noreferrer"
         class="underline underline-offset-4 hover:text-foreground"

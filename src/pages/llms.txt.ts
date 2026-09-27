@@ -8,9 +8,7 @@ import { SITE, REPO_URL, siteUrl } from '@/lib/site-meta';
  * content collections that render the pages, so it can't drift from the
  * site. Full docs text lives at /llms-full.txt.
  *
- * ⚠️ RE-BRAND ON INSTANTIATION: the identity lines come from
- * src/lib/site-meta.ts — update that file for new projects (see CLAUDE.md
- * § "Agent-readable surface").
+ * Identity lines come from src/lib/site-meta.ts (Foodie).
  */
 export const GET: APIRoute = async ({ site }) => {
   const base = siteUrl(site, import.meta.env.BASE_URL);
@@ -30,6 +28,8 @@ export const GET: APIRoute = async ({ site }) => {
 
 > ${SITE.description}
 
+${SITE.longDescription}
+
 Source: ${REPO_URL} (${SITE.license}). Agent/contributor context lives in
 [CLAUDE.md](${REPO_URL}/blob/main/CLAUDE.md) — the sub-agent loop
 (prometeo → forja → centinela), conventions and guardrails. Full docs as a
@@ -37,9 +37,9 @@ single file: [llms-full.txt](${url('/llms-full.txt')}).
 
 ## Start here
 
-- [How a feature ships — live walkthrough](${url('/how-it-works/')}): the issue → plan → commits → verdict loop on a real run
-- [Component gallery](${url('/gallery/')}): every component rendered live, light + dark, with Props API tables
-- [Demos](${url('/demos/')}): dashboard, 50k-row virtualized table, settings, backend API contract
+- [Home](${url('/')}): Foodie in English (also [Español](${url('/es/')}))
+- [Docs](${url('/docs/')}): how the project is built and how to contribute
+- [Component gallery](${url('/gallery/')}): the UI kit Foodie's screens are built from, rendered live
 
 ## Docs
 

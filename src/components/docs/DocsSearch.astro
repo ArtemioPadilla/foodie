@@ -38,7 +38,7 @@ const enabled = flags.docsSearch;
         // Bypass Vite's static analysis by computing the URL at runtime.
         // The Pagefind bundle is created as a postbuild step (see package.json
         // build script) and lives at <base>/_pagefind/pagefind.js. Under a
-        // subpath deploy (GitHub project pages at /inceptor/) a root-absolute
+        // subpath deploy (GitHub project pages at /foodie/) a root-absolute
         // URL 404s, so the base prefix is mandatory. In dev the bundle doesn't
         // exist; we gracefully degrade.
         const base = import.meta.env.BASE_URL.replace(/\/$/, '');

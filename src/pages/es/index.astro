@@ -3,8 +3,8 @@ import { withBase } from '@/lib/href';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { galleryManifest, categoryOrder, categoryLabels, getByCategory } from '../../content/gallery';
 import StatusBadgeStrip from '@/components/marketing/StatusBadgeStrip.astro';
-import { SITE } from '@/lib/site-meta';
-import { t } from '../../i18n';
+import { SITE, REPO_URL, SITE_ORIGIN } from '@/lib/site-meta';
+import { t, hreflangAlternates } from '../../i18n';
 
 // ── Build-time stats (mirrors src/pages/index.astro) ──────────────────────
 // Same globs as the EN home so both pages show the same honest numbers.
@@ -51,12 +51,7 @@ const flow = [
 ];
 
 // Hreflang alternates — mirrors src/pages/index.astro
-const site = 'https://artemiop.com';
-const alternates = [
-  { hreflang: 'en', href: `${site}/inceptor/` },
-  { hreflang: 'es', href: `${site}/inceptor/es/` },
-  { hreflang: 'x-default', href: `${site}/inceptor/` },
-];
+const alternates = hreflangAlternates('/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
 
 const jsonLd = [
   {
@@ -64,14 +59,14 @@ const jsonLd = [
     '@type': 'WebPage',
     name: `${SITE.name} — Inicio`,
     description: t('es', 'home.tagline'),
-    url: new URL(`${import.meta.env.BASE_URL}es/`, Astro.site ?? 'https://artemiop.com').toString(),
+    url: new URL(`${import.meta.env.BASE_URL}es/`, Astro.site ?? SITE_ORIGIN).toString(),
     inLanguage: 'es',
   },
 ];
 ---
 
 <BaseLayout
-  title="Inceptor — scaffold de desarrollo guiado por issues"
+  title={`${SITE.name} — Tu asistente personal de planificación de comidas`}
   description={t('es', 'home.tagline')}
   lang="es"
   alternates={alternates}
@@ -91,7 +86,7 @@ const jsonLd = [
             <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60"></span>
             <span class="relative inline-flex h-2 w-2 rounded-full bg-primary"></span>
           </span>
-          <span class="font-mono">inceptor</span>
+          <span class="font-mono">foodie</span>
           <span class="text-muted-foreground">· {t('es', 'home.kicker')}</span>
         </div>
 
@@ -109,7 +104,7 @@ const jsonLd = [
 
         <div class="rise mt-5" style="animation-delay:.20s">
           <code class="inline-block rounded-lg border border-border bg-muted px-4 py-2.5 font-mono text-sm text-foreground select-all">
-            npm create inceptor-app
+            npm run dev
           </code>
         </div>
 
@@ -136,7 +131,7 @@ const jsonLd = [
           <span class="text-border">·</span>
           <a href={withBase('/blog/')} class="transition-colors hover:text-primary">/blog</a>
           <span class="text-border">·</span>
-          <a href="https://github.com/ArtemioPadilla/inceptor" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-primary">github ↗</a>
+          <a href={REPO_URL} target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-primary">github ↗</a>
           <span class="text-border">·</span>
           <span class="text-muted-foreground/60">Astro 5 · React 19 · Tailwind v4 · Base UI</span>
         </div>
@@ -145,7 +140,7 @@ const jsonLd = [
       <!-- the loop graphic — same SVG as EN home, labels translated -->
       <div class="rise relative mx-auto hidden aspect-square w-full max-w-md place-items-center lg:grid" style="animation-delay:.2s">
         <div class="absolute inset-8 rounded-full glow-emerald opacity-70 blur-2xl"></div>
-        <svg viewBox="0 0 400 400" class="float-slow relative h-full w-full" role="img" aria-label="El bucle de Inceptor: issue, build, revisión, merge — y vuelta a empezar.">
+        <svg viewBox="0 0 400 400" class="float-slow relative h-full w-full" role="img" aria-label="El bucle de desarrollo: issue, build, revisión, merge — y vuelta a empezar.">
           <defs>
             <linearGradient id="ig-es" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="var(--color-primary-400)" />
@@ -220,16 +215,10 @@ const jsonLd = [
             ))}
           </ol>
           <div class="mt-10 flex flex-wrap gap-4">
-            <a href={withBase('/docs/start-here/inceptor-tour/')} class="inline-flex items-center gap-1.5 font-semibold text-primary transition-colors hover:text-primary/80">
+            <a href={withBase('/docs/start-here/template-tour/')} class="inline-flex items-center gap-1.5 font-semibold text-primary transition-colors hover:text-primary/80">
               {t('es', 'home.loopCta1')} →
             </a>
-            <a
-              href={withBase('/how-it-works/')}
-              class="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2 font-semibold text-primary transition-colors hover:border-primary/50 hover:bg-primary/10"
-            >
-              {t('es', 'home.loopCta2')} →
-            </a>
-            <a href={withBase('/docs/how-we-work/inceptor/')} class="text-muted-foreground transition-colors hover:text-foreground">
+            <a href={withBase('/docs/how-we-work/workflow/')} class="text-muted-foreground transition-colors hover:text-foreground">
               {t('es', 'home.loopCta3')}
             </a>
           </div>

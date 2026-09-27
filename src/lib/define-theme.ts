@@ -7,7 +7,7 @@
  * derive light+dark from one definition instead of hand-tuning ~20 CSS vars.
  *
  * This is a pure function (no DOM, no build step) so it can plausibly be
- * called from a future `create-inceptor-app` setup script to re-brand a new
+ * called from a future project-setup script to re-brand a new
  * project's `src/styles/global.css` from one accent color, per the
  * "re-brand when instantiating" workflow CLAUDE.md already documents.
  *

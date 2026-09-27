@@ -61,7 +61,7 @@ export function ShowcaseDetailsTabbed() {
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>Last deployed 2 hours ago by <strong>artemio</strong>.</p>
                 <p>Serving 1,234 requests/min on 38 edge nodes.</p>
-                <p>Custom domain: <code>app.inceptor.dev</code></p>
+                <p>Custom domain: <code>app.foodie.example</code></p>
               </div>
             ),
           },

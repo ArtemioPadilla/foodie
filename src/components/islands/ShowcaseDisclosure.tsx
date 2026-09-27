@@ -28,8 +28,8 @@ export default function ShowcaseDisclosure() {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Accordion</p>
           <Accordion defaultValue={['a']} className="rounded-lg border border-border px-4">
             <AccordionItem value="a">
-              <AccordionTrigger>What is Inceptor?</AccordionTrigger>
-              <AccordionContent>An issue-driven web scaffold on Astro + React + Base UI.</AccordionContent>
+              <AccordionTrigger>What is Foodie?</AccordionTrigger>
+              <AccordionContent>An offline-first meal planner: recipes, weekly plans, shopping lists and pantry.</AccordionContent>
             </AccordionItem>
             <AccordionItem value="b">
               <AccordionTrigger>Is it free?</AccordionTrigger>

@@ -1,85 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 
-// Source-level guards for Wave 4 issues #138 (/how-it-works) and #144
-// (status badge strip) from docs/AUDIT-2026-06.md §7 items 2 & 9.
+// Source-level guards for Wave 4 issues #138 (TimelineStage) and #144
+// (status badge strip) from docs/AUDIT-2026-06.md §7 items 2 & 9. The
+// template's /how-it-works marketing page was dropped in the Foodie rebrand
+// (roadmap Issue 003); the TimelineStage component it used stays in the kit.
 //
 // These are structural guards: they assert the presence of specific markup
 // strings that form the acceptance criteria without executing the Astro build.
 
 const read = (p: string) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf-8');
-
-// ── Issue #138 — /how-it-works page ─────────────────────────────────────────
-
-describe('how-it-works page (#138)', () => {
-  it('the page file exists', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src.length).toBeGreaterThan(0);
-  });
-
-  it('uses BaseLayout', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('BaseLayout');
-  });
-
-  it('sets id="main-content" on main for the skip-to-content link', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('id="main-content"');
-  });
-
-  it('uses withBase() for all internal links', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain("import { withBase } from '@/lib/href'");
-    expect(src).toMatch(/withBase\(/);
-  });
-
-  it('contains the ISSUE stage label', () => {
-    const src = read('src/pages/how-it-works.astro');
-    // Stage label rendered via TimelineStage label prop
-    expect(src).toContain('label="ISSUE"');
-  });
-
-  it('contains the PLAN stage label', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('label="PLAN"');
-  });
-
-  it('contains the COMMITS stage label', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('label="COMMITS"');
-  });
-
-  it('contains the VERDICT stage label', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('label="VERDICT"');
-  });
-
-  it('references PR #136 as the real worked example', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('#136');
-  });
-
-  it('contains the Tdd-Red trailer mention to explain the convention', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('Tdd-Red:');
-  });
-
-  it('has an npm create inceptor-app command in the run-it-yourself CTA', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('npm create inceptor-app');
-  });
-
-  it('links to the quick-start docs from the CTA via withBase', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain("withBase('/docs/start-here/quick-start/')");
-  });
-
-  it('has an SEO title and description on the BaseLayout', () => {
-    const src = read('src/pages/how-it-works.astro');
-    expect(src).toContain('title="How a feature ships');
-    expect(src).toContain('description=');
-  });
-});
 
 // ── TimelineStage component ───────────────────────────────────────────────────
 
@@ -156,14 +86,12 @@ describe('StatusBadgeStrip component (#144)', () => {
 // ── index.astro integrations ──────────────────────────────────────────────────
 
 describe('index.astro wave 4 integrations', () => {
-  it('links /how-it-works/ from the loop section', () => {
+  // The "/how-it-works" walkthrough (a template-marketing page about the
+  // upstream template's own PR #136) was removed in the Foodie rebrand
+  // (roadmap Issue 003), so the loop section no longer links to it.
+  it('no longer links the removed /how-it-works/ page', () => {
     const src = read('src/pages/index.astro');
-    expect(src).toContain("withBase('/how-it-works/')");
-  });
-
-  it('the how-it-works link is labeled "See a real run"', () => {
-    const src = read('src/pages/index.astro');
-    expect(src).toContain('See a real run');
+    expect(src).not.toContain("withBase('/how-it-works/')");
   });
 
   it('imports and renders StatusBadgeStrip', () => {

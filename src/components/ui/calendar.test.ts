@@ -22,7 +22,7 @@ describe('calendar', () => {
     expect(source).not.toMatch(/from .{1,2}@radix/);
   });
 
-  it('maps classNames to Inceptor semantic tokens, not literal palette classes', () => {
+  it('maps classNames to the kit semantic tokens, not literal palette classes', () => {
     expect(source).toMatch(/bg-primary/);
     expect(source).toMatch(/text-primary-foreground/);
   });

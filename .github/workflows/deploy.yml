@@ -31,7 +31,7 @@ jobs:
           # needs the repo name as its base path. Defaults to this repo's slug;
           # override with an ASTRO_BASE repo secret (e.g. set it to `/` if you
           # later move to a root/custom-domain user-pages deploy).
-          ASTRO_BASE: ${{ secrets.ASTRO_BASE || '/inceptor' }}
+          ASTRO_BASE: ${{ secrets.ASTRO_BASE || '/foodie' }}
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:

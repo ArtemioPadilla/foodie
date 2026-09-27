@@ -3,7 +3,7 @@ import '../styles/global.css';
 import FeedbackFAB from '../components/common/FeedbackFAB.astro';
 import SiteHeader from '../components/common/SiteHeader.astro';
 import SiteFooter from '../components/common/SiteFooter.astro';
-import { SITE } from '../lib/site-meta';
+import { SITE, SITE_ORIGIN } from '../lib/site-meta';
 import { jsonLd as serializeJsonLd } from '../lib/json-ld';
 import OfflineBanner from '../components/islands/OfflineBanner';
 import HydrationCanary from '../components/islands/HydrationCanary';
@@ -35,7 +35,7 @@ interface Props {
 }
 
 const {
-  title = 'My App',
+  title = SITE.name,
   // Default to the site's real positioning line (src/lib/site-meta.ts) —
   // pages that forget to pass a description must not introduce the site as
   // boilerplate filler (this default is also what /llms.txt leads with).
@@ -46,7 +46,7 @@ const {
 } = Astro.props;
 
 // Canonical URL — derived from Astro.site + Astro.url.pathname so it always
-// reflects the live origin and the current subpath (e.g. /inceptor/gallery/).
+// reflects the live origin and the current subpath (e.g. /foodie/recipes/).
 // Falls back gracefully when Astro.site is not set (local dev without --site).
 const canonicalUrl = Astro.site
   ? new URL(Astro.url.pathname, Astro.site).toString()
@@ -124,13 +124,13 @@ const canonicalUrl = Astro.site
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(withBase('/og-image.png'), Astro.site ?? 'https://artemiop.com').toString()} />
+    <meta property="og:image" content={new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString()} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(withBase('/og-image.png'), Astro.site ?? 'https://artemiop.com').toString()} />
+    <meta name="twitter:image" content={new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString()} />
     {/* Agent-first index of the site (llmstxt.org convention). Generated at
         build from the content collections — see src/pages/llms.txt.ts. */}
     <link rel="alternate" type="text/plain" title="llms.txt" href={withBase('/llms.txt')} />

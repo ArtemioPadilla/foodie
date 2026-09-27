@@ -11,7 +11,9 @@
  * Zero JS — pure static HTML.
  */
 
-const REPO_SLUG = 'ArtemioPadilla/inceptor';
+import { SITE } from '@/lib/site-meta';
+
+const REPO_SLUG = SITE.repoSlug;
 const GH_ACTIONS = `https://github.com/${REPO_SLUG}/actions/workflows`;
 const GH_ACTIONS_RUNS = `https://github.com/${REPO_SLUG}/actions`;
 

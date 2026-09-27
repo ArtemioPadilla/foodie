@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import QueryProvider from './QueryProvider';
 import ErrorBoundary from './ErrorBoundary';
 import { githubIssuesUrl } from '@/lib/api';
+import { SITE } from '@/lib/site-meta';
 
 interface GitHubIssue {
   id: number;
@@ -18,7 +19,7 @@ interface GitHubIssue {
   pull_request?: { url: string };
 }
 
-const REPO = 'ArtemioPadilla/inceptor';
+const REPO = SITE.repoSlug;
 
 function IssuesListInner() {
   const queryClient = useQueryClient();

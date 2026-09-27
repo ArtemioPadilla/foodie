@@ -1,4 +1,5 @@
 ---
+import { REPO_URL } from '@/lib/site-meta';
 import { fileURLToPath } from 'node:url';
 import { withBase } from '@/lib/href';
 import BaseLayout from '../../layouts/BaseLayout.astro';
@@ -50,7 +51,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const repoBlob = `https://github.com/ArtemioPadilla/inceptor/blob/main/${entry.source}`;
+const repoBlob = `${REPO_URL}/blob/main/${entry.source}`;
 const recipe = galleryRecipes[entry.slug];
 const playground = galleryPlaygrounds[entry.slug];
 

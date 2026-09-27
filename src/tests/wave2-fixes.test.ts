@@ -31,20 +31,14 @@ describe('audit wave 2 — trust & polish', () => {
       expect(footer).toMatch(/withBase\(/);
     });
 
-    it('contains a GitHub link', () => {
+    it('contains a GitHub link (single-sourced from site-meta)', () => {
       const footer = read('src/components/common/SiteFooter.astro');
-      expect(footer).toContain('github.com/ArtemioPadilla/inceptor');
+      expect(footer).toContain('href={REPO_URL}');
     });
 
     it('contains an MIT license note', () => {
       const footer = read('src/components/common/SiteFooter.astro');
       expect(footer.toLowerCase()).toContain('mit');
-    });
-
-    it('contains a "Built with Inceptor" credit', () => {
-      const footer = read('src/components/common/SiteFooter.astro');
-      expect(footer).toContain('Built with');
-      expect(footer).toContain('Inceptor');
     });
 
     it('contains EN and ES language switcher links', () => {
@@ -187,13 +181,12 @@ describe('audit wave 2 — trust & polish', () => {
   // Updated for ES parity: /es/ is now a full translation matching the EN home
   // structure (hero + stats + loop + kit), not a minimal pattern-demo page.
   describe('es/index.astro', () => {
-    it('has correct capital-I Inceptor branding in the title', () => {
+    it('has the product name (from site-meta) in the title, not a lowercase slug', () => {
       const page = read('src/pages/es/index.astro');
-      // Must contain 'Inceptor' (capital I) — the old lowercase "inceptor — ES"
-      // title was one of the audit findings (§4.6). The new full title is
-      // "Inceptor — scaffold de desarrollo guiado por issues".
-      expect(page).toContain('Inceptor —');
-      expect(page).not.toContain('"inceptor — ES"');
+      // The old lowercase "<slug> — ES" title was one of the audit findings
+      // (§4.6). The title is now `${SITE.name} — <tagline>` (Foodie rebrand).
+      expect(page).toContain('title={`${SITE.name} —');
+      expect(page).not.toMatch(/"[a-z]+ — ES"/);
     });
 
     it('passes alternates prop for hreflang', () => {

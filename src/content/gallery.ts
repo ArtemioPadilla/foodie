@@ -24,7 +24,7 @@ export interface GalleryEntry {
   /**
    * Category bucket on the index page.
    */
-  category: 'primitives' | 'forms' | 'advanced' | 'compound' | 'overlays' | 'disclosure' | 'feedback' | 'data' | 'charts' | 'motion' | 'pwa' | 'navmenu' | 'extras' | 'gen-ai' | 'inceptor';
+  category: 'primitives' | 'forms' | 'advanced' | 'compound' | 'overlays' | 'disclosure' | 'feedback' | 'data' | 'charts' | 'motion' | 'pwa' | 'navmenu' | 'extras' | 'gen-ai' | 'reporting';
   /**
    * Optional install command for shadcn-style components.
    * If omitted, the gallery omits the install section.
@@ -274,7 +274,7 @@ export const galleryManifest: GalleryEntry[] = [
     category: 'gen-ai',
     island: 'ShowcaseAI',
   },
-  // Inceptor
+  // Issue reporting
   {
     slug: 'error-boundary',
     name: 'ErrorBoundary',
@@ -282,7 +282,7 @@ export const galleryManifest: GalleryEntry[] = [
       'Throw an error inside an island — get a pre-filled GitHub issue with stack trace, component path, URL, and UA.',
     source: 'src/components/islands/ErrorBoundary.tsx',
     status: 'stable',
-    category: 'inceptor',
+    category: 'reporting',
     island: 'ShowcaseErrorBoundary',
   },
   // Resizable layout & bulk actions (ROADMAP Epic 22)
@@ -339,7 +339,7 @@ export const categoryLabels: Record<GalleryEntry['category'], string> = {
   pwa: 'PWA',
   extras: 'Extras & data-viz',
   'gen-ai': 'Generative AI',
-  inceptor: 'Inceptor reporting',
+  reporting: 'Issue reporting',
 };
 
 export const categoryOrder: GalleryEntry['category'][] = [
@@ -356,5 +356,5 @@ export const categoryOrder: GalleryEntry['category'][] = [
   'motion',
   'pwa',
   'extras',
-  'inceptor',
+  'reporting',
 ];

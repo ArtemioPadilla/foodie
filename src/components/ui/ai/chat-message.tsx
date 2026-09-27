@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 /**
  * ChatMessage — one turn in an AI conversation, styled by role.
  *
- * The agent-native UI kit (#204): Inceptor's identity is agent-orchestrated
+ * The agent-native UI kit (#204): the template's identity is agent-orchestrated
  * development, so an honest chat surface is on-brand, not an afterthought.
  * Assistant turns are visually distinct and carry the `AIOutputLabel` slot
  * (passed as `footer`) so disclosure rides along with the content.

@@ -1,6 +1,7 @@
+import { SITE } from '@/lib/site-meta';
 // Repo where issues are filed. Reads PUBLIC_REPO_SLUG so a fork reports to its
 // own repo (not the template's). Falls back to the template slug for dev.
-const REPO = (import.meta.env.PUBLIC_REPO_SLUG as string | undefined) ?? 'ArtemioPadilla/inceptor';
+const REPO = SITE.repoSlug;
 
 export interface ReportIssueInput {
   title: string;

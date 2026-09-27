@@ -1,4 +1,5 @@
 ---
+import { REPO_URL } from '@/lib/site-meta';
 import { withBase } from '@/lib/href';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { ShowcaseAppLayoutDefault, ShowcaseAppLayoutSplit } from '@/components/islands/ShowcaseAppLayout';
@@ -98,7 +99,7 @@ import { ShowcaseAppLayoutDefault, ShowcaseAppLayoutSplit } from '@/components/i
         ← Gallery
       </a>
       <a
-        href="https://github.com/ArtemioPadilla/inceptor/blob/main/src/components/islands/AppLayoutIsland.tsx"
+        href={`${REPO_URL}/blob/main/src/components/islands/AppLayoutIsland.tsx`}
         target="_blank"
         rel="noopener noreferrer"
         class="underline underline-offset-4 hover:text-foreground"

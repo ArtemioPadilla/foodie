@@ -13,9 +13,10 @@ import { BarList } from '@/components/ui/bar-list';
 import { DataTable } from '@/components/ui/data-table';
 import type { ColumnDef } from '@tanstack/react-table';
 import { githubIssuesUrl } from '@/lib/api';
+import { SITE } from '@/lib/site-meta';
 
 // The repo whose GitHub Issues drive the live data on the dashboard.
-const REPO = 'ArtemioPadilla/inceptor';
+const REPO = SITE.repoSlug;
 
 interface GitHubIssue {
   id: number;

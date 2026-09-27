@@ -8,13 +8,14 @@
  *   (static import) and src/lib/site-meta.ts (re-exported as SITE_ORIGIN)
  *   can consume the same value without duplication.
  *
- * RE-BRAND ON INSTANTIATION: change SITE_ORIGIN to your production domain.
- * Then update public/robots.txt Sitemap URL to match (or let the doctor
- * script catch it for you).
+ * Foodie is served as a GitHub project page at
+ * https://artemiopadilla.github.io/foodie/ — the origin lives here, the
+ * `/foodie` base comes from ASTRO_BASE. public/robots.txt Sitemap URL must
+ * match (the doctor script and src/tests/site-meta.test.ts catch drift).
  */
 
 /** Production origin — no trailing slash. Used for sitemap + OG tags. */
-export const SITE_ORIGIN = 'https://artemiop.com';
+export const SITE_ORIGIN = 'https://artemiopadilla.github.io';
 
 /**
  * Canonical URL for the site root (origin + base subpath).
@@ -23,8 +24,8 @@ export const SITE_ORIGIN = 'https://artemiop.com';
  *
  * This helper exists here so astro.config.mjs can call it before Vite starts.
  *
- * @param {string} [base='/'] - The base path (e.g. '/inceptor').
- * @returns {string} Full canonical URL (e.g. 'https://artemiop.com/inceptor').
+ * @param {string} [base='/'] - The base path (e.g. '/foodie').
+ * @returns {string} Full canonical URL (e.g. 'https://artemiopadilla.github.io/foodie').
  */
 export function canonicalUrl(base = '/') {
   return `${SITE_ORIGIN}${base === '/' ? '' : base.replace(/\/$/, '')}`;

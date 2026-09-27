@@ -13,7 +13,7 @@ Every change has:
 4. **Three sub-agent passes** — `prometeo` plans, `forja` implements, `centinela` validates
 5. **Squash merge** to `main`, branch deleted
 
-Read [the 60-second tour](/docs/start-here/inceptor-tour/) for the workflow walkthrough.
+Read [the 60-second tour](/docs/start-here/template-tour/) for the workflow walkthrough.
 
 ## When NOT to use Inceptor
 

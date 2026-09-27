@@ -3,10 +3,10 @@ import { jsonLd } from './json-ld';
 
 describe('jsonLd', () => {
   it('serializes a plain object to JSON', () => {
-    const result = jsonLd({ '@type': 'WebSite', name: 'Inceptor' });
+    const result = jsonLd({ '@type': 'WebSite', name: 'Foodie' });
     const parsed = JSON.parse(result);
     expect(parsed['@type']).toBe('WebSite');
-    expect(parsed.name).toBe('Inceptor');
+    expect(parsed.name).toBe('Foodie');
   });
 
   it('escapes < to prevent </script> injection', () => {

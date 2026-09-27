@@ -28,7 +28,6 @@ describe('agent-readable surface', () => {
     const layout = read('src/layouts/BaseLayout.astro');
     expect(layout).toContain('application/ld+json');
     expect(layout).toContain('description = SITE.description');
-    expect(layout).not.toContain("description = 'Built with inceptor'");
     expect(layout).toContain("href={withBase('/llms.txt')}");
   });
 
@@ -50,7 +49,7 @@ describe('agent-readable surface', () => {
     expect(md).toContain('src/lib/site-meta.ts');
   });
 
-  it('create-inceptor-app emits site-meta, llms.txt, and a CLAUDE.md re-brand checklist with TODO(agent) markers', () => {
+  it('scripts/init.mjs (project scaffolder) emits site-meta, llms.txt, and a CLAUDE.md re-brand checklist with TODO(agent) markers', () => {
     const init = read('scripts/init.mjs');
     expect(init).toContain("write('src/lib/site-meta.ts'");
     expect(init).toContain("write('src/pages/llms.txt.ts'");

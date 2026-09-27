@@ -32,7 +32,7 @@ describe('IssuesList', () => {
     // back to api.github.com otherwise. See src/lib/api.test.ts for the URL.
     expect(source).toMatch(/githubIssuesUrl/);
     expect(source).toMatch(/from ['"]@\/lib\/api['"]/);
-    expect(source).toMatch(/ArtemioPadilla\/inceptor/);
+    expect(source).toMatch(/SITE\.repoSlug/);
   });
 
   it('does not import from framer-motion', () => {

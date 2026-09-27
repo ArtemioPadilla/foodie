@@ -38,7 +38,7 @@ if command -v gh >/dev/null 2>&1; then
   if gh auth status >/dev/null 2>&1; then
     ok "gh auth: signed in"
   else
-    warn "gh auth: not signed in — run \`gh auth login\` for the Inceptor flow to work"
+    warn "gh auth: not signed in — run \`gh auth login\` for the issue-driven flow (ship, monday) to work"
   fi
 else
   warn "gh not found — install from https://cli.github.com (needed for /goal, ship, monday)"
@@ -57,7 +57,7 @@ if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   elif printf "%s" "$branch" | grep -qE '^(phase-[0-9]+/issue-[0-9]+-|chore/|docs/|test/|fix/)' ; then
     ok "branch \`$branch\` follows naming convention"
   else
-    warn "branch \`$branch\` does not match Inceptor naming (phase-N/issue-NNN-slug or chore/...)"
+    warn "branch \`$branch\` does not match the naming convention (phase-N/issue-NNN-slug or chore/...)"
   fi
 else
   fail "not inside a git repository"
@@ -95,7 +95,9 @@ fi
 # ---------------------------------------------------------------------------
 # Placeholder / template-default scan (#185)
 # Warns when the canonical origin or API key placeholders look like they were
-# never updated after forking from the Inceptor template.
+# never updated after forking from the Inceptor template. Foodie is owned by
+# the same GitHub account as the template, so the scan targets the template's
+# *values* (artemiop.com, ArtemioPadilla/inceptor), not the owner name.
 # ---------------------------------------------------------------------------
 echo
 echo "Placeholder scan"
@@ -111,7 +113,7 @@ if [ "$PKG_NAME" = "inceptor" ] || [ "$PKG_NAME" = "" ]; then
 else
   # Derived project: flag leftover template defaults in key files
   PLACEHOLDER_FILES="src/lib/site-meta.ts site.config.mjs public/robots.txt"
-  TEMPLATE_ORIGINS="artemiop.com ArtemioPadilla"
+  TEMPLATE_ORIGINS="artemiop.com ArtemioPadilla/inceptor"
   found_placeholder=0
   for f in $PLACEHOLDER_FILES; do
     if [ -f "$f" ]; then

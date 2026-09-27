@@ -73,11 +73,11 @@ export default function ShowcaseOverlays() {
 
           {/* Hover card */}
           <HoverCard>
-            <HoverCardTrigger render={<Button variant="link" />}>@inceptor</HoverCardTrigger>
+            <HoverCardTrigger render={<Button variant="link" />}>@foodie</HoverCardTrigger>
             <HoverCardContent>
-              <p className="text-sm font-semibold text-foreground">Inceptor</p>
+              <p className="text-sm font-semibold text-foreground">Foodie</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Issue-driven web scaffold. Astro + React + Base UI.
+                Your Personal Meal Planning Assistant. Astro + React + Base UI.
               </p>
             </HoverCardContent>
           </HoverCard>

@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import source from './PrivacyToast.tsx?raw';
 
 describe('PrivacyToast', () => {
-  it('reads and writes the inceptor:privacy-ack localStorage key', () => {
-    expect(source).toMatch(/inceptor:privacy-ack/);
+  it('reads and writes the foodie:privacy-ack localStorage key', () => {
+    expect(source).toMatch(/foodie:privacy-ack/);
     expect(source).toMatch(/localStorage\.getItem\(\s*ACK_KEY\s*\)/);
     expect(source).toMatch(/localStorage\.setItem\(\s*ACK_KEY\s*,\s*['"]true['"]\s*\)/);
   });

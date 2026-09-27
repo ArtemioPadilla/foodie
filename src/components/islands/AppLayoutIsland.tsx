@@ -1,5 +1,5 @@
 /**
- * AppLayoutIsland — reusable service-shell pattern for Inceptor.
+ * AppLayoutIsland — reusable service-shell pattern for Foodie.
  *
  * Provides:
  *   - Left navigation area (SideNav)
@@ -203,7 +203,7 @@ function TopBar({
         </button>
         {logo ?? (
           <span className="text-sm font-semibold text-sidebar-foreground">
-            Inceptor
+            Foodie
           </span>
         )}
       </div>

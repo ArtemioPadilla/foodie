@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
  * Splitter — resizable panes for master-detail layouts (ROADMAP Epic 22).
  * Base UI ships no splitter primitive, so per ADR 0009 this wraps
  * `@zag-js/splitter` directly (not `@ark-ui/react`) as the state-machine
- * foundation, styled with Inceptor's own Tailwind/`cn()` conventions instead
+ * foundation, styled with the kit's own Tailwind/`cn()` conventions instead
  * of zag's `data-scope`/`data-part` styling story.
  *
  * `SplitterContext` is intra-component only — the entire <Splitter> composition

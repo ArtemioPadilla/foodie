@@ -103,7 +103,7 @@ Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entr
 |---|---|---|---|
 | **Extras & data-viz** | ✅ stable | Tree view, Timeline, Bar list, Sparkline, Gauge. | [`src/components/ui/`](../src/components/ui/) |
 
-## 14. Inceptor reporting
+## 14. Issue reporting
 
 | Component | Status | Summary | Source |
 |---|---|---|---|
@@ -117,4 +117,4 @@ Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entr
 
 ---
 
-_Last generated: 2026-08-10. Run `npm run gen:catalog` to refresh._
+_Last generated: 2026-09-27. Run `npm run gen:catalog` to refresh._

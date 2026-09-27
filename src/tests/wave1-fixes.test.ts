@@ -10,8 +10,8 @@ const read = (p: string) => readFileSync(new URL(`../../${p}`, import.meta.url),
 describe('audit wave 1 — production fixes', () => {
   it('robots.txt points at the real sitemap, not the placeholder domain', () => {
     const robots = read('public/robots.txt');
-    expect(robots).not.toContain('inceptor.example');
-    expect(robots).toContain('https://artemiop.com/inceptor/sitemap-index.xml');
+    expect(robots).not.toContain('.example');
+    expect(robots).toContain('https://artemiopadilla.github.io/foodie/sitemap-index.xml');
   });
 
   it('PWA navigateFallback stays inside the configured base scope', () => {

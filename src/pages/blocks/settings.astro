@@ -1,4 +1,5 @@
 ---
+import { REPO_URL } from '@/lib/site-meta';
 import { withBase } from '@/lib/href';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import BlockPreviewToggle from '../../components/gallery/BlockPreviewToggle.astro';
@@ -7,7 +8,7 @@ import settingsDemoSource from '../../components/islands/SettingsDemo.tsx?raw';
 ---
 
 <BaseLayout
-  title="Settings block — inceptor"
+  title="Settings block — Foodie"
   description="An installable settings-page block: sectioned Tabs (Profile, Notifications, Appearance, Danger zone) over Select, Switch, RadioGroup, Slider, Textarea, Avatar, and a destructive AlertDialog-gated Delete account flow."
 >
   <main id="main-content" class="mx-auto max-w-3xl px-4 py-12 space-y-6">
@@ -33,7 +34,7 @@ import settingsDemoSource from '../../components/islands/SettingsDemo.tsx?raw';
         ← Back to blocks
       </a>
       <a
-        href="https://github.com/ArtemioPadilla/inceptor/blob/main/src/components/islands/SettingsDemo.tsx"
+        href={`${REPO_URL}/blob/main/src/components/islands/SettingsDemo.tsx`}
         target="_blank"
         rel="noopener noreferrer"
         class="underline underline-offset-4 hover:text-foreground"

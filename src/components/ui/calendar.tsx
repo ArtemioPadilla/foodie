@@ -7,7 +7,7 @@ import { buttonVariants } from '@/components/ui/button';
 
 // Calendar wraps react-day-picker's DayPicker (MIT). We deliberately do NOT
 // import "react-day-picker/style.css" — every element is styled via the
-// `classNames` prop below, mapped to Inceptor's existing CSS-var tokens, so
+// `classNames` prop below, mapped to the kit's existing CSS-var tokens, so
 // dark mode and the shadcn visual language apply automatically.
 type CalendarProps = React.ComponentProps<typeof DayPicker>;
 

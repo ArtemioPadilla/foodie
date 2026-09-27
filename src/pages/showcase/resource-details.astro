@@ -1,4 +1,5 @@
 ---
+import { REPO_URL } from '@/lib/site-meta';
 import { withBase } from '@/lib/href';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import {
@@ -95,7 +96,7 @@ import {
         ← Gallery
       </a>
       <a
-        href="https://github.com/ArtemioPadilla/inceptor/blob/main/src/components/islands/DetailsPageSimple.tsx"
+        href={`${REPO_URL}/blob/main/src/components/islands/DetailsPageSimple.tsx`}
         target="_blank"
         rel="noopener noreferrer"
         class="underline underline-offset-4 hover:text-foreground"
@@ -103,7 +104,7 @@ import {
         DetailsPageSimple source ↗
       </a>
       <a
-        href="https://github.com/ArtemioPadilla/inceptor/blob/main/src/components/islands/DetailsPageWithTabs.tsx"
+        href={`${REPO_URL}/blob/main/src/components/islands/DetailsPageWithTabs.tsx`}
         target="_blank"
         rel="noopener noreferrer"
         class="underline underline-offset-4 hover:text-foreground"

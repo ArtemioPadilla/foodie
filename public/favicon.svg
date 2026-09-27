@@ -1,4 +1,27 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#10b981"/>
-  <path d="M8 16h16M16 8v16" stroke="white" stroke-width="3" stroke-linecap="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none"><rect width="64" height="64" rx="12" fill="#10b981"/><g transform="translate(32 32) scale(0.152) translate(-256 -268)"><g transform="translate(128, 100)">
+    <!-- Hat top -->
+    <circle cx="64" cy="64" r="48" fill="white" opacity="0.9"/>
+    <circle cx="128" cy="48" r="56" fill="white"/>
+    <circle cx="192" cy="64" r="48" fill="white" opacity="0.9"/>
+
+    <!-- Hat band -->
+    <rect x="32" y="96" width="192" height="24" rx="4" fill="white"/>
+
+    <!-- Hat base -->
+    <path d="M 32 120 L 32 180 Q 32 200 52 200 L 204 200 Q 224 200 224 180 L 224 120 Z"
+          fill="white" opacity="0.95"/>
+
+    <!-- Fork accent -->
+    <g transform="translate(80, 240)" fill="white" opacity="0.3">
+      <rect x="0" y="0" width="8" height="80" rx="4"/>
+      <rect x="16" y="0" width="8" height="80" rx="4"/>
+      <rect x="32" y="0" width="8" height="80" rx="4"/>
+      <rect x="-4" y="0" width="48" height="12" rx="6"/>
+    </g>
+
+    <!-- Spoon accent -->
+    <g transform="translate(160, 240)" fill="white" opacity="0.3">
+      <ellipse cx="12" cy="12" rx="12" ry="16"/>
+      <rect x="8" y="24" width="8" height="56" rx="4"/>
+    </g>
+  </g></g></svg>

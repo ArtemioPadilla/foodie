@@ -72,8 +72,12 @@
     --secondary-foreground: light-dark(oklch(0.205 0 0), oklch(0.985 0 0));
     --muted: light-dark(oklch(0.97 0 0), oklch(0.269 0 0));
     --muted-foreground: light-dark(oklch(0.49 0 0), oklch(0.715 0 0));
-    --accent: light-dark(oklch(0.96 0.02 163), oklch(0.28 0.04 165));
-    --accent-foreground: light-dark(oklch(0.3 0.06 163), oklch(0.92 0.05 165));
+    /* Foodie accent: amber (#f59e0b, oklch hue ≈ 70). The shadcn `accent`
+       token is a *tinted surface* (hover/selected rows, menu items), so it
+       carries a soft amber tint with a deep amber-brown foreground; the
+       saturated brand amber lives in the --color-accent-* scale below. */
+    --accent: light-dark(oklch(0.96 0.045 85), oklch(0.30 0.055 70));
+    --accent-foreground: light-dark(oklch(0.40 0.10 55), oklch(0.92 0.10 85));
     --destructive: light-dark(oklch(0.577 0.245 27.325), oklch(0.704 0.191 22.216));
     --destructive-foreground: light-dark(oklch(0.985 0 0), oklch(0.145 0.02 25));
     --border: light-dark(oklch(0.922 0 0), oklch(1 0 0 / 12%));
@@ -137,10 +141,27 @@
 }
 
 @theme {
+  /* Brand primary: emerald (#10b981) — identical to the template default. */
   --color-primary-400: #34d399;
   --color-primary-500: #10b981;
   --color-primary-600: #059669;
   --color-primary-700: #047857;
+  /* Brand accent: amber (legacy/tailwind.config.js `accent` scale). */
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+  --color-accent-700: #b45309;
+  /* Food-category colors (legacy/tailwind.config.js). Used for ingredient and
+     recipe category badges: `bg-food-protein`, `text-food-dairy`, … Constant
+     across light/dark — they are identity hues, not surfaces; pair them with
+     white text (or use them as borders/dots) on dark backgrounds. */
+  --color-food-protein: #dc2626;
+  --color-food-vegetables: #16a34a;
+  --color-food-fruits: #ea580c;
+  --color-food-grains: #d97706;
+  --color-food-dairy: #3b82f6;
+  --color-food-pantry: #8b5cf6;
+  --color-food-spices: #84cc16;
 
   /* Type system — editorial serif display + grotesque body + mono for code.
      Loaded in BaseLayout via Google Fonts (preconnect + display=swap). */

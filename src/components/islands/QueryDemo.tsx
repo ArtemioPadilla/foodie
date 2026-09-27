@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { repoStatsUrl } from '@/lib/api';
 import QueryProvider from './QueryProvider';
 import ErrorBoundary from './ErrorBoundary';
+import { SITE } from '@/lib/site-meta';
 
-/** Canonical repo slug. Reads PUBLIC_REPO_SLUG when set (fork-friendly). */
-const REPO = (import.meta.env.PUBLIC_REPO_SLUG as string | undefined) ?? 'ArtemioPadilla/inceptor';
+/** Canonical repo slug — single-sourced from site-meta.ts (honors PUBLIC_REPO_SLUG). */
+const REPO = SITE.repoSlug;
 
 interface RepoInfo {
   description: string | null;
@@ -15,7 +16,7 @@ interface RepoInfo {
 
 function RepoStatsInner() {
   const { data, isLoading, error } = useQuery<RepoInfo>({
-    queryKey: ['repo', 'inceptor'],
+    queryKey: ['repo', REPO],
     queryFn: async () => {
       // Route through repoStatsUrl() so a self-hosted backend proxy is used
       // when PUBLIC_API_BASE is set, avoiding GitHub's 60 req/h unauthenticated cap.

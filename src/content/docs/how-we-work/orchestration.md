@@ -25,7 +25,7 @@ against `main`, centinela APPROVED, branch named per the plan."
 
 ## See also
 
-- [The 60-second tour](/docs/start-here/inceptor-tour/) — the same loop, walked
+- [The 60-second tour](/docs/start-here/template-tour/) — the same loop, walked
   end to end
 - [Sub-agents](/docs/how-we-work/sub-agents/) — prometeo, forja, centinela
 - [`CLAUDE.md` § Workflow](https://github.com/ArtemioPadilla/inceptor/blob/main/CLAUDE.md)
