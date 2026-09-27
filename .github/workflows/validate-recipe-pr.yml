@@ -8,11 +8,12 @@ name: Validate recipe PR
 # legacy ajv-cli + JSON-schema step (Zod schemas in src/schemas are the only
 # cross-boundary contract in this codebase).
 #
-# PHASE 1 DEPENDENCY: `src/tests/catalog-schema.test.ts` is created by roadmap
-# Issue 011 (content collections validated with the Zod schemas from Issue
-# 010). Until it exists this workflow emits a ::warning:: instead of failing,
-# so data PRs are not blocked by a missing gate during Phase 0 — remove the
-# guard (or leave it; it is a no-op once the file exists) when Issue 011 lands.
+# `src/tests/catalog-schema.test.ts` landed with roadmap Issue 011 (content
+# collections validated with the Zod schemas from Issue 010): it parses the
+# four catalog files in full, enforces unique ids, trilingual text and
+# cross-file references. The existence guard below is now a no-op safety net —
+# if the test file were ever removed the workflow emits a ::warning:: instead
+# of silently passing. How to add a recipe: docs/recipes/catalog-data.md.
 # ---------------------------------------------------------------------------
 
 on:

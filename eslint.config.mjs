@@ -161,6 +161,9 @@ export default [
       'vitest.setup.ts',
       'scripts/**',
       'tests/**',
+      // Legacy Vite scripts archived read-only for reference (roadmap Issue
+      // 011) — not executable, not part of the toolchain, never linted.
+      'docs/archive/legacy-vite/scripts/**',
       'server-flask/**',
       'server-node/**',
     ],

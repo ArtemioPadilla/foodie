@@ -1,0 +1,82 @@
+# Catalog data: recipes, ingredients, beverages, categories
+
+**Source of truth:** `public/data/*.json`. The same files are (a) loaded as
+Astro **content collections** at build time (static pages, JSON-LD) and
+(b) fetched at runtime by islands through `useCatalog()`. Roadmap D6 / Issue 011.
+
+| File                           | Shape                                                        | Collection    | Entries                    |
+| ------------------------------ | ------------------------------------------------------------ | ------------- | -------------------------- |
+| `public/data/recipes.json`     | `{ "recipes": Recipe[] }`                                    | `recipes`     | 50                         |
+| `public/data/ingredients.json` | `{ "ingredients": Ingredient[] }`                            | `ingredients` | 105                        |
+| `public/data/beverages.json`   | `Beverage[]` (bare array)                                    | `beverages`   | 39                         |
+| `public/data/categories.json`  | `{ mealTypes, cuisines, dietaryTags, ingredientCategories }` | `categories`  | 4 (one entry per taxonomy) |
+
+The mapping (path → `file()` loader `parser` → Zod schema) lives in
+`src/lib/catalog/collections.ts`; `src/content.config.ts` only wires it into
+`defineCollection`. Entry ids are the record `id`s (`rec_001`, `ing_042`,
+`bev_coffee_black`, `mealTypes`).
+
+```ts
+import { getCollection, getEntry } from 'astro:content';
+
+const recipes = await getCollection('recipes'); // CollectionEntry<'recipes'>[]
+const mealTypes = (await getEntry('categories', 'mealTypes'))!.data.items;
+```
+
+## Validation — what breaks the build
+
+Every record is parsed with the schemas in `src/schemas/` (`RecipeSchema`,
+`IngredientSchema`, `BeverageSchema`, `CategoryGroupSchema`). Failing records
+break `astro build` and turn `npm run test -- src/tests/catalog-schema.test.ts` red:
+
+- **All three languages.** Every `MultiLangText` (`name`, `description`, `tips`,
+  `instructions[].text`, `ingredients[].notes`, `storageInstructions`, …) must
+  have non-blank `en`, `es` **and** `fr`.
+- **Unique ids** per file, and **unique English recipe names**
+  (`scripts/check-duplicates.mjs`, also runnable on its own).
+- **References resolve:** `ingredients[].ingredientId`, `variations[].changedIngredients[].ingredientId`
+  and composite `components[].ingredientId` must exist in `ingredients.json`;
+  `type` must be one of `categories.json → mealTypes`; an ingredient's
+  `category` one of `ingredientCategories`.
+- **Enums and ranges:** `type` ∈ breakfast/lunch/dinner/snack/dessert,
+  `difficulty` ∈ easy/medium/hard, `rating` 0–5, integer `servings`/`reviewCount`,
+  `dateAdded` as `YYYY-MM-DD`, beverage `category` ∈ water/coffee/tea/juice/soda/alcohol/milk/other.
+
+Known drift that is _not_ enforced (data predates the rule): some `cuisine`
+values (`international`, `chinese`, `hawaiian`) are missing from
+`categories.json → cuisines`, and two recipes have `prepTime + cookTime ≠ totalTime`.
+Fix the data before tightening the schema.
+
+## Adding a recipe (JSON → PR → `validate-recipe-pr.yml`)
+
+1. **Write the JSON.** Copy an existing record from `public/data/recipes.json`
+   and edit it, or use the in-app _Contribute_ wizard (roadmap Issue 038/039),
+   which validates against `RecipeSchema` and downloads the JSON. Pick the next
+   free id (`rec_051`, …); ids are zero-padded and sorted.
+2. **Reference existing ingredients** by id. If an ingredient is missing, add it
+   to `public/data/ingredients.json` in the same PR (same trilingual rules).
+3. **Check locally:**
+
+   ```bash
+   npm run test -- src/tests/catalog-schema.test.ts   # schemas, ids, translations, references
+   node scripts/check-duplicates.mjs                  # optional: duplicates only
+   npm run build                                      # content collections must sync
+   ```
+
+4. **Open a PR** touching `public/data/*.json`. The
+   `.github/workflows/validate-recipe-pr.yml` workflow runs the same catalog test
+   and posts (or updates) a comment with the result; a red check means one of
+   the rules above failed — the vitest output names the record and field.
+5. **Review & merge.** Maintainers check the translations read naturally and
+   the nutrition numbers are plausible; merging to `main` deploys.
+
+Community members without a fork can use the **Recipe submission** issue form
+(`.github/ISSUE_TEMPLATE/recipe-submission.yml`) and paste the JSON; a
+maintainer turns it into the PR.
+
+## Changing a schema
+
+Edit the schema in `src/schemas/` (never `interface`s — types come from
+`z.infer`), keep the field optional unless every existing record has it, and
+run the catalog test: it parses the four files in full, so the data tells you
+immediately whether the new rule holds.

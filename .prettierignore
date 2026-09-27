@@ -7,3 +7,5 @@ playwright-report/
 test-results/
 public/
 src/content/docs/decisions/
+# Archived legacy scripts are kept verbatim (roadmap Issue 011)
+docs/archive/legacy-vite/scripts/
