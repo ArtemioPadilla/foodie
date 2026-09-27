@@ -69,8 +69,11 @@ describe('ci.yml — CI hardening (#168)', () => {
     expect(ci).toContain('name: Build & Check');
   });
 
-  it('still contains server-node and server-flask jobs', () => {
-    expect(ci).toContain('server-node');
-    expect(ci).toContain('server-flask');
+  // Foodie is fully static (roadmap D12, Issue 006): the template's backend
+  // archetype jobs must NOT come back.
+  it('has no server-node / server-flask jobs (static site, no backend)', () => {
+    expect(ci).not.toMatch(/^\s+server-node:\s*$/m);
+    expect(ci).not.toMatch(/^\s+server-flask:\s*$/m);
+    expect(ci).not.toContain('working-directory: server-');
   });
 });

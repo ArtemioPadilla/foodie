@@ -1,0 +1,72 @@
+name: Security
+
+# ---------------------------------------------------------------------------
+# CodeQL + dependency review (roadmap Issue 006).
+#
+# Adapted from Foodie's legacy security-scan.yml for the Inceptor stack: the
+# two gates worth keeping are CodeQL (static analysis of the TypeScript /
+# Astro sources) and dependency-review (blocks PRs that add packages with
+# known vulnerabilities or disallowed licenses). The legacy `npm audit` job is
+# dropped — Dependabot (.github/dependabot.yml, weekly, grouped) covers
+# dependency freshness and security advisories without a flaky CI step.
+#
+# Only first-party `actions/*` and `github/*` actions are used, so version
+# tags are acceptable to ci.yml's unpinned-ref scan.
+# ---------------------------------------------------------------------------
+
+on:
+  push:
+    branches: [inceptor, main]
+  pull_request:
+    branches: [inceptor, main]
+  schedule:
+    # Weekly, Monday 06:00 UTC — catches newly published advisories/queries
+    # even when the code did not change.
+    - cron: '0 6 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
+
+  codeql:
+    name: CodeQL (javascript-typescript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          # `none`: JS/TS is analysed from source — no autobuild of the Astro
+          # site is needed, which keeps the job fast and deterministic.
+          build-mode: none
+          queries: security-and-quality
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:javascript-typescript'

@@ -1,10 +1,13 @@
 name: Visual regression
 
+# Runs on PRs to the integration branch (`inceptor`) and to `main` — see
+# ci.yml for the branch model (roadmap Issue 006). `npx playwright test` covers
+# the visual/a11y suite (chromium light + dark) and the e2e journeys.
 on:
   pull_request:
-    branches: [main]
+    branches: [inceptor, main]
   push:
-    branches: [main]
+    branches: [inceptor, main]
 
 # One run per branch (see ci.yml — audit Wave 1b).
 concurrency:

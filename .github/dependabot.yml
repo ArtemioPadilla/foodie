@@ -53,6 +53,12 @@ updates:
           - "vitest"
           - "typescript"
           - "prettier"
+      # Firebase Auth adapter (roadmap D9, Issue 035): the SDK ships as one
+      # umbrella package plus scoped internals — bump them together.
+      firebase:
+        patterns:
+          - "firebase"
+          - "@firebase/*"
     commit-message:
       prefix: chore
       include: scope

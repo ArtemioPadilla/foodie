@@ -1,0 +1,63 @@
+name: Lighthouse
+
+# ---------------------------------------------------------------------------
+# Lighthouse CI over the static build (roadmap Issue 006).
+#
+# `lhci autorun` reads .lighthouserc.json: it serves ./dist itself
+# (staticDistDir), audits the landing in the three locales, one section page
+# and the docs landing, and asserts the category scores — accessibility ≥ 0.9
+# and best-practices are ERROR level, performance/SEO error too, Core Web
+# Vitals warn only. Budgets come from lighthouse-budgets.json.
+#
+# Kept out of ci.yml on purpose: it needs a full build + a served preview and
+# its numbers wobble on shared runners, so it must never slow down or flake
+# the `npm run check` gate. It gates PRs to the long-lived branches only.
+# ---------------------------------------------------------------------------
+
+on:
+  pull_request:
+    branches: [inceptor, main]
+  push:
+    branches: [inceptor, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: lhci autorun (dist/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Root base path: .lighthouserc.json addresses pages as
+      # http://localhost/<route>/index.html, which lhci's static server maps
+      # onto dist/. The GitHub Pages build (ASTRO_BASE=/foodie) is audited by
+      # the same assertions locally via `npm run lighthouse`.
+      - name: Build
+        run: npm run build
+
+      - name: Lighthouse CI
+        run: npx lhci autorun --config=.lighthouserc.json
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          if-no-files-found: ignore
+          retention-days: 14

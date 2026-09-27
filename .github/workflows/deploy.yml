@@ -1,4 +1,9 @@
 name: Deploy to GitHub Pages
+
+# Node 22 + ASTRO_BASE only — no MkDocs/Python step (roadmap D12, Issue 006).
+# Deploys on push to `main`. Until the cutover (Issue 030) `main` still holds
+# the legacy SPA with its own deploy.yml; this file lives on `inceptor` and
+# becomes the live deploy when `inceptor` is merged into `main`.
 on:
   push:
     branches: [main]
