@@ -1,0 +1,81 @@
+name: Recipe submission
+description: Propose a new recipe for the Foodie catalog (used by the in-app contribute wizard — roadmap Issue 039)
+title: "[recipe] "
+labels:
+  - "recipe-submission"
+  - "type:feat"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for cooking with us! The easiest path is the **Contribute** wizard in
+        the app: it validates the recipe, downloads the JSON and opens this form
+        pre-filled. Recipes are reviewed against the Zod schema in
+        `src/schemas/recipe.ts` and merged into `public/data/recipes.json`
+        (EN, ES and FR fields are all required).
+  - type: input
+    id: recipe-name
+    attributes:
+      label: Recipe name (English)
+      placeholder: Scrambled eggs with spinach
+    validations:
+      required: true
+  - type: dropdown
+    id: meal-type
+    attributes:
+      label: Meal type
+      options:
+        - breakfast
+        - lunch
+        - dinner
+        - snack
+        - dessert
+        - beverage
+    validations:
+      required: true
+  - type: input
+    id: cuisine
+    attributes:
+      label: Cuisine(s)
+      description: Comma-separated, lowercase (e.g. `mexican, mediterranean`).
+      placeholder: mexican
+    validations:
+      required: true
+  - type: textarea
+    id: recipe-json
+    attributes:
+      label: Recipe JSON
+      description: Paste the JSON downloaded by the wizard (one recipe object matching `src/schemas/recipe.ts`). Names, descriptions, instructions and tips must carry `en`, `es` and `fr`.
+      render: json
+      placeholder: |
+        {
+          "id": "scrambled-eggs-spinach",
+          "name": { "en": "…", "es": "…", "fr": "…" },
+          "type": "breakfast",
+          "cuisine": ["mediterranean"],
+          "servings": 2,
+          "ingredients": [ … ],
+          "instructions": [ … ]
+        }
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes for the reviewer
+      description: Source or inspiration, substitutions you tested, anything the schema cannot express.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Submission checklist
+      options:
+        - label: The recipe is my own or free to share under the repository's MIT license (no copyrighted text or images).
+          required: true
+        - label: All three languages (EN, ES, FR) are filled in for every text field.
+          required: true
+        - label: Ingredient ids match entries in `public/data/ingredients.json` (or the missing ingredients are listed in the notes).
+          required: false
+        - label: Nutrition values are per serving and plausible.
+          required: false

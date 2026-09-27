@@ -1,390 +1,251 @@
 #!/usr/bin/env bash
-# create-issues.sh
-# Bootstraps labels, milestones, and the 27 integration-plan issues for this repo.
+# create-issues.sh — bootstrap labels, milestones and the roadmap issues on GitHub.
 #
-# Requirements:
-#   - gh CLI installed and authenticated: `gh auth login`
-#   - Run from the repo root (the script uses the current `gh` repo context)
-#   - Idempotent: re-running skips items that already exist (matches by name)
+# Parses the canonical migration plan
+#   docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md
+# (every `### Issue NNN — Title` block with its **Phase** / **Milestone** /
+# **Labels** / **Branch** / **Depends on** / **Effort** lines, Description,
+# Acceptance criteria and Validation sections) and emits one `gh issue create`
+# per issue, plus the `gh label create` / milestone calls they need.
+#
+# DRY RUN BY DEFAULT: prints every issue header (`### Issue NNN — Title`) and
+# the exact commands it would run, writes each issue body to a temp dir for
+# inspection, and touches nothing on GitHub. `--apply` runs the commands
+# (idempotent: existing labels, milestones and issues — matched by title — are
+# skipped).
+#
+# Requirements (only for --apply): gh CLI authenticated (`gh auth login`),
+# run from the repo root so `gh` resolves the repo.
 #
 # Usage:
-#   bash scripts/create-issues.sh                  # dry-run preview
-#   bash scripts/create-issues.sh --apply          # actually create everything
-#   bash scripts/create-issues.sh --apply --issues-only   # skip labels/milestones
+#   bash scripts/create-issues.sh                    # dry run (default)
+#   bash scripts/create-issues.sh --apply            # create labels, milestones, issues
+#   bash scripts/create-issues.sh --apply --issues-only
+#   bash scripts/create-issues.sh --spec path/to/plan.md
+#   bash scripts/create-issues.sh --only 005,006     # limit to some roadmap ids
+#
+# Validation (roadmap Issue 007): `bash scripts/create-issues.sh | grep -c '^### Issue'` → 48
 
 set -euo pipefail
 
+SPEC="docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md"
 APPLY=false
 SKIP_META=false
-for arg in "$@"; do
-  case "$arg" in
+ONLY=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
     --apply) APPLY=true ;;
     --issues-only) SKIP_META=true ;;
-    -h|--help)
-      sed -n '2,15p' "$0"
-      exit 0
-      ;;
+    --spec) shift; SPEC="$1" ;;
+    --only) shift; ONLY="$1" ;;
+    -h|--help) sed -n '2,27p' "$0"; exit 0 ;;
+    *) echo "Unknown argument: $1" >&2; exit 2 ;;
   esac
+  shift
 done
 
-if ! command -v gh >/dev/null; then
-  echo "ERROR: gh CLI not found. Install: https://cli.github.com" >&2
-  exit 1
-fi
-if ! gh auth status >/dev/null 2>&1; then
-  echo "ERROR: gh not authenticated. Run: gh auth login" >&2
+if [[ ! -f "$SPEC" ]]; then
+  echo "ERROR: spec not found: $SPEC (run from the repo root or pass --spec)" >&2
   exit 1
 fi
 
-REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
-echo "Target repo: $REPO"
+REPO_SLUG="${PUBLIC_REPO_SLUG:-ArtemioPadilla/foodie}"
+SPEC_BRANCH="${SPEC_BRANCH:-inceptor}"   # the plan lives on the integration branch until the cutover
+
+if $APPLY; then
+  command -v gh >/dev/null || { echo "ERROR: gh CLI not found. Install: https://cli.github.com" >&2; exit 1; }
+  gh auth status >/dev/null 2>&1 || { echo "ERROR: gh not authenticated. Run: gh auth login" >&2; exit 1; }
+  REPO_SLUG=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+fi
+
+OUT=$(mktemp -d "${TMPDIR:-/tmp}/foodie-issues.XXXXXX")
+echo "Spec:        $SPEC"
+echo "Target repo: $REPO_SLUG"
+echo "Bodies:      $OUT/"
 $APPLY || echo "[DRY RUN — pass --apply to actually create things]"
 echo
 
 # ----------------------------------------------------------------------
-# Labels
+# Parse the spec → one file set per issue in $OUT
+#   NNN.title  NNN.phase  NNN.milestone  NNN.labels  NNN.branch
+#   NNN.depends  NNN.effort  NNN.desc  NNN.accept  NNN.valid
+# plus phases.tsv (phase number ⇥ phase title) and ids.txt (ordered ids)
 # ----------------------------------------------------------------------
-declare -A LABELS=(
-  ["phase-0"]="6E6E6E"
-  ["phase-1"]="0E8A16"
-  ["phase-2"]="1D76DB"
-  ["phase-3"]="5319E7"
-  ["phase-4"]="B60205"
-  ["phase-5"]="D93F0B"
-  ["phase-6"]="FBCA04"
-  ["phase-7"]="0052CC"
-  ["type:chore"]="C5DEF5"
-  ["type:feat"]="A2EEEF"
-  ["type:docs"]="D4C5F9"
+awk -v out="$OUT" '
+  function trim(s) { sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s }
+  function put(name, text) { f = out "/" cur "." name; printf "%s", text > f; close(f) }
+  function app(name, line) { f = out "/" cur "." name; print line >> f; close(f) }
+
+  /^## Phase [0-9]+ — / {
+    n = $0; sub(/^## Phase /, "", n); split(n, parts, " — ")
+    printf "%s\t%s\n", parts[1], parts[2] >> (out "/phases.tsv"); close(out "/phases.tsv")
+    cur = ""; section = ""
+    next
+  }
+  /^### Issue [0-9]{3} — / {
+    cur = substr($0, 11, 3)
+    title = $0; sub(/^### Issue [0-9]{3} — /, "", title)
+    put("title", trim(title))
+    print cur >> (out "/ids.txt"); close(out "/ids.txt")
+    section = "head"
+    next
+  }
+  /^## / { cur = ""; section = ""; next }   # any other h2 ends the current block
+  cur == "" { next }
+
+  section == "head" && /^\*\*Phase\*\*:/ {
+    line = $0
+    n = split(line, cells, /\|/)
+    for (i = 1; i <= n; i++) {
+      c = trim(cells[i])
+      if (c ~ /^\*\*Phase\*\*:/)     { sub(/^\*\*Phase\*\*:[ \t]*/, "", c);     put("phase", trim(c)) }
+      if (c ~ /^\*\*Milestone\*\*:/) { sub(/^\*\*Milestone\*\*:[ \t]*/, "", c); put("milestone", trim(c)) }
+      if (c ~ /^\*\*Labels\*\*:/)    { sub(/^\*\*Labels\*\*:[ \t]*/, "", c);    gsub(/[ \t]/, "", c); put("labels", c) }
+    }
+    next
+  }
+  section == "head" && /^\*\*Branch\*\*:/     { s = $0; sub(/^\*\*Branch\*\*:[ \t]*/, "", s);     put("branch", trim(s)); next }
+  section == "head" && /^\*\*Depends on\*\*:/ { s = $0; sub(/^\*\*Depends on\*\*:[ \t]*/, "", s); put("depends", trim(s)); next }
+  section == "head" && /^\*\*Effort\*\*:/     { s = $0; sub(/^\*\*Effort\*\*:[ \t]*/, "", s);     put("effort", trim(s)); next }
+
+  /^\*\*Description\*\*/         { section = "desc";   next }
+  /^\*\*Acceptance criteria\*\*/ { section = "accept"; next }
+  /^\*\*Validation\*\*/          { section = "valid";  next }
+
+  section == "desc"   { app("desc", $0) }
+  section == "accept" { app("accept", $0) }
+  section == "valid"  { app("valid", $0) }
+' "$SPEC"
+
+mapfile -t IDS < "$OUT/ids.txt"
+if [[ -n "$ONLY" ]]; then
+  IFS=',' read -r -a keep <<< "$ONLY"
+  filtered=()
+  for id in "${IDS[@]}"; do
+    for k in "${keep[@]}"; do [[ "$id" == "$(printf '%03d' "$((10#$k))")" ]] && filtered+=("$id"); done
+  done
+  IDS=("${filtered[@]}")
+fi
+
+read_field() { local id="$1" name="$2"; [[ -f "$OUT/$id.$name" ]] && cat "$OUT/$id.$name" || true; }
+
+# GitHub-style anchor for a heading: lowercase, drop punctuation, spaces → '-'.
+slugify() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^[:alnum:][:space:]_-]//g; s/[[:space:]]/-/g'
+}
+
+# ----------------------------------------------------------------------
+# Run helper — prints the command in dry run, executes it with --apply
+# ----------------------------------------------------------------------
+run() {
+  if $APPLY; then "$@"; else printf '  $'; printf ' %q' "$@"; printf '\n'; fi
+}
+
+# ----------------------------------------------------------------------
+# Labels (phase-N from the spec, type:* and risk:high as used by it)
+# ----------------------------------------------------------------------
+declare -A LABEL_COLOR=(
+  ["phase-0"]="6E6E6E" ["phase-1"]="0E8A16" ["phase-2"]="1D76DB" ["phase-3"]="5319E7"
+  ["phase-4"]="B60205" ["phase-5"]="D93F0B" ["phase-6"]="FBCA04"
+  ["type:chore"]="C5DEF5" ["type:feat"]="A2EEEF" ["type:docs"]="D4C5F9" ["type:test"]="BFD4F2"
+  ["risk:high"]="E11D21"
 )
+declare -A LABELS_USED=()
+for id in "${IDS[@]}"; do
+  IFS=',' read -r -a ls <<< "$(read_field "$id" labels)"
+  for l in "${ls[@]}"; do [[ -n "$l" ]] && LABELS_USED["$l"]=1; done
+done
 
-create_label() {
-  local name="$1" color="$2"
-  if gh label list --limit 200 --json name -q '.[].name' | grep -Fxq "$name"; then
-    echo "  · label exists: $name"
-  else
-    if $APPLY; then
-      gh label create "$name" --color "$color" --description "Auto-created by create-issues.sh"
-    fi
-    echo "  + label: $name (#$color)"
-  fi
-}
+existing_labels=""
+existing_milestones=""
+if $APPLY; then
+  existing_labels=$(gh label list --limit 200 --json name -q '.[].name')
+  existing_milestones=$(gh api "repos/$REPO_SLUG/milestones?state=all&per_page=100" -q '.[].title')
+fi
 
-# ----------------------------------------------------------------------
-# Milestones (gh has no first-class milestone CLI; use the REST API)
-# ----------------------------------------------------------------------
-create_milestone() {
-  local title="$1" description="$2"
-  local existing
-  existing=$(gh api "repos/$REPO/milestones?state=all" -q ".[] | select(.title == \"$title\") | .number" || true)
-  if [[ -n "$existing" ]]; then
-    echo "  · milestone exists: $title (#$existing)"
-  else
-    if $APPLY; then
-      gh api "repos/$REPO/milestones" \
-        -f title="$title" \
-        -f description="$description" \
-        -f state=open >/dev/null
+if ! $SKIP_META; then
+  echo "==> Labels"
+  while IFS= read -r name; do
+    [[ -z "$name" ]] && continue
+    if grep -Fxq "$name" <<< "$existing_labels"; then
+      echo "  · label exists: $name"
+    else
+      run gh label create "$name" --color "${LABEL_COLOR[$name]:-EDEDED}" --description "Foodie on Inceptor migration roadmap"
     fi
-    echo "  + milestone: $title"
-  fi
-}
+  done < <(printf '%s\n' "${!LABELS_USED[@]}" | sort)
+  echo
+
+  # --------------------------------------------------------------------
+  # Milestones: one per distinct **Milestone**, described by its phase title
+  # --------------------------------------------------------------------
+  echo "==> Milestones"
+  declare -A MS_PHASE=()
+  for id in "${IDS[@]}"; do MS_PHASE["$(read_field "$id" milestone)"]="$(read_field "$id" phase)"; done
+  # Milestone titles contain spaces ("v0.1 - Foundation"): iterate line by line,
+  # never through word-splitting.
+  while IFS= read -r ms; do
+    [[ -z "$ms" ]] && continue
+    phase="${MS_PHASE[$ms]}"
+    phase_title=$(awk -F'\t' -v p="$phase" '$1 == p { print $2 }' "$OUT/phases.tsv" | head -1)
+    if grep -Fxq "$ms" <<< "$existing_milestones"; then
+      echo "  · milestone exists: $ms"
+    else
+      run gh api "repos/$REPO_SLUG/milestones" -f title="$ms" -f description="Phase $phase - $phase_title" -f state=open
+    fi
+  done < <(printf '%s\n' "${!MS_PHASE[@]}" | sort -V)
+  echo
+fi
 
 # ----------------------------------------------------------------------
 # Issues
 # ----------------------------------------------------------------------
-create_issue() {
-  local title="$1" milestone="$2" labels="$3" body="$4"
-  # Skip if an open or closed issue with the exact title already exists
-  if gh issue list --state all --search "in:title \"$title\"" --json title -q '.[].title' | grep -Fxq "$title"; then
-    echo "  · issue exists: $title"
-    return
+echo "==> Issues (${#IDS[@]})"
+created=0
+for id in "${IDS[@]}"; do
+  title=$(read_field "$id" title)
+  phase=$(read_field "$id" phase)
+  milestone=$(read_field "$id" milestone)
+  labels=$(read_field "$id" labels)
+  branch=$(read_field "$id" branch)
+  depends=$(read_field "$id" depends)
+  effort=$(read_field "$id" effort)
+  gh_title="$title (roadmap #$id)"
+  anchor="issue-$(slugify "$id — $title")"
+  # roadmap refs "#004, #011" → "roadmap #004, roadmap #011" (GitHub numbers differ)
+  depends_text=$(sed -E 's/#([0-9]{3})/roadmap #\1/g' <<< "${depends:-none}")
+
+  body="$OUT/$id.body.md"
+  {
+    echo "> Source of truth: [\`$(basename "$SPEC")\`](https://github.com/$REPO_SLUG/blob/$SPEC_BRANCH/$SPEC#$anchor) — roadmap **Issue $id**. The spec wins over this copy."
+    echo
+    echo "**Phase**: $phase · **Milestone**: $milestone · **Branch**: \`$branch\` · **Depends on**: $depends_text · **Effort**: $effort"
+    echo
+    echo "## Description"
+    echo
+    read_field "$id" desc
+    echo
+    echo "## Acceptance criteria"
+    echo
+    read_field "$id" accept
+    echo
+    echo "## Validation"
+    echo
+    read_field "$id" valid
+    echo
+    echo "## Workflow"
+    echo
+    echo "Branch \`$branch\` → PR to \`inceptor\` (to \`main\` after the cutover, roadmap #030). Dispatch: prometeo → forja → centinela (see \`CLAUDE.md\`). Commit summary suffix: \`(roadmap #$id)\`."
+  } > "$body"
+
+  echo "### Issue $id — $title"
+  if $APPLY && gh issue list --state all --limit 200 --search "in:title \"roadmap #$id\"" --json title -q '.[].title' | grep -Fxq "$gh_title"; then
+    echo "  · issue exists: $gh_title"
+    continue
   fi
-  if $APPLY; then
-    gh issue create \
-      --title "$title" \
-      --body "$body" \
-      --label "$labels" \
-      --milestone "$milestone" >/dev/null
-  fi
-  echo "  + issue: $title"
-}
-
-# Standardized issue body. Source of truth remains INTEGRATION-PLAN.md.
-make_body() {
-  local issue_num="$1" branch="$2" depends="$3" effort="$4" desc="$5" accept="$6"
-  cat <<EOF
-> Source of truth: see [\`INTEGRATION-PLAN.md\`](../blob/main/INTEGRATION-PLAN.md#issue-$(printf '%03d' "$issue_num")).
-
-**Branch**: \`$branch\`
-**Depends on**: $depends
-**Effort**: $effort
-
-## Description
-
-$desc
-
-## Acceptance criteria
-
-$accept
-
-## Workflow
-
-Run \`/goal #$issue_num\` in Claude Code to execute this issue automatically.
-EOF
-}
-
-# ======================================================================
-# Step 1 — labels
-# ======================================================================
-if ! $SKIP_META; then
-  echo "==> Labels"
-  for name in "${!LABELS[@]}"; do
-    create_label "$name" "${LABELS[$name]}"
-  done
-  echo
-fi
-
-# ======================================================================
-# Step 2 — milestones
-# ======================================================================
-if ! $SKIP_META; then
-  echo "==> Milestones"
-  create_milestone "v0.2 - Stack modernization"   "Phase 0 — bring base stack to current versions (Astro 5, Tailwind v4, React)"
-  create_milestone "v0.3 - Component system"      "Phase 1 — shadcn/ui + Base UI foundation"
-  create_milestone "v0.4 - State"                 "Phase 2 — Nano Stores + TanStack Query + offline persister"
-  create_milestone "v0.5 - Data grids"            "Phase 3 — TanStack Table/Virtual + URL state"
-  create_milestone "v0.6 - Dashboards"            "Phase 4 — Tremor Raw + Recharts + /dashboard page"
-  create_milestone "v0.7 - Offline-first"         "Phase 5 — @vite-pwa/astro + offline UI"
-  create_milestone "v0.8 - Motion"                "Phase 6 — view transitions + tailwindcss-motion + Motion lazy"
-  create_milestone "v1.0 - Inceptor-aware stack"       "Phase 7 — FeedbackFAB+React + visual regression + issue templates"
-  echo
-fi
-
-# ======================================================================
-# Step 3 — issues
-# ======================================================================
-echo "==> Issues"
-
-create_issue "chore: upgrade Astro 4.16 → 5.x" \
-  "v0.2 - Stack modernization" "phase-0,type:chore" \
-  "$(make_body 1 'phase-0/issue-001-upgrade-astro-5' 'none' 'S' \
-    'Required for Tailwind v4, native View Transitions, Skew Protection, React 19.' \
-    '- [ ] \`npm ls astro\` reports 5.x
-- [ ] \`astro.config.mjs\` updated for breaking changes
-- [ ] \`npm run build\` passes
-- [ ] Hello World renders identically')"
-
-create_issue "chore: migrate Tailwind v3 → v4 via @tailwindcss/vite" \
-  "v0.2 - Stack modernization" "phase-0,type:chore" \
-  "$(make_body 2 'phase-0/issue-002-tailwind-v4' '#1' 'M' \
-    'Replace deprecated \`@astrojs/tailwind\` with \`@tailwindcss/vite\`. Move config to CSS-first.' \
-    '- [ ] \`@astrojs/tailwind\` removed
-- [ ] \`tailwindcss@^4\` + \`@tailwindcss/vite@^4\` installed
-- [ ] \`astro.config.mjs\` uses Vite plugin
-- [ ] \`tailwind.config.mjs\` deleted; tokens in \`src/styles/global.css\`')"
-
-create_issue "chore: add @astrojs/react + path aliases" \
-  "v0.2 - Stack modernization" "phase-0,type:chore" \
-  "$(make_body 3 'phase-0/issue-003-react-and-aliases' '#2' 'S' \
-    'Add React 19 via \`npx astro add react\`. Configure \`@/*\` path alias.' \
-    '- [ ] React 19 installed
-- [ ] tsconfig has \`@/*\` → \`./src/*\`
-- [ ] \`<HelloReact client:load />\` renders')"
-
-create_issue "feat: bootstrap shadcn/ui with Base UI primitives" \
-  "v0.3 - Component system" "phase-1,type:feat" \
-  "$(make_body 4 'phase-1/issue-004-shadcn-init' '#3' 'M' \
-    'Run \`npx shadcn@latest init\` choosing Base UI primitives.' \
-    '- [ ] \`components.json\` at root
-- [ ] \`src/lib/utils.ts\` exports \`cn()\`
-- [ ] CSS vars in \`global.css\` (light + dark)')"
-
-create_issue "feat: dark mode toggle (zero-flash)" \
-  "v0.3 - Component system" "phase-1,type:feat" \
-  "$(make_body 5 'phase-1/issue-005-dark-mode' '#4' 'M' \
-    'Inline script in <head> applies theme before paint; toggle is .astro (no React).' \
-    '- [ ] \`ThemeToggle.astro\` exists
-- [ ] No flash on hard reload
-- [ ] \`aria-pressed\` correct')"
-
-create_issue "feat: install base component set" \
-  "v0.3 - Component system" "phase-1,type:feat" \
-  "$(make_body 6 'phase-1/issue-006-base-components' '#4' 'M' \
-    'Install button, input, label, card, dialog, dropdown-menu, table, badge, tabs, toast, form.' \
-    '- [ ] All components under \`src/components/ui/\`
-- [ ] No \`@radix-ui\` imports (Base UI only)
-- [ ] No \`framer-motion\` imports')"
-
-create_issue "feat: /showcase page" \
-  "v0.3 - Component system" "phase-1,type:feat" \
-  "$(make_body 7 'phase-1/issue-007-showcase-page' '#6' 'M' \
-    'Render every installed component on /showcase as living docs + visual-regression target.' \
-    '- [ ] \`src/pages/showcase.astro\` exists
-- [ ] All components in light + dark
-- [ ] No console errors')"
-
-create_issue "docs: component contribution guide" \
-  "v0.3 - Component system" "phase-1,type:docs" \
-  "$(make_body 8 'phase-1/issue-008-component-docs' '#7' 'S' \
-    'Document adding components, the multi-island gotcha, theming via CSS vars.' \
-    '- [ ] \`docs/COMPONENTS.md\` exists
-- [ ] Linked from README')"
-
-create_issue "feat: Nano Stores for cross-island state" \
-  "v0.4 - State" "phase-2,type:feat" \
-  "$(make_body 9 'phase-2/issue-009-nano-stores' '#5' 'M' \
-    'Install \`nanostores\` + \`@nanostores/react\`. Migrate theme state to Nano.' \
-    '- [ ] \`src/stores/theme.ts\` exports \`\$theme\`
-- [ ] No \`React.createContext\` anywhere
-- [ ] Two islands share theme state live')"
-
-create_issue "feat: TanStack Query + idb-keyval persister" \
-  "v0.4 - State" "phase-2,type:feat" \
-  "$(make_body 10 'phase-2/issue-010-tanstack-query' '#6' 'L' \
-    'TanStack Query with AsyncStoragePersister + idb-keyval. Provider per-island.' \
-    '- [ ] Packages installed
-- [ ] \`src/lib/queryClient.ts\` factory
-- [ ] Opt-in via \`meta: { persist: true }\`
-- [ ] IndexedDB shows cache')"
-
-create_issue "feat: example data island — GitHub Issues fetcher (dogfood)" \
-  "v0.4 - State" "phase-2,type:feat" \
-  "$(make_body 11 'phase-2/issue-011-issues-fetcher' '#10' 'M' \
-    'React island lists open issues from this very repo. Loading/error/empty states.' \
-    '- [ ] \`IssuesList.tsx\` exists
-- [ ] Cache survives reload
-- [ ] /data demo page')"
-
-create_issue "feat: TanStack Table + Virtual integration" \
-  "v0.5 - Data grids" "phase-3,type:feat" \
-  "$(make_body 12 'phase-3/issue-012-tanstack-table' '#10' 'L' \
-    'Generic <DataTable> on shadcn <Table>. Sort, filter, pinning, resize, virtualization.' \
-    '- [ ] \`data-table.tsx\` exports \`<DataTable>\`
-- [ ] Generic-typed columns
-- [ ] Documented')"
-
-create_issue "feat: 50k-row virtualization demo" \
-  "v0.5 - Data grids" "phase-3,type:feat" \
-  "$(make_body 13 'phase-3/issue-013-large-list-demo' '#12' 'M' \
-    'Demo page at /data/large rendering 50,000 rows. Budget: <16ms/frame, <50ms input.' \
-    '- [ ] Page works
-- [ ] 60fps scroll verified
-- [ ] Filter <50ms')"
-
-create_issue "feat: URL state sync for filters" \
-  "v0.5 - Data grids" "phase-3,type:feat" \
-  "$(make_body 14 'phase-3/issue-014-url-state' '#12' 'M' \
-    'Persist DataTable state in URLSearchParams. Shareable, back/forward works.' \
-    '- [ ] Filters update URL without reload
-- [ ] Pasting URL restores state')"
-
-create_issue "feat: Tremor Raw KPI components (copy-paste)" \
-  "v0.6 - Dashboards" "phase-4,type:feat" \
-  "$(make_body 15 'phase-4/issue-015-tremor-raw' '#6' 'M' \
-    'Copy Tremor Raw Card/Metric/ProgressBar/Tracker/Callout/Divider. DO NOT install @tremor/react.' \
-    '- [ ] Components in \`src/components/ui/\`
-- [ ] No \`@tremor/react\` import
-- [ ] In /showcase')"
-
-create_issue "feat: Recharts wrappers themed to shadcn CSS vars" \
-  "v0.6 - Dashboards" "phase-4,type:feat" \
-  "$(make_body 16 'phase-4/issue-016-recharts-wrappers' '#15' 'M' \
-    'Line/Bar/Area/Donut wrappers reading var(--chart-1)..(--chart-5). Lazy-load on /dashboard only.' \
-    '- [ ] Wrappers exist
-- [ ] Dark mode flips colors automatically
-- [ ] Recharts in separate chunk')"
-
-create_issue "feat: /dashboard demo page" \
-  "v0.6 - Dashboards" "phase-4,type:feat" \
-  "$(make_body 17 'phase-4/issue-017-dashboard-page' '#15, #16, #12' 'L' \
-    '3 KPIs + 2 charts + 1 table, fed by the dogfood GitHub Issues source.' \
-    '- [ ] Page renders the full layout
-- [ ] Lighthouse Performance ≥ 90
-- [ ] Mobile 375px works')"
-
-create_issue "feat: @vite-pwa/astro" \
-  "v0.7 - Offline-first" "phase-5,type:feat" \
-  "$(make_body 18 'phase-5/issue-018-vite-pwa' '#17' 'M' \
-    'Install @vite-pwa/astro. Manifest, icons, autoUpdate, Workbox stale-while-revalidate.' \
-    '- [ ] manifest.webmanifest generated
-- [ ] SW registered
-- [ ] App installable
-- [ ] Lighthouse PWA passes')"
-
-create_issue "feat: offline indicator + retry UI" \
-  "v0.7 - Offline-first" "phase-5,type:feat" \
-  "$(make_body 19 'phase-5/issue-019-offline-ui' '#18' 'M' \
-    'Detect navigator.onLine. Banner + Retry wired to queryClient.invalidateQueries().' \
-    '- [ ] Banner appears <1s offline
-- [ ] Retry refetches failed queries')"
-
-create_issue "feat: install + update prompts" \
-  "v0.7 - Offline-first" "phase-5,type:feat" \
-  "$(make_body 20 'phase-5/issue-020-pwa-prompts' '#18' 'M' \
-    'beforeinstallprompt → custom install button. SW updated → toast with Reload CTA.' \
-    '- [ ] Install button shows on prompt event
-- [ ] Update toast after deploy
-- [ ] Reload activates new SW')"
-
-create_issue "feat: native @view-transition for cross-page" \
-  "v0.8 - Motion" "phase-6,type:feat" \
-  "$(make_body 21 'phase-6/issue-021-view-transitions' '#3' 'S' \
-    'CSS @view-transition { navigation: auto; }. Hero elements get view-transition-name.' \
-    '- [ ] Rule in global.css
-- [ ] At least one named element
-- [ ] No breakage on older browsers')"
-
-create_issue "feat: tailwindcss-motion utilities" \
-  "v0.8 - Motion" "phase-6,type:feat" \
-  "$(make_body 22 'phase-6/issue-022-tw-motion' '#2' 'S' \
-    'Install tailwindcss-motion. Replace imperative micro-animations with utilities.' \
-    '- [ ] Plugin registered
-- [ ] ≥3 components use it
-- [ ] No JS bundle growth')"
-
-create_issue "feat: Motion (lazy) for complex islands" \
-  "v0.8 - Motion" "phase-6,type:feat" \
-  "$(make_body 23 'phase-6/issue-023-motion-lazy' '#6' 'M' \
-    'Install \`motion\` (NOT framer-motion). Document LazyMotion + domAnimation pattern.' \
-    '- [ ] motion installed
-- [ ] One island uses LazyMotion
-- [ ] Motion in own chunk
-- [ ] No \`framer-motion\` imports anywhere')"
-
-create_issue "feat: FeedbackFAB captures React errors" \
-  "v1.0 - Inceptor-aware stack" "phase-7,type:feat" \
-  "$(make_body 24 'phase-7/issue-024-feedback-react' '#6' 'L' \
-    'ErrorBoundary on each island. Capture component path. Hydration mismatch detection.' \
-    '- [ ] ErrorBoundary auto-applied
-- [ ] Thrown error pre-fills issue with stack
-- [ ] Hydration mismatches captured')"
-
-create_issue "chore: update CLAUDE.md with installed stack context" \
-  "v1.0 - Inceptor-aware stack" "phase-7,type:chore" \
-  "$(make_body 25 'phase-7/issue-025-claude-md' '#17' 'S' \
-    'Refresh CLAUDE.md to reflect actually-installed versions and add /goal docs.' \
-    '- [ ] Versions current
-- [ ] /goal + sub-agents documented
-- [ ] Compound-component gotcha with example')"
-
-create_issue "docs: new issue templates (component, dashboard, table)" \
-  "v1.0 - Inceptor-aware stack" "phase-7,type:docs" \
-  "$(make_body 26 'phase-7/issue-026-issue-templates' '#25' 'M' \
-    'add_component.yml, add_dashboard.yml, add_data_table.yml. Pre-fill Claude triage context.' \
-    '- [ ] Three YAML templates
-- [ ] Selectable from New Issue UI
-- [ ] Pre-applied labels')"
-
-create_issue "chore: visual regression in CI (Playwright)" \
-  "v1.0 - Inceptor-aware stack" "phase-7,type:chore" \
-  "$(make_body 27 'phase-7/issue-027-visual-regression' '#7, #17' 'L' \
-    'Playwright CI job snapshots /showcase and /dashboard in light + dark.' \
-    '- [ ] Playwright configured
-- [ ] Snapshots both pages, both themes
-- [ ] Baselines committed
-- [ ] Update process documented')"
+  run gh issue create --title "$gh_title" --label "$labels" --milestone "$milestone" --body-file "$body"
+  created=$((created + 1))
+done
 
 echo
-echo "✅ Done."
+echo "Done: ${#IDS[@]} issues parsed, $created to create. Bodies in $OUT/"
 $APPLY || echo "[That was a dry run. Re-run with --apply to actually create everything.]"
