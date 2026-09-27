@@ -75,6 +75,13 @@ export const es: typeof en = {
     bridgeBody:
       'Las guías y referencias completas viven bajo /docs/ y se comparten entre idiomas. Esta portada en español sirve como punto de entrada; sigue el enlace de arriba para leer las convenciones, la arquitectura y las decisiones del scaffold.',
   },
+  common: {
+    showMore: 'Mostrar {{count}} más',
+    reviewCount: '{{count}} reseña',
+    reviewCount_plural: '{{count}} reseñas',
+    checkedProgress: '{{checked}} / {{total}} marcados',
+    maxTimeFormat: '≤{{time}}m',
+  },
   footer: {
     builtWith: 'Hecho con Astro, Tailwind, shadcn y Claude Code',
     license: 'Licencia MIT',

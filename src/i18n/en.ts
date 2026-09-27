@@ -77,6 +77,18 @@ export const en = {
     bridgeBody:
       'Complete guides and references live under /docs/ and are shared across locales. This Spanish landing is the entry point; follow the link above to read the conventions, architecture, and scaffold decisions.',
   },
+  /**
+   * Shared strings that exercise `t()` interpolation (`{{name}}`) and plural
+   * (`_plural`) resolution — ported from the legacy translation.json so the
+   * mechanism is covered by real keys (see src/i18n/index.test.ts).
+   */
+  common: {
+    showMore: 'Show {{count}} more',
+    reviewCount: '{{count}} review',
+    reviewCount_plural: '{{count}} reviews',
+    checkedProgress: '{{checked}} / {{total}} checked',
+    maxTimeFormat: '≤{{time}}m',
+  },
   footer: {
     builtWith: 'Built with Astro, Tailwind, shadcn, and Claude Code',
     license: 'MIT licensed',

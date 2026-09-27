@@ -2,16 +2,18 @@
  * Route parity test (issue #186).
  *
  * ## What this tests
- * Every page that exists under `src/pages/es/` must map to a real EN route.
- * An orphan ES page — one without a corresponding English source — means
- * either the EN page was deleted (without removing the translation) or the ES
- * page was created by mistake. Both are caught here at CI time.
+ * Every page that exists under `src/pages/<locale>/` (es, fr — roadmap Issue
+ * 004) must map to a real EN route. An orphan localized page — one without a
+ * corresponding English source — means either the EN page was deleted
+ * (without removing the translation) or the localized page was created by
+ * mistake. Both are caught here at CI time. ES and FR must also mirror each
+ * other, so a page translated into one locale is translated into both.
  *
  * ## What this does NOT enforce
- * It is intentional that many EN routes have NO ES equivalent. The site ships
- * only the top-level ES pages (index, gallery, docs) as translated landing
- * pages. All deeper routes (/demos, /blog, /contact, etc.) are English-only
- * by design. Those are listed in EN_ONLY_ALLOWLIST below.
+ * It is intentional that many EN routes have NO localized equivalent. The
+ * site ships only the top-level localized pages (index, gallery, docs) as
+ * translated landing pages. All deeper routes (/demos, /blog, /contact, etc.)
+ * are English-only by design. Those are listed in EN_ONLY_ALLOWLIST below.
  *
  * ## Methodology: build-time data emitter vs runtime consumer
  * This file is a *build-time data emitter* test: it reads the file system
@@ -27,7 +29,11 @@ import { describe, it, expect } from 'vitest';
 // test runner's module context so paths are relative to this file's location.
 
 const allEnPages = import.meta.glob('../pages/**/*.{astro,md,mdx}', { eager: false });
-const allEsPages = import.meta.glob('../pages/es/**/*.{astro,md,mdx}', { eager: false });
+const localizedPages = {
+  es: import.meta.glob('../pages/es/**/*.{astro,md,mdx}', { eager: false }),
+  fr: import.meta.glob('../pages/fr/**/*.{astro,md,mdx}', { eager: false }),
+} as const;
+const NON_DEFAULT_LOCALES = Object.keys(localizedPages) as (keyof typeof localizedPages)[];
 
 /**
  * Intentionally English-only routes — ES translations are out of scope for
@@ -79,16 +85,18 @@ function toRoute(globKey: string): string {
   return rel.endsWith('/index') ? rel.slice(0, -'/index'.length) || '/' : rel;
 }
 
-/** Strip the "/es" locale prefix to get the EN equivalent. */
-function toEnRoute(esRoute: string): string {
-  return esRoute.replace(/^\/es/, '') || '/';
+/** Strip the "/es" or "/fr" locale prefix to get the EN equivalent. */
+function toEnRoute(localizedRoute: string): string {
+  return localizedRoute.replace(/^\/(es|fr)(?=\/|$)/, '') || '/';
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────
 
-describe('route parity — ES pages must map to real EN routes', () => {
+describe('route parity — localized pages must map to real EN routes', () => {
   const enRoutes = new Set(Object.keys(allEnPages).map(toRoute));
-  const esRoutes = Object.keys(allEsPages).map(toRoute);
+  const routesByLocale = Object.fromEntries(
+    NON_DEFAULT_LOCALES.map((l) => [l, Object.keys(localizedPages[l]).map(toRoute)]),
+  ) as Record<(typeof NON_DEFAULT_LOCALES)[number], string[]>;
 
   /**
    * Check whether `candidate` is covered by the set of EN routes. A dynamic
@@ -107,20 +115,29 @@ describe('route parity — ES pages must map to real EN routes', () => {
     return false;
   }
 
-  it('every /es/* page has a corresponding EN route', () => {
-    const orphans: string[] = [];
+  for (const locale of NON_DEFAULT_LOCALES) {
+    it(`every /${locale}/* page has a corresponding EN route`, () => {
+      const orphans: string[] = [];
 
-    for (const esRoute of esRoutes) {
-      const enEquivalent = toEnRoute(esRoute);
-      if (!isCoveredByEnRoute(enEquivalent)) {
-        orphans.push(`${esRoute} → expected EN: ${enEquivalent}`);
+      for (const route of routesByLocale[locale]) {
+        const enEquivalent = toEnRoute(route);
+        if (!isCoveredByEnRoute(enEquivalent)) {
+          orphans.push(`${route} → expected EN: ${enEquivalent}`);
+        }
       }
-    }
 
-    expect(
-      orphans,
-      `Orphan ES pages found (no matching EN route):\n${orphans.join('\n')}`,
-    ).toEqual([]);
+      expect(
+        orphans,
+        `Orphan ${locale.toUpperCase()} pages found (no matching EN route):\n${orphans.join('\n')}`,
+      ).toEqual([]);
+    });
+  }
+
+  it('es and fr translate the same set of pages', () => {
+    const es = routesByLocale.es.map(toEnRoute).sort();
+    const fr = routesByLocale.fr.map(toEnRoute).sort();
+    expect(es.length).toBeGreaterThan(0);
+    expect(fr).toEqual(es);
   });
 
   it('allowlist documents intentionally EN-only routes that exist as files', () => {

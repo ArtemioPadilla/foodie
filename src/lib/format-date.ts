@@ -24,7 +24,7 @@ import type { Locale } from '@/i18n';
  * Format a `Date` as a human-readable string in the given locale.
  *
  * @param date   - The date to format.
- * @param locale - A `Locale` value ('en' | 'es'). Defaults to 'en'.
+ * @param locale - A `Locale` value ('en' | 'es' | 'fr'). Defaults to 'en'.
  * @param opts   - Override `Intl.DateTimeFormatOptions`; defaults to
  *                 `{ dateStyle: 'long' }` which produces e.g. "June 9, 2026".
  *
@@ -38,7 +38,7 @@ export function formatDate(
   opts: Intl.DateTimeFormatOptions = { dateStyle: 'long' },
 ): string {
   // Use a BCP 47 tag: 'es' → 'es-419' (Latin American) gives the most widely
-  // understood Spanish form. 'en' stays as-is (defaults to en-US in Node/V8).
+  // understood Spanish form. 'en' and 'fr' stay as-is (en-US / fr-FR defaults).
   const bcp47 = locale === 'es' ? 'es-419' : locale;
   return new Intl.DateTimeFormat(bcp47, opts).format(date);
 }

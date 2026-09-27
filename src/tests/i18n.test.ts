@@ -13,10 +13,13 @@ describe('i18n', () => {
       expect(detectLocale('/es')).toBe('es');
       expect(detectLocale('/es/')).toBe('es');
       expect(detectLocale('/es/about')).toBe('es');
+      expect(detectLocale('/fr')).toBe('fr');
+      expect(detectLocale('/fr/about')).toBe('fr');
     });
 
-    it('does not match partial matches like /espresso', () => {
+    it('does not match partial matches like /espresso or /fruit', () => {
       expect(detectLocale('/espresso')).toBe('en');
+      expect(detectLocale('/fruit')).toBe('en');
     });
   });
 
@@ -29,6 +32,8 @@ describe('i18n', () => {
     it('adds the prefix when switching to a non-default locale', () => {
       expect(localizedPath('/about', 'es')).toBe('/es/about');
       expect(localizedPath('/', 'es')).toBe('/es');
+      expect(localizedPath('/about', 'fr')).toBe('/fr/about');
+      expect(localizedPath('/es/about', 'fr')).toBe('/fr/about');
     });
 
     it('round-trips between locales without losing the path', () => {
@@ -43,6 +48,7 @@ describe('i18n', () => {
     it('resolves a dot-path key in the requested locale', () => {
       expect(t('en', 'nav.home')).toBe('Home');
       expect(t('es', 'nav.home')).toBe('Inicio');
+      expect(t('fr', 'nav.home')).toBe('Accueil');
     });
 
     it('falls back to the default locale when a key is missing', () => {
@@ -57,29 +63,38 @@ describe('i18n', () => {
     it('exposes the configured locale list', () => {
       expect(LOCALES).toContain('en');
       expect(LOCALES).toContain('es');
+      expect(LOCALES).toContain('fr');
+      expect(LOCALES).toHaveLength(3);
       expect(DEFAULT_LOCALE).toBe('en');
     });
   });
 
-  // ── Key parity (issue #176) ────────────────────────────────────────────────
+  // ── Key parity (issue #176, ×3 since roadmap Issue 004) ───────────────────
   // English is the structural source of truth. Every non-English locale must
   // carry exactly the same leaf keys — no more, no fewer. A missing key is a
-  // compile error in es.ts (typeof en constraint), and a *narrower* shape is
-  // blocked here at runtime so stale translations get caught in CI too.
+  // compile error in es.ts / fr.ts (typeof en constraint), and a *narrower*
+  // shape is blocked here at runtime so stale translations get caught in CI.
   describe('key parity', () => {
     const enKeys = collectLeafKeys(dictionaries['en']).sort();
+    const others = LOCALES.filter((l) => l !== DEFAULT_LOCALE);
 
-    it('es contains every key that en contains', () => {
-      const esKeys = collectLeafKeys(dictionaries['es']).sort();
-      const missingInEs = enKeys.filter((k) => !esKeys.includes(k));
-      expect(missingInEs, `Keys in en but missing in es: ${missingInEs.join(', ')}`).toEqual([]);
+    it('covers every non-default locale (es, fr)', () => {
+      expect([...others]).toEqual(['es', 'fr']);
     });
 
-    it('en contains every key that es contains (no orphan es keys)', () => {
-      const esKeys = collectLeafKeys(dictionaries['es']).sort();
-      const extraInEs = esKeys.filter((k) => !enKeys.includes(k));
-      expect(extraInEs, `Keys in es but missing in en: ${extraInEs.join(', ')}`).toEqual([]);
-    });
+    for (const locale of others) {
+      it(`${locale} contains every key that en contains`, () => {
+        const keys = collectLeafKeys(dictionaries[locale]).sort();
+        const missing = enKeys.filter((k) => !keys.includes(k));
+        expect(missing, `Keys in en but missing in ${locale}: ${missing.join(', ')}`).toEqual([]);
+      });
+
+      it(`en contains every key that ${locale} contains (no orphan ${locale} keys)`, () => {
+        const keys = collectLeafKeys(dictionaries[locale]).sort();
+        const extra = keys.filter((k) => !enKeys.includes(k));
+        expect(extra, `Keys in ${locale} but missing in en: ${extra.join(', ')}`).toEqual([]);
+      });
+    }
 
     it('collectLeafKeys produces flat dot-paths', () => {
       const keys = collectLeafKeys({ nav: { home: 'Home', switchLanguage: 'Español' } });

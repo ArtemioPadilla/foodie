@@ -24,11 +24,12 @@ export default defineConfig({
   // https://artemiopadilla.github.io/foodie/ (origin + ASTRO_BASE).
   site: SITE_ORIGIN,
   base: BASE,
-  // i18n routing — English at root (no prefix), Spanish under /es/.
-  // `prefixDefaultLocale: false` keeps existing English URLs unchanged.
+  // i18n routing — English at root (no prefix), Spanish under /es/, French
+  // under /fr/ (roadmap D7). `prefixDefaultLocale: false` keeps English URLs
+  // unchanged. Keep in sync with LOCALES in src/i18n/index.ts.
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'es'],
+    locales: ['en', 'es', 'fr'],
     routing: {
       prefixDefaultLocale: false,
       redirectToDefaultLocale: false,

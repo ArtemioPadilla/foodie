@@ -41,10 +41,12 @@ describe('audit wave 2 — trust & polish', () => {
       expect(footer.toLowerCase()).toContain('mit');
     });
 
-    it('contains EN and ES language switcher links', () => {
+    it('renders the EN/ES/FR LangSwitcher', () => {
       const footer = read('src/components/common/SiteFooter.astro');
-      expect(footer).toContain('hreflang="en"');
-      expect(footer).toContain('hreflang="es"');
+      expect(footer).toContain('<LangSwitcher');
+      const switcher = read('src/components/common/LangSwitcher.astro');
+      expect(switcher).toContain('hreflang={locale}');
+      expect(switcher).toContain('localizedPath');
     });
   });
 
@@ -162,10 +164,9 @@ describe('audit wave 2 — trust & polish', () => {
 
   // ── 6. SiteHeader language switcher ────────────────────────────────────
   describe('SiteHeader language switcher', () => {
-    it('contains EN and ES toggle links', () => {
+    it('renders the EN/ES/FR LangSwitcher', () => {
       const header = read('src/components/common/SiteHeader.astro');
-      expect(header).toContain('hreflang="en"');
-      expect(header).toContain('hreflang="es"');
+      expect(header).toContain('<LangSwitcher');
     });
 
     it('uses withBase() for the switcher hrefs', () => {

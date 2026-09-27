@@ -1,0 +1,89 @@
+---
+/**
+ * LangSwitcher — EN / ES / FR links that keep the visitor on the page they are
+ * reading (roadmap Issue 004, D7).
+ *
+ * - Targets are derived with `localizedPath()` from the current route (base
+ *   stripped), so `/es/docs/` ↔ `/docs/` ↔ `/fr/docs/`.
+ * - Routes that only exist in English (demos, blog, individual docs…) fall
+ *   back to the target locale's home instead of a 404: the page set is known
+ *   at build time via `import.meta.glob`, so the check costs nothing at runtime.
+ * - Clicking a link persists `foodie:locale`; BaseLayout's first-visit
+ *   redirect honours that key, so an explicit choice is never overridden.
+ */
+import { withBase } from '@/lib/href';
+import { LOCALES, LOCALE_NAMES, DEFAULT_LOCALE, detectLocale, localizedPath, stripBase, type Locale } from '@/i18n';
+
+interface Props {
+  /** Classes for the wrapping element — include the display utility
+   *  (`inline-flex`, `hidden sm:inline-flex`, …); the default is `inline-flex`. */
+  class?: string;
+  /** Link classes; `[aria-current]` styling is appended for the active locale. */
+  linkClass?: string;
+}
+
+const { class: className = 'inline-flex', linkClass = 'rounded px-1.5 py-1 text-muted-foreground transition-colors hover:text-primary' } =
+  Astro.props;
+
+// Route without the deploy base so localizedPath() sees `/es/docs/`, never
+// `/foodie/es/docs/` (Astro.url.pathname may carry the base at build time).
+const route = stripBase(Astro.url.pathname, import.meta.env.BASE_URL);
+const current = detectLocale(route);
+
+// Page inventory, resolved at build time: "/src/pages/es/docs.astro" →
+// "/es/docs/". Dynamic routes ("/src/pages/docs/[...slug].astro") contribute
+// their prefix ("/docs/") so every page they render counts as existing.
+const pageFiles = Object.keys(import.meta.glob('/src/pages/**/*.{astro,md,mdx}'));
+const toRoute = (f: string) => {
+  const rel = f.replace(/^\/src\/pages/, '').replace(/\.(astro|mdx?)$/, '');
+  const stem = rel.endsWith('/index') ? rel.slice(0, -'/index'.length) : rel;
+  return `${stem}/`.replace(/\/+/g, '/');
+};
+const staticRoutes = new Set(pageFiles.filter((f) => !f.includes('[')).map(toRoute));
+const dynamicPrefixes = pageFiles.filter((f) => f.includes('[')).map((f) => toRoute(f).replace(/\/\[.*$/, '/'));
+const routeExists = (p: string) => staticRoutes.has(p) || dynamicPrefixes.some((prefix) => p.startsWith(prefix));
+const normalized = route.endsWith('/') ? route : `${route}/`;
+
+function targetFor(locale: Locale): string {
+  const candidate = localizedPath(normalized, locale);
+  const withSlash = candidate.endsWith('/') ? candidate : `${candidate}/`;
+  if (routeExists(withSlash)) return withSlash;
+  return locale === DEFAULT_LOCALE ? '/' : `/${locale}/`;
+}
+---
+
+<span class:list={['items-center gap-0', className]} role="group" aria-label="Language">
+  {
+    LOCALES.map((locale, i) => (
+      <>
+        {i > 0 && <span class="text-border text-[0.6rem]" aria-hidden="true">/</span>}
+        <a
+          href={withBase(targetFor(locale))}
+          hreflang={locale}
+          lang={locale}
+          title={LOCALE_NAMES[locale]}
+          aria-current={locale === current ? 'true' : undefined}
+          data-lang-switch={locale}
+          class:list={[linkClass, locale === current && 'text-foreground font-semibold']}
+        >
+          {locale.toUpperCase()}
+        </a>
+      </>
+    ))
+  }
+</span>
+
+<script>
+  // Persist the explicit choice before navigation so the first-visit locale
+  // redirect in BaseLayout never bounces the visitor back. Delegated once per
+  // page (Astro dedupes this hoisted script across LangSwitcher instances).
+  document.addEventListener('click', (event) => {
+    const link = (event.target as Element | null)?.closest?.('a[data-lang-switch]');
+    if (!link) return;
+    try {
+      localStorage.setItem('foodie:locale', link.getAttribute('data-lang-switch') ?? '');
+    } catch {
+      /* storage unavailable — nothing to persist */
+    }
+  });
+</script>

@@ -11,10 +11,11 @@
  *   - Nav recap (Gallery / Demos / Docs / Blog / Contact)
  *   - GitHub link
  *   - MIT license note
- *   - EN ⇄ ES language switcher
+ *   - EN / ES / FR language switcher (LangSwitcher)
  */
 import { withBase } from '@/lib/href';
 import { REPO_URL, SITE } from '@/lib/site-meta';
+import LangSwitcher from './LangSwitcher.astro';
 
 const nav = [
   { href: '/gallery/', label: 'Gallery' },
@@ -66,25 +67,7 @@ const year = new Date().getFullYear();
       <!-- language switcher -->
       <div>
         <p class="mb-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-primary">Language</p>
-        <div class="flex items-center gap-1 font-mono text-xs">
-          <a
-            href={withBase('/')}
-            class="rounded px-2 py-0.5 text-foreground transition-colors hover:text-primary"
-            hreflang="en"
-            lang="en"
-          >
-            EN
-          </a>
-          <span class="text-border" aria-hidden="true">/</span>
-          <a
-            href={withBase('/es/')}
-            class="rounded px-2 py-0.5 text-muted-foreground transition-colors hover:text-primary"
-            hreflang="es"
-            lang="es"
-          >
-            ES
-          </a>
-        </div>
+        <LangSwitcher class="inline-flex gap-1 font-mono text-xs" linkClass="rounded px-2 py-0.5 text-muted-foreground transition-colors hover:text-primary" />
       </div>
 
     </div>

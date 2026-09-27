@@ -12,16 +12,17 @@
  *   - Copy diagnostics to clipboard
  *   - Duplicate detection: queries GitHub API for similar open issues before submit
  *   - Opens pre-filled GitHub Issue
- *   - i18n es/en
+ *   - i18n en/es/fr
  */
 
 import { SITE } from '@/lib/site-meta';
+import type { Locale } from '@/i18n';
 
 interface Props {
-  lang?: 'es' | 'en';
+  lang?: Locale;
 }
 
-const { lang = 'es' } = Astro.props;
+const { lang = 'en' } = Astro.props;
 
 // Where the feedback issues get filed — single-sourced from site-meta.ts
 // (honors PUBLIC_REPO_SLUG, defaults to the Foodie repo).
@@ -89,6 +90,36 @@ const tr = {
     similar_issues: 'Similar issues',
     file_anyway: 'File anyway',
     checking_dupes: 'Checking for similar issues…',
+  },
+  fr: {
+    button_label: 'Signaler un problème',
+    modal_title: 'Signaler un problème',
+    type_label: 'Type',
+    type_bug: 'Bug',
+    type_feature: 'Demande de fonctionnalité',
+    type_question: 'Question',
+    type_translation: 'Problème de traduction',
+    title_label: 'Titre',
+    title_placeholder: 'Résumé court du problème',
+    description_label: 'Description',
+    description_placeholder: 'Que s’est-il passé ? Qu’attendiez-vous ?',
+    steps_label: 'Étapes pour reproduire',
+    steps_placeholder: '1. Aller à…\n2. Cliquer sur…\n3. Voir l’erreur',
+    expected_label: 'Comportement attendu',
+    expected_placeholder: 'Que devait-il se passer ?',
+    diagnostics_toggle: 'Afficher les diagnostics',
+    diagnostics_env: 'Environnement',
+    diagnostics_console: 'Erreurs de console',
+    diagnostics_network: 'Requêtes échouées',
+    diagnostics_none: 'Aucun capturé',
+    copy_diagnostics: 'Copier les diagnostics',
+    copied: 'Copié !',
+    cancel: 'Annuler',
+    open_on_github: 'Ouvrir sur GitHub',
+    badge_errors_label: 'erreurs détectées',
+    similar_issues: 'Problèmes similaires',
+    file_anyway: 'Signaler quand même',
+    checking_dupes: 'Recherche de problèmes similaires…',
   },
 }[lang];
 ---
