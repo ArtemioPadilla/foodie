@@ -9,6 +9,7 @@ Thank you for your interest in contributing to Foodie! This document provides gu
 - [Contributing Recipes](#contributing-recipes)
 - [Development Setup](#development-setup)
 - [Coding Standards](#coding-standards)
+- [Migration to Inceptor — temporary branching policy](#migration-to-inceptor--temporary-branching-policy)
 - [Submitting Changes](#submitting-changes)
 - [Testing Guidelines](#testing-guidelines)
 - [Documentation](#documentation)
@@ -205,6 +206,53 @@ refactor: Simplify ingredient filtering
 test: Add tests for meal planner
 chore: Update dependencies
 ```
+
+## 🚧 Migration to Inceptor — temporary branching policy
+
+> **Temporary section** (roadmap Phase 0 → Phase 3). It is removed at the
+> cutover (roadmap Issue 030). Canonical plan:
+> [`docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md`](docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md).
+
+Foodie is being rebuilt on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
+template (Astro 5 + React 19 + Tailwind v4 + Base UI). While that happens the
+repository has **two live lines of development**:
+
+| Branch | What it holds | Deploys? |
+|---|---|---|
+| `main` | The **legacy** React 18 + Vite SPA, frozen at `ac89bf1` (tag `legacy-vite-1.0.0`, mirrored by the `legacy` branch) | Yes — `https://artemiopadilla.github.io/foodie/` keeps serving legacy until the cutover |
+| `inceptor` | The **integration branch** for the new app (roadmap Phases 0–3). Created by the maintainer from the Phase-0 working branch; protected (PR required, checks `build`, `test`, `type-check`) | Not yet — enabled at the cutover |
+
+### Where do PRs go?
+
+- **Migration work** (any roadmap issue `001`–`030`): branch from `inceptor` as
+  `phase-N/issue-NNN-short-slug` and open the PR **against `inceptor`**, not
+  `main`. Example: `phase-0/issue-003-rebrand-foodie` → PR base `inceptor`.
+- **Legacy hotfixes only** (something broken on the live site): PR against
+  `main`. Keep them minimal — `main` is frozen apart from urgent fixes and the
+  legacy code is not being ported line-by-line.
+- **Never** merge `inceptor` into `main` or vice-versa outside the cutover PR
+  (roadmap Issue 030). `main` stays the legacy deploy until the new app reaches
+  parity on catalog + planner + shopping + pantry (end of Phase 3).
+
+### Conventions on `inceptor`
+
+- Commit messages: Conventional Commits with the roadmap id —
+  `type(scope): summary (roadmap #NNN)`.
+- Every PR must keep `npm run check` green (astro check + tsc + vitest + eslint
+  + pragmas + build) and follow the Inceptor rules listed in `CLAUDE.md`
+  (no `@astrojs/tailwind`, no React Context across islands, `withBase()` for
+  every href/asset, Zod schemas in `src/schemas/` for cross-boundary types).
+- Labels `phase-0`…`phase-6`, `type:chore|feat|docs|test`, `risk:high` and
+  milestones `v0.1`…`v1.0` classify the work (created by
+  `scripts/create-issues.sh`, roadmap Issue 007).
+- Reading legacy code from the `inceptor` branch: `git show main:src/<path>`
+  (or `git show legacy:src/<path>`); while Phase 0 is in progress a read-only
+  copy also lives under `legacy/` (removed in roadmap Issue 008).
+
+### After the cutover
+
+Once Issue 030 lands, `inceptor` is merged into `main`, `main` deploys the new
+app and all PRs target `main` again. This section is deleted in that PR.
 
 ## 🚀 Submitting Changes
 
