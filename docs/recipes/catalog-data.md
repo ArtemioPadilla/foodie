@@ -74,6 +74,41 @@ Community members without a fork can use the **Recipe submission** issue form
 (`.github/ISSUE_TEMPLATE/recipe-submission.yml`) and paste the JSON; a
 maintainer turns it into the PR.
 
+## Runtime: `useCatalog()` in islands (Issue 016)
+
+Static pages read the collections; islands that need the catalog at runtime
+(recipe browser, planner, shopping list) call `useCatalog()` from
+`src/lib/catalog/use-catalog.ts` inside the template's `QueryProvider`:
+
+```tsx
+import QueryProvider from '@/components/islands/QueryProvider';
+import type { Locale } from '@/i18n';
+import { useCatalog } from '@/lib/catalog/use-catalog';
+import { filterRecipes, sortRecipes, getIngredientName } from '@/lib/catalog/selectors';
+
+function Inner({ lang }: { lang: Locale }) {
+  const { recipes, ingredients, beverages, categories, status } = useCatalog();
+  // status: 'loading' | 'success' | 'error' | 'offline' (offline = serving the IDB cache)
+  const visible = sortRecipes(filterRecipes(recipes, { types: ['dinner'] }), 'rating-desc', { lang });
+  …
+}
+export default function MyIsland(props) {
+  return <QueryProvider idbKey="tanstack-query-cache-catalog"><Inner {...props} /></QueryProvider>;
+}
+```
+
+- One query per file (`['catalog', 'recipes']` …), `fetch(withBase('/data/x.json'))`
+  — never a hardcoded `/foodie/…` — parsed with the same Zod file schemas as the
+  build; an invalid payload is `status: 'error'`, not a crash.
+- `meta: { persist: true }` → the parsed catalog is stored in IndexedDB for
+  24 h (`PERSIST_MAX_AGE_MS`) and served first on the next visit; when the
+  refetch fails or the browser is offline the cached copy stays and `status`
+  becomes `'offline'`.
+- Selectors are pure and take the arrays explicitly (`getRecipeById`,
+  `getIngredientName`, `searchRecipes`, `filterRecipes`, `sortRecipes`,
+  `makeCategoryResolver(ingredients)` in `lib/domain/shopping`), so the same
+  code runs in Astro pages, islands and tests.
+
 ## Changing a schema
 
 Edit the schema in `src/schemas/` (never `interface`s — types come from

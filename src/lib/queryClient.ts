@@ -7,6 +7,9 @@ import { get, set, del } from 'idb-keyval';
 
 const IDB_PERSIST_KEY = 'tanstack-query-cache';
 
+/** How long a persisted cache is trusted before it is discarded on restore (24 h). */
+export const PERSIST_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
 /**
  * idb-keyval-backed Persister. Stores the whole TanStack Query cache as one
  * JSON-serializable object under a single key in IndexedDB.
@@ -69,6 +72,42 @@ export function shouldPersistQuery(query: {
   );
 }
 
+export interface AttachPersisterOptions {
+  /** IndexedDB key (default `tanstack-query-cache`); ignored when `persister` is given. */
+  idbKey?: string;
+  /** Replace the idb-keyval persister (tests use an in-memory one). */
+  persister?: Persister;
+  /** Debounce for writes, ms (default 1000 — TanStack's own default). */
+  throttleTime?: number;
+}
+
+/**
+ * Attach a persister to a QueryClient and also expose the restore promise, so
+ * callers that need to know when the cached state has been hydrated (tests,
+ * prefetch-on-boot) can await it. `attachPersister` is the fire-and-forget
+ * form used by `QueryProvider`.
+ *
+ * Only successfully-settled queries with `meta.persist === true` are written
+ * (see `shouldPersistQuery`); a persisted cache older than
+ * `PERSIST_MAX_AGE_MS` is dropped on restore.
+ */
+export function attachPersisterWithRestore(
+  client: QueryClient,
+  options?: AttachPersisterOptions,
+): { detach: () => void; restored: Promise<void> } {
+  const persister = options?.persister ?? createIdbPersister(options?.idbKey);
+  const [unsubscribe, restored] = persistQueryClient({
+    queryClient: client,
+    persister,
+    maxAge: PERSIST_MAX_AGE_MS,
+    ...(options?.throttleTime !== undefined ? { throttleTime: options.throttleTime } : {}),
+    dehydrateOptions: {
+      shouldDehydrateQuery: shouldPersistQuery,
+    },
+  });
+  return { detach: unsubscribe, restored };
+}
+
 /**
  * Attach the idb-keyval persister to a QueryClient. Returns a cleanup function
  * that detaches and removes the persisted cache.
@@ -76,18 +115,6 @@ export function shouldPersistQuery(query: {
  * Only successfully-settled queries with `meta.persist === true` are written
  * to disk (see `shouldPersistQuery`).
  */
-export function attachPersister(
-  client: QueryClient,
-  options?: { idbKey?: string },
-): () => void {
-  const persister = createIdbPersister(options?.idbKey);
-  const [unsubscribe] = persistQueryClient({
-    queryClient: client,
-    persister,
-    maxAge: 24 * 60 * 60 * 1000, // 24h
-    dehydrateOptions: {
-      shouldDehydrateQuery: shouldPersistQuery,
-    },
-  });
-  return unsubscribe;
+export function attachPersister(client: QueryClient, options?: AttachPersisterOptions): () => void {
+  return attachPersisterWithRestore(client, options).detach;
 }

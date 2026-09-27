@@ -1,11 +1,13 @@
 /**
- * Pure catalog selectors (roadmap Issue 013 ports the `BeverageContext`
- * logic; Issue 016 adds the recipe/ingredient selectors and `useCatalog`).
+ * Pure catalog selectors (roadmap Issue 013 ported the `BeverageContext`
+ * logic; Issue 016 the `RecipeContext` / `IngredientContext` selectors —
+ * the fetch itself lives in `use-catalog.ts`).
  * They take the catalog arrays explicitly so they work in islands (from
  * `useCatalog()`), in Astro pages (from `getCollection`) and in tests.
  */
-import { getTranslated } from '@/i18n';
-import type { Beverage, Locale } from '@/schemas';
+import { getTranslated, LOCALES } from '@/i18n';
+import { calculateRecipeCost } from '@/lib/domain/calculations';
+import type { Beverage, Ingredient, Locale, Recipe, RecipeFilters, SortOption } from '@/schemas';
 
 /**
  * @deprecated Alias kept for Issue 013 callers — the canonical helper is
@@ -36,4 +38,137 @@ export function searchBeverages(
   const term = query.trim().toLowerCase();
   if (!term) return [...beverages];
   return beverages.filter((b) => getTranslated(b.name, lang).toLowerCase().includes(term));
+}
+
+// ── Recipes / ingredients (roadmap Issue 016 — port of RecipeContext / IngredientContext) ──
+
+export function getRecipeById(recipes: ReadonlyArray<Recipe>, id: string): Recipe | undefined {
+  return recipes.find((r) => r.id === id);
+}
+
+export function getIngredientById(
+  ingredients: ReadonlyArray<Ingredient>,
+  id: string,
+): Ingredient | undefined {
+  return ingredients.find((i) => i.id === id);
+}
+
+/** Localised ingredient name; falls back to the id when the catalog does not know it (legacy behaviour). */
+export function getIngredientName(
+  ingredients: ReadonlyArray<Ingredient>,
+  id: string,
+  lang: Locale = 'en',
+): string {
+  const ingredient = getIngredientById(ingredients, id);
+  return ingredient ? getTranslated(ingredient.name, lang) : id;
+}
+
+export function getIngredientsByCategory(
+  ingredients: ReadonlyArray<Ingredient>,
+  category: string,
+): Ingredient[] {
+  return ingredients.filter((i) => i.category === category);
+}
+
+/** Recipes whose ingredient lines reference `ingredientId` (ingredient detail → "used in"). */
+export function getRecipesByIngredient(
+  recipes: ReadonlyArray<Recipe>,
+  ingredientId: string,
+): Recipe[] {
+  return recipes.filter((r) => r.ingredients.some((line) => line.ingredientId === ingredientId));
+}
+
+/**
+ * Case-insensitive, trimmed substring match on the recipe name in ANY locale
+ * (legacy behaviour — "huevos" finds Scrambled Eggs on the English site too)
+ * plus the description in `lang`. Blank query → every recipe.
+ */
+export function searchRecipes(
+  recipes: ReadonlyArray<Recipe>,
+  query: string,
+  lang: Locale = 'en',
+): Recipe[] {
+  const term = query.trim().toLowerCase();
+  if (!term) return [...recipes];
+  return recipes.filter(
+    (r) =>
+      LOCALES.some((l) => r.name[l].toLowerCase().includes(term)) ||
+      getTranslated(r.description, lang).toLowerCase().includes(term),
+  );
+}
+
+/**
+ * Apply `RecipeFilters` (every set filter must match). Ported from
+ * `RecipeContext`: `dietaryLabels` and `tags` match the recipe `tags` array
+ * (any of), `cuisines` any-of, `types`/`difficulties` exact, `maxTime` caps
+ * `totalTime`; `ingredients` keeps recipes using at least one listed id.
+ */
+export function filterRecipes(
+  recipes: ReadonlyArray<Recipe>,
+  filters: RecipeFilters,
+  lang: Locale = 'en',
+): Recipe[] {
+  let result = filters.search ? searchRecipes(recipes, filters.search, lang) : [...recipes];
+  const { types, cuisines, dietaryLabels, difficulties, tags, ingredients } = filters;
+  if (types?.length) result = result.filter((r) => types.includes(r.type));
+  if (cuisines?.length) result = result.filter((r) => r.cuisine.some((c) => cuisines.includes(c)));
+  if (dietaryLabels?.length) {
+    result = result.filter((r) => dietaryLabels.some((label) => r.tags.includes(label)));
+  }
+  if (difficulties?.length) result = result.filter((r) => difficulties.includes(r.difficulty));
+  if (tags?.length) result = result.filter((r) => tags.some((tag) => r.tags.includes(tag)));
+  const { maxTime, maxPrepTime, maxCookTime } = filters;
+  if (maxTime) result = result.filter((r) => r.totalTime <= maxTime);
+  if (maxPrepTime) result = result.filter((r) => r.prepTime <= maxPrepTime);
+  if (maxCookTime) result = result.filter((r) => r.cookTime <= maxCookTime);
+  if (ingredients?.length) {
+    result = result.filter((r) => r.ingredients.some((line) => ingredients.includes(line.ingredientId)));
+  }
+  return result;
+}
+
+const DIFFICULTY_RANK: Record<string, number> = { easy: 1, medium: 2, hard: 3 };
+
+export interface SortRecipesOptions {
+  /** Locale used for name sorting (legacy always compared the English name). */
+  lang?: Locale;
+  /** Needed by `cost-asc` / `cost-desc`; without it cost sorts keep the input order. */
+  ingredients?: ReadonlyArray<Ingredient>;
+}
+
+/**
+ * Return a NEW array sorted by a `SortOption`. Legacy aliases (`rating`,
+ * `prepTime`, `newest`, `name`, `cost`) map onto their `-desc`/`-asc` forms.
+ */
+export function sortRecipes(
+  recipes: ReadonlyArray<Recipe>,
+  sortBy: SortOption,
+  options: SortRecipesOptions = {},
+): Recipe[] {
+  const lang = options.lang ?? 'en';
+  const costOf = (r: Recipe) =>
+    options.ingredients ? calculateRecipeCost(r, options.ingredients) : 0;
+  const name = (r: Recipe) => getTranslated(r.name, lang);
+  const comparators: Record<SortOption, (a: Recipe, b: Recipe) => number> = {
+    'rating-desc': (a, b) => b.rating - a.rating,
+    rating: (a, b) => b.rating - a.rating,
+    'rating-asc': (a, b) => a.rating - b.rating,
+    'time-asc': (a, b) => a.totalTime - b.totalTime,
+    prepTime: (a, b) => a.totalTime - b.totalTime,
+    'time-desc': (a, b) => b.totalTime - a.totalTime,
+    'name-asc': (a, b) => name(a).localeCompare(name(b), lang),
+    name: (a, b) => name(a).localeCompare(name(b), lang),
+    'name-desc': (a, b) => name(b).localeCompare(name(a), lang),
+    'difficulty-asc': (a, b) =>
+      (DIFFICULTY_RANK[a.difficulty] ?? 0) - (DIFFICULTY_RANK[b.difficulty] ?? 0),
+    'difficulty-desc': (a, b) =>
+      (DIFFICULTY_RANK[b.difficulty] ?? 0) - (DIFFICULTY_RANK[a.difficulty] ?? 0),
+    recent: (a, b) => Date.parse(b.dateAdded) - Date.parse(a.dateAdded),
+    newest: (a, b) => Date.parse(b.dateAdded) - Date.parse(a.dateAdded),
+    popular: (a, b) => b.reviewCount - a.reviewCount,
+    'cost-asc': (a, b) => costOf(a) - costOf(b),
+    cost: (a, b) => costOf(a) - costOf(b),
+    'cost-desc': (a, b) => costOf(b) - costOf(a),
+  };
+  return [...recipes].sort(comparators[sortBy]);
 }
