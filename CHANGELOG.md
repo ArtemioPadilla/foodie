@@ -11,77 +11,20 @@ Canonical plan for v2:
 
 ## [Unreleased]
 
-### Changed
+Nothing yet. The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
 
-- **Docs on the site.** The MkDocs pages moved into the site at `/docs/`
-  (Getting started, Guides, Reference, Contributing), rewritten for the v2
-  stack, with Pagefind search that covers the docs and every recipe page. The
-  data-model reference (`/docs/reference/api/`) is generated from the Zod
-  schemas at build time, so it cannot drift from the code. The template's
-  Inceptor docs pages are gone; `/docs/guides/github-pages-setup/` redirects
-  to the deployment guide (#043).
-- **Project docs for the finished stack.** `CLAUDE.md` rewritten for v2
-  (Astro 7, Foodie ADR index, rules, data and state, roadmap status),
-  `README.md` with CI/deploy badges and new screenshots
-  (`npm run docs:screenshots` → `docs/assets/`), and `CONTRIBUTING.md` with the
-  issue-driven flow and the recipe contribution flow (#044).
-- **Performance budgets.** `npm run perf` builds the site as deployed, checks
-  that Recharts and the Firebase SDK load only where they are used, writes a
-  chunk report, and runs Lighthouse on `/`, `/es/`, `/fr/`, `/recipes/`, a
-  recipe, `/planner/` and `/tracking/progress/` with byte budgets
-  (`lighthouse-budgets.json`: script ≤ 200 KB on the landing, ≤ 350 KB on the
-  planner and tracking) and score gates (a11y ≥ 0.95, best practices = 1).
-  Pages now download only their own language's strings, and dialogs (sign in,
-  account menu, mobile menu, search, recipe picker, prices, templates,
-  sharing) load the first time they open: the landing's script went from
-  324 KB to 186 KB and the planner's from 438 KB to 333 KB. Recipe photos, when
-  they arrive, are pre-optimised WebP with a `srcset` (#045).
+## [2.0.0] - unreleased
 
-### Fixed
-
-- A React hydration error (#418) on pages where the browser offered "Install
-  app" (or knew it was offline, or had an update waiting) before the header
-  hydrated (#045).
-
-### Removed
-
-- The legacy MkDocs sources (`docs/index.md`, `docs/getting-started/`,
-  `docs/guides/`, `docs/reference/api.md`, `docs/contributing/recipe-format.md`)
-  (#043).
-- **Template surfaces Foodie does not use** (#046): the blog, `/demos/*`,
-  `/showcase/*`, `/blocks/*`, `/login/` (replaced by the sign-in dialog),
-  `/contact/`, the AI chat kit (`src/components/ui/ai/`) and the islands only
-  those pages used. The component gallery stays for contributors but is built
-  only outside the production deploy (`PUBLIC_FLAG_EXPERIMENTAL_GALLERY`); the
-  deployed site now has 516 pages. The ⌘K search lists Foodie's sections in
-  the page's language.
-- **Unused dependencies** (#047): `@anthropic-ai/sdk`, `@vitest/expect` and
-  `@dnd-kit/utilities` (never imported; `@dnd-kit/core` still brings its own
-  copy). The dead `server:flask` / `server:node` scripts.
-
-### Security
-
-- `npm audit` reports 0 vulnerabilities, dev dependencies included (#047):
-  Vitest 5 (the `@vitest/mocker` advisory), a patched `fast-uri`, and
-  `overrides` for the Lighthouse CI tooling's `tmp`, `@puppeteer/browsers`
-  (drops `extract-zip`), `qs` and `uuid`, each justified in `SECURITY.md`. `security.yml` gains an
-  `npm audit --audit-level=high` job and CodeQL v4; it runs on push, pull
-  request and weekly. `SECURITY.md` rewritten for Foodie (reporting, scope,
-  `PUBLIC_*`-only secrets policy, Firebase API key restriction). Test tooling
-  majors taken: `vitest` 5, `jsdom` 30, `prettier-plugin-astro` 1, and
-  `@nanostores/react` 2 at runtime.
-
-## [2.0.0-beta.1] - unreleased
-
-The date is set when the maintainer tags the cutover
-([`docs/runbooks/cutover.md`](docs/runbooks/cutover.md)).
+The date is set when the maintainer tags the release
+([`docs/runbooks/github-actions-pending.md`](docs/runbooks/github-actions-pending.md)).
 
 Foodie v2 is a rebuild on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
 template: Astro 7 islands with React 19, Tailwind v4, Base UI primitives,
 nanostores and TanStack Query. Every route is a static page in English,
 Spanish and French, and it is still served at
-`https://artemiopadilla.github.io/foodie/` (roadmap Phases 0–3, issues
-001–030).
+`https://artemiopadilla.github.io/foodie/`. This release closes the whole
+migration roadmap (Phases 0–6, issues 001–048). A `2.0.0-beta.1` was prepared
+for the cutover (#030) but never tagged; its entries are folded in here.
 
 ### Added
 
@@ -99,6 +42,8 @@ Spanish and French, and it is still served at
   (#019).
 - **Favourites** from any recipe card or detail page. `/recipes/?favorites=1`
   lists them, and they also appear on the landing page (#020).
+- **SEO.** A trilingual sitemap with `hreflang` alternates, a unique title
+  and canonical URL on every page, Open Graph tags and `robots.txt` (#022).
 - **Meal planner.** `/planner/` shows a week or a month view. You can drag
   recipes with the mouse, touch or keyboard (`@dnd-kit`, with screen-reader
   announcements), set servings per meal and a plan default, copy and clear
@@ -118,36 +63,128 @@ Spanish and French, and it is still served at
   and a service worker precaches every Foodie page. The catalog is cached
   network-first, and the app shows an offline banner and an update prompt
   (#028).
+- **Nutrition tracking.** `/tracking/` is a food diary with quick add for
+  recipes, ingredients, drinks and water, and totals against your goals.
+  `/tracking/goals/` sets daily goals with presets and a macro preview, and
+  `/tracking/progress/` shows week and month charts (calories, trend, a
+  sparkline per macro), a streak and the most logged recipe, each chart with
+  an accessible data table (#031–#034).
+- **Optional accounts.** Sign in with email, Google or GitHub (Firebase Auth,
+  loaded only when you open the dialog) from the header's account menu.
+  `/profile/` edits your name, avatar, units, diet and language, and offers
+  "Export my data" (one JSON file) and "Clear my data". Preferences and
+  favourites are kept per account, and guest favourites are merged once into
+  the account, with Undo (#035–#037).
+- **Recipe contributions without secrets.** `/contribute/` is a step-by-step
+  wizard with validation, a saved draft and a preview rendered as the site
+  would show it. Submitting downloads the recipe JSON and opens a prefilled
+  GitHub issue (`recipe-submission.yml`) — no token or OAuth app in the
+  browser (#038, #039).
+- **Share a plan by link.** The planner's Share dialog gives a link (plus
+  WhatsApp, the system share sheet and a QR code) that carries the plan,
+  compressed, in the URL fragment. `/plan/shared/` shows it read-only and
+  imports it as your plan. No server or database is involved (#040).
+- **Ingredient prices and plan cost.** A validated price sheet (51 catalog
+  ingredients), your own prices per ingredient (they win over the sheet) and
+  a currency preference drive the cost in the plan summary and the shopping
+  list (#041).
+- **Documentation on the site.** `/docs/` (Getting started, Guides,
+  Reference, Contributing) with Pagefind search over the docs and every
+  recipe. The data-model reference is generated from the Zod schemas at build
+  time (#043).
 - **v1 compatibility (#030).**
   - Your data carries over. The plan, templates, shopping list, pantry,
-    favourites, food diary, goals and theme stay under the same
-    `localStorage` keys (ADR 0002), and each value is checked against a Zod
-    schema when it is read. A test covers the 12 v1 keys.
+    favourites, food diary, goals, per-account preferences and theme stay
+    under the same `localStorage` keys (ADR 0002), and each value is checked
+    against a Zod schema when it is read. A test covers the 12 v1 keys.
   - Old links still work. Deep links in v1's `?/recipes/…` form
     (spa-github-pages) redirect once to the new static route.
 - **Quality gates.** `npm run check` runs astro check, tsc, Vitest, ESLint,
-  the pragma check, the build and the SEO test. CI also runs Playwright:
-  visual baselines in light and dark, axe accessibility checks, a console
-  smoke test, keyboard, mobile and e2e journeys for each section. Lighthouse
-  budgets gate performance, accessibility and best practices (#006, #023,
-  #029).
+  the pragma check, the build and the built-site tests (SEO, CSP, bundle
+  split). CI also runs Playwright: visual baselines in light and
+  dark, axe accessibility checks, a console smoke test, keyboard, mobile, a
+  CSP audit and e2e journeys for each section. `npm run perf` and
+  `lighthouse.yml` gate performance ≥ 0.9, accessibility ≥ 0.95, best
+  practices = 1 and SEO ≥ 0.95 with byte budgets per page (#006, #023, #029,
+  #034, #045).
 - **Issue-driven workflow.** The `FeedbackFAB` button pre-fills a GitHub
-  issue. The repo adds issue templates and the `prometeo`, `forja` and
-  `centinela` agents (#007).
+  issue and now reports the release version (`PUBLIC_VERSION`) next to the
+  build SHA. The repo adds issue templates, the `prometeo`, `forja` and
+  `centinela` agents and `scripts/create-issues.sh` (#007, #048).
 
 ### Changed
 
 - The stack moved from React 18 + Vite (a single-page app) to Astro 7
-  islands. Pages ship without JavaScript unless they need it (D1–D4).
+  islands. Pages ship without JavaScript unless they need it (D1–D4,
+  ADR 0011).
 - State moved from React Context providers to nanostores. Stores that must
   persist use `persistentAtom`, which validates values with Zod and syncs
   across tabs (#012, #013).
-- Translations moved from i18next with a runtime language detector to
-  dictionaries compiled into each static page (#015).
+- Translations moved from i18next with a runtime language detector to typed
+  dictionaries compiled into each static page. The browser downloads only its
+  page's language (#015, #045).
 - The catalog (`public/data/*.json`) is validated at build time with Astro
   content collections and at runtime with Zod (#010, #011).
+- Drag and drop moved from `react-dnd` to `@dnd-kit/core` (ADR 0010).
+- Firebase Auth sits behind an `AuthProvider` contract, configured from
+  `PUBLIC_FIREBASE_*` build variables instead of a config committed in the
+  source (ADR 0012).
+- Fonts (Fraunces, Hanken Grotesk, JetBrains Mono) are self-hosted instead of
+  loaded from Google Fonts, and precached for offline use (#035).
 - Deployment now uses GitHub Actions with Node 22 and `ASTRO_BASE`. The
   MkDocs and Python steps are gone (D12, #006).
+- Project docs rewritten for the new stack: `CLAUDE.md`, `README.md` (CI and
+  deploy badges, new screenshots from `npm run docs:screenshots`),
+  `CONTRIBUTING.md` (issue-driven flow and recipe flow) and `SECURITY.md`
+  (#044, #047).
+- Pages download only their own language's strings, and dialogs (sign in,
+  account menu, mobile menu, search, recipe picker, prices, templates,
+  sharing) load the first time they open: the landing's script went from
+  324 KB to 186 KB and the planner's from 438 KB to 333 KB. Recipe photos,
+  when they arrive, are pre-optimised WebP with a `srcset` (#045).
+
+### Fixed
+
+- v1's recipe contribution never worked (the GitHub service was never
+  initialised and wrote one file per recipe instead of `recipes.json`); the
+  new flow goes through a prefilled issue (D10, #039).
+- v1 fetched `/foodie/data/beverages.json` with a hard-coded base path and
+  registered `/sw.js` by hand at the wrong path; the catalog and the service
+  worker now follow the configured base (#016, #028).
+- A React hydration error (#418) on pages where the browser offered "Install
+  app" (or knew it was offline, or had an update waiting) before the header
+  hydrated (#045).
+
+### Removed
+
+- **Dependencies of v1:** `react-router-dom`, `i18next`, `react-i18next`,
+  `i18next-browser-languagedetector`, `react-dnd`, `react-dnd-html5-backend`,
+  `@octokit/rest`, `date-fns`, `vite`, `vite-plugin-pwa`, `workbox-window`,
+  `@vitejs/plugin-react`, `tailwindcss` 3 with `postcss` and `autoprefixer`,
+  `ajv` and `ajv-cli` (Zod validates the catalog), `sharp` (brand assets are
+  generated with an ad-hoc install), `@vitest/ui`, `@vitest/coverage-v8`,
+  `eslint-plugin-react-refresh`, `globals`, `@eslint/js` and
+  `typescript-eslint` (#008, #047).
+- **Unused dependencies of the template:** `@anthropic-ai/sdk`,
+  `@vitest/expect` and `@dnd-kit/utilities` (never imported; `@dnd-kit/core`
+  still brings its own copy) (#047).
+- The client-side 404 redirect of the single-page app (`404.html`,
+  `404-redirect.js`, `spa-redirect.js`). Every route is now a real page;
+  `404.astro` only decodes v1 links (#005, #030).
+- The `legacy/` working copy. You can still read the v1 code with
+  `git show legacy-vite-1.0.0:<path>` (#008).
+- The GitHub token in `localStorage` (`github-access-token`, purged on every
+  page load) and `VITE_GITHUB_CLIENT_SECRET` in `.env.example` (#039).
+- MkDocs and its sources (`mkdocs.yml`, `requirements.txt`, `docs/index.md`,
+  `docs/getting-started/`, `docs/guides/`, `docs/reference/api.md`,
+  `docs/contributing/recipe-format.md`) (#006, #043).
+- **Template surfaces Foodie does not use** (#046): the blog, `/demos/*`,
+  `/showcase/*`, `/blocks/*`, `/login/` (replaced by the sign-in dialog),
+  `/contact/`, the AI chat kit (`src/components/ui/ai/`) and the islands only
+  those pages used. The component gallery stays for contributors but is built
+  only outside the production deploy (`PUBLIC_FLAG_EXPERIMENTAL_GALLERY`); the
+  deployed site has 516 pages. The ⌘K search lists Foodie's sections in the
+  page's language. The dead `server:flask` / `server:node` scripts.
 
 ### Security
 
@@ -157,26 +194,39 @@ Spanish and French, and it is still served at
   `esbuild`). `@vite-pwa/astro` 1.2.0 still caps its `astro` peer at `^5`, so
   an npm `overrides` entry lets it run on Astro 7. See
   [ADR 0011](docs/decisions/0011-astro-7-upgrade.md) (#030).
+- `npm audit` reports 0 vulnerabilities, dev dependencies included (#047):
+  Vitest 5 (the `@vitest/mocker` advisory), a patched `fast-uri`, and
+  `overrides` for the Lighthouse CI tooling's `tmp`, `@puppeteer/browsers`
+  (drops `extract-zip`), `qs` and `uuid`, each justified in `SECURITY.md`.
+  `security.yml` gains an `npm audit --audit-level=high` job and CodeQL v4;
+  it runs on push, pull request and weekly. Test tooling majors taken:
+  `vitest` 5, `jsdom` 30, `prettier-plugin-astro` 1, and `@nanostores/react`
+  2 at runtime.
+- **Content-Security-Policy** on every page (Astro's `security.csp` meta):
+  hashed inline scripts and styles, no `'unsafe-eval'` and no
+  `'unsafe-inline'` for scripts, only the Google/Firebase origins sign-in
+  needs. Zod runs without its `new Function` probe. `tests/e2e/csp.spec.ts`
+  fails on any violation (#035, ADR 0012).
+- No secret reaches the browser: only `PUBLIC_*` variables are read, the
+  Firebase web config comes from repository secrets, the GitHub OAuth client
+  secret lives only in the Firebase console, and a build that would ship the
+  mock sign-in adapter fails (#035, #039). `SECURITY.md` covers reporting,
+  scope, the secrets policy and restricting the Firebase API key to the
+  deployed origins (#047).
 
-### Removed
+### Deferred
 
-- The client-side 404 redirect of the single-page app (`404.html`,
-  `404-redirect.js`, `spa-redirect.js`). Every route is now a real page;
-  `404.astro` only decodes v1 links (#005, #030).
-- The `legacy/` working copy. You can still read the v1 code with
-  `git show legacy-vite-1.0.0:<path>` (#008).
+Not part of 2.0.0, by decision D14 of the roadmap; the backlog with the
+conditions to pick each one up is in [`ROADMAP.md`](ROADMAP.md):
 
-### Not yet in this beta
+- **Cloud sync** of plans, lists, pantry and diary (Firestore or another
+  backend). Data stays local-first in the browser (ADR 0002).
+- **Automatic recipe pull requests** from the wizard (needs a backend such as
+  Inceptor's `server-node` `/api/feedback`); today a maintainer turns the
+  prefilled issue into a PR.
+- **Tauri** desktop and Android apps (the Inceptor runbooks stay in
+  `docs/runbooks/tauri-*.md`) and an **iOS** app.
+- A Kanban/board view of the plan.
 
-These v1 features are still being ported. Your data for them stays in
-`localStorage` untouched until they arrive:
-
-- Nutrition tracking UI (Phase 4, #031–#035). `trackingEntries` and
-  `nutritionGoals` are preserved.
-- Sign-in, profile, per-account preferences and data export/clear (Phase 5,
-  #036–#037). `user-preferences-<uid>` and `user-favorites-<uid>` are
-  preserved.
-- Recipe submission wizard (#038–#039) and shared plans (#040).
-
-[Unreleased]: https://github.com/ArtemioPadilla/foodie/compare/v2.0.0-beta.1...HEAD
-[2.0.0-beta.1]: https://github.com/ArtemioPadilla/foodie/compare/legacy-vite-1.0.0...v2.0.0-beta.1
+[Unreleased]: https://github.com/ArtemioPadilla/foodie/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/ArtemioPadilla/foodie/compare/legacy-vite-1.0.0...v2.0.0

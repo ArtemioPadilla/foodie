@@ -1,5 +1,8 @@
 # Repo cleanup: close PR #28, the legacy Dependabot PRs and the dead branches
 
+Step 15 of [`github-actions-pending.md`](github-actions-pending.md), the
+ordered list of every GitHub-side action (Issue 048), runs this runbook.
+
 This is the maintainer runbook for roadmap **Issue 042** (Phase 5). Everything
 inside the repo is done. PR #28's stories are ported (Issues 026, 040, 041) and
 its two documents are archived. What remains are GitHub-side actions, and only
@@ -49,7 +52,7 @@ with the branch that holds it.
 
 ```bash
 gh pr close 28 --repo "$REPO" --comment "$(cat <<'MSG'
-Closing without merging: Foodie was rebuilt on Inceptor (Astro 5 + React 19 islands), and this PR's stories were ported one by one instead of merged (roadmap decision D1, "port by stories").
+Closing without merging: Foodie was rebuilt on Inceptor (Astro 7 + React 19 islands), and this PR's stories were ported one by one instead of merged (roadmap decision D1, "port by stories").
 
 Where each part landed:
 

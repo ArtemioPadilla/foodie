@@ -14,7 +14,8 @@ MkDocs step any more: the docs you are reading are built with the app.
 2. Runs `npm run build` with:
    - `ASTRO_BASE=/foodie` (or the `ASTRO_BASE` repository secret), so every
      link, asset and the service worker scope live under `/foodie/`;
-   - `PUBLIC_REPO_SLUG`, `PUBLIC_BUILD_SHA`;
+   - `PUBLIC_REPO_SLUG`, `PUBLIC_BUILD_SHA` and `PUBLIC_VERSION` (the
+     `package.json` version, shown in the feedback button's diagnostics);
    - `FOODIE_DEPLOY=1`, which makes the build fail if the mock sign-in adapter
      would be included;
    - the four `PUBLIC_FIREBASE_*` repository secrets (optional; without them

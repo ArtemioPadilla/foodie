@@ -1,7 +1,7 @@
 # Foodie → Inceptor — Diseño de migración y roadmap
 
 **Fecha:** 2026-09-27
-**Estado:** Propuesta (pendiente de revisión de Artemio)
+**Estado:** Implementado (pendiente de acciones en GitHub) — los 48 issues están en el código (§6); las desviaciones respecto a este plan están en §7, y las acciones de GitHub que faltan (cutover, tags, release, issues, limpieza), en orden, en [`docs/runbooks/github-actions-pending.md`](../../runbooks/github-actions-pending.md).
 **Decisión:** Reconstruir Foodie sobre el template Inceptor (Astro 5 + React 19 + Tailwind v4 + Base UI), template-first, con paridad funcional por fases y cutover a `main` al cerrar la Fase 3.
 **Referencias:** `ArtemioPadilla/inceptor` (HEAD `bde55a0`) · precedente `TradePilot/docs/superpowers/specs/2026-06-11-web-rebuild-inceptor-design.md`.
 
@@ -1345,3 +1345,229 @@ git tag -l 'v2.*' && gh release view v2.0.0
 - **Cutover**: merge de la rama `inceptor` en `main` que sustituye la app legacy en producción (Issue 030).
 - **IDD**: Issue-Driven Development — issue → `prometeo` (plan) → `forja` (código) → `centinela` (validación) → PR → merge → deploy.
 - **Tier de ethics**: nivel de la checklist `.claude/checklists/ethics.json` exigido por PR (0 docs/tests, 1 UI, 2 datos de usuario/auth).
+
+## 6. Estado de implementación
+
+Actualizado el 2026-09-28 (Issue 048). Todo el trabajo se hizo como commits
+en una sola rama (`claude/foodie-status-next-steps-qvkt0l`, descendiente de
+`main` @ `ac89bf1`), sin issues ni PRs de GitHub. Por eso la tabla lista
+**commits** en lugar de PRs (ver §7). "Hecho en el repo" significa que el
+código y la documentación están, y que quedan pasos que solo el maintainer
+puede dar en GitHub. Esos pasos están numerados en el runbook
+[`github-actions-pending.md`](../../runbooks/github-actions-pending.md).
+La lista se regenera con
+`git log --format='%h %s' c68a1c9..HEAD | grep 'roadmap #'`.
+
+| Fase | Issues | Estado |
+|---|---|---|
+| 0. Fundación | 001–009 | Hecho en el repo. Pendiente: tag, ramas, protección, labels, milestones e issues |
+| 1. Dominio y estado | 010–016 | Hecho |
+| 2. Catálogo | 017–023 | Hecho |
+| 3. Planificación y compras | 024–030 | Hecho en el repo. Pendiente: el cutover (merge a `main`, deploy, smoke) |
+| 4. Tracking | 031–034 | Hecho |
+| 5. Cuentas y contribución | 035–042 | Hecho en el repo. Pendiente: secrets y clave de Firebase, prueba real del popup, cierre de PR #28 y de ramas |
+| 6. Docs, calidad y cierre | 043–048 | Hecho en el repo. Pendiente: Lighthouse de producción, `security.yml` en `main`, tag `v2.0.0`, release, cierre de issues y milestone |
+
+| Issue | Título | Estado | Commits | Pendiente en GitHub ([runbook](../../runbooks/github-actions-pending.md)) |
+|---|---|---|---|---|
+| 001 | chore: preservar legacy y abrir rama de integración | Hecho en el repo | `aea5426` | Tag `legacy-vite-1.0.0`, ramas `legacy`/`inceptor`, protección, labels y milestones (pasos 2–4, 10) |
+| 002 | chore: copiar Inceptor a la raíz y dejar `npm run check` verde | Hecho | `7a5ad6c` | — |
+| 003 | chore: rebrand Foodie (identidad, base path, tokens, iconos) | Hecho | `029acc7` | — |
+| 004 | feat(i18n): base trilingüe EN/ES/FR en el template | Hecho | `dfe73cf` | — |
+| 005 | feat(pages): landing Foodie, navegación y 404 trilingües | Hecho | `7308dd6` | — |
+| 006 | chore(ci): CI/CD de Inceptor adaptado a Foodie | Hecho en el repo | `42f2230` | `security.yml`/Dependabot corriendo en `main` (pasos 5, 17) |
+| 007 | chore(agents): agentes IDD, FeedbackFAB y plantillas apuntando a Foodie | Hecho en el repo | `689aaa9` | Crear los 48 issues con `create-issues.sh --apply` (paso 4) |
+| 008 | chore: eliminar `legacy/` de la rama `inceptor` | Hecho | `083a5fc` | — |
+| 009 | docs(adr): ADR 0001 estrategia de migración y ADR 0002 stakeholders de datos locales | Hecho | `87b2611` | — |
+| 010 | feat(schemas): Zod schemas del dominio Foodie | Hecho | `a714fe3` | — |
+| 011 | feat(data): content collections sobre `public/data/*.json` | Hecho | `d9d5404` | — |
+| 012 | feat(lib): `persistentAtom` con validación Zod y sync entre pestañas | Hecho | `67732c5` `44392ea` | — |
+| 013 | feat(stores): stores persistentes del dominio | Hecho | `e064708` | — |
+| 014 | feat(lib): port de utilidades y servicios puros con sus tests | Hecho | `d1e1a3a` | — |
+| 015 | feat(i18n): diccionarios Foodie EN/ES/FR y `getTranslated` | Hecho | `50797e6` | — |
+| 016 | feat(catalog): `useCatalog` (TanStack Query + IDB) para islas | Hecho | `c47fbac` | — |
+| 017 | feat(recipes): página `/recipes` con isla `RecipeBrowser` | Hecho | `0d12113` | — |
+| 018 | feat(recipes): detalle estático `/recipes/[id]` ×3 idiomas con JSON-LD | Hecho | `88fc00e` | — |
+| 019 | feat(ingredients): `/ingredients` e `/ingredients/[id]` | Hecho | `0417bc4` | — |
+| 020 | feat(favorites): favoritos transversales | Hecho | `0c2eac6` `1dd1161` | — |
+| 021 | feat(ui): componentes de dominio en la gallery y `ux:check` | Hecho | `52cfc3d` `6a7ad11` | — |
+| 022 | feat(seo): sitemap, hreflang, OG, robots | Hecho | `edc110c` | — |
+| 023 | test(e2e): journeys de catálogo y a11y | Hecho | `177bb8b` `f891425` `5b1ae0c` | — |
+| 024 | feat(planner): isla `MealPlanner` con `@dnd-kit` | Hecho | `c242e3e` | — |
+| 025 | feat(planner): `RecipePicker`, plantillas y resumen del plan | Hecho | `f58fe40` `8d68024` | — |
+| 026 | feat(shopping): isla `ShoppingList` con ítems propios y exportación | Hecho | `42d10ab` `dd0f4d0` `222acb3` | — |
+| 027 | feat(pantry): isla `Pantry` | Hecho | `e4f48e5` | — |
+| 028 | feat(pwa): manifest Foodie, caché de datos y UI offline | Hecho | `fe31a5b` | — |
+| 029 | test(e2e): journeys de planner, compras y despensa + visual | Hecho | `5c1d59c` `9379ab3` `1bdba17` `04d193f` | — |
+| 030 | chore(release): CUTOVER `inceptor` → `main` y despliegue en `/foodie/` | Hecho en el repo | `41a1097` `4068b8b` | Checks previos, merge a `main`, deploy, smoke, borrar `inceptor` (pasos 9, 11, 12, 15) |
+| 031 | feat(tracking): isla `TrackingToday` con `QuickAdd` | Hecho | `334252b` | — |
+| 032 | feat(tracking): `/tracking/goals` con `Form` | Hecho | `85534d4` | — |
+| 033 | feat(tracking): `/tracking/progress` con gráficas | Hecho | `d210e28` | — |
+| 034 | test(e2e): journeys de tracking y cierre de paridad de tests | Hecho | `4c71e37` | — |
+| 035 | feat(auth): contrato `AuthProvider`, adapter Firebase y `$user` | Hecho en el repo | `8a3ef3c` `e64d672` `498bc6b` `6ed26fa` `d1c1d81` | Secrets `PUBLIC_FIREBASE_*`, clave restringida y rotada, dominios autorizados (pasos 6, 7, 18) |
+| 036 | feat(auth): `AuthDialog`, `AccountMenu` y `/profile` | Hecho en el repo | `5b8f69c` | Probar el popup real de Google/GitHub bajo la CSP antes del merge y en producción (pasos 8, 12) |
+| 037 | feat(prefs): preferencias y favoritos por usuario | Hecho | `185af62` `aa5c217` `b8fdb12` | — |
+| 038 | feat(contribute): wizard de recetas con `Stepper` + `Form` | Hecho | `c94bde5` | — |
+| 039 | feat(contribute): envío sin secretos (JSON + issue prefilled) | Hecho | `f7a2bfd` | — |
+| 040 | feat(planner): compartir plan por URL (`/plan/shared`) | Hecho | `69c334e` | — |
+| 041 | feat(shopping): precios de ingredientes y coste del plan | Hecho | `5eca6e6` | — |
+| 042 | chore: cerrar PR #28 y limpiar ramas | Hecho en el repo | `9fa9e8e` | Cerrar PR #28 y Dependabot #29–#35, borrar ramas muertas (paso 15) |
+| 043 | docs: migrar MkDocs a la colección `docs` | Hecho | `15a604d` | — |
+| 044 | docs: `CLAUDE.md`, README, CONTRIBUTING para el nuevo stack | Hecho | `3ee3666` | — |
+| 045 | chore(perf): presupuestos Lighthouse y peso de bundle | Hecho en el repo | `6ad9d68` `301a0ca` `89d1f90` `b6719c6` | Lighthouse de producción archivado (paso 13) |
+| 046 | chore: recorte de gallery/demos/blog y auditoría de reglas | Hecho | `e71f052` | — |
+| 047 | chore(deps): higiene de dependencias y seguridad | Hecho en el repo | `8fb1855` | `security.yml` verde en `main` (paso 17) |
+| 048 | chore(release): `v2.0.0` Foodie on Inceptor | Hecho en el repo | este commit (`git log -F --grep "(roadmap #048)"`) | Tag `v2.0.0`, GitHub Release, cerrar issues y milestones (pasos 14, 16, 19) |
+
+## 7. Desviaciones respecto al plan
+
+Todas las desviaciones que se registraron durante la implementación, en un
+solo sitio. Cada una remite al ADR o al commit que la justifica.
+
+**Stack y decisiones**
+
+- **Astro 7 en lugar de Astro 5** (Issue 030, [ADR 0011](../../decisions/0011-astro-7-upgrade.md)).
+  `npm audit --omit=dev` marcaba `astro <= 7.2.7` (crítica) y `sharp` (alta),
+  y ninguna versión 5.x o 6.x tenía parche. Se subió a `astro` ^7.3 con
+  `@astrojs/react` 7, `@astrojs/mdx` 8 y Vite 8. `@vite-pwa/astro` 1.2.0 fija
+  su peer en `^5`, así que funciona sobre Astro 7 gracias a un `overrides`.
+  Astro 7 manda `astro preview` a segundo plano cuando detecta un agente, y
+  por eso las dos configuraciones de Playwright usan `--ignore-lock`.
+  ADR 0011 queda `Proposed` hasta que se mergee el cutover. Las menciones a
+  "Astro 5" de §0–§2 son el contexto histórico de este plan.
+- **Numeración de ADRs.** El plan llama "ADR 0003", "ADR 0004" y "ADR 0005" a
+  los ADRs de `@dnd-kit`, de auth y de compartir el plan. Esos números los
+  ocupan ADRs heredados de Inceptor, que siguen en `docs/decisions/`, así que
+  los ADRs de Foodie toman los siguientes números libres: **0010** `@dnd-kit`
+  (D8), **0011** Astro 7, **0012** Firebase Auth + CSP (D9; el "ADR 0004" del
+  plan), **0013** compartir con `fflate` (D11; el "ADR 0005") y **0014**
+  precios de ingredientes. 0001 y 0002 tienen dos ficheros cada uno: el de
+  Foodie y el heredado (nota de numeración en ADR 0001).
+- **Diccionarios i18n en `.ts`, no en `.json`** (Issue 015). Son
+  `src/i18n/{en,es,fr}.ts`, con `es` y `fr` tipados `typeof en`, así que una
+  clave que falte sigue siendo un error de `tsc`, que es lo que pedía el
+  criterio. Tienen 769 hojas por idioma (las 716 de v1 más las del template).
+  Desde Issue 045 cada idioma es su propio chunk, y el navegador carga solo el
+  de la página. Un código que traduce a otro idioma llama antes a
+  `ensureLocales()`.
+- **Compartir plan en el fragment** (Issue 040, ADR 0013). D11 decía "en
+  query". Se usa `#p=<payload>`, como dice la descripción del issue, porque
+  el fragment no llega al servidor. Se eligió `fflate` en lugar de
+  `lz-string` por el tamaño medido: unos 246 caracteres frente a 326 para una
+  semana de 7×4.
+- **Dependencias.** `@dnd-kit/utilities` estaba permitida, pero nunca se
+  importó y se quitó en Issue 047 (`@dnd-kit/core` trae su propia copia).
+  `sharp` salió en Issue 008: `generate-brand-assets.mjs` lo instala al
+  vuelo. Issue 047 añadió `overrides` para la cadena de `@lhci/cli` (`tmp`,
+  `@puppeteer/browsers`, `qs`, `uuid`), justificados en `SECURITY.md`.
+
+**Producto**
+
+- **51 precios en lugar de "150+"** (Issue 041, [ADR 0014](../../decisions/0014-ingredient-prices.md)).
+  La hoja de PR #28 se reindexó con los ids del catálogo, y solo 51 de sus
+  entradas corresponden a ingredientes del catálogo (se guarda `legacyKey`
+  para la trazabilidad). Los precios en otra moneda quedan fuera porque no
+  hay tipos de cambio. Ampliar la hoja está en `ROADMAP.md`.
+- **`/profile` solo con sesión** (Issue 036, ADR 0002 §4 enmendado). El
+  `RouteGuard` que pide el plan deja "Exportar mis datos" y "Borrar mis
+  datos" fuera del alcance de un visitante anónimo o de un build sin auth. La
+  lógica (`src/lib/user-data.ts`) no depende de la UI, y exponerla sin cuenta
+  es un seguimiento en `ROADMAP.md`.
+- **Hidratación de `/tracking/progress`.** El mapa de rutas de §2 dice
+  `client:load`, e Issue 033 dice `client:visible`. Se implementó
+  `client:visible`, porque las gráficas son el JS más pesado del sitio. La
+  isla de la landing se llama `FavoriteRecipes` (Issue 020, `client:visible`),
+  no `FeaturedRecipes`.
+- **QuickAdd con cuatro pestañas** (Issue 031): receta, ingrediente, bebida y
+  agua. El test portado de v1 esperaba tres y se adaptó a propósito.
+
+**Seguridad: CSP y fuentes**
+
+- **CSP con hashes, no con nonces** (Issue 035, [ADR 0012](../../decisions/0012-firebase-auth-adapter.md)).
+  Un sitio estático no puede generar nonces. La meta sale de
+  `security.csp` de Astro 7 más `csp.config.mjs`, que calcula el hash de los
+  scripts `is:inline` y de los `<style>` de Base UI y zag-js. Estas son las
+  decisiones que tomó el ADR:
+  - `style-src-attr 'unsafe-inline'`, a propósito, solo para atributos
+    `style=""`; nunca para elementos `<style>`.
+  - Zod corre sin JIT: el script de tema de `BaseLayout` define
+    `__zod_globalConfig` para que su sonda con `new Function` no viole
+    `'unsafe-eval'`.
+  - `'unsafe-eval'` se permite solo en las páginas Playground de la gallery,
+    que no están en producción.
+  - Los specs de screenshots y de axe usan `bypassCSP` porque inyectan un
+    `<style>`. El resto de las suites corre bajo la política real, y
+    `tests/e2e/csp.spec.ts` es el gate.
+
+  La meta no puede expresar `frame-ancestors` ni `report-uri`. El popup real
+  de Google/GitHub no se puede probar en CI: se prueba con los secrets reales
+  antes del merge (paso 8 del runbook).
+- **Fuentes self-hosted** (hardening de Issue 035). Fraunces, Hanken
+  Grotesk y JetBrains Mono se sirven como `woff2` desde `public/fonts/`, con
+  licencia OFL. Google Fonts salió de la CSP y del service worker. Issue 028
+  preveía cachear Google Fonts con `CacheFirst`; ahora las fuentes van en el
+  precache. Los screenshots ya no fijan las fuentes del sistema.
+- **La build de producción rechaza el adapter mock** (Issue 035): si
+  `PUBLIC_AUTH_MOCK` coincide con `FOODIE_DEPLOY=1`, `astro.config.mjs`
+  aborta. El contrato `AuthProvider` ganó `updateProfile` para `/profile`
+  (Issue 036).
+
+**Docs, rendimiento y template**
+
+- **Docs** (Issue 043). La referencia `/docs/reference/api/` es una página
+  Astro que se genera desde `src/schemas` en cada build, no un
+  `reference/api.md`. ES y FR solo tienen landings puente
+  (`route-parity`). Pagefind indexa solo las páginas marcadas con
+  `data-pagefind-body` (docs y detalle de receta). Los bloques de código usan
+  `github-dark-high-contrast`, porque los comentarios de `github-dark` no
+  pasaban el contraste de axe.
+- **Imágenes** (Issue 045). No hay `scripts/optimize-images.mjs` ni `sharp`
+  como devDep. Se eligió el pipeline externo que el criterio permitía: las
+  fotos se optimizan antes de commitearlas (`docs/recipes/catalog-data.md`),
+  e `image-budget.test.ts` lo vigila. Hoy ninguna receta tiene foto.
+- **Presupuestos** (Issue 045). Además de los del plan, el catálogo tiene un
+  presupuesto de script de 320 KB o menos, y el gate de accesibilidad subió
+  de 0.9 (Issue 006) a 0.95. El criterio "Lighthouse producción" se midió
+  sobre una build con la forma de producción servida en local
+  (`npm run perf`). La corrida contra `artemiopadilla.github.io` queda para
+  después del cutover (paso 13 del runbook).
+- **Recorte** (Issue 046). Producción publica **516** páginas, frente a las
+  ≈ 520 previstas. La gallery queda tras `flags.experimentalGallery`,
+  inyectada por `flagged-pages.config.mjs` y fuera del deploy. También se
+  quitaron `/login/` (lo sustituye `AuthDialog`) y `/contact/`. Los ADRs
+  heredados de Inceptor se conservan.
+
+**Proceso y GitHub**
+
+- **Commits en lugar de PRs por issue.** El plan pedía una rama
+  `phase-N/issue-NNN-*` y un PR a `inceptor` por issue, además de "tabla de
+  fases con PR por issue" (Issue 048). Se trabajó en una sola rama, sin issues
+  ni PRs de GitHub, y §6 enlaza commits. Los commits de TDD rojo (`67732c5`,
+  `185af62`) dejan `npm run check` en rojo a propósito. Los issues se crean y
+  se cierran con referencia a sus commits en los pasos 4 y 16 del runbook.
+- **Ninguna acción de GitHub se ha ejecutado.** Tags, ramas `legacy` e
+  `inceptor`, protección, labels, milestones, issues, secrets, cutover,
+  release y limpieza siguen pendientes, y están ordenados en
+  [`github-actions-pending.md`](../../runbooks/github-actions-pending.md).
+  Mientras no exista la rama `legacy`, v1 se lee con
+  `git show main:<ruta>`, y con `git show legacy-vite-1.0.0:<ruta>` una vez
+  creado el tag.
+- **Checks requeridos** (Issue 001). Los checks de v2 se llaman
+  `Build & Check`, `visual`, `lhci autorun (dist/)`, `Dependency review`,
+  `npm audit (high/critical)` y `CodeQL (javascript-typescript)`, no `build`,
+  `test` y `type-check`.
+- **Ramas que se conservan** (Issue 042). Además de `main`, `legacy` y
+  `phase-*`, se conservan las ramas de agente `claude/*` hasta que su trabajo
+  esté mergeado (`repo-cleanup.md`).
+- **Versión** (Issues 030 y 048). El tag `v2.0.0-beta.1` de Issue 030 nunca
+  se creó. Como la rama de integración ya lleva las siete fases, el
+  `CHANGELOG` pliega la beta en `[2.0.0]`, y el runbook recomienda publicar
+  `v2.0.0` directamente sobre el merge del cutover (la beta queda como
+  opción). `package.json` pasa de `0.1.0` (el template) a `2.0.0`, y
+  `deploy.yml` inyecta esa versión como `PUBLIC_VERSION`.
+- **Documentos que no actualizó el agente.** `CLAUDE.md` y
+  `.claude/agents/*.md` son configuración del maintainer. Aún dicen "Astro 5"
+  (agentes) y mencionan `/gallery`, `/demos`, `/blocks`, `/blog` y
+  `@dnd-kit/utilities` (`CLAUDE.md`). Además, la fila de la fase 6 de
+  "Roadmap status" sigue mostrando 045–048 como pendientes. Todo ello está
+  anotado en `ROADMAP.md`.

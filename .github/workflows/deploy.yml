@@ -29,6 +29,12 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci
+      # The release version (package.json, bumped per CHANGELOG release;
+      # roadmap Issue 048) is inlined as PUBLIC_VERSION and shown in the
+      # FeedbackFAB diagnostics next to PUBLIC_BUILD_SHA.
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - name: Build
         run: npm run build
         env:
@@ -41,6 +47,7 @@ jobs:
           # Issue 007). Inlined at build; forks override with a repo variable.
           PUBLIC_REPO_SLUG: ${{ vars.PUBLIC_REPO_SLUG || 'ArtemioPadilla/foodie' }}
           PUBLIC_BUILD_SHA: ${{ github.sha }}
+          PUBLIC_VERSION: ${{ steps.version.outputs.version }}
           # Marks the production build: astro.config.mjs refuses to build
           # if PUBLIC_AUTH_MOCK (the dev/test mock auth adapter) is also set.
           FOODIE_DEPLOY: '1'

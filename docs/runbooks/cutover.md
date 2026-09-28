@@ -6,7 +6,12 @@ the v1 React 18 + Vite SPA. The issue is `risk:high` and needs **explicit
 human review**. Everything in the repo is already prepared: the v1 URL
 redirect, the legacy-data test, `CHANGELOG.md`, the README notice and the
 `CONTRIBUTING.md` branching policy. What remains are the GitHub-side actions
-below, which only the maintainer can run.
+below, which only the maintainer can run. The single ordered list of every
+GitHub-side action, this runbook's steps included, is
+[`github-actions-pending.md`](github-actions-pending.md) (Issue 048). Since the
+integration branch now carries every phase, the cutover merge ships
+**v2.0.0** directly. The `2.0.0-beta.1` this runbook first planned was never
+tagged.
 
 Conventions used below:
 
@@ -44,9 +49,11 @@ In the repo settings, check the following:
   `legacy-vite-1.0.0`.
 - **Branch protection on `main`**: the required checks become v2's, by job
   name as they appear on a PR. These are
-  `Build & Check` (ci.yml), `visual` (visual.yml), `lighthouse`
-  (lighthouse.yml) and `dependency-review` (security.yml). v1's `test.yml`
-  checks go away with the merge.
+  `Build & Check` (ci.yml), `visual` (visual.yml), `lhci autorun (dist/)`
+  (lighthouse.yml), and `Dependency review`, `npm audit (high/critical)` and
+  `CodeQL (javascript-typescript)` (security.yml). v1's `test.yml` checks go
+  away with the merge. The command is in
+  [`github-actions-pending.md`](github-actions-pending.md) step 10.
 
 ## 1. Pre-merge checklist (goes in the PR body)
 
@@ -81,8 +88,9 @@ npm audit --omit=dev --audit-level=high     # must report no high/critical
   (`docs/decisions/`).
 - [ ] The README carries the "v2 on Inceptor" notice and links the tag
   `legacy-vite-1.0.0`.
-- [ ] In `CHANGELOG.md`, `## [2.0.0-beta.1] - unreleased` has the release date
-  (`YYYY-MM-DD`). Commit that date on `$INTEGRATION` before merging.
+- [ ] In `CHANGELOG.md`, `## [2.0.0] - unreleased` has the release date
+  (`YYYY-MM-DD`). Commit that date on `$INTEGRATION` before merging
+  ([`github-actions-pending.md`](github-actions-pending.md) step 9).
 - [ ] The legacy-data manual validation (step 2) is done and noted in the PR.
 - [ ] CI is green on the PR: ci.yml, visual.yml, lighthouse.yml and
   security.yml.
@@ -146,7 +154,7 @@ fast-forward and leave no merge commit. Use one of these:
 ```bash
 # Preferred: through the PR, using GitHub's "Create a merge commit" button, or:
 gh pr create --repo "$REPO" --base main --head "$INTEGRATION" \
-  --title "chore(release): cutover inceptor → main, v2.0.0-beta.1 (roadmap #030)" \
+  --title "chore(release): cutover inceptor → main, v2.0.0 (roadmap #030, #048)" \
   --body-file cutover-pr.md          # the checklist from step 1, filled in
 gh pr merge <PR> --repo "$REPO" --merge        # --merge = merge commit (not --squash / --rebase)
 
@@ -166,17 +174,15 @@ gh run list --repo "$REPO" --workflow deploy.yml --branch main --limit 1
 gh run watch --repo "$REPO" "$(gh run list --repo "$REPO" --workflow deploy.yml --branch main --limit 1 --json databaseId -q '.[0].databaseId')"
 ```
 
-## 5. Tag `v2.0.0-beta.1`
+## 5. Tag `v2.0.0`
 
-```bash
-git fetch origin
-MERGE_SHA=$(git rev-parse origin/main)          # the merge commit from step 3
-git tag -a v2.0.0-beta.1 "$MERGE_SHA" -m "Foodie v2.0.0-beta.1 — Inceptor rebuild (roadmap #030)"
-git push origin v2.0.0-beta.1
-# Release notes = the CHANGELOG section
-awk '/^## \[2.0.0-beta.1\]/{f=1;next} /^## \[/{f=0} f' CHANGELOG.md > /tmp/notes.md
-gh release create v2.0.0-beta.1 --repo "$REPO" --prerelease --title "v2.0.0-beta.1" --notes-file /tmp/notes.md
-```
+After the production smoke (step 7) and the production Lighthouse run, tag
+the merge and publish the release. The commands are in
+[`github-actions-pending.md`](github-actions-pending.md) steps 13–14: the
+notes are the CHANGELOG's `[2.0.0]` section, and the archived Lighthouse
+reports are attached. If you want a soak period first, tag the merge
+`v2.0.0-beta.1` with `--prerelease` and the same notes, and tag `v2.0.0`
+later.
 
 ## 6. Delete `inceptor`
 
@@ -223,8 +229,9 @@ Then check in a browser, in a fresh profile and in a private window:
 
 If production is broken and a fix-forward is not quick, redeploy the v1 build
 from its tag. v1's `deploy.yml` has `workflow_dispatch`, and it needs the
-repository's `VITE_FIREBASE_*` secrets. Keep them until v2 is final
-(`2.0.0`).
+repository's `VITE_FIREBASE_*` secrets. Keep them until the rollback
+window is over ([`github-actions-pending.md`](github-actions-pending.md)
+step 18).
 
 ```bash
 gh workflow run deploy.yml --repo "$REPO" --ref legacy-vite-1.0.0
