@@ -38,10 +38,12 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // `build:no-search` skips the Pagefind index for speed (search is not
-    // exercised here). ASTRO_BASE, when set, flows into both build and preview
-    // through the inherited environment.
-    command: `npm run build:no-search && npm run preview -- --port ${PORT}`,
+    // The full `build` (with the Pagefind index, ~1 s more) rather than
+    // `build:no-search`: both configs share dist/, and a search-less dist left
+    // behind by this run used to break tests/visual/search.spec.ts when the
+    // visual suite ran next without rebuilding. ASTRO_BASE, when set, flows
+    // into both build and preview through the inherited environment.
+    command: `npm run build && npm run preview -- --port ${PORT}`,
     url: `http://localhost:${PORT}${BASE_PATH}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
