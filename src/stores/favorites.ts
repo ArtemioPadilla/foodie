@@ -2,16 +2,28 @@ import { computed } from 'nanostores';
 import { FavoriteRecipesSchema, type FavoriteRecipes } from '@/schemas';
 import { persistentAtom } from '@/lib/persist';
 import { notifyQuotaExceeded } from './storage-status';
+import { $user } from './user';
 
 /**
- * Favourite recipe ids (port of `RecipeContext.favoriteRecipes`). Same
- * `localStorage` key as the legacy app so existing favourites survive.
+ * Favourite recipe ids (port of `RecipeContext.favoriteRecipes`). The key
+ * follows the session (roadmap Issue 037): guests keep the legacy
+ * `favoriteRecipes` key, a signed-in user the legacy per-account
+ * `user-favorites-${uid}` (v1 `AuthContext`), so existing favourites of both
+ * kinds survive. The one-time guest → account merge is in `./account-merge`.
  */
 export const FAVORITES_KEY = 'favoriteRecipes';
 
-export const $favorites = persistentAtom<FavoriteRecipes>(FAVORITES_KEY, FavoriteRecipesSchema, [], {
-  onQuotaExceeded: notifyQuotaExceeded,
-});
+/** The key `$favorites` uses for a session (`null` = guest). */
+export function favoritesKeyFor(uid: string | null | undefined): string {
+  return uid ? `user-favorites-${uid}` : FAVORITES_KEY;
+}
+
+export const $favorites = persistentAtom<FavoriteRecipes>(
+  () => favoritesKeyFor($user.get()?.uid),
+  FavoriteRecipesSchema,
+  [],
+  { onQuotaExceeded: notifyQuotaExceeded, keyDeps: [$user] },
+);
 
 export const $favoriteCount = computed($favorites, (ids) => ids.length);
 

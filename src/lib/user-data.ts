@@ -18,6 +18,7 @@
 import type { WritableAtom } from 'nanostores';
 import { DEFAULT_GOALS, DEFAULT_PREFERENCES, USER_DATA_EXPORT_FORMAT, type UserDataExport } from '@/schemas';
 import type { AuthUser } from '@/schemas/auth';
+import { $mergedAccounts } from '@/stores/account-merge';
 import { $favorites } from '@/stores/favorites';
 import { $goals } from '@/stores/goals';
 import { $pantry } from '@/stores/pantry';
@@ -41,6 +42,7 @@ function stores(): ReadonlyArray<readonly [PersistedStore, unknown]> {
     [$tracking, []],
     [$goals, DEFAULT_GOALS],
     [$preferences, DEFAULT_PREFERENCES],
+    [$mergedAccounts, []],
   ] as unknown as ReadonlyArray<readonly [PersistedStore, unknown]>;
 }
 

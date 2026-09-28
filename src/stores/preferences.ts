@@ -10,23 +10,39 @@ import {
 import { persistentAtom } from '@/lib/persist';
 import { $theme, followSystemTheme, setTheme, systemPrefersDark, type Theme } from './theme';
 import { notifyQuotaExceeded } from './storage-status';
+import { $user } from './user';
 
 /**
- * Guest preferences (unit system, dietary restrictions, theme choice…).
- * Legacy stored these only per signed-in user (`user-preferences-<uid>`, see
- * `AuthContext`); the auth issue (Issue 037) swaps the key on sign-in via
- * `persistentAtom`'s `migrate`. The guest key is new, so it takes the
- * `foodie:` prefix (ADR 0002, "New keys"). `theme` here is the user's
- * *choice* (`light | dark | system`); the resolved value lives in `$theme`
+ * User preferences (unit system, dietary restrictions, theme choice…).
+ *
+ * The storage key follows the session (roadmap Issue 037, `persistentAtom`'s
+ * reactive key): guests use `foodie:preferences` (new key, `foodie:` prefix
+ * per ADR 0002 "New keys"); a signed-in user uses the legacy per-account key
+ * `user-preferences-${uid}` (written by v1's `AuthContext`, so v1 accounts
+ * find their preferences again). Signing out switches back to the guest key,
+ * whose data is never touched by signing in; the one-time guest → account
+ * merge lives in `./account-merge`. `theme` here is the user's *choice*
+ * (`light | dark | system`); the resolved value lives in `$theme`
  * (`localStorage['theme']`, applied before first paint by BaseLayout).
  */
 export const PREFERENCES_KEY = 'foodie:preferences';
 
+/** The key `$preferences` uses for a session (`null` = guest). */
+export function preferencesKeyFor(uid: string | null | undefined): string {
+  return uid ? `user-preferences-${uid}` : PREFERENCES_KEY;
+}
+
+/** v1 per-account objects written before a field existed: fill it with the default. */
+function withDefaults(raw: unknown): UserPreferences {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('not a preferences object');
+  return { ...DEFAULT_PREFERENCES, ...(raw as Partial<UserPreferences>) };
+}
+
 export const $preferences = persistentAtom<UserPreferences>(
-  PREFERENCES_KEY,
+  () => preferencesKeyFor($user.get()?.uid),
   UserPreferencesSchema,
   DEFAULT_PREFERENCES,
-  { onQuotaExceeded: notifyQuotaExceeded },
+  { onQuotaExceeded: notifyQuotaExceeded, migrate: withDefaults, keyDeps: [$user] },
 );
 
 export const $unitSystem = computed($preferences, (p) => p.unitSystem);

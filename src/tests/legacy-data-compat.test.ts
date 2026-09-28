@@ -163,7 +163,7 @@ describe('every v2 store hydrates from v1 localStorage', () => {
 });
 
 describe('keys v2 does not read yet, or never will', () => {
-  it('per-account keys (10, 11) are left untouched for Issue 037 and already match its schemas', async () => {
+  it('per-account keys (10, 11) are left untouched while signed out and already match their schemas', async () => {
     const { UserPreferencesSchema, FavoriteRecipesSchema } = await import('@/schemas');
     const prefs = localStorage.getItem(`user-preferences-${UID}`);
     expect(prefs).toBe(raw(legacy[`user-preferences-${UID}`]));
@@ -173,6 +173,19 @@ describe('keys v2 does not read yet, or never will', () => {
     expect(FavoriteRecipesSchema.safeParse(JSON.parse(favs!)).success).toBe(true);
     // The guest preferences store starts from its own key, not the account's.
     expect(stores.preferences.$preferences.get().allergies).toEqual([]);
+  });
+
+  it('per-account keys (10, 11) become $preferences / $favorites when that v1 account signs in (Issue 037)', async () => {
+    const { $user } = await import('@/stores/user');
+    $user.set({ uid: UID, email: 'v1@foodie.test', displayName: 'V1', photoURL: null, emailVerified: true, method: 'password', createdAt: null });
+    expect(stores.preferences.$preferences.key).toBe(`user-preferences-${UID}`);
+    expect(stores.preferences.$preferences.get()).toEqual(legacy[`user-preferences-${UID}`]);
+    expect(stores.favorites.$favorites.key).toBe(`user-favorites-${UID}`);
+    expect(stores.favorites.$favorites.get()).toEqual(legacy[`user-favorites-${UID}`]);
+    // Reading does not rewrite them.
+    expect(localStorage.getItem(`user-preferences-${UID}`)).toBe(raw(legacy[`user-preferences-${UID}`]));
+    $user.set(null);
+    expect(stores.favorites.$favorites.key).toBe('favoriteRecipes');
   });
 
   it('github-access-token (12) is never read by a store (D10; removal on first run is Issue 039)', () => {

@@ -69,6 +69,7 @@ inherited ones and from third-party libraries sharing the origin
 | `foodie:contribute-draft` | 038                           | in-progress recipe submission (the form's own fields; **the contributor's name is optional and never required**)                                    | Draft content                         |
 | `foodie:custom-prices`    | 041                           | per-ingredient price overrides `{ [ingredientId]: number }` + currency                                                                              | Behavioural (anonymous)               |
 | `foodie:preferences`      | 013                           | guest `UserPreferences` (unit system, dietary restrictions, allergies, theme choice); Issue 037 migrates it to `user-preferences-${uid}` on sign-in | **Health-adjacent** (allergies, diet) |
+| `foodie:anon-merged`     | 037                           | `string[]` of Firebase uids whose one-time guest → account merge already ran on this device (kept after an undo so it is never offered twice) | Behavioural (per account) |
 
 Template stores already present and unchanged: `theme` (shared with legacy
 key 1), TanStack Query's IDB cache (`idb-keyval`, catalog JSON only — public
@@ -136,7 +137,10 @@ data, not user data), and the PWA's Workbox caches.
      (clearing data is not signing out).
    - Signing out never deletes anonymous data; signing in offers a one-time,
      reversible merge of anonymous favourites/preferences into the per-user
-     keys (Issue 037, `toast` with undo).
+     keys (Issue 037, `toast` with undo). As implemented: favourites are
+     unioned; guest preferences are adopted only by an account with none
+     stored (an account's own settings are never overwritten); the guest keys
+     stay as they were; the uid is recorded in `foodie:anon-merged`.
    - Browser "clear site data" is always a complete wipe because nothing is
      mirrored elsewhere.
 

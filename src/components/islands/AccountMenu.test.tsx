@@ -5,6 +5,8 @@ import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { withBase } from '@/lib/href';
 import { MOCK_DEMO_ACCOUNT } from '@/lib/auth/mock';
+import { $mergedAccounts, resetAccountMergeForTests } from '@/stores/account-merge';
+import { $favorites, addFavorite, clearFavorites } from '@/stores/favorites';
 import { $user, initAuth, resetUserStoreForTests, signInEmail } from '@/stores/user';
 import AccountMenu, { accountToasts, initials } from './AccountMenu';
 
@@ -19,6 +21,10 @@ const opened: string[] = [];
 beforeEach(() => {
   localStorage.clear();
   resetUserStoreForTests();
+  clearFavorites();
+  $mergedAccounts.set([]);
+  resetAccountMergeForTests();
+  localStorage.clear();
   // A fresh page load: nanostores keeps a store "mounted" for a second after
   // its last listener leaves, so onMount (→ initAuth) would not rerun here.
   initAuth();
@@ -84,6 +90,26 @@ describe('AccountMenu', () => {
     render(<AccountMenu lang="en" />);
     expect(await screen.findByTestId('auth-dialog')).toBeInTheDocument();
     expect(window.location.search).toBe('?x=2');
+  });
+
+  it('announces the one-time guest → account merge with an Undo that restores the account (roadmap #037)', async () => {
+    addFavorite('rec_001');
+    addFavorite('rec_002');
+    const user = userEvent.setup();
+    render(<AccountMenu lang="en" />);
+    await screen.findByTestId('account-signin');
+    await act(async () => {
+      await signInEmail(MOCK_DEMO_ACCOUNT.email, MOCK_DEMO_ACCOUNT.password);
+    });
+    expect($favorites.key).toMatch(/^user-favorites-/);
+    expect($favorites.get()).toEqual(['rec_001', 'rec_002']);
+    expect(await screen.findByText('Guest data added to your account')).toBeInTheDocument();
+    expect(screen.getByText('2 favourite recipes added.')).toBeInTheDocument();
+    await user.click(screen.getByTestId('merge-undo'));
+    expect($favorites.get()).toEqual([]);
+    expect(await screen.findByText('Merge undone — your account data is as it was.')).toBeInTheDocument();
+    // Guest favourites are still there for when they sign out.
+    expect(JSON.parse(localStorage.getItem('favoriteRecipes')!)).toEqual(['rec_001', 'rec_002']);
   });
 
   it('initials come from the name, else the e-mail', () => {

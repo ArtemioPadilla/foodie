@@ -15,6 +15,7 @@ import { localizedRoute, t, type Locale } from '@/i18n';
 import { withBase } from '@/lib/href';
 import { useHydrated } from '@/lib/use-hydrated';
 import type { AuthUser } from '@/schemas/auth';
+import { $mergeNotice, consumeMergeNotice, undoMerge, type MergeNotice } from '@/stores/account-merge';
 import { $authReady, $user, authAvailable, authErrorKey, signOut } from '@/stores/user';
 import AuthDialog from './AuthDialog';
 import ErrorBoundary from './ErrorBoundary';
@@ -33,6 +34,8 @@ import ErrorBoundary from './ErrorBoundary';
  *    without `PUBLIC_FIREBASE_*`) render nothing at all.
  *  - `?signin=1` in the URL (where `/profile/` sends signed-out visitors)
  *    opens the dialog once and is then removed from the address bar.
+ *  - The one-time guest → account merge (Issue 037, `stores/account-merge`)
+ *    is announced here as a toast with "Undo".
  *
  * Its toasts use a dedicated manager so they never double-render with the
  * page island's own `<Toaster>`.
@@ -60,6 +63,29 @@ export function initials(user: Pick<AuthUser, 'displayName' | 'email'>): string 
   return letters.toUpperCase() || '?';
 }
 
+/** The merge toast: what moved into the account, and an Undo button. */
+export function showMergeToast(merged: MergeNotice, lang: Locale): string {
+  const lines = [
+    merged.favoritesAdded > 0 ? t(lang, 'auth.mergeFavorites', { count: merged.favoritesAdded }) : null,
+    merged.preferencesAdopted ? t(lang, 'auth.mergePreferences') : null,
+  ].filter(Boolean);
+  const undo: React.ComponentPropsWithoutRef<'button'> & { 'data-testid': string } = {
+    children: t(lang, 'auth.undo'),
+    'data-testid': 'merge-undo',
+    onClick: () => {
+      accountToasts.close(id);
+      if (undoMerge()) accountToasts.add({ title: t(lang, 'auth.mergeUndone') });
+    },
+  };
+  const id = accountToasts.add({
+    title: t(lang, 'auth.mergeTitle'),
+    description: lines.join(' '),
+    timeout: 12_000,
+    actionProps: undo,
+  });
+  return id;
+}
+
 /** Remove `signin` from the current URL without a navigation. Returns whether it was there. */
 function consumeSignInParam(): boolean {
   try {
@@ -82,6 +108,14 @@ function AccountMenuView({ lang }: AccountMenuProps) {
   React.useEffect(() => {
     if (consumeSignInParam()) setDialogOpen(true);
   }, []);
+
+  // Announce each guest → account merge once, with Undo (Issue 037).
+  const notice = useStore($mergeNotice);
+  React.useEffect(() => {
+    if (!notice) return;
+    const merged = consumeMergeNotice();
+    if (merged) showMergeToast(merged, lang);
+  }, [notice, lang]);
 
   const onSignedIn = React.useCallback(
     (signedIn: AuthUser) => {

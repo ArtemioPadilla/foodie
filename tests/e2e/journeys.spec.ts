@@ -1330,6 +1330,37 @@ test.describe('accounts (roadmap #036)', () => {
     expect(new URL(page.url()).search).toBe('');
   });
 
+  test('signing in merges guest favourites into the account once, with Undo (roadmap #037)', async ({ page }) => {
+    await page.goto('./');
+    await page.evaluate(() => localStorage.setItem('favoriteRecipes', JSON.stringify(['rec_001', 'rec_002'])));
+    await page.reload();
+    const signIn = page.getByTestId('account-signin');
+    const hasAuth = await signIn
+      .waitFor({ state: 'visible', timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
+    test.skip(!hasAuth, 'this build has no auth adapter (no PUBLIC_FIREBASE_* / PUBLIC_AUTH_MOCK)');
+
+    await signIn.click();
+    await page.getByTestId('auth-google').click();
+    await expect(page.getByText('Guest data added to your account')).toBeVisible();
+    await expect(page.getByText('2 favourite recipes added.')).toBeVisible();
+    const accountFavorites = () =>
+      page.evaluate(() => JSON.parse(localStorage.getItem('user-favorites-mock-google-user') ?? '[]') as string[]);
+    expect(await accountFavorites()).toEqual(['rec_001', 'rec_002']);
+
+    await page.getByTestId('merge-undo').click();
+    await expect(page.getByText('Merge undone — your account data is as it was.')).toBeVisible();
+    expect(await accountFavorites()).toEqual([]);
+
+    // Never twice: a reload (session restored) proposes nothing.
+    await page.reload();
+    await expect(page.getByTestId('account-menu-trigger')).toBeVisible();
+    await expect(page.getByText('Guest data added to your account')).toHaveCount(0);
+    // The guest favourites are still there for when they sign out.
+    expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toBe('["rec_001","rec_002"]');
+  });
+
   test('the profile page exists in every locale and is guarded when signed out', async ({ page }) => {
     for (const prefix of ['', 'es/', 'fr/']) {
       await page.goto(`./${prefix}profile/`);

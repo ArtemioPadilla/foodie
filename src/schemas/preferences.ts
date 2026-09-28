@@ -54,3 +54,11 @@ export const UserProfileSchema = z.object({
   createdAt: z.string(),
 });
 export type UserProfile = z.infer<typeof UserProfileSchema>;
+
+/**
+ * `localStorage['foodie:anon-merged']` (roadmap Issue 037): the uids for which
+ * the one-time guest → account merge already ran on this device (kept after
+ * an undo too, so it is never offered twice).
+ */
+export const MergedAccountsSchema = z.array(z.string().min(1));
+export type MergedAccounts = z.infer<typeof MergedAccountsSchema>;
