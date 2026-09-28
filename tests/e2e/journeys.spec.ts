@@ -797,6 +797,50 @@ test.describe('pantry journeys (roadmap #027)', () => {
   });
 });
 
+test.describe('food diary journeys (roadmap #031)', () => {
+  test('loads the tracking page in every locale', async ({ page }) => {
+    for (const [prefix, title] of [['', 'Food Diary'], ['es/', 'Diario de Comidas'], ['fr/', 'Journal Alimentaire']] as const) {
+      await page.goto(`./${prefix}tracking/`);
+      await expect(page.locator('main[data-page="tracking"] h1')).toHaveText(title);
+      await expect(page.getByTestId('tracking-today')).toHaveAttribute('data-status', 'ready');
+      await expect(page.getByTestId('tracking-meal')).toHaveCount(5);
+    }
+  });
+
+  test('logs a recipe and water, sees the totals move, and it all survives a reload', async ({ page }) => {
+    await page.goto('./tracking/');
+    await expect(page.getByTestId('tracking-day')).toHaveAttribute('data-catalog', 'success');
+    await expect(page.getByTestId('tracking-calories')).toHaveText(/^0 \//);
+
+    await page.getByRole('button', { name: 'Add to Lunch' }).click();
+    const dialog = page.getByTestId('quick-add-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('searchbox', { name: 'Search recipes' }).fill('pancakes');
+    await dialog.getByTestId('quick-add-recipe-option').first().click();
+    await dialog.getByRole('button', { name: 'Log Meal' }).click();
+    await expect(dialog).toBeHidden();
+    const lunch = page.locator('[data-testid="tracking-meal"][data-meal="lunch"]');
+    await expect(lunch.getByTestId('tracking-entry')).toHaveCount(1);
+    await expect(page.getByTestId('tracking-calories')).not.toHaveText(/^0 \//);
+
+    await page.getByTestId('tracking-quick-add').click();
+    await dialog.getByRole('tab', { name: 'Water' }).click();
+    await dialog.getByRole('button', { name: 'Log 1 glass' }).click();
+    await expect(dialog).toBeHidden();
+    const water = page.locator('[data-testid="tracking-metric"][data-metric="water"]');
+    await expect(water).toContainText('250 / 2,000 ml');
+
+    await page.reload();
+    await expect(page.getByTestId('tracking-entry')).toHaveCount(2);
+    await expect(water).toContainText('250 / 2,000 ml');
+
+    // Delete asks first (alert-dialog), then removes.
+    await lunch.getByTestId('tracking-entry-delete').click();
+    await page.getByTestId('confirm-delete-entry').click();
+    await expect(lunch.getByTestId('tracking-entry')).toHaveCount(0);
+  });
+});
+
 test.describe('offline PWA (roadmap #028)', () => {
   // The generated service worker precaches ~1 300 files on first visit.
   test.setTimeout(120_000);
@@ -1040,7 +1084,13 @@ test.describe('v1 compatibility (roadmap #030)', () => {
     await page.goto('./recipes/?favorites=1');
     await expect(page.getByTestId('recipe-card')).toHaveCount(3);
 
-    // Tracking has no v2 page before Phase 4; its data must simply be untouched.
+    // Tracking (roadmap #031): the v1 diary shows up on its day, grouped by meal.
+    await page.goto('./tracking/?date=2026-09-18');
+    await expect(page.getByTestId('tracking-today')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('tracking-entry')).toHaveCount(3);
+    await expect(page.locator('[data-testid="tracking-meal"][data-meal="beverage"]').getByTestId('tracking-entry')).toHaveCount(1);
+    await expect(page.getByTestId('tracking-calories')).toContainText('/ 1,800 kcal');
+
     const stored = await page.evaluate(() => ({
       tracking: JSON.parse(localStorage.getItem('trackingEntries') ?? '[]').length,
       goals: JSON.parse(localStorage.getItem('nutritionGoals') ?? 'null')?.calories,

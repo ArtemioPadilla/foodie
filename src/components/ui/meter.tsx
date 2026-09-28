@@ -9,10 +9,12 @@ import { cn } from '@/lib/utils';
 interface MeterProps extends React.ComponentPropsWithoutRef<typeof BaseMeter.Root> {
   label?: React.ReactNode;
   showValue?: boolean;
+  /** Extra classes for the filled indicator (e.g. a warning colour past a goal). */
+  indicatorClassName?: string;
 }
 
 const Meter = React.forwardRef<React.ComponentRef<typeof BaseMeter.Root>, MeterProps>(
-  ({ className, label, showValue = true, ...props }, ref) => (
+  ({ className, label, showValue = true, indicatorClassName, ...props }, ref) => (
     <BaseMeter.Root
       ref={ref}
       className={cn('w-full', className)}
@@ -28,7 +30,7 @@ const Meter = React.forwardRef<React.ComponentRef<typeof BaseMeter.Root>, MeterP
         </div>
       )}
       <BaseMeter.Track className="relative h-2 w-full overflow-hidden rounded-full bg-secondary">
-        <BaseMeter.Indicator className="h-full rounded-full bg-primary transition-all" />
+        <BaseMeter.Indicator className={cn('h-full rounded-full bg-primary transition-all', indicatorClassName)} />
       </BaseMeter.Track>
     </BaseMeter.Root>
   ),

@@ -14,7 +14,13 @@ import {
   mostLoggedMeals,
   waterMl,
   weeklySummary,
+  dayMetrics,
+  groupEntriesByMeal,
+  planDayIndex,
+  sumCalories,
+  withQuantity,
 } from './tracking';
+import { makeIngredient, makeRecipe, mockBeverages } from '@/tests/fixtures/foodie-domain';
 
 const onTrack = makeNutrition({ calories: 2000, protein: 50 });
 
@@ -147,5 +153,51 @@ describe('averageCalories / mostLoggedMeals', () => {
       { recipeId: 'r2', count: 1 },
     ]);
     expect(mostLoggedMeals(entries, 1)).toHaveLength(1);
+  });
+});
+
+describe('day view helpers (roadmap #031)', () => {
+  it('groupEntriesByMeal buckets every meal type and orders each by time', () => {
+    const groups = groupEntriesByMeal([
+      makeEntry({ id: 'b', mealType: 'lunch', time: '13:30:00' }),
+      makeEntry({ id: 'a', mealType: 'lunch', time: '12:00:00' }),
+      makeEntry({ id: 'c', mealType: 'beverage', time: '09:00:00' }),
+    ]);
+    expect(Object.keys(groups)).toEqual(['breakfast', 'lunch', 'dinner', 'snack', 'beverage']);
+    expect(groups.lunch.map((e) => e.id)).toEqual(['a', 'b']);
+    expect(groups.beverage).toHaveLength(1);
+    expect(groups.breakfast).toEqual([]);
+  });
+
+  it('sumCalories rounds the meal total', () => {
+    expect(sumCalories([makeEntry({ nutrition: makeNutrition({ calories: 100.4 }) }), makeEntry({ nutrition: makeNutrition({ calories: 50.4 }) })])).toBe(151);
+    expect(sumCalories([])).toBe(0);
+  });
+
+  it('dayMetrics reports the seven nutrients against the goals', () => {
+    const metrics = dayMetrics(makeNutrition({ calories: 1500, protein: 60, sugar: 25, sodium: 3450 }), DEFAULT_GOALS);
+    expect(metrics.map((m) => m.key)).toEqual(['calories', 'protein', 'carbs', 'fat', 'fiber', 'sugar', 'sodium']);
+    expect(metrics[0]).toMatchObject({ consumed: 1500, goal: 2000, percentage: 75, remaining: 500, unit: 'kcal' });
+    expect(metrics[1]).toMatchObject({ percentage: 120, remaining: 0 });
+    expect(metrics[6]).toMatchObject({ unit: 'mg', percentage: 150 });
+    const noSugarGoal = dayMetrics(makeNutrition({ sugar: 10 }), { ...DEFAULT_GOALS, sugar: undefined });
+    expect(noSugarGoal[5]).toMatchObject({ goal: undefined, percentage: 0 });
+  });
+
+  it('withQuantity recomputes from the catalog, or scales when the item is unknown', () => {
+    const recipe = makeRecipe();
+    const catalog = { recipes: [recipe], ingredients: [makeIngredient()], beverages: mockBeverages };
+    const entry = makeEntry({ recipeId: recipe.id, quantity: 1, servings: 1, nutrition: makeNutrition({ calories: 1 }) });
+    const doubled = withQuantity(entry, 2, catalog);
+    expect(doubled.servings).toBe(2);
+    expect(doubled.nutrition.calories).toBe(Math.round((recipe.nutrition.calories * 2) / recipe.servings));
+
+    const custom = makeEntry({ recipeId: undefined, customName: { en: 'Toast', es: 'Pan', fr: 'Pain' }, quantity: 2, servings: undefined, nutrition: makeNutrition({ calories: 200 }) });
+    expect(withQuantity(custom, 3, catalog).nutrition.calories).toBe(300);
+  });
+
+  it('planDayIndex is Monday-based', () => {
+    expect(planDayIndex('2026-09-28')).toBe(0); // Monday
+    expect(planDayIndex('2026-10-04')).toBe(6); // Sunday
   });
 });

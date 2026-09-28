@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { PANTRY, PLAN, SHOPPING, seedPlanning } from '../fixtures/planning';
+import { PANTRY, PLAN, SHOPPING, TRACKING, seedPlanning } from '../fixtures/planning';
 
 /**
  * Accessibility gate (Epic 12, criterion #1 of the 7-item UX quality bar).
@@ -46,6 +46,7 @@ const routes = [
   '/planner/',
   '/es/shopping/',
   '/fr/pantry/',
+  '/tracking/',
 ];
 
 /** Axe scan (WCAG 2.1 AA) that fails on critical/serious violations. */
@@ -104,6 +105,7 @@ for (const route of routes) {
     // Catalog browsers: scan the hydrated island (cards rendered), not its skeleton.
     if (/recipes\/$/.test(route)) await expect(page.getByTestId('recipe-card').first()).toBeVisible();
     if (/ingredients\/$/.test(route)) await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
+    if (/tracking\/$/.test(route)) await expect(page.getByTestId('tracking-today')).toHaveAttribute('data-status', 'ready');
     await expectNoSeriousViolations(page, route);
   });
 }
@@ -115,6 +117,8 @@ const seeded = [
   { route: '/planner/', storage: { currentMealPlan: PLAN }, ready: 'meal-planner' },
   { route: '/shopping/', storage: { shoppingList: SHOPPING }, ready: 'shopping-list' },
   { route: '/pantry/', storage: { pantryItems: PANTRY }, ready: 'pantry' },
+  // Roadmap Issue 031: the diary's "today" (frozen clock) with entries in several meals.
+  { route: '/tracking/', storage: { trackingEntries: TRACKING }, ready: 'tracking-today' },
 ] as const;
 
 for (const { route, storage, ready } of seeded) {
@@ -126,3 +130,20 @@ for (const { route, storage, ready } of seeded) {
     await expectNoSeriousViolations(page, route);
   });
 }
+
+// Roadmap Issue 031: the quick-add dialog (Tabs + Select + NumberField) open
+// with a recipe selected, then on the water tab.
+test('a11y — /tracking/ quick-add dialog', async ({ page }) => {
+  await seedPlanning(page, { trackingEntries: TRACKING });
+  await page.goto('/tracking/');
+  await expect(page.getByTestId('tracking-day')).toHaveAttribute('data-catalog', 'success');
+  await page.getByTestId('tracking-quick-add').click();
+  const dialog = page.getByTestId('quick-add-dialog');
+  await expect(dialog).toBeVisible();
+  await dialog.getByTestId('quick-add-recipe-option').first().click();
+  await expect(dialog.getByTestId('quick-add-preview')).toBeVisible();
+  await expectNoSeriousViolations(page, '/tracking/ (quick add, recipe)');
+  await dialog.getByRole('tab', { name: 'Water' }).click();
+  await expect(dialog.getByTestId('quick-add-water')).toBeVisible();
+  await expectNoSeriousViolations(page, '/tracking/ (quick add, water)');
+});

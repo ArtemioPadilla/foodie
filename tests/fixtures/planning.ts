@@ -61,6 +61,18 @@ export const PANTRY = [
   { id: 'p4', ingredientId: 'ing_016', quantity: 2, unit: 'cup', addedAt: ADDED, location: 'Fridge' },
 ];
 
+const n = (calories: number, protein: number, carbs: number, fat: number) => ({
+  servingSize: '1 serving', calories, protein, carbs, fat, fiber: 3, sugar: 4, sodium: 300, cholesterol: 0,
+});
+
+/** Food diary on the frozen "today" (roadmap Issue 031): a recipe, an ingredient, water and a coffee. */
+export const TRACKING = [
+  { id: 't1', date: '2026-09-28', time: '08:10:00', mealType: 'breakfast', recipeId: 'rec_007', quantity: 1, unit: 'servings', servings: 1, nutrition: n(85, 2.8, 13, 2.5), loggedAt: '2026-09-28T08:10:00.000Z' },
+  { id: 't2', date: '2026-09-28', time: '13:05:00', mealType: 'lunch', ingredientId: 'ing_025', quantity: 120, unit: 'g', nutrition: n(180, 30, 0, 6), loggedAt: '2026-09-28T13:05:00.000Z' },
+  { id: 't3', date: '2026-09-28', time: '10:30:00', mealType: 'beverage', beverageId: 'bev_water', quantity: 500, unit: 'ml', nutrition: n(0, 0, 0, 0), loggedAt: '2026-09-28T10:30:00.000Z' },
+  { id: 't4', date: '2026-09-28', time: '09:00:00', mealType: 'beverage', beverageId: 'bev_coffee_black', quantity: 240, unit: 'ml', nutrition: n(2, 0.3, 0, 0), loggedAt: '2026-09-28T09:00:00.000Z' },
+];
+
 /** Freeze the clock and seed localStorage (plus the privacy ack) before the first `goto`. */
 export async function seedPlanning(page: Page, storage: Record<string, unknown>): Promise<void> {
   await page.clock.setFixedTime(PLANNING_NOW);
