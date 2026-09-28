@@ -1,0 +1,32 @@
+---
+/**
+ * `/ingredients/[id]/` wrapper for `en` (roadmap Issue 019): one static page
+ * per catalog ingredient (`getStaticPaths` from `getCollection('ingredients')`,
+ * 105 × 3 locales = 315 pages) with the "recipes with this ingredient" list
+ * computed at build. The page body lives in
+ * `components/pages/IngredientDetail.astro`; this file owns the layout
+ * metadata for this locale — title, description and hreflang alternates.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import IngredientDetail from '@/components/pages/IngredientDetail.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { getIngredientDetailPaths } from '@/lib/catalog/ingredient-detail-paths';
+import { ingredientDetailMeta, type IngredientDetailProps } from '@/lib/domain/ingredient-detail';
+
+export async function getStaticPaths() {
+  return getIngredientDetailPaths('en');
+}
+
+const lang = 'en' as const;
+const detail = Astro.props as IngredientDetailProps;
+const meta = ingredientDetailMeta(detail, {
+  lang,
+  origin: (Astro.site ?? new URL(SITE_ORIGIN)).origin,
+  base: import.meta.env.BASE_URL,
+  siteName: SITE.name,
+});
+---
+
+<BaseLayout title={meta.title} description={meta.description} lang={lang} alternates={meta.alternates} ogType="article">
+  <IngredientDetail lang={lang} {...detail} />
+</BaseLayout>

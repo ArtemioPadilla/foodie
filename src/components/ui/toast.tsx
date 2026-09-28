@@ -1,0 +1,130 @@
+import * as React from 'react';
+import { Toast as BaseToast } from '@base-ui-components/react/toast';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { XIcon } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+
+// Toast built on Base UI's Toast primitive instead of the Radix UI toast package.
+// createToastManager enables imperative usage outside React components.
+
+export const toastManager = BaseToast.createToastManager();
+
+/** A separate manager for a `<Toaster manager={…}>` that must not share the page's queue. */
+export function createToastManager() {
+  return BaseToast.createToastManager();
+}
+
+const toastVariants = cva(
+  'group pointer-events-auto flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-8 shadow-lg',
+  {
+    variants: {
+      variant: {
+        default: 'border bg-background text-foreground',
+        destructive: 'border-destructive bg-destructive text-destructive-foreground',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  },
+);
+
+export type ToastVariant = VariantProps<typeof toastVariants>['variant'];
+
+export interface ToastData {
+  variant?: ToastVariant;
+}
+
+// Inner component that calls useToastManager (must be inside Provider)
+function ToastList({ closeLabel }: { closeLabel: string }) {
+  const { toasts } = BaseToast.useToastManager();
+
+  return (
+    <>
+      {toasts.map((toast) => {
+        const typedToast = toast as BaseToast.Root.ToastObject<ToastData>;
+        return (
+          // Root goes directly inside the Viewport (Base UI's canonical toast
+          // pattern). `.bui-toast` (global.css) handles absolute placement +
+          // index/offset stacking + enter/exit; no Toast.Positioner (that is
+          // for anchored popovers and pushed the toast off-screen here).
+          <BaseToast.Root
+            key={toast.id}
+            toast={toast}
+            className={cn(
+              'bui-toast',
+              // Base UI stores custom data under .data, not at the top level (TS2339).
+              toastVariants({ variant: typedToast.data?.variant }),
+            )}
+          >
+            <div className="grid gap-1">
+              {toast.title && (
+                <BaseToast.Title className="text-sm font-semibold">
+                  {toast.title}
+                </BaseToast.Title>
+              )}
+              {toast.description && (
+                <BaseToast.Description className="text-sm opacity-90">
+                  {toast.description}
+                </BaseToast.Description>
+              )}
+              {/* Rendered only when the toast was added with `actionProps`
+                  (e.g. an "Undo" button); Base UI hides it otherwise. */}
+              <BaseToast.Action className="mt-1 inline-flex h-8 w-fit items-center rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring" />
+            </div>
+            <BaseToast.Close
+              aria-label={closeLabel}
+              className="absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100"
+            >
+              <XIcon className="h-4 w-4" aria-hidden="true" />
+            </BaseToast.Close>
+          </BaseToast.Root>
+        );
+      })}
+    </>
+  );
+}
+
+interface ToasterProps {
+  className?: string;
+  /**
+   * The manager this Toaster renders. Defaults to the shared `toastManager`;
+   * an island that must not double-render with a page island's Toaster (e.g.
+   * the header's AccountMenu) passes its own `createToastManager()`.
+   */
+  manager?: ReturnType<typeof BaseToast.createToastManager>;
+  /** Accessible name of each toast's close (×) button — pass the localised "Close". */
+  closeLabel?: string;
+}
+
+// Toaster mounts the Provider+Viewport pair. Place once in your layout.
+export function Toaster({ className, closeLabel = 'Close', manager = toastManager }: ToasterProps) {
+  return (
+    <BaseToast.Provider toastManager={manager}>
+      <BaseToast.Viewport
+        className={cn(
+          // Fixed bottom-right container; toasts stack absolutely inside it.
+          'fixed bottom-4 right-4 z-[100] w-[calc(100%-2rem)] sm:w-[380px]',
+          className,
+        )}
+      >
+        <ToastList closeLabel={closeLabel} />
+      </BaseToast.Viewport>
+    </BaseToast.Provider>
+  );
+}
+
+// Convenience function to add a toast imperatively from anywhere in the app.
+export function toast(options: Parameters<typeof toastManager.add>[0]) {
+  return toastManager.add(options);
+}
+
+// Named re-exports for shadcn API parity
+export const ToastProvider = BaseToast.Provider;
+export const ToastViewport = BaseToast.Viewport;
+export const ToastRoot = BaseToast.Root;
+export const ToastTitle = BaseToast.Title;
+export const ToastDescription = BaseToast.Description;
+export const ToastClose = BaseToast.Close;
+export const ToastAction = BaseToast.Action;

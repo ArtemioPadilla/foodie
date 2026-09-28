@@ -1,53 +1,64 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Playwright configuration for E2E tests
- * @see https://playwright.dev/docs/test-configuration
- */
+// Allow overriding the preview port so developers with another Astro project
+// already running on 4321 don't get a silent hang. Example:
+//   PREVIEW_PORT=4399 npx playwright test
+// See SETUP.md for docs on the port-busy scenario.
+const PORT = Number(process.env.PREVIEW_PORT ?? 4321);
+
 export default defineConfig({
-  testDir: './tests/e2e',
+  testDir: './tests/visual',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
-  reporter: 'html',
-
+  workers: process.env.CI ? 1 : undefined,
+  reporter: process.env.CI ? 'github' : 'list',
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: `http://localhost:${PORT}`,
     trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
   },
-
-  // In CI: only chromium for speed. Locally: all browsers for full coverage
-  projects: process.env.CI
-    ? [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }]
-    : [
-        {
-          name: 'chromium',
-          use: { ...devices['Desktop Chrome'] },
-        },
-        {
-          name: 'firefox',
-          use: { ...devices['Desktop Firefox'] },
-        },
-        {
-          name: 'webkit',
-          use: { ...devices['Desktop Safari'] },
-        },
-        {
-          name: 'Mobile Chrome',
-          use: { ...devices['Pixel 5'] },
-        },
-        {
-          name: 'Mobile Safari',
-          use: { ...devices['iPhone 12'] },
-        },
-      ],
-
+  // Screenshots live under tests/__screenshots__/{projectName}/{arg}{ext} so
+  // light and dark baselines are separated by subdirectory and easy to find.
+  snapshotPathTemplate: 'tests/__screenshots__/{projectName}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: {
+      // Tight default — individual tests override when needed (e.g. charts).
+      maxDiffPixelRatio: 0.01,
+      animations: 'disabled',
+    },
+  },
+  projects: [
+    {
+      name: 'chromium-light',
+      use: { ...devices['Desktop Chrome'], colorScheme: 'light' },
+    },
+    {
+      name: 'chromium-dark',
+      use: { ...devices['Desktop Chrome'], colorScheme: 'dark' },
+    },
+    // Behavioural journeys (tests/e2e) ride along with the visual suite so
+    // `npx playwright test` covers everything; `npm run test:e2e` runs them
+    // alone through playwright.e2e.config.ts (own build + port).
+    {
+      name: 'chromium',
+      testDir: './tests/e2e',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:5173',
+    // Playwright requires a built artifact; run `npm run build` before
+    // `npm run test:visual` or `npm run test:visual:update`.
+    // `--ignore-lock` keeps `astro preview` in the foreground. Since Astro 7
+    // the CLI auto-backgrounds itself (and exits 0) when it detects an agent
+    // environment (CLAUDECODE, AI_AGENT, … via am-i-vibing), which Playwright
+    // reports as "Process from config.webServer exited early" and which left
+    // an orphaned daemon behind. `--ignore-lock` disables that auto-background
+    // path and skips the .astro lock file, so Playwright owns (and kills) the
+    // server process in every environment — and the visual (4321) and e2e
+    // (4322) servers can run side by side from the same root.
+    command: `npm run preview -- --port ${PORT} --ignore-lock`,
+    url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 120_000,
   },
 });

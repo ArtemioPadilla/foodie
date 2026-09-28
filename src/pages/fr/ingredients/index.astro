@@ -1,0 +1,23 @@
+---
+/**
+ * `/ingredients/` wrapper for `fr` (roadmap Issue 019). The page body lives in
+ * `components/pages/Ingredients.astro`; this file owns the layout metadata
+ * for this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Ingredients from '@/components/pages/Ingredients.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'fr' as const;
+const alternates = hreflangAlternates('/ingredients/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'ingredients.title')}`}
+  description={t(lang, 'ingredients.browseDescription')}
+  lang={lang}
+  alternates={alternates}
+>
+  <Ingredients lang={lang} />
+</BaseLayout>

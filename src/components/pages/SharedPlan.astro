@@ -1,0 +1,35 @@
+---
+/**
+ * SharedPlan — the `/plan/shared/` page body (roadmap Issue 040, D11; port of
+ * PR #28's `SharedPlanPage` without Firestore).
+ *
+ * Rendered by the thin wrappers `pages/plan/shared.astro`,
+ * `pages/es/plan/shared.astro` and `pages/fr/plan/shared.astro`. The plan
+ * travels in the URL fragment (`#p=…`), which never reaches the server, so the
+ * heading is static and everything else is the `SharedPlan` island
+ * (`client:load`: the page has no content without it).
+ */
+import SharedPlan from '@/components/islands/SharedPlan';
+import { t, type Locale } from '@/i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<main id="main-content" class="mx-auto max-w-[96rem] px-4 py-10 sm:py-14" data-page="plan-shared">
+  <header class="mb-8 max-w-3xl">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t(lang, 'sharedPlan.kicker')}</p>
+    <h1
+      class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+      style="view-transition-name: page-title"
+    >
+      {t(lang, 'sharedPlan.title')}
+    </h1>
+    <p class="mt-4 text-muted-foreground">{t(lang, 'sharedPlan.description')}</p>
+  </header>
+
+  <SharedPlan lang={lang} client:load />
+</main>

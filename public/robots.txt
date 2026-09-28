@@ -1,6 +1,4 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
 
-# Sitemaps
-Sitemap: https://artemiopadilla.github.io/foodie/sitemap.xml
+Sitemap: https://artemiopadilla.github.io/foodie/sitemap-index.xml

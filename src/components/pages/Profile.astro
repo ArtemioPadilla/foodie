@@ -1,0 +1,35 @@
+---
+/**
+ * Profile — the `/profile/` page body (roadmap Issue 036; port of legacy
+ * `ProfilePage`).
+ *
+ * Rendered by the thin wrappers `pages/profile.astro`, `pages/es/profile.astro`
+ * and `pages/fr/profile.astro`. The heading is static; everything else is the
+ * `Profile` island (`client:load`), which waits for `$authReady` and then
+ * either shows the account (RouteGuard, `allow={['user']}`) or sends the
+ * visitor home with `?signin=1`.
+ */
+import Profile from '@/components/islands/Profile';
+import { t, type Locale } from '@/i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<main id="main-content" class="mx-auto max-w-5xl px-4 py-10 sm:py-14" data-page="profile">
+  <header class="mb-8 max-w-3xl">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t(lang, 'profile.kicker')}</p>
+    <h1
+      class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+      style="view-transition-name: page-title"
+    >
+      {t(lang, 'profile.title')}
+    </h1>
+    <p class="mt-4 text-muted-foreground">{t(lang, 'profile.description')}</p>
+  </header>
+
+  <Profile lang={lang} client:load />
+</main>

@@ -1,0 +1,158 @@
+---
+/**
+ * /docs/reference/api/ — the data model, generated from `src/schemas/` at
+ * build time (roadmap Issue 043). Replaces the hand-written MkDocs
+ * `reference/api.md`, which had drifted from the code: this page introspects
+ * the live Zod schemas, so a field added to a schema shows up on the next
+ * build. The URL is the legacy one, so old links keep working.
+ */
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import { anchorFor, describeModules, type SchemaDoc } from '@/lib/docs/schema-reference';
+
+const modules = import.meta.glob<Record<string, unknown>>(
+  ['../../../schemas/*.ts', '!../../../schemas/*.test.ts'],
+  { eager: true },
+);
+const docs = describeModules(modules);
+const total = docs.reduce((n, m) => n + m.schemas.length, 0);
+
+/** Splits a type expression so schema names can be rendered as links. */
+function segments(type: string, refs: string[]): { text: string; ref?: string }[] {
+  if (refs.length === 0) return [{ text: type }];
+  const pattern = new RegExp(`\\b(${refs.join('|')})\\b`, 'g');
+  return type
+    .split(pattern)
+    .filter((part) => part !== '')
+    .map((part) => (refs.includes(part) ? { text: part, ref: part } : { text: part }));
+}
+
+const kindLabel: Record<SchemaDoc['kind'], string> = {
+  object: 'object',
+  enum: 'enum',
+  array: 'array',
+  record: 'record',
+  tuple: 'tuple',
+  scalar: 'value',
+};
+---
+
+<DocsLayout
+  title="Data model (schemas)"
+  description="Every Zod schema in src/schemas — catalog JSON, localStorage values, forms and URL payloads — generated at build time."
+  slug="reference/api"
+  source="src/schemas/"
+>
+  <p>
+    Foodie has no server API: its "API" is the shape of the data it reads and writes. Every
+    value that crosses a boundary — the catalog files in <code>public/data/</code>, the
+    <code>localStorage</code> keys, form input, the shared-plan URL, the recipe submission —
+    is a Zod schema in <code>src/schemas/</code>, and TypeScript types come from
+    <code>z.infer</code>. This page is generated from those schemas when the site is built,
+    so it always matches the code ({total} schemas in {docs.length} modules).
+  </p>
+  <p>
+    Types are shown as a JSON author sees them (Zod's <em>input</em> side): a field with a
+    default is optional. A type in <code>monospace</code> that links elsewhere on this page is
+    another exported schema. Which store persists which schema is in
+    <a href="../state/">State and storage</a>; the catalog files and their build-time checks
+    are in <a href="../../contributing/recipe-format/">Recipe format</a>.
+  </p>
+
+  <h2 id="modules">Modules</h2>
+  <ul>
+    {docs.map((m) => (
+      <li>
+        <a href={`#module-${m.module}`}><code>{m.module}.ts</code></a> —{' '}
+        {m.schemas.map((s, i) => (
+          <>
+            {i > 0 && ', '}
+            <a href={`#${s.anchor}`}>{s.name}</a>
+          </>
+        ))}
+      </li>
+    ))}
+  </ul>
+
+  {docs.map((m) => (
+    <section aria-labelledby={`module-${m.module}`}>
+      <h2 id={`module-${m.module}`}><code>src/schemas/{m.module}.ts</code></h2>
+      {m.schemas.map((s) => (
+        <div class="schema-block" data-schema={s.name}>
+          <h3 id={s.anchor}>
+            {s.name} <span class="schema-kind">{kindLabel[s.kind]}</span>
+          </h3>
+          {s.description && <p>{s.description}</p>}
+
+          {s.kind === 'object' && (
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Field</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">Required</th>
+                  <th scope="col">Constraints</th>
+                </tr>
+              </thead>
+              <tbody>
+                {s.fields.map((f) => (
+                  <tr>
+                    <td><code>{f.name}</code></td>
+                    <td>
+                      <code>
+                        {segments(f.type, f.refs).map((seg) =>
+                          seg.ref ? <a href={`#${anchorFor(seg.ref)}`}>{seg.text}</a> : seg.text,
+                        )}
+                      </code>
+                    </td>
+                    <td>{f.required ? 'yes' : 'no'}</td>
+                    <td>{[...f.constraints, ...(f.description ? [f.description] : [])].join(' · ') || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          {s.kind === 'enum' && (
+            <p>
+              One of:{' '}
+              {s.values.map((v, i) => (
+                <>
+                  {i > 0 && ', '}
+                  <code>{JSON.stringify(v)}</code>
+                </>
+              ))}
+            </p>
+          )}
+
+          {s.kind !== 'object' && s.kind !== 'enum' && (
+            <p>
+              Type:{' '}
+              <code>
+                {segments(s.type, s.refs).map((seg) =>
+                  seg.ref ? <a href={`#${anchorFor(seg.ref)}`}>{seg.text}</a> : seg.text,
+                )}
+              </code>
+              {s.constraints.length > 0 && <> — {s.constraints.join(' · ')}</>}
+            </p>
+          )}
+        </div>
+      ))}
+    </section>
+  ))}
+</DocsLayout>
+
+<style>
+  .schema-block {
+    margin-top: 1.5rem;
+  }
+  .schema-kind {
+    margin-left: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    padding: 0.05rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted-foreground);
+    vertical-align: middle;
+  }
+</style>

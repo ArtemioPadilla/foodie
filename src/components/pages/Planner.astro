@@ -1,0 +1,44 @@
+---
+/**
+ * Planner — the `/planner/` page body (roadmap Issue 024, D4 "una página por
+ * ruta, una isla por página"; port of legacy `PlannerPage`).
+ *
+ * Rendered by the thin wrappers `pages/planner.astro`, `pages/es/planner.astro`
+ * and `pages/fr/planner.astro`, which own the `<BaseLayout>` metadata. The
+ * heading and the help text are static HTML; the plan itself lives in
+ * `localStorage`, so everything else is the `MealPlanner` island, hydrated
+ * with `client:load` (the page has no content without it).
+ */
+import { InfoIcon } from 'lucide-react';
+import MealPlanner from '@/components/islands/MealPlanner';
+import { t, type Locale } from '@/i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<main id="main-content" class="mx-auto max-w-[96rem] px-4 py-10 sm:py-14" data-page="planner">
+  <header class="mb-8 max-w-3xl">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t(lang, 'planner.kicker')}</p>
+    <h1
+      class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+      style="view-transition-name: page-title"
+    >
+      {t(lang, 'planner.title')}
+    </h1>
+    <p class="mt-4 text-muted-foreground">{t(lang, 'planner.description')}</p>
+  </header>
+
+  <MealPlanner lang={lang} client:load />
+
+  <aside class="mt-8 flex gap-3 rounded-lg border border-border bg-muted/40 p-4 text-sm" aria-labelledby="planner-help-title">
+    <InfoIcon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+    <div>
+      <p id="planner-help-title" class="font-medium text-foreground">{t(lang, 'planner.helpTitle')}</p>
+      <p class="mt-1 text-muted-foreground">{t(lang, 'planner.helpText')}</p>
+    </div>
+  </aside>
+</main>

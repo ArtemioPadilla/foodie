@@ -1,0 +1,120 @@
+---
+/**
+ * SiteFooter — rendered by BaseLayout so every page carries it (roadmap
+ * Issue 005; links from the legacy `Footer.tsx`, minus the placeholder
+ * `mailto:` address).
+ *
+ * Sections, all localised from the route locale:
+ *   - brand + tagline
+ *   - Quick links (Recipes / Planner / Contribute)
+ *   - Resources (Documentation / Report an issue / Contributing / GitHub)
+ *   - EN / ES / FR language switcher (LangSwitcher)
+ *   - MIT license + llms.txt (agent-readable surface)
+ */
+import { withBase } from '@/lib/href';
+import { REPO_URL, SITE } from '@/lib/site-meta';
+import LangSwitcher from './LangSwitcher.astro';
+import { detectLocale, localizedRoute, stripBase, t } from '@/i18n';
+
+const route = stripBase(Astro.url.pathname, import.meta.env.BASE_URL);
+const locale = detectLocale(route);
+const href = (r: string) => withBase(localizedRoute(r, locale));
+
+const quickLinks = [
+  { href: href('/recipes/'), label: t(locale, 'nav.recipes') },
+  { href: href('/planner/'), label: t(locale, 'nav.planner') },
+  { href: href('/contribute/'), label: t(locale, 'nav.contribute') },
+];
+
+const resources = [
+  { href: withBase('/docs/'), label: t(locale, 'footer.documentation'), external: false },
+  { href: `${REPO_URL}/issues`, label: t(locale, 'footer.reportIssue'), external: true },
+  { href: `${REPO_URL}/blob/main/CONTRIBUTING.md`, label: t(locale, 'footer.contributing'), external: true },
+];
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-border bg-background">
+  <div class="mx-auto max-w-6xl px-5 py-10">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+
+      <!-- brand + tagline -->
+      <div class="flex flex-col gap-3">
+        <a
+          href={href('/')}
+          class="group flex items-center gap-2 font-display text-base font-semibold tracking-tight text-foreground transition-colors hover:text-primary"
+          aria-label="Foodie — home"
+        >
+          <img src={withBase('/favicon.svg')} width="16" height="16" alt="" aria-hidden="true" class="rounded-[0.2em]" />
+          {SITE.name}
+        </a>
+        <p class="max-w-[18rem] font-mono text-[0.7rem] leading-relaxed text-muted-foreground">
+          {SITE.description}
+        </p>
+      </div>
+
+      <!-- quick links -->
+      <nav aria-label={t(locale, 'footer.quickLinks')}>
+        <p class="mb-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-primary">{t(locale, 'footer.quickLinks')}</p>
+        <ul class="flex flex-col gap-1.5">
+          {quickLinks.map((n) => (
+            <li>
+              <a href={n.href} class="font-mono text-xs text-muted-foreground transition-colors hover:text-primary">
+                {n.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- resources -->
+      <nav aria-label={t(locale, 'footer.resources')}>
+        <p class="mb-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-primary">{t(locale, 'footer.resources')}</p>
+        <ul class="flex flex-col gap-1.5">
+          {resources.map((n) => (
+            <li>
+              <a
+                href={n.href}
+                target={n.external ? '_blank' : undefined}
+                rel={n.external ? 'noopener noreferrer' : undefined}
+                class="font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
+              >
+                {n.label}{n.external && ' ↗'}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- language switcher -->
+      <div>
+        <p class="mb-2 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-primary">{t(locale, 'footer.language')}</p>
+        <LangSwitcher class="inline-flex gap-1 font-mono text-xs" linkClass="rounded px-2 py-0.5 text-muted-foreground transition-colors hover:text-primary" />
+      </div>
+
+    </div>
+
+    <!-- bottom bar -->
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border/50 pt-6">
+      <p class="font-mono text-[0.68rem] text-muted-foreground">
+        &copy; {year} {SITE.name} · {t(locale, 'footer.license')}
+      </p>
+      <div class="flex items-center gap-4 font-mono text-[0.68rem] text-muted-foreground">
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-colors hover:text-primary"
+        >
+          GitHub ↗
+        </a>
+        {/* Agent-first index (llmstxt.org) — humans rarely click it, but
+            surfacing it advertises that the site is machine-readable. */}
+        <a href={withBase('/llms.txt')} class="transition-colors hover:text-primary">
+          llms.txt
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

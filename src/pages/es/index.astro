@@ -1,0 +1,47 @@
+---
+/**
+ * Landing wrapper for `es` (roadmap Issue 005). The page body lives in
+ * `components/pages/Home.astro`; this file owns the layout metadata for this
+ * locale: title, hreflang alternates and the JSON-LD identity blocks (WebSite +
+ * SoftwareSourceCode) that agents and search engines read.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Home from '@/components/pages/Home.astro';
+import { SITE, REPO_URL, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'es' as const;
+const alternates = hreflangAlternates('/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
+
+// Structured identity — see src/lib/site-meta.ts for the source values.
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    description: SITE.description,
+    inLanguage: lang,
+    url: new URL(import.meta.env.BASE_URL, Astro.site ?? SITE_ORIGIN).toString(),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    name: SITE.name,
+    description: SITE.longDescription,
+    codeRepository: REPO_URL,
+    license: `https://spdx.org/licenses/${SITE.license}`,
+    programmingLanguage: [...SITE.programmingLanguages],
+    runtimePlatform: 'Astro 7 / React 19',
+  },
+];
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'home.title')} ${t(lang, 'home.titleEmphasis')}`}
+  description={t(lang, 'home.tagline')}
+  lang={lang}
+  alternates={alternates}
+  jsonLd={jsonLd}
+>
+  <Home lang={lang} />
+</BaseLayout>

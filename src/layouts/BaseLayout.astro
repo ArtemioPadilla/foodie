@@ -1,0 +1,267 @@
+---
+import '../styles/global.css';
+import FeedbackFAB from '../components/common/FeedbackFAB.astro';
+import SiteHeader from '../components/common/SiteHeader.astro';
+import SiteFooter from '../components/common/SiteFooter.astro';
+import LegacyRedirect from '../components/common/LegacyRedirect.astro';
+import { SITE, SITE_ORIGIN } from '../lib/site-meta';
+import { jsonLd as serializeJsonLd } from '../lib/json-ld';
+import OfflineBanner from '../components/islands/OfflineBanner';
+import HydrationCanary from '../components/islands/HydrationCanary';
+import InstallButton from '../components/islands/InstallButton';
+import UpdateToast from '../components/islands/UpdateToast';
+import PrivacyToast from '../components/islands/PrivacyToast';
+import { withBase } from '../lib/href';
+import { flags } from '../lib/flags';
+import { LOCALES, stripBase, type Locale, type AlternateLink } from '../i18n';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: Locale;
+  /** Hreflang alternates. When provided, emitted as <link rel="alternate">.
+   *  Build them with `hreflangAlternates()` from src/i18n (en + es + fr +
+   *  x-default) for pages that exist in every locale.
+   *  Pages that don't pass this prop get no hreflang tags (safe default). */
+  alternates?: AlternateLink[];
+  /** JSON-LD blocks (schema.org). Each object is emitted as its own
+   *  <script type="application/ld+json"> — the structured identity agents
+   *  and search engines read. See src/lib/site-meta.ts for the source values. */
+  jsonLd?: Record<string, unknown>[];
+  /** Open Graph type — `website` (default) or `article` for content pages
+   *  such as a recipe detail (roadmap Issue 018). */
+  ogType?: 'website' | 'article';
+  /** Absolute URL of a page-specific OG/Twitter image; defaults to the
+   *  site's `/og-image.png`. */
+  ogImage?: string;
+}
+
+const {
+  title = SITE.name,
+  // Default to the site's real positioning line (src/lib/site-meta.ts) —
+  // pages that forget to pass a description must not introduce the site as
+  // boilerplate filler (this default is also what /llms.txt leads with).
+  description = SITE.description,
+  lang = 'en',
+  alternates,
+  jsonLd = [],
+  ogType = 'website',
+  ogImage,
+} = Astro.props;
+
+const OG_LOCALES: Record<Locale, string> = { en: 'en_US', es: 'es_ES', fr: 'fr_FR' };
+const ogImageUrl = ogImage ?? new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString();
+
+// Canonical URL — derived from Astro.site + Astro.url.pathname so it always
+// reflects the live origin and the current subpath (e.g. /foodie/recipes/).
+// Falls back gracefully when Astro.site is not set (local dev without --site).
+// Directory-style paths always end in '/': under a base, Astro reports the
+// site root as `/foodie` (no slash), which GitHub Pages 301s to `/foodie/` —
+// a canonical must never point at a redirect (roadmap Issue 022).
+const canonicalPath =
+  Astro.url.pathname.endsWith('/') || /\.[a-z0-9]+$/i.test(Astro.url.pathname)
+    ? Astro.url.pathname
+    : `${Astro.url.pathname}/`;
+const canonicalUrl = Astro.site
+  ? new URL(canonicalPath, Astro.site).toString()
+  : null;
+
+// First-visit locale redirect (roadmap Issue 004): only the English site root
+// carries the inline script below. Localized roots (/es/, /fr/) and deeper
+// pages never redirect, so there is no way to bounce between locales.
+const baseDir = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const isSiteRoot = lang === 'en' && stripBase(Astro.url.pathname, baseDir).replace(/\/+$/, '/') === '/';
+const redirectLocales = LOCALES.filter((l) => l !== 'en');
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    {/* charset first (must sit in the first 1024 bytes). The build moves the
+        Content-Security-Policy meta Astro emits (astro.config.mjs
+        `security.csp`, csp.config.mjs) to right after it, so the policy is in
+        force before any script or stylesheet below is parsed. */}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Zero-flash theme script: runs synchronously before first paint.
+      Reads localStorage.theme; falls back to prefers-color-scheme on
+      first visit. is:inline prevents Astro from deferring this as a
+      module, which is required for it to execute before the browser
+      renders any content.
+    -->
+    <script is:inline>
+      (function () {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isDark = stored === 'dark' || (stored === null && prefersDark);
+          if (isDark) document.documentElement.classList.add('dark');
+        } catch (_) {
+          // localStorage / matchMedia unavailable — leave default (light)
+        }
+        // Zod v4 without JIT: its `new Function('')` feature probe is refused
+        // by the CSP (no 'unsafe-eval') and reported as a
+        // securitypolicyviolation. Zod reads this global config when a schema
+        // is created, so it must be set before any module script runs
+        // (ADR 0012 § CSP; tests/e2e/csp.spec.ts).
+        globalThis.__zod_globalConfig = Object.assign(globalThis.__zod_globalConfig || {}, { jitless: true });
+      })();
+    </script>
+    <!--
+      Wire the @vite-pwa/astro virtual module into our Nano Stores so the
+      UpdateToast appears when a new SW is ready. This must be a module
+      script (no is:inline) so the @/* alias resolves at build time.
+      Placed after the theme script so the critical theme-flash prevention
+      runs first.
+    -->
+    <script>
+      import { initPwaRegister } from '@/lib/pwa-register';
+      import { initSentry } from '@/lib/sentry';
+      import { initAnalytics } from '@/lib/analytics';
+      import { purgeRetiredKeys } from '@/lib/retired-keys';
+      initPwaRegister();
+      // v1's GitHub token is deleted on first load (ADR 0002 §3, roadmap #039).
+      purgeRetiredKeys();
+      // Skeleton init — no-op unless the corresponding PUBLIC_FLAG_* env vars
+      // are set. See src/lib/sentry.ts and src/lib/analytics.ts.
+      void initSentry();
+      initAnalytics();
+    </script>
+    {/* First-visit locale redirect — rendered ONLY on the English site root.
+        Runs once per browser: if the visitor has no explicit preference
+        (`foodie:locale`, written here and by LangSwitcher) and their legacy
+        i18next choice or browser language is es/fr, persist it and hop to
+        /es/ or /fr/. Because the preference is written *before* navigating
+        and the localized roots carry no script, it can never loop; users who
+        pick EN in the switcher are left alone forever after. */}
+    {isSiteRoot && (
+      <script is:inline define:vars={{ base: baseDir, locales: redirectLocales }}>
+        (function () {
+          try {
+            // A Foodie v1 deep link (`/?/recipes/…`) is LegacyRedirect's job:
+            // it decodes the route and localizes it itself (roadmap #030).
+            if (location.search.indexOf('?/') === 0) return;
+            var KEY = 'foodie:locale';
+            if (localStorage.getItem(KEY)) return;
+            var hint = localStorage.getItem('i18nextLng') || navigator.language || '';
+            var code = String(hint).slice(0, 2).toLowerCase();
+            if (locales.indexOf(code) === -1) return;
+            localStorage.setItem(KEY, code);
+            var target = base + code + '/';
+            if (location.pathname !== target) {
+              location.replace(target + location.search + location.hash);
+            }
+          } catch (_) {
+            /* storage unavailable — stay on the English root */
+          }
+        })();
+      </script>
+    )}
+    <meta name="description" content={description} />
+    {/* color-scheme: tells the browser's chrome (scrollbars, form controls,
+        etc.) which mode it is in, matching the CSS color-scheme on :root/.dark.
+        This prevents unstyled light scrollbars from showing in dark mode. */}
+    <meta name="color-scheme" content="light dark" />
+    {/* Canonical URL prevents duplicate-content penalties when the page is
+        accessible under multiple paths (e.g. trailing-slash variants). */}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {/* Hreflang alternates — only emitted when the caller provides them,
+        so pages that have no i18n equivalent don't emit bogus tags. */}
+    {alternates && alternates.map((alt) => (
+      <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+    ))}
+    {/* Type system: Fraunces (display) + Hanken Grotesk (body) + JetBrains Mono,
+        self-hosted from public/fonts/ (@font-face in global.css, display=swap).
+        Preload the latin body face so text swaps in without a late request. */}
+    <link
+      rel="preload"
+      href={withBase('/fonts/hanken-grotesk-latin.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
+    <link rel="icon" type="image/png" sizes="32x32" href={withBase('/favicon.ico')} />
+    <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
+    <meta name="theme-color" content="#10b981" />
+    {/* Web app manifest generated by @vite-pwa/astro (astro.config.mjs) — the
+        link browsers and Lighthouse need to consider the site installable. */}
+    <link rel="manifest" href={withBase('/manifest.webmanifest')} />
+    {/* Open Graph + Twitter Card — base-aware absolute URL to the OG image */}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content={OG_LOCALES[lang]} />
+    <meta property="og:site_name" content={SITE.name} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    {!ogImage && <meta property="og:image:width" content="1200" />}
+    {!ogImage && <meta property="og:image:height" content="630" />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    {/* Agent-first index of the site (llmstxt.org convention). Generated at
+        build from the content collections — see src/pages/llms.txt.ts. */}
+    <link rel="alternate" type="text/plain" title="llms.txt" href={withBase('/llms.txt')} />
+    {/* JSON-LD structured data — the identity agents/search engines parse.
+        Blocks are provided per page; values come from src/lib/site-meta.ts. */}
+    {jsonLd.map((block) => (
+      <script type="application/ld+json" set:html={serializeJsonLd(block)} />
+    ))}
+  </head>
+  <body class="relative min-h-screen bg-background text-foreground antialiased" style="view-transition-name: body-bg">
+    {isSiteRoot && <LegacyRedirect />}
+    {/* Skip-to-content link — WCAG 2.4.1 requirement. Visually hidden until
+        focused (sr-only focus:not-sr-only). Targets #main-content which is
+        added to the <main> element on pages within the file boundary.
+        On pages that lack the id, the anchor still works (just no scroll). */}
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[999] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground focus:shadow-lg focus:outline-none"
+    >
+      Skip to content
+    </a>
+    <SiteHeader><slot name="account" slot="account" /></SiteHeader>
+    <slot />
+    <SiteFooter />
+    <FeedbackFAB lang={lang} />
+    <!--
+      PWA UI (roadmap Issue 028) — OfflineBanner, InstallButton and UpdateToast
+      are all gated by `flags.pwaPrompts` (PUBLIC_FLAG_PWA_PROMPTS, on by
+      default); the service worker itself registers regardless.
+      OfflineBanner is mounted with client:idle so the online/offline event
+      listeners are live as soon as the browser finishes loading, without
+      blocking first paint. position: fixed means it doesn't affect layout.
+      The 1 s idle timeout caps the wait: on a busy main thread (a page
+      hydrating the catalog offline) requestIdleCallback can starve, and the
+      offline status must still show promptly.
+    -->
+    {flags.pwaPrompts && <OfflineBanner client:idle={{ timeout: 1000 }} lang={lang} />}
+    <!--
+      HydrationCanary: listens for React hydration-mismatch error signatures
+      and writes a pre-filled GitHub issue URL to sessionStorage so the FAB
+      can surface it. Renders nothing; mounted with client:idle to avoid
+      blocking first paint.
+    -->
+    <HydrationCanary client:idle />
+    <!--
+      InstallButton: appears when `beforeinstallprompt` fires (Chromium only).
+      Stays invisible on Safari/Firefox — no extra conditional needed.
+      UpdateToast: appears when a new SW is waiting; the Reload button
+      skip-waits + reloads. Both use client:idle for the same reason as
+      OfflineBanner — no need to block first paint.
+    -->
+    {flags.pwaPrompts && <InstallButton client:idle lang={lang} />}
+    {flags.pwaPrompts && <UpdateToast client:idle lang={lang} />}
+    <!--
+      PrivacyToast: first-load ethics disclosure (Epic 12). Tells users that
+      diagnostics stay local and only leave the device if they open an issue.
+      Shown once per browser, then suppressed via localStorage. Gated behind
+      a feature flag (on by default); client:idle so it never blocks paint.
+    -->
+    {flags.privacyToast && <PrivacyToast client:idle />}
+  </body>
+</html>

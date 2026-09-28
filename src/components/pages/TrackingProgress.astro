@@ -1,0 +1,36 @@
+---
+/**
+ * TrackingProgress — the `/tracking/progress/` page body (roadmap Issue 033;
+ * port of legacy `ProgressPage`).
+ *
+ * Rendered by the thin wrappers `pages/tracking/progress.astro`,
+ * `pages/es/tracking/progress.astro` and `pages/fr/tracking/progress.astro`,
+ * which own the `<BaseLayout>` metadata. The heading is static HTML; the
+ * diary and goals live in `localStorage` (ADR 0002), so the KPIs and the
+ * Recharts wrappers are the `ProgressDashboard` island, hydrated with
+ * `client:visible` (the charts are the heaviest JS on the site).
+ */
+import ProgressDashboard from '@/components/islands/ProgressDashboard';
+import { t, type Locale } from '@/i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<main id="main-content" class="mx-auto max-w-5xl px-4 py-10 sm:py-14" data-page="tracking-progress">
+  <header class="mb-8 max-w-3xl">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t(lang, 'progress.kicker')}</p>
+    <h1
+      class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+      style="view-transition-name: page-title"
+    >
+      {t(lang, 'progress.title')}
+    </h1>
+    <p class="mt-4 text-muted-foreground">{t(lang, 'progress.pageDescription')}</p>
+  </header>
+
+  <ProgressDashboard lang={lang} client:visible />
+</main>

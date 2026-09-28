@@ -1,0 +1,42 @@
+import { useStore } from '@nanostores/react';
+import { t, type Locale } from '@/i18n';
+import { $needsRefresh, activateUpdate } from '@/stores/install';
+import { useHydrated } from '@/lib/use-hydrated';
+
+/**
+ * Toast that appears when a new service worker is waiting to activate.
+ * `$needsRefresh` is set true by the pwa-register module's `onNeedRefresh`
+ * callback, which fires after a successful SW update download.
+ *
+ * Clicking "Reload" calls `activateUpdate()` which skip-waits the new SW
+ * and reloads the page — the user immediately gets the updated app.
+ *
+ * Accessibility:
+ * - role="status" + aria-live="polite" announces the message without
+ *   interrupting ongoing screen-reader speech.
+ */
+export default function UpdateToast({ lang = 'en' }: { lang?: Locale }) {
+  const needs = useStore($needsRefresh);
+  // The SW can flag an update before this idle island hydrates: match the
+  // server's empty render first (roadmap Issue 045).
+  const hydrated = useHydrated();
+  if (!hydrated || !needs) return null;
+
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed top-4 right-4 z-50 max-w-sm rounded-lg border border-border bg-card text-card-foreground px-4 py-3 shadow-lg motion-preset-slide-down-md motion-duration-300"
+    >
+      <p className="text-sm font-medium">{t(lang, 'offline.updateTitle')}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{t(lang, 'offline.updateBody')}</p>
+      <button
+        type="button"
+        onClick={() => activateUpdate()}
+        className="mt-2 inline-flex items-center rounded-md border border-primary/40 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        {t(lang, 'offline.reload')}
+      </button>
+    </div>
+  );
+}

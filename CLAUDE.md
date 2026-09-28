@@ -1,907 +1,311 @@
-# CLAUDE.md - Foodie Meal Planning PWA
+# Foodie — Claude Code context
 
-**Project**: Foodie - Comprehensive Meal Planning Web Application
-**Version**: 1.0.0
-**Last Updated**: 2025-01-10
-**Tech Stack**: React 18, TypeScript, Vite 5, Tailwind CSS, Firebase (optional), GitHub Pages
+## Overview
 
----
+Foodie is an offline-first meal-planning web app: a trilingual (EN/ES/FR)
+catalog of 50 recipes and 105 ingredients, a weekly planner with drag and drop,
+a consolidated shopping list with prices, a pantry, a food diary with goals and
+progress charts, optional sign-in, recipe contribution without secrets, and
+plan sharing by URL. All user data is local-first (`localStorage`).
 
-## Table of Contents
+v2 is a template-first rebuild on **Inceptor**: **Astro 7** (`^7.3`, ADR 0011)
+static pages with **React 19** islands, at the repo root. v1 (React 18 + Vite
+SPA) is frozen at the tag `legacy-vite-1.0.0`; read it with
+`git show legacy-vite-1.0.0:src/<path>`.
 
-1. [Project Overview](#project-overview)
-2. [Architecture](#architecture)
-3. [Tech Stack Decisions](#tech-stack-decisions)
-4. [Project Structure](#project-structure)
-5. [Key Features](#key-features)
-6. [Data Model](#data-model)
-7. [State Management](#state-management)
-8. [Internationalization](#internationalization)
-9. [PWA Implementation](#pwa-implementation)
-10. [GitHub Integration](#github-integration)
-11. [Development Workflow](#development-workflow)
-12. [Deployment](#deployment)
-13. [Testing Strategy](#testing-strategy)
-14. [Performance Optimization](#performance-optimization)
-15. [Accessibility](#accessibility)
-16. [Future Enhancements](#future-enhancements)
-17. [Troubleshooting](#troubleshooting)
-18. [Contributing](#contributing)
+- **Canonical plan:** [`docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md`](docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md)
+  — 48 issues in 7 phases, decisions D1–D14, target architecture, per-issue
+  acceptance criteria. Read the issue block you work on in full.
+- **Docs site:** `/docs/` (content in `src/content/docs/`, sidebar in
+  `src/content/docs-sidebar.ts`; `/docs/reference/api/` is generated from
+  `src/schemas` at build time).
+- **Live:** <https://artemiopadilla.github.io/foodie/> (GitHub Pages, base `/foodie`).
 
----
+**Stack (installed).** Astro 7 + `@astrojs/react` (React 19) + `@astrojs/mdx`
+· Tailwind v4 via `@tailwindcss/vite` · shadcn-style primitives on
+`@base-ui-components/react` (`src/components/ui/`, owned source) · Nano Stores
+(`nanostores`, `@nanostores/react`) · TanStack Query/Table/Virtual ·
+react-hook-form + Zod 4 · lucide-react · recharts · `motion/react` ·
+`@vite-pwa/astro` · Pagefind. Foodie additions allowed by the roadmap:
+`@dnd-kit/core` (ADR 0010), `firebase` (only
+`firebase/app` + `firebase/auth`, dynamic import, ADR 0012), `fflate` (ADR 0013).
+Tests: Vitest + Testing Library, Playwright + axe-core. Node 22 (`.nvmrc`).
 
-## Project Overview
+## Commands
 
-Foodie is a Progressive Web Application (PWA) designed to help users plan meals, discover recipes, generate shopping lists, and manage their pantry. The app supports multiple languages (English, Spanish, French) and multiple cuisines, making it truly global.
+```bash
+npm ci                    # install (lockfile exact)
+npm run dev               # http://localhost:4321/
+npm run check             # astro check + tsc + vitest + eslint + pragmas, then build + built-site tests — the gate before every commit
+npm run test              # vitest only;  npm run test -- <file>  for one file
+npm run build             # astro build + pagefind → dist/
+npm run preview           # serve dist/
+npm run build && npx playwright test   # visual + a11y + smoke suite AND e2e journeys (default config)
+npm run test:e2e          # e2e journeys + CSP gate (own build with PUBLIC_AUTH_MOCK=1)
+npm run test:visual:update # refresh screenshot baselines (or npm run refresh-baselines, Docker)
+npm run a11y              # axe-core scan (needs a build)
+npm run ux:check          # contrast + motion token checks
+npm run lighthouse        # Lighthouse CI (set CHROME_PATH if Chrome is not found)
+npm run perf              # perf gate: prod-shaped build, bundle-split checks, chunk report, Lighthouse scores + byte budgets
+npm run docs:screenshots  # README captures into docs/assets/ (needs a running preview)
+```
 
-### Core Objectives
+**Playwright under an agent (Astro 7).** When `astro preview` detects an AI
+agent (`CLAUDECODE`, `AI_AGENT`, …) it moves itself to the background and
+exits. Both Playwright configs start it with `--ignore-lock`, which keeps it in
+the foreground under Playwright's control, so the commands above work as-is. A
+preview you start by hand as an agent still backgrounds itself: add
+`--ignore-lock` or stop it with `npx astro preview stop`. If Lighthouse reports
+"Chrome installation not found", point `CHROME_PATH` at Playwright's Chromium
+(e.g. `/opt/pw-browsers/chromium-*/chrome-linux/chrome`).
 
-- **Flexibility**: Support any cuisine, dietary restriction, or meal planning style
-- **Accessibility**: WCAG 2.1 AA compliant, works offline, mobile-first
-- **Community-Driven**: GitHub-integrated recipe contribution system
-- **Performant**: Fast loading, optimized bundles, PWA capabilities
-- **Multilingual**: Full i18n support with easy expansion to more languages
-
----
+`npm run test:e2e` leaves the mock-auth build in `dist/`: run `npm run build`
+again before the visual suite.
 
 ## Architecture
 
-### High-Level Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                    User Interface (React)                │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐│
-│  │  Pages   │  │Components│  │ Layouts  │  │ Routing ││
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬────┘│
-└───────┼────────────┼──────────────┼──────────────┼─────┘
-        │            │              │              │
-┌───────▼────────────▼──────────────▼──────────────▼─────┐
-│              Context API (State Management)             │
-│  ┌──────┐ ┌──────┐ ┌─────────┐ ┌──────┐ ┌───────────┐ │
-│  │Recipe│ │Planner│ │Shopping│ │ Auth │ │ Language  │ │
-│  └──────┘ └──────┘ └─────────┘ └──────┘ └───────────┘ │
-└────────┬────────────────────────────────────────┬──────┘
-         │                                        │
-┌────────▼────────────────────────────────────────▼──────┐
-│                     Services Layer                      │
-│  ┌──────────┐  ┌──────────┐  ┌───────────┐  ┌───────┐│
-│  │ Recipe   │  │Firebase  │  │  GitHub   │  │ Utils ││
-│  │ Service  │  │  Service │  │   API     │  │       ││
-│  └──────────┘  └──────────┘  └───────────┘  └───────┘│
-└────────┬────────────────────────────────────────┬──────┘
-         │                                        │
-┌────────▼────────────────────────────────────────▼──────┐
-│                      Data Layer                         │
-│  ┌──────────┐  ┌──────────────┐  ┌──────────────────┐│
-│  │JSON Files│  │ LocalStorage │  │ Firebase/Firestore││
-│  │(Static)  │  │  (Offline)   │  │  (Cloud Sync)     ││
-│  └──────────┘  └──────────────┘  └──────────────────┘│
-└─────────────────────────────────────────────────────────┘
-```
-
-### Design Patterns
-
-1. **Context + Hooks Pattern**: Global state managed through React Context API with custom hooks
-2. **Container/Presentational**: Separation of logic (containers) and UI (presentational components)
-3. **Composition**: Small, reusable components composed to build complex UIs
-4. **Service Layer**: Business logic abstracted into service modules
-5. **Progressive Enhancement**: Core functionality works without JavaScript, enhanced with React
-
----
-
-## Tech Stack Decisions
-
-### Why These Technologies?
-
-#### React 18 + TypeScript
-- **React**: Industry standard, excellent ecosystem, great performance with concurrent features
-- **TypeScript**: Type safety reduces bugs, better IDE support, self-documenting code
-- **Hooks**: Modern React patterns, easier state management and side effects
-
-#### Vite 5
-- **Fast HMR**: Lightning-fast hot module replacement for better DX
-- **ES Modules**: Native ES module support, no bundling in dev
-- **Optimized Build**: Rollup-based production builds with automatic code splitting
-- **Plugin Ecosystem**: Easy PWA integration with vite-plugin-pwa
-
-#### Tailwind CSS
-- **Utility-First**: Rapid development with utility classes
-- **Customization**: Easy to customize theme and extend
-- **Performance**: PurgeCSS removes unused styles automatically
-- **Dark Mode**: Built-in dark mode support with `class` strategy
-
-#### React Context API (vs Redux/Zustand)
-- **Built-in**: No external dependencies for state management
-- **Sufficient**: App complexity doesn't require heavy state management
-- **Simple**: Easier for contributors to understand and extend
-- **Performant**: With proper memoization and context splitting
-
-#### i18next
-- **Mature**: Battle-tested i18n solution
-- **React Integration**: Official react-i18next package
-- **Language Detection**: Automatic language detection from browser
-- **Async Loading**: Load translations on-demand
-
-#### Firebase (Optional)
-- **Authentication**: Easy OAuth integration (Google, GitHub)
-- **Firestore**: Real-time database for user data, meal plans
-- **Storage**: Cloud storage for user-uploaded recipe images
-- **Free Tier**: Generous free tier for small to medium apps
-
-#### GitHub Pages
-- **Free**: Free hosting for public repositories
-- **CI/CD**: Integrated with GitHub Actions
-- **Custom Domains**: Support for custom domains
-- **HTTPS**: Automatic HTTPS support
-
----
-
-## Project Structure
-
 ```
 foodie/
-├── public/                     # Static assets
-│   ├── images/                 # Image assets
-│   │   ├── recipes/            # Recipe photos
-│   │   ├── ingredients/        # Ingredient photos
-│   │   ├── icons/              # PWA icons
-│   │   └── placeholders/       # Placeholder images
-│   ├── locales/                # Translation files
-│   │   ├── en/translation.json
-│   │   ├── es/translation.json
-│   │   └── fr/translation.json
-│   └── manifest.webmanifest    # PWA manifest
-│
+├── .claude/agents/          ← prometeo, forja, centinela
+├── .claude/checklists/      ← ethics, governance, forbidden-imports
+├── docs/                    ← roadmap (superpowers/specs), ADRs (decisions/),
+│                               runbooks, recipes (how-tos), assets (README captures)
+├── public/data/             ← recipes, ingredients, beverages, categories,
+│                               ingredient-prices .json (single source of the catalog)
 ├── src/
-│   ├── components/             # React components
-│   │   ├── common/             # Reusable UI components
-│   │   ├── layout/             # Layout components (Header, Footer)
-│   │   ├── recipe/             # Recipe-related components
-│   │   ├── planner/            # Meal planner components
-│   │   ├── shopping/           # Shopping list components
-│   │   ├── contribute/         # Recipe contribution wizard
-│   │   ├── auth/               # Authentication components
-│   │   └── pantry/             # Pantry management components
-│   │
-│   ├── contexts/               # React Context providers
-│   │   ├── AppContext.tsx      # App-wide settings
-│   │   ├── ThemeContext.tsx    # Dark/light theme
-│   │   ├── LanguageContext.tsx # i18n language state
-│   │   ├── AuthContext.tsx     # User authentication
-│   │   ├── RecipeContext.tsx   # Recipe data & filters
-│   │   ├── PlannerContext.tsx  # Meal planning state
-│   │   └── ShoppingContext.tsx # Shopping list state
-│   │
-│   ├── hooks/                  # Custom React hooks
-│   │   ├── useRecipes.ts       # Recipe operations
-│   │   ├── useMealPlans.ts     # Meal plan operations
-│   │   ├── useLocalStorage.ts  # LocalStorage wrapper
-│   │   ├── useDebounce.ts      # Debounce hook
-│   │   └── useMediaQuery.ts    # Responsive design hook
-│   │
-│   ├── utils/                  # Utility functions
-│   │   ├── calculations.ts     # Nutrition, cost calculations
-│   │   ├── unitConversions.ts  # Unit conversion logic
-│   │   ├── nutritionEstimator.ts # Nutrition estimation
-│   │   ├── githubAPI.ts        # GitHub API wrapper
-│   │   ├── firebaseAPI.ts      # Firebase operations
-│   │   ├── storage.ts          # LocalStorage utilities
-│   │   ├── validation.ts       # Form & data validation
-│   │   └── formatting.ts       # Date, number formatting
-│   │
-│   ├── services/               # Business logic services
-│   │   ├── recipeService.ts    # Recipe CRUD operations
-│   │   ├── ingredientService.ts # Ingredient operations
-│   │   ├── plannerService.ts   # Meal planning logic
-│   │   └── shoppingService.ts  # Shopping list generation
-│   │
-│   ├── data/                   # Static data (JSON)
-│   │   ├── recipes.json        # Recipe database
-│   │   ├── ingredients.json    # Ingredient database
-│   │   ├── categories.json     # Categories & taxonomies
-│   │   └── config.json         # App configuration
-│   │
-│   ├── schemas/                # JSON schemas for validation
-│   │   ├── recipe.schema.json
-│   │   ├── ingredient.schema.json
-│   │   └── mealPlan.schema.json
-│   │
-│   ├── pages/                  # Page components
-│   │   ├── HomePage.tsx
-│   │   ├── RecipesPage.tsx
-│   │   ├── RecipeDetailPage.tsx
-│   │   ├── PlannerPage.tsx
-│   │   ├── ShoppingListPage.tsx
-│   │   ├── ContributePage.tsx
-│   │   ├── PantryPage.tsx
-│   │   ├── ProfilePage.tsx
-│   │   └── NotFoundPage.tsx
-│   │
-│   ├── types/                  # TypeScript type definitions
-│   │   └── index.ts            # All type definitions
-│   │
-│   ├── styles/                 # Global styles
-│   │   └── globals.css         # Tailwind + custom styles
-│   │
-│   ├── App.tsx                 # Root component
-│   ├── main.tsx                # Entry point
-│   └── i18n.ts                 # i18next configuration
-│
-├── .github/
-│   └── workflows/              # GitHub Actions
-│       ├── deploy.yml          # Deploy to GitHub Pages
-│       ├── validate-recipe-pr.yml # Validate recipe PRs
-│       └── lighthouse-ci.yml   # Performance testing
-│
-├── scripts/                    # Build & utility scripts
-│   ├── validateJSON.js         # JSON schema validation
-│   └── generateSitemap.js      # Sitemap generation
-│
-├── tests/                      # Test files
-│   ├── unit/                   # Unit tests
-│   ├── integration/            # Integration tests
-│   └── e2e/                    # End-to-end tests
-│
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.js
-├── .env.example
-├── README.md
-└── CLAUDE.md                   # This file
+│   ├── components/
+│   │   ├── ui/              ← Inceptor kit on Base UI (owned)
+│   │   ├── domain/          ← RecipeCard, NutritionFacts, DietaryBadges, …
+│   │   ├── islands/         ← RecipeBrowser, RecipeDetailActions, IngredientBrowser,
+│   │   │                       MealPlanner, ShoppingList, Pantry, TrackingToday,
+│   │   │                       GoalsForm, ProgressDashboard, ContributeWizard,
+│   │   │                       AuthDialog, AccountMenu, Profile, SharedPlan, MobileNav
+│   │   ├── common/          ← Astro chrome (SiteHeader, SiteFooter, LangSwitcher)
+│   │   └── pages/           ← page bodies shared by the /, /es/, /fr/ wrappers
+│   ├── content/             ← docs collection + docs-sidebar.ts (+ template gallery data)
+│   ├── content.config.ts    ← collections: docs, blog, recipes, ingredients,
+│   │                           beverages, categories, prices
+│   ├── i18n/                ← en.ts (Dictionary type), es.ts, fr.ts, index.ts
+│   ├── lib/
+│   │   ├── auth/            ← contracts, config, firebase adapter, mock, guard-user
+│   │   ├── catalog/         ← collections, useCatalog (Query + IDB), selectors
+│   │   ├── domain/          ← units, shopping, nutrition, tracking, plan-share, cost, …
+│   │   ├── docs/            ← schema-reference (build-time schema → table data)
+│   │   ├── persist.ts       ← persistentAtom (localStorage + Zod + cross-tab)
+│   │   └── href.ts, flags.ts, site-meta.ts, report-issue.ts, …
+│   ├── schemas/             ← Zod: recipe, ingredient, beverage, meal-plan, shopping,
+│   │                           pantry, tracking, goals, preferences, auth,
+│   │                           recipe-submission, plan-share, user-data, …
+│   ├── stores/              ← $theme, $preferences, $favorites, $planner, $shopping,
+│   │                           $pantry, $tracking, $goals, $user, $customPrices, …
+│   ├── layouts/             ← BaseLayout, DocsLayout
+│   └── pages/               ← one page per route; es/ and fr/ wrappers
+└── tests/{visual,e2e,fixtures}/   ← Playwright
 ```
 
----
-
-## Key Features
-
-### 1. Recipe Browser
-- **Search**: Full-text search across recipes in all languages
-- **Filters**: By meal type, cuisine, dietary tags, prep/cook time
-- **Sorting**: By rating, time, cost, popularity, name
-- **Detail View**: Full recipe with scaling, nutrition facts, timer
-- **Favorites**: Save favorite recipes (localStorage or Firebase)
-
-### 2. Meal Planner
-- **Calendar Views**: Week and month views
-- **Drag & Drop**: Intuitive drag-and-drop recipe assignment
-- **Servings Adjustment**: Global and per-meal servings control
-- **Plan Templates**: Save and reuse meal plans
-- **Sharing**: Generate shareable links for meal plans
-
-### 3. Shopping List
-- **Auto-Generation**: Generate from meal plan
-- **Smart Consolidation**: Combine same ingredients
-- **Category Grouping**: Organize by ingredient category
-- **Interactive**: Check off items, add notes
-- **Export**: Print, copy, WhatsApp, CSV
-
-### 4. Recipe Contribution
-- **Multi-Step Wizard**: 7-step guided recipe submission
-- **GitHub Integration**: Automatic PR creation for new recipes
-- **Validation**: Client-side and server-side validation
-- **Preview**: Preview recipe before submission
-
-### 5. Pantry Management
-- **Inventory**: Track ingredients at home
-- **Expiration Tracking**: See what's expiring soon
-- **Recipe Suggestions**: Suggest recipes based on pantry items
-
-### 6. User System
-- **Authentication**: Email/password, Google OAuth
-- **Preferences**: Language, theme, dietary restrictions
-- **Cloud Sync**: Sync favorites, plans across devices (Firebase)
-- **Guest Mode**: Use app without account (localStorage only)
-
-### 7. PWA Features
-- **Offline Support**: Service Worker caches recipes and app shell
-- **Installable**: Add to home screen prompt
-- **Fast Loading**: Optimized bundle, lazy loading
-- **Responsive**: Mobile-first design, works on all devices
-
----
-
-## Data Model
-
-### Recipe
-
-```typescript
-interface Recipe {
-  id: string;
-  name: MultiLangText;               // EN, ES, FR
-  description: MultiLangText;
-  type: string;                      // breakfast, lunch, dinner, snack, dessert
-  cuisine: string[];                 // mediterranean, mexican, etc.
-  prepTime: number;                  // minutes
-  cookTime: number;
-  totalTime: number;
-  servings: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-  tags: string[];                    // gluten-free, vegan, etc.
-  dietaryLabels: DietaryLabels;
-  nutrition: NutritionInfo;
-  ingredients: RecipeIngredient[];
-  instructions: RecipeInstruction[];
-  tips?: MultiLangText;
-  equipment: string[];
-  imageUrl?: string;
-  author?: string;
-  dateAdded: string;
-  rating: number;
-  reviewCount: number;
-}
-```
-
-### Ingredient
-
-```typescript
-interface Ingredient {
-  id: string;
-  name: MultiLangText;
-  category: string;                  // protein, vegetables, etc.
-  unit: string;                      // piece, cup, lb, etc.
-  avgPrice: number;
-  currency: string;
-  region: string;
-  tags: {
-    glutenFree: boolean;
-    vegan: boolean;
-    vegetarian: boolean;
-    dairyFree: boolean;
-    nutFree: boolean;
-    kosher: boolean;
-    halal: boolean;
-  };
-  alternatives: string[];
-  seasonality: string[];
-  storageInstructions: MultiLangText;
-}
-```
-
-### Meal Plan
-
-```typescript
-interface MealPlan {
-  id: string;
-  name: MultiLangText;
-  description: MultiLangText;
-  servings: number;
-  dietaryRestrictions: string[];
-  difficulty: string;
-  estimatedCost: number;
-  currency: string;
-  days: PlanDay[];                   // 7 days typically
-  tags: string[];
-  isPublic: boolean;
-  shareToken?: string;
-}
-```
-
----
-
-## State Management
-
-### Context Architecture
-
-We use **React Context API** with separate contexts for different concerns:
-
-1. **AppContext**: App-wide config, online status, PWA install prompt
-2. **ThemeContext**: Dark/light theme toggle
-3. **LanguageContext**: Current language, translation helpers
-4. **AuthContext**: User auth state, sign in/out methods
-5. **RecipeContext**: Recipe data, filters, favorites
-6. **PlannerContext**: Current meal plan, CRUD operations
-7. **ShoppingContext**: Shopping list items, CRUD operations
-
-### Why Not Redux?
-
-- **Simpler**: Fewer concepts, easier for contributors
-- **Built-in**: No external dependencies
-- **Sufficient**: App complexity doesn't require Redux
-- **Performance**: Proper context splitting prevents unnecessary re-renders
-
-### State Persistence
-
-- **LocalStorage**: Meal plans, favorites, shopping lists (offline-first)
-- **Firebase**: Optional cloud sync for authenticated users
-- **Service Worker**: Cache static assets and API responses
-
----
-
-## Internationalization
-
-### Implementation
-
-- **Library**: i18next + react-i18next
-- **Languages**: English (en), Spanish (es), French (fr)
-- **Detection**: Automatic browser language detection
-- **Fallback**: English as fallback language
-- **Async Loading**: Translation files loaded on-demand
-
-### Translation Files
-
-Located in `public/locales/{lang}/translation.json`:
-
-```json
-{
-  "app": {
-    "name": "Foodie",
-    "tagline": "Your Personal Meal Planning Assistant"
-  },
-  "nav": {
-    "home": "Home",
-    "recipes": "Recipes",
-    ...
-  }
-}
-```
-
-### Usage in Components
-
-```typescript
-import { useTranslation } from 'react-i18next';
-
-function MyComponent() {
-  const { t } = useTranslation();
-  return <h1>{t('app.name')}</h1>;
-}
-```
-
-### Multilingual Data
-
-Recipes, ingredients, and categories use `MultiLangText`:
-
-```typescript
-interface MultiLangText {
-  en: string;
-  es: string;
-  fr: string;
-}
-
-// Usage
-const recipeName: MultiLangText = {
-  en: "Scrambled Eggs",
-  es: "Huevos Revueltos",
-  fr: "Œufs Brouillés"
-};
-```
-
-Use `LanguageContext.getTranslated(text)` to get current language version.
-
----
-
-## PWA Implementation
-
-### Service Worker
-
-Configured via `vite-plugin-pwa`:
-
-```typescript
-// vite.config.ts
-VitePWA({
-  registerType: 'autoUpdate',
-  workbox: {
-    globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
-    runtimeCaching: [
-      {
-        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-        handler: 'CacheFirst',
-      },
-      {
-        urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
-        handler: 'CacheFirst',
-      }
-    ]
-  }
-})
-```
-
-### Manifest
-
-`public/manifest.webmanifest`:
-
-```json
-{
-  "name": "Foodie - Meal Planner",
-  "short_name": "Foodie",
-  "theme_color": "#10b981",
-  "display": "standalone",
-  "start_url": "/",
-  "icons": [...]
-}
-```
-
-### Offline Strategy
-
-- **App Shell**: Cached on first visit
-- **Recipes**: Cached after viewing
-- **Images**: Cached with CacheFirst strategy
-- **API Calls**: Network-first, cache fallback
-
----
-
-## GitHub Integration
-
-### Recipe Contribution Workflow
-
-1. **User**: Fills out 7-step recipe wizard
-2. **App**: Generates JSON matching schema
-3. **App**: Uses Octokit to:
-   - Fork repository
-   - Create feature branch
-   - Commit JSON files
-   - Create Pull Request
-4. **GitHub Actions**: Validates JSON schema, checks duplicates
-5. **Maintainer**: Reviews and merges PR
-6. **Auto-Deploy**: Merged changes trigger deployment
-
-### OAuth Setup
-
-```typescript
-// In contribution wizard
-import { Octokit } from '@octokit/rest';
-
-const octokit = new Octokit({
-  auth: userGitHubToken
-});
-
-// Fork repo
-const fork = await octokit.repos.createFork({
-  owner: 'your-org',
-  repo: 'foodie'
-});
-
-// Create branch, commit, PR...
-```
-
-### PR Template
-
-```markdown
-## New Recipe Submission
-
-**Recipe**: {{name}}
-**Submitted by**: @{{username}}
-
-### Checklist
-- [ ] JSON schema valid
-- [ ] All required fields present
-- [ ] Nutrition info reasonable
-- [ ] Instructions clear
-- [ ] Image appropriate
-- [ ] No duplicate recipe
-```
-
----
-
-## Development Workflow
-
-### Getting Started
-
-```bash
-# Clone repository
-git clone https://github.com/artemiopadilla/foodie.git
-cd foodie
-
-# Install dependencies
-npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
-```
-
-### Available Scripts
-
-```json
-{
-  "dev": "vite",                      // Start dev server
-  "build": "tsc && vite build",       // Production build
-  "preview": "vite preview",          // Preview production build
-  "lint": "eslint .",                 // Run ESLint
-  "test": "vitest",                   // Run unit tests
-  "test:e2e": "playwright test",      // Run E2E tests
-  "validate:json": "node scripts/validateJSON.js" // Validate JSON files
-}
-```
-
-### Code Style
-
-- **Linting**: ESLint with TypeScript rules
-- **Formatting**: Prettier (2 spaces, single quotes)
-- **Naming**:
-  - Components: PascalCase (e.g., `RecipeCard.tsx`)
-  - Functions: camelCase (e.g., `calculateTotalCost`)
-  - Constants: UPPER_SNAKE_CASE (e.g., `MAX_SERVINGS`)
-- **Files**:
-  - Components: `.tsx`
-  - Utilities: `.ts`
-  - Styles: `.css`
-
----
-
-## Deployment
-
-### GitHub Pages
-
-Deployed automatically via GitHub Actions:
-
-```yaml
-# .github/workflows/deploy.yml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/deploy-pages@v4
-```
-
-### Base Path
-
-Configured in `vite.config.ts`:
-
-```typescript
-export default defineConfig({
-  base: '/foodie/',  // Replace with your repo name
-  ...
-});
-```
-
-### Custom Domain (Optional)
-
-1. Add `CNAME` file to `public/` directory
-2. Configure DNS settings at your domain provider
-3. Enable HTTPS in GitHub Pages settings
-
----
-
-## Testing Strategy
-
-### Unit Tests (Vitest)
-
-Test utilities, hooks, and pure functions:
-
-```typescript
-// utils/unitConversions.test.ts
-import { convertUnit } from './unitConversions';
-
-describe('convertUnit', () => {
-  it('converts cups to ml', () => {
-    expect(convertUnit(1, 'cup', 'ml')).toBe(240);
-  });
-});
-```
-
-### Integration Tests
-
-Test component interactions:
-
-```typescript
-// RecipeCard.test.tsx
-import { render, screen } from '@testing-library/react';
-import RecipeCard from './RecipeCard';
-
-test('displays recipe name', () => {
-  const recipe = { name: { en: 'Test Recipe' }, ... };
-  render(<RecipeCard recipe={recipe} />);
-  expect(screen.getByText('Test Recipe')).toBeInTheDocument();
-});
-```
-
-### E2E Tests (Playwright)
-
-Test critical user flows:
-
-```typescript
-// tests/e2e/meal-planner.spec.ts
-test('create meal plan', async ({ page }) => {
-  await page.goto('/planner');
-  await page.click('text=Create New Plan');
-  await page.fill('input[name="planName"]', 'My Plan');
-  await page.click('text=Save');
-  await expect(page.locator('text=My Plan')).toBeVisible();
-});
-```
-
----
-
-## Performance Optimization
-
-### Bundle Optimization
-
-- **Code Splitting**: Route-based lazy loading
-- **Tree Shaking**: Remove unused code
-- **Minification**: Terser for JS, cssnano for CSS
-- **Compression**: gzip/brotli enabled
-
-### Image Optimization
-
-- **Format**: WebP with JPEG fallback
-- **Lazy Loading**: Images below fold lazy loaded
-- **Responsive**: srcset for different screen sizes
-- **Compression**: All images optimized
-
-### Caching Strategy
-
-- **Static Assets**: Cache-First (1 year)
-- **API Calls**: Network-First with cache fallback
-- **Images**: Cache-First (30 days)
-
-### Lighthouse Scores
-
-Target scores:
-- Performance: >90
-- Accessibility: 100
-- Best Practices: 100
-- SEO: 100
-
----
-
-## Accessibility
-
-### WCAG 2.1 AA Compliance
-
-- **Semantic HTML**: Proper use of headings, landmarks
-- **Keyboard Navigation**: All interactive elements keyboard accessible
-- **ARIA Labels**: Screen reader support
-- **Color Contrast**: 4.5:1 for normal text, 3:1 for large text
-- **Focus Indicators**: Visible focus states
-- **Alt Text**: All images have descriptive alt text
-- **Forms**: Proper labels, error messages
-
-### Testing
-
-- **Automated**: Lighthouse, axe-core
-- **Manual**: Keyboard navigation, screen reader testing
-- **Tools**: WAVE, axe DevTools
-
----
-
-## Future Enhancements
-
-### Phase 2
-- Native mobile apps (React Native)
-- Voice commands (Alexa, Google Assistant)
-- Barcode scanning for pantry management
-- AI recipe suggestions
-- Social features (follow users, share plans)
-
-### Phase 3
-- Grocery delivery integration (Instacart, Amazon Fresh)
-- Meal prep video tutorials
-- Nutritionist consultation booking
-- Integration with fitness trackers
-- Smart appliance integration (IoT)
-
----
-
-## Troubleshooting
-
-### Common Issues
-
-#### 1. Build Fails with TypeScript Errors
-
-```bash
-# Clear cache and reinstall
-rm -rf node_modules package-lock.json
-npm install
-npm run build
-```
-
-#### 2. PWA Not Updating
-
-```bash
-# Clear service worker cache
-# In browser DevTools: Application > Service Workers > Unregister
-# Then hard refresh: Ctrl+Shift+R (Windows) or Cmd+Shift+R (Mac)
-```
-
-#### 3. Images Not Loading
-
-Check `vite.config.ts` base path matches your deployment URL:
-
-```typescript
-export default defineConfig({
-  base: '/foodie/',  // Must match GitHub repo name
-});
-```
-
-#### 4. i18n Translations Not Loading
-
-Ensure translation files are in `public/locales/{lang}/translation.json`, not in `src/`.
-
----
-
-## Contributing
-
-### How to Contribute
-
-1. **Fork** the repository
-2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
-3. **Commit** your changes: `git commit -m 'Add amazing feature'`
-4. **Push** to the branch: `git push origin feature/amazing-feature`
-5. **Open** a Pull Request
-
-### Contribution Guidelines
-
-- Follow existing code style
-- Add tests for new features
-- Update documentation
-- Ensure all tests pass
-- Use semantic commit messages
-
-### Adding Recipes
-
-Use the in-app recipe contribution wizard for the best experience. It will:
-- Validate your recipe
-- Generate proper JSON
-- Create a PR automatically
-
----
-
-## Maintainer Notes
-
-### Adding a New Language
-
-1. Add language code to `src/i18n.ts`:
-   ```typescript
-   supportedLngs: ['en', 'es', 'fr', 'de'],
-   ```
-
-2. Create translation file: `public/locales/de/translation.json`
-
-3. Update `MultiLangText` interface in `src/types/index.ts`:
-   ```typescript
-   interface MultiLangText {
-     en: string;
-     es: string;
-     fr: string;
-     de: string;
-   }
-   ```
-
-4. Add recipes/ingredients in new language
-
-### Reviewing Recipe PRs
-
-Check:
-- [ ] JSON schema valid (automated)
-- [ ] Nutrition values reasonable
-- [ ] Instructions clear and numbered
-- [ ] Image appropriate (no copyrighted content)
-- [ ] No duplicate recipe
-- [ ] All 3 languages present and accurate
-
-### Deployment
-
-Push to `main` branch triggers automatic deployment via GitHub Actions. No manual steps required.
-
----
-
-## License
-
-MIT License - see LICENSE file for details.
-
----
-
-## Contact
-
-- **Issues**: https://github.com/artemiopadilla/foodie/issues
-- **Discussions**: https://github.com/artemiopadilla/foodie/discussions
-- **Email**: foodie@example.com
-
----
-
-**Generated with Claude Code** - Anthropic's AI-powered coding assistant
-Last updated: 2025-01-10
+**Routes** (each in `/`, `/es/`, `/fr/`): `/`, `/recipes/`, `/recipes/[id]/`
+(getStaticPaths), `/ingredients/`, `/ingredients/[id]/`, `/planner/`,
+`/shopping/`, `/pantry/`, `/tracking/`, `/tracking/goals/`,
+`/tracking/progress/`, `/contribute/`, `/profile/`, `/plan/shared/`, 404.
+EN-only: `/docs/**` (ES/FR have bridge landings), and the template's
+`/gallery`, `/demos`, `/blocks`, `/blog` (trimmed in roadmap #046).
+**One island per page**; `client:load` where the page is empty without it,
+`client:visible`/`client:idle` otherwise.
+
+**Data flow:** Astro page (build) → `getCollection('recipes')` → static HTML +
+JSON-LD ×3 locales · island → `useCatalog()` (TanStack Query, IndexedDB
+persist) → `fetch(withBase('/data/x.json'))` · island → `useStore($planner)` ←
+`persistentAtom` ← `localStorage` (Zod-validated) · auth island →
+`AuthProvider` contract → Firebase adapter (lazy) → `$user` / `$authReady` →
+`GuardUser`.
+
+## Conventions
+
+- **Branches:** `phase-N/issue-NNN-slug` for roadmap work, from `main`, PR →
+  `main` (the `inceptor` integration branch closed with the cutover, #030).
+- **Commits:** Conventional Commits with the id, e.g.
+  `feat(planner): duplicate a day (roadmap #026)`. `Tdd-Red:` trailer on a
+  red-test commit. Record user-visible changes under `## [Unreleased]` in
+  `CHANGELOG.md`.
+- **Labels / milestones:** `phase-0`…`phase-6`, `type:feat|fix|docs|test|chore`,
+  `risk:high`, `recipe-submission`; milestones `v0.1`…`v1.0`. Bootstrap from
+  the roadmap with `bash scripts/create-issues.sh` (dry run; `--apply`).
+- **Issue-driven development and orchestration.** The main Claude Code session
+  is the orchestrator; three sub-agents in `.claude/agents/` do the work:
+  **prometeo** plans (reads the roadmap, orders issues by `Depends on`, writes
+  no code), **forja** implements one issue with atomic commits, **centinela**
+  validates (`npm run check`, the issue's Validation block, forbidden imports,
+  ethics tier) and returns `APPROVED` / `REJECTED`. Flow: issue → prometeo →
+  forja → centinela → PR → CI + review → merge → deploy.
+- **Ethics tiers** (`.claude/checklists/ethics.json`, `docs/ETHICS.md`):
+  tier-0 docs/tests; tier-1 default for `type:feat`/`type:fix` (checklist items
+  1, 7, 8); tier-2 (`risk:high`: new non-same-origin fetch, new persistent
+  storage of user input, `/profile`/AuthDialog-like surfaces, diagnostics
+  changes) requires a Stakeholder Analysis ADR.
+
+## Rules
+
+Critical warnings (Inceptor) — read before touching code:
+
+1. ❌ No `@astrojs/tailwind` — Tailwind v4 goes through `@tailwindcss/vite`.
+2. ❌ No React Context shared **across** islands — Nano Stores only
+   (`src/stores/`, persistent ones through `persistentAtom`). Context inside one
+   island is fine.
+3. ❌ Never wrap the whole app in one island.
+4. ❌ No `@radix-ui/*` mixed with Base UI — the kit is Base UI.
+5. ❌ No `@tremor/react` — Tremor Raw (copied source) only.
+6. ❌ No `framer-motion` — import from `motion/react`.
+
+Foodie rules on top:
+
+- **Zod at every boundary.** Cross-boundary types (network, storage, forms,
+  URL payloads, `public/data/*.json`) are Zod schemas in `src/schemas/`; types
+  come from `z.infer`, not `interface`.
+- **`withBase()` for every href and asset** (`src/lib/href.ts`); locale-aware
+  links through `withBase(localizedRoute(path, lang))`. Never hardcode `/foodie/`.
+- **`lang` is a prop.** Islands receive `lang: Locale` and never read
+  `navigator.language` during render; stores and pure functions take `lang`
+  as an argument. Every ES page has an FR twin (`route-parity` test).
+- **Dependencies:** the curated stack above only. No new runtime dependency
+  without a roadmap decision or ADR.
+- **Never** `--no-verify`, never `@ts-ignore` (`check:pragmas`), never delete a
+  test to get green — adapt it deliberately and say so in the PR.
+- **CSP (ADR 0012, `csp.config.mjs`).** Every page ships a hashed CSP meta; no
+  `'unsafe-inline'` scripts/styles, no `'unsafe-eval'`. A library that injects
+  a runtime `<style>` gets its text added to `RUNTIME_STYLE_TEXTS`; do not
+  loosen the policy. Zod runs jitless in the browser because BaseLayout's
+  inline theme script sets `globalThis.__zod_globalConfig` — a layout that does
+  not use BaseLayout must set it too. `tests/e2e/csp.spec.ts` is the gate.
+- **Fonts** (Fraunces, Hanken Grotesk, JetBrains Mono) are self-hosted in
+  `public/fonts/` — no font CDN; keeps the CSP short and screenshots stable.
+- **Search:** Pagefind indexes only pages with `data-pagefind-body` (the docs
+  `<article>`, the recipe detail `<main>`). Mark noise `data-pagefind-ignore`.
+
+**Compound-component gotcha.** shadcn/Base UI compositions that share state
+(`Dialog`, `Sheet`, `Tabs`, controlled `DropdownMenu`, `Toast`)
+**cannot span multiple islands**: Astro hydrates each `client:*` boundary as its own React
+root, so a trigger in one island never sees content in another. Wrap the whole
+composition in **one** file under `src/components/islands/` and hydrate it
+once — e.g. `MobileNav.tsx` (the header's `Sheet`) or the template's
+`ShowcaseDialog.tsx`, mounted as `<MobileNav client:idle lang={lang} … />` /
+`<ShowcaseDialog client:visible />`.
+
+**Island lifecycle.** Pair every listener, interval and observer with its
+cleanup (`createDisposer()` from `src/lib/disposer.ts`). Browser-only values
+(theme, unit system) go through `useClientPreference` so SSR and first paint
+match.
+
+**Auth gating.** `src/lib/route-guard.tsx` + `GuardUser` only; explicit
+allowlists (`=== true`), deny by default, identity from `$user` — never from
+props or query params.
+
+## Data and state
+
+- **Catalog:** `public/data/*.json` is the single source. Content collections
+  (`file()` loader, `src/lib/catalog/collections.ts`) validate it with the Zod
+  schemas at build time; islands read it at runtime with `useCatalog()`
+  (TanStack Query persisted to IndexedDB for 24 h → offline). Prices:
+  `ingredient-prices.json` via `usePriceCatalog()` (ADR 0014).
+- **User data** (ADR 0002): Nano Stores persisted by `persistentAtom` —
+  every read Zod-validated, invalid values fall back to the default without
+  being overwritten, cross-tab sync, quota errors → `$storageQuotaExceeded`.
+  v1 keys are kept verbatim (`favoriteRecipes`, `currentMealPlan`,
+  `savedMealPlans`, `shoppingList`, `pantryItems`, `trackingEntries`,
+  `nutritionGoals`, `theme`, per-account `user-preferences-<uid>` /
+  `user-favorites-<uid>`); new keys use the `foodie:` prefix
+  (`foodie:preferences`, `foodie:custom-prices`, `foodie:contribute-draft`,
+  `foodie:locale`, …). The v1 `github-access-token` key is purged on load.
+  `/profile/` exports and clears all Foodie keys.
+- **Auth** (D9, ADR 0012): Firebase Auth behind the `AuthProvider` contract,
+  SDK loaded lazily in auth islands only. Config `PUBLIC_FIREBASE_*` (all four
+  or auth is disabled); `PUBLIC_AUTH_MOCK=1` forces the mock (dev/e2e;
+  `demo@foodie.test` / `foodie-demo`); the build refuses the mock with
+  `FOODIE_DEPLOY=1`. No Firestore.
+- **Sharing** (D11, ADR 0013): the plan is compressed with `fflate` into the
+  URL fragment → `/plan/shared/`. **Contribution** (D10): the wizard downloads
+  JSON and opens a prefilled `recipe-submission.yml` issue — no token, no secret.
+- Changing a schema: edit `src/schemas/`, run
+  `npm run test -- src/tests/catalog-schema.test.ts`; the data model docs page
+  regenerates itself.
+
+## i18n
+
+EN at `/`, ES at `/es/`, FR at `/fr/` — static routes, no runtime switch, no
+i18next. UI strings in `src/i18n/{en,es,fr}.ts` (`es`/`fr` typed against
+`typeof en`, so a missing key is a `tsc` error); catalog text is
+`MultiLangText` `{ en, es, fr }` in the JSON. Helpers: `t(lang, key, params)`
+(`{{x}}` interpolation, `_plural` keys), `getTranslated(text, lang)`,
+`detectLocale(pathname)`, `localizedRoute(path, lang)`, `hreflangAlternates`.
+New page = body in `components/pages/` + EN page + ES/FR wrappers.
+`src/tests/i18n.test.ts` checks key parity, placeholders and plurals.
+
+## Testing
+
+- **Vitest** (`src/**/*.test.ts(x)`): domain logic, stores (jsdom pragma,
+  `vi.resetModules()` for hydration), islands with an explicit `lang` prop, and
+  repo contracts in `src/tests/` (route parity, forbidden imports, i18n, this
+  file, workflows, SEO/CSP of `dist/` via `npm run test:dist`).
+- **Catalog:** `src/tests/catalog-schema.test.ts` (schemas, unique ids,
+  trilingual text, references); `validate-recipe-pr.yml` runs it on PRs.
+- **Playwright:** `tests/visual/` (screenshots light/dark in
+  `tests/__screenshots__/`, axe, console-error smoke, keyboard, mobile, search)
+  and `tests/e2e/` (journeys + `csp.spec.ts`). Specs that inject styles or run
+  axe use `test.use({ bypassCSP: true })`; everything else runs under the real
+  CSP. Seed state with `tests/fixtures/planning.ts` (frozen clock). Prefer
+  `getByRole`/`getByText`/`getByPlaceholder`; wait for hydration
+  (`astro-island:not([ssr])`) before interacting.
+- Quality bar: Lighthouse a11y ≥ 0.95, best practices = 1.0, no console errors.
+
+## Deploy
+
+`.github/workflows/deploy.yml` on push to `main`: Node 22, `npm ci`,
+`npm run build` with `ASTRO_BASE=/foodie`, `FOODIE_DEPLOY=1`,
+`PUBLIC_REPO_SLUG`, `PUBLIC_BUILD_SHA` and the `PUBLIC_FIREBASE_*` secrets,
+then GitHub Pages. No Python/MkDocs step (D12). Other workflows: `ci.yml`
+(check + actionlint), `visual.yml` (Playwright, hard gate), `lighthouse.yml`,
+`security.yml` (CodeQL + dependency review, weekly), `validate-recipe-pr.yml`,
+`deploy-failure-issue.yml`. Origin in `site.config.mjs`; rollback to v1 and the
+cutover steps in `docs/runbooks/cutover.md`. Only `PUBLIC_*` variables reach the
+bundle — never put a secret in one.
+
+## Agent-readable surface — ⚠️ re-brand when instantiating
+
+`/llms.txt`, `/llms-full.txt`, the JSON-LD blocks and the default meta
+description are all single-sourced from `src/lib/site-meta.ts` (name,
+description, `repoSlug` honouring `PUBLIC_REPO_SLUG=ArtemioPadilla/foodie`,
+license). If this repo is ever used as the seed of another project, update that
+file (plus `site.config.mjs`, `public/robots.txt` and `PUBLIC_REPO_SLUG`)
+first, or the new site will introduce itself as Foodie.
+
+## Roadmap status
+
+| Phase | Issues | State |
+|---|---|---|
+| 0 — Foundation | 001–009 | Done |
+| 1 — Domain, data and state | 010–016 | Done |
+| 2 — Catalog | 017–023 | Done |
+| 3 — Planning + cutover | 024–030 | Done in code (cutover runbook: `docs/runbooks/cutover.md`) |
+| 4 — Nutrition tracking | 031–034 | Done |
+| 5 — Accounts and contribution | 035–042 | Done |
+| 6 — Docs, quality and closing | 043–048 | 043 docs site, 044 this file/README/CONTRIBUTING done; next: 045 perf budgets, 046 template trim, 047 deps/security, 048 `v2.0.0` release |
+
+GitHub-side steps (tags, milestones, closing issues, branch cleanup) are the
+maintainer's; the runbooks in `docs/runbooks/` list them.
+
+## Decisions (ADRs, `docs/decisions/`)
+
+Foodie: **0001** migration strategy (D1–D14) · **0002** local-first user data
+(keys, stakeholders, export/clear) · **0010** `@dnd-kit` for the planner ·
+**0011** Astro 7 upgrade · **0012** Firebase Auth adapter + CSP · **0013** plan
+sharing with `fflate` · **0014** ingredient prices. The other numbers
+(0001–0009 with other slugs) are Inceptor's inherited ADRs. New decision →
+copy `docs/decisions/TEMPLATE.md`.
+
+## References
+
+- Roadmap: `docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md`
+- Principles / ethics: `docs/PRINCIPLES.md`, `docs/ETHICS.md`
+- How-tos: `docs/recipes/` (catalog-data, state, i18n-islands, contributing-recipes)
+- Components: `docs/COMPONENTS.md`, `docs/component-catalog.md`,
+  `docs/component-guidelines/foodie.md`; live gallery at `/gallery/`
+- Setup: `SETUP.md` · Contributing: `CONTRIBUTING.md` · Changelog: `CHANGELOG.md`

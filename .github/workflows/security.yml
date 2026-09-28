@@ -1,0 +1,92 @@
+name: Security
+
+# ---------------------------------------------------------------------------
+# CodeQL + dependency review + npm audit (roadmap Issues 006 and 047).
+#
+# Adapted from Foodie's legacy security-scan.yml for the Inceptor stack:
+#   - CodeQL: static analysis of the TypeScript / Astro sources.
+#   - dependency-review: blocks PRs that add packages with known
+#     vulnerabilities or disallowed licenses.
+#   - npm audit: the whole lockfile (dev dependencies included) must carry no
+#     high/critical advisory (Issue 047). Residual fixes live in package.json
+#     `overrides`, each justified in SECURITY.md.
+# Dependabot (.github/dependabot.yml, weekly, grouped) proposes the updates.
+#
+# Triggers: push + PR keep the workflow active (GitHub disables scheduled
+# workflows after 60 days without repository activity); the weekly cron
+# catches advisories and CodeQL queries published while the code is idle.
+#
+# Only first-party `actions/*` and `github/*` actions are used, so version
+# tags are acceptable to ci.yml's unpinned-ref scan.
+# ---------------------------------------------------------------------------
+
+on:
+  push:
+    branches: [inceptor, main]
+  pull_request:
+    branches: [inceptor, main]
+  schedule:
+    # Weekly, Monday 06:00 UTC — catches newly published advisories/queries
+    # even when the code did not change.
+    - cron: '0 6 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  npm-audit:
+    name: npm audit (high/critical)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: '22'
+      # Reads the registry's advisory database for the committed lockfile —
+      # no install needed.
+      - name: Audit the lockfile (dev dependencies included)
+        run: npm audit --audit-level=high
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure
+
+  codeql:
+    name: CodeQL (javascript-typescript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          # `none`: JS/TS is analysed from source — no autobuild of the Astro
+          # site is needed, which keeps the job fast and deterministic.
+          build-mode: none
+          queries: security-and-quality
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:javascript-typescript'

@@ -1,0 +1,71 @@
+---
+/**
+ * Shopping — the `/shopping/` page body (roadmap Issue 026, D4 "una página
+ * por ruta, una isla por página"; port of legacy `ShoppingListPage`).
+ *
+ * Rendered by the thin wrappers `pages/shopping.astro`, `pages/es/shopping.astro`
+ * and `pages/fr/shopping.astro`, which own the `<BaseLayout>` metadata. The
+ * heading and help text are static HTML; the list lives in `localStorage`, so
+ * everything else is the `ShoppingList` island, hydrated with `client:load`.
+ *
+ * Print (`@media print`, the "Imprimir" export): only `<main>` is printed —
+ * header, footer, floating buttons, toasts and dialog portals (all siblings of
+ * `<main>` under `<body>`) are hidden, the island hides its own controls
+ * (`print:hidden`), collapsed categories are expanded and the light tokens are
+ * forced (`color-scheme: light`) so a dark-mode user still prints black on white.
+ */
+import { InfoIcon } from 'lucide-react';
+import ShoppingList from '@/components/islands/ShoppingList';
+import { t, type Locale } from '@/i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<main id="main-content" class="mx-auto max-w-5xl px-4 py-10 sm:py-14 print:max-w-none print:p-0" data-page="shopping">
+  <header class="mb-8 max-w-3xl print:mb-4">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary print:hidden">{t(lang, 'shopping.kicker')}</p>
+    <h1
+      class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl print:mt-0 print:text-3xl"
+      style="view-transition-name: page-title"
+    >
+      {t(lang, 'shopping.title')}
+    </h1>
+    <p class="mt-4 text-muted-foreground print:hidden">{t(lang, 'shopping.description')}</p>
+  </header>
+
+  <ShoppingList lang={lang} client:load />
+
+  <aside class="mt-8 flex gap-3 rounded-lg border border-border bg-muted/40 p-4 text-sm print:hidden" aria-labelledby="shopping-help-title">
+    <InfoIcon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
+    <div>
+      <p id="shopping-help-title" class="font-medium text-foreground">{t(lang, 'shopping.helpTitle')}</p>
+      <p class="mt-1 text-muted-foreground">{t(lang, 'shopping.helpText')}</p>
+    </div>
+  </aside>
+</main>
+
+<style is:global>
+  @media print {
+    @page {
+      margin: 1.5cm;
+    }
+    body > :not(main) {
+      display: none !important;
+    }
+    /* Paper is white: force the light tokens (every colour token is a
+       light-dark() pair that follows color-scheme) even from dark mode. */
+    html,
+    body {
+      color-scheme: light !important;
+      background: #fff !important;
+    }
+    main[data-page='shopping'] * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+  }
+</style>

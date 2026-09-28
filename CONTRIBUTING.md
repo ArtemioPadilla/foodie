@@ -1,434 +1,226 @@
 # Contributing to Foodie
 
-Thank you for your interest in contributing to Foodie! This document provides guidelines and instructions for contributing to the project.
+Thanks for helping. There are two ways in: **add a recipe** (no code needed)
+or **change the code**. Both end in a pull request against `main`, checked by
+CI and reviewed by a maintainer; merging deploys to
+<https://artemiopadilla.github.io/foodie/>.
 
-## 📋 Table of Contents
+Foodie v2 runs on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
+template (Astro 7 islands + React 19 + Tailwind v4 + Base UI). Before touching
+code, read [`CLAUDE.md`](CLAUDE.md): it lists the stack, the rules and the
+roadmap status. The docs site has the long versions:
+[development](https://artemiopadilla.github.io/foodie/docs/guides/development/),
+[testing](https://artemiopadilla.github.io/foodie/docs/guides/testing/) and the
+[data model](https://artemiopadilla.github.io/foodie/docs/reference/api/).
 
-- [Code of Conduct](#code-of-conduct)
-- [How to Contribute](#how-to-contribute)
-- [Contributing Recipes](#contributing-recipes)
-- [Development Setup](#development-setup)
-- [Coding Standards](#coding-standards)
-- [Submitting Changes](#submitting-changes)
-- [Testing Guidelines](#testing-guidelines)
-- [Documentation](#documentation)
+## Contributing a recipe
 
-## 📜 Code of Conduct
+Every recipe is one record in `public/data/recipes.json`, in English, Spanish
+and French, validated with `RecipeSchema` (`src/schemas/recipe.ts`). The full
+format is in the docs:
+[Contributing recipes](https://artemiopadilla.github.io/foodie/docs/contributing/recipe-format/).
 
-This project follows the [Contributor Covenant](https://www.contributor-covenant.org/) Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
+### Without git — the Contribute wizard
 
-## 🤝 How to Contribute
+1. Open [`/contribute/`](https://artemiopadilla.github.io/foodie/contribute/)
+   (or `/es/contribute/`, `/fr/contribute/`) and fill the seven steps; your
+   draft is saved in your browser.
+2. **Submit** opens a prefilled *Recipe submission* issue on GitHub and
+   downloads `recipe-<id>.json`. Foodie never holds a GitHub token: you create
+   the issue with your own account. If the recipe is too long for the issue
+   URL, attach the downloaded file instead.
+3. Tick the checklist and create the issue. It is labelled
+   `recipe-submission`.
+4. A maintainer copies the JSON into `public/data/recipes.json`, assigns the
+   next id (`rec_051`, …), completes any missing translation and opens the PR
+   that closes your issue.
 
-There are many ways to contribute to Foodie:
+### With git — a pull request
 
-1. **Report Bugs**: Submit detailed bug reports via [GitHub Issues](https://github.com/yourusername/foodie/issues)
-2. **Suggest Features**: Propose new features or improvements
-3. **Add Recipes**: Contribute delicious recipes to our database
-4. **Fix Issues**: Pick up issues labeled `good-first-issue` or `help-wanted`
-5. **Improve Documentation**: Help improve our docs
-6. **Add Translations**: Help translate the app to more languages
+1. Fork, then branch from `main` (e.g. `recipe/lentil-soup`).
+2. Append your record to `public/data/recipes.json` with the next free id.
+   Missing ingredients go into `public/data/ingredients.json` in the same PR.
+   Omit optional fields instead of writing `null`.
+3. Check it:
 
-## 🍽️ Contributing Recipes
-
-### Using the In-App Wizard (Recommended)
-
-The easiest way to contribute recipes is through our in-app contribution wizard:
-
-1. Visit `/contribute` in the app
-2. Sign in with GitHub (required for PR creation)
-3. Follow the 7-step wizard:
-   - Basic Information
-   - Times & Servings
-   - Ingredients
-   - Instructions
-   - Nutrition & Tags
-   - Preview
-   - Submit
-4. The wizard will automatically create a Pull Request
-
-### Manual Recipe Submission
-
-If you prefer to submit recipes manually:
-
-1. **Fork the repository**
-2. **Create a new recipe file** in `/public/data/recipes/` named `{recipe-id}.json`
-3. **Follow the recipe schema**:
-
-```json
-{
-  "id": "rec_###",
-  "name": {
-    "en": "Recipe Name",
-    "es": "Nombre de la Receta",
-    "fr": "Nom de la Recette"
-  },
-  "description": { "en": "...", "es": "...", "fr": "..." },
-  "type": "breakfast|lunch|dinner|snack|dessert",
-  "cuisine": ["mediterranean", "mexican", etc.],
-  "prepTime": 15,
-  "cookTime": 30,
-  "totalTime": 45,
-  "servings": 4,
-  "difficulty": "easy|medium|hard",
-  "tags": ["gluten-free", "vegetarian", etc.],
-  "dietaryLabels": {
-    "glutenFree": true,
-    "vegetarian": false,
-    ...
-  },
-  "nutrition": {
-    "calories": 350,
-    "protein": 20,
-    ...
-  },
-  "ingredients": [
-    {
-      "ingredientId": "ing_###",
-      "quantity": 2,
-      "unit": "cup",
-      "preparation": "chopped",
-      "optional": false
-    }
-  ],
-  "instructions": [
-    {
-      "step": 1,
-      "text": { "en": "...", "es": "...", "fr": "..." },
-      "time": 5
-    }
-  ],
-  "equipment": ["oven", "mixing-bowl"],
-  "author": "your-github-username",
-  "dateAdded": "2025-01-10",
-  "rating": 0,
-  "reviewCount": 0
-}
-```
-
-4. **Validate your recipe**:
    ```bash
-   npm run validate:json
+   npm run test -- src/tests/catalog-schema.test.ts   # schemas, unique ids, three languages, ingredient references
+   npm run build                                      # the content collections must load
    ```
 
-5. **Submit a Pull Request** with:
-   - Clear title: "Add recipe: {Recipe Name}"
-   - Description of the recipe
-   - Any special notes or variations
+4. Open the PR. `validate-recipe-pr.yml` runs the catalog test and comments the
+   result; a maintainer reviews the translations and the nutrition values.
 
-### Recipe Guidelines
+How submissions are processed end to end (and why there are no secrets):
+[`docs/recipes/contributing-recipes.md`](docs/recipes/contributing-recipes.md)
+and [`docs/recipes/catalog-data.md`](docs/recipes/catalog-data.md).
 
-- **Original or Properly Attributed**: Only submit recipes you created or have permission to share
-- **Complete Information**: Include all required fields
-- **Accurate Nutrition**: Provide reasonable nutrition estimates
-- **Clear Instructions**: Write step-by-step instructions anyone can follow
-- **Quality Images**: Use high-quality, well-lit photos (if available)
-- **Multilingual**: Provide translations for at least English and Spanish
+## Contributing code — the issue-driven flow
 
-## 💻 Development Setup
+Every change starts as a GitHub issue and ships as one PR:
 
-### Prerequisites
+```
+issue ──► prometeo (plan) ──► forja (implement) ──► centinela (validate) ──► PR ──► CI + review ──► merge ──► deploy
+```
 
-- Node.js 18+ and npm
-- Git
-- A code editor (VS Code recommended)
+1. **Issue.** Find or open one. Roadmap work comes from the
+   [migration roadmap](docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md)
+   (`bash scripts/create-issues.sh` turns its issue blocks into GitHub issues;
+   dry run by default, `--apply` to create). Each issue has acceptance
+   criteria and a validation command.
+2. **Plan — prometeo** (`.claude/agents/prometeo.md`) reads the roadmap and the
+   issue, checks `Depends on`, and returns an ordered plan. It writes no code.
+3. **Implement — forja** (`.claude/agents/forja.md`) implements that one issue
+   on its branch with atomic commits, test first where behaviour changes.
+4. **Validate — centinela** (`.claude/agents/centinela.md`) runs
+   `npm run check` and the issue's validation block, checks forbidden imports
+   and the ethics tier, and answers `APPROVED` or `REJECTED` with reasons.
+5. **Pull request** against `main` with `Closes #N`. CI (`ci.yml`,
+   `visual.yml`, `lighthouse.yml`, `security.yml`) must be green; a maintainer
+   reviews and merges; `deploy.yml` publishes.
 
-### Setup Steps
+In a Claude Code session the main session orchestrates the three sub-agents.
+Working by hand, you play the three roles yourself: plan from the issue,
+implement, then run every check before opening the PR.
+
+### Branches and pull requests
+
+| Branch / tag | What it holds | Deploys? |
+|---|---|---|
+| `main` | Foodie v2 | Yes. Each push runs `deploy.yml` |
+| `phase-N/issue-NNN-slug`, `fix/…`, `feat/…` | One issue each, PR → `main` | No |
+| tag `legacy-vite-1.0.0` | The frozen v1 (React 18 + Vite SPA) | No. Rollback only ([`docs/runbooks/cutover.md`](docs/runbooks/cutover.md)) |
+
+To read v1 code: `git show legacy-vite-1.0.0:src/<path>`. The v1 phase
+reports and changelog are archived under `docs/archive/legacy-vite/`.
+
+### Conventions
+
+- **Commits:** Conventional Commits with the id —
+  `type(scope): summary (roadmap #NNN)` or `(#N)`. A commit that only adds a
+  failing test may carry a `Tdd-Red:` trailer.
+- **Labels:** `phase-0` … `phase-6`, `type:feat|fix|docs|test|chore`,
+  `risk:high`, `recipe-submission`; milestones `v0.1` … `v1.0`.
+- **Rules** (enforced by ESLint, tests and review): no `@astrojs/tailwind`, no
+  `@radix-ui/*`, no `@tremor/react`, no `framer-motion`; no React Context
+  across islands (Nano Stores); one island per page; Zod schemas in
+  `src/schemas/` for cross-boundary types; `withBase()` for every href and
+  asset; islands get `lang` as a prop.
+- **Never** `--no-verify`, never `@ts-ignore`, never delete a test to get
+  green — change it deliberately and explain why in the PR.
+- **Ethics tier** in the PR description (`.claude/checklists/ethics.json`,
+  [`docs/ETHICS.md`](docs/ETHICS.md)): tier-0 docs/tests, tier-1 features and
+  fixes, tier-2 (`risk:high`) needs a Stakeholder Analysis ADR.
+- Record user-visible changes under `## [Unreleased]` in
+  [`CHANGELOG.md`](CHANGELOG.md). New architectural decisions get an ADR in
+  `docs/decisions/` (copy `TEMPLATE.md`).
+
+## The checks
 
 ```bash
-# Fork and clone the repository
-git clone https://github.com/artemiopadilla/foodie.git
-cd foodie
-
-# Install dependencies
-npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
+npm run check         # astro check + tsc + Vitest + ESLint + pragmas, then build + built-site tests — must be green
+npm run test          # Vitest only (excludes Playwright specs)
+npm run test:e2e      # Playwright journeys + the CSP gate (own build with the mock sign-in)
+npm run build && npx playwright test   # visual + a11y + smoke + keyboard/mobile + journeys
 ```
 
-### Project Structure
+`npm run test:e2e` leaves its mock-auth build in `dist/`; run `npm run build`
+before the visual suite. Under an AI agent, Astro 7's `astro preview`
+backgrounds itself: the Playwright configs pass `--ignore-lock`, and a preview
+started by hand needs it too (or `npx astro preview stop`).
 
-```
-foodie/
-├── public/           # Static assets and data
-├── src/
-│   ├── components/   # React components
-│   ├── contexts/     # State management
-│   ├── hooks/        # Custom React hooks
-│   ├── pages/        # Page components
-│   ├── services/     # Business logic
-│   ├── types/        # TypeScript types
-│   └── utils/        # Utility functions
-└── tests/            # Test files
-```
+## Visual regression
 
-## 🎨 Coding Standards
+Playwright snapshots the catalog (`/recipes/`, a recipe detail, an ingredient
+detail), the planning pages (`/planner/`, `/shopping/`, `/pantry/`, seeded from
+`tests/fixtures/planning.ts` with a frozen clock — roadmap Issue 029) and the
+template's component `/gallery`, in both light and dark. The gallery is built
+by `npm run build` and in CI but left out of the production deploy
+(`FOODIE_DEPLOY=1`, `flagged-pages.config.mjs` — roadmap Issue 046).
+Baselines live under `tests/__screenshots__/{chromium-light,chromium-dark}/`.
 
-### TypeScript
+The CI workflow at `.github/workflows/visual.yml` runs `npx playwright test`
+(visual + a11y + smoke + keyboard/mobile + the e2e journeys) on every PR and
+push to `main`. It is a **hard gate** — no `continue-on-error` (roadmap Issue
+029; `src/tests/workflow-foodie-ci.test.ts` keeps it that way).
 
-- **Use strict mode**: All code must pass TypeScript strict checks
-- **Type everything**: Avoid `any` types
-- **Use interfaces**: Define interfaces for all data structures
-- **Export types**: Keep types in `/src/types/index.ts`
+Web fonts are self-hosted (`public/fonts/`, `@font-face` in
+`src/styles/global.css`), so a baseline renders the same glyphs on every
+machine — no third-party font host is involved, and Playwright waits for
+`document.fonts.ready` before each screenshot.
 
-### React
+Specs that inject a `<style>` to freeze animations (`page.addStyleTag`) and
+the axe scan opt into `test.use({ bypassCSP: true })`: the production CSP
+refuses injected styles. Everything else — smoke, keyboard, mobile, search and
+the e2e journeys, including `tests/e2e/csp.spec.ts` — runs under the real
+policy.
 
-- **Functional Components**: Use functional components with hooks
-- **TypeScript with React**: Always use `.tsx` extension
-- **Props**: Define prop types with interfaces
-- **Hooks**: Follow React hooks rules
-- **No inline styles**: Use Tailwind CSS classes
+> The console-error smoke (`tests/visual/smoke.spec.ts`) is hermetic: it
+> answers `api.github.com` (FeedbackFAB's duplicate-issue search) with
+> fixtures, so a TLS-intercepting proxy or a GitHub rate limit cannot fail
+> it. It runs under the production CSP, so a "Refused to …" console error
+> fails it too.
 
-### Code Style
-
-- **Prettier**: Run `npm run format` before committing
-- **ESLint**: Run `npm run lint` and fix all warnings
-- **Naming Conventions**:
-  - Components: PascalCase (`RecipeCard.tsx`)
-  - Functions: camelCase (`calculateTotal`)
-  - Constants: UPPER_SNAKE_CASE (`MAX_SERVINGS`)
-  - Files: kebab-case for utils (`unit-conversions.ts`)
-
-### Git Commits
-
-Use semantic commit messages:
-
-```
-feat: Add recipe scaling functionality
-fix: Correct nutrition calculation
-docs: Update README with new features
-style: Format code with Prettier
-refactor: Simplify ingredient filtering
-test: Add tests for meal planner
-chore: Update dependencies
-```
-
-## 🚀 Submitting Changes
-
-### Before Submitting
-
-1. **Run tests**: `npm test`
-2. **Run linter**: `npm run lint`
-3. **Build successfully**: `npm run build`
-4. **Check TypeScript**: `tsc --noEmit`
-5. **Update documentation** if needed
-
-### Pull Request Process
-
-1. **Create a feature branch**:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Make your changes** with clear, atomic commits
-
-3. **Push to your fork**:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-4. **Open a Pull Request**:
-   - Use a clear, descriptive title
-   - Reference any related issues (#123)
-   - Describe what changed and why
-   - Include screenshots for UI changes
-   - Check the boxes in the PR template
-
-5. **Respond to feedback**: Address review comments promptly
-
-6. **Wait for approval**: Maintainers will review and merge
-
-### PR Title Format
-
-```
-[Type] Brief description
-
-Types: feat, fix, docs, style, refactor, test, chore
-```
-
-Examples:
-- `[feat] Add pantry management system`
-- `[fix] Correct recipe scaling calculation`
-- `[docs] Improve installation instructions`
-
-## 🧪 Testing Guidelines
-
-### Writing Tests
-
-- **Unit Tests**: Test individual functions and components
-- **Integration Tests**: Test component interactions
-- **E2E Tests**: Test complete user flows
-
-### Test Files
-
-```
-tests/
-├── unit/
-│   ├── utils/
-│   ├── services/
-│   └── hooks/
-├── integration/
-│   └── components/
-└── e2e/
-    └── flows/
-```
-
-### Running Tests
+### Update baselines after an intentional visual change
 
 ```bash
-# Run all tests
-npm test
-
-# Run specific test file
-npm test -- path/to/test
-
-# Run with coverage
-npm run test:coverage
-
-# Run E2E tests
-npm run test:e2e
+npm run build
+npm run test:visual:update
+git add tests/__screenshots__/
+git commit -m "test(visual): refresh baselines"
 ```
 
-### Test Guidelines
+### Run visual tests without updating baselines
 
-- **Test file naming**: `ComponentName.test.tsx` or `utilName.test.ts`
-- **Test structure**: Use `describe` and `it` blocks
-- **Assertions**: Be specific with assertions
-- **Mocking**: Mock external dependencies
-- **Coverage**: Aim for >80% coverage on new code
-
-## 📚 Documentation
-
-### When to Update Docs
-
-- Adding new features
-- Changing APIs
-- Modifying configuration
-- Adding dependencies
-
-### Documentation Files
-
-- `README.md`: User-facing documentation
-- `CLAUDE.md`: Technical architecture
-- `docs/`: Detailed guides
-- Code comments: Complex logic explanation
-- JSDoc: Function and component documentation
-
-### JSDoc Example
-
-```typescript
-/**
- * Scales recipe ingredients based on target servings
- * @param recipe - The recipe to scale
- * @param targetServings - Desired number of servings
- * @returns Scaled recipe with adjusted ingredient quantities
- */
-export function scaleRecipe(recipe: Recipe, targetServings: number): Recipe {
-  // Implementation
-}
+```bash
+npm run build          # build is required; Playwright uses the preview server
+npm run test:visual    # equivalent to: playwright test
 ```
 
-## 🐛 Reporting Bugs
+### Why are some pixels noisy?
 
-### Before Reporting
+- **Chart rendering** has minor anti-aliasing variability between machines and
+  OSes. The dashboard tolerance is set to `0.03` (3% pixel diff).
+- **Network responses** are mocked in the dashboard test so the GitHub API
+  data is stable and reproducible.
+- **Animations and transitions** are disabled by a `<style>` tag injected
+  before each screenshot capture, so no frames are caught mid-animation.
 
-1. **Search existing issues**: Check if it's already reported
-2. **Try latest version**: Update to the latest version
-3. **Reproduce consistently**: Can you reproduce it?
-4. **Check browser console**: Any error messages?
+### Refresh baselines in CI's environment (Linux)
 
-### Bug Report Template
+The Playwright project ships a Docker image matching the CI runner. The
+one-shot:
 
-```markdown
-**Describe the bug**
-A clear description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce:
-1. Go to '...'
-2. Click on '....'
-3. See error
-
-**Expected behavior**
-What should happen instead?
-
-**Screenshots**
-If applicable, add screenshots.
-
-**Environment:**
- - OS: [e.g. macOS, Windows]
- - Browser: [e.g. Chrome 120, Safari 17]
- - Version: [e.g. 1.0.0]
-
-**Additional context**
-Any other relevant information.
+```bash
+npm run refresh-baselines
 ```
 
-## 💡 Feature Requests
+That's a wrapper around `scripts/refresh-baselines.sh` which pulls the
+Docker image, runs `npm ci && npm run build && npx playwright test --update-snapshots`
+under the container, and prints next-step guidance.
 
-### Before Requesting
+Manual equivalent (in case Docker isn't available on PATH):
 
-1. **Check existing requests**: Search issues and discussions
-2. **Consider scope**: Is it aligned with project goals?
-3. **Provide details**: Be specific about the feature
-
-### Feature Request Template
-
-```markdown
-**Is your feature request related to a problem?**
-Describe the problem you're trying to solve.
-
-**Describe the solution you'd like**
-A clear description of what you want to happen.
-
-**Describe alternatives you've considered**
-Any alternative solutions or features?
-
-**Additional context**
-Mockups, examples, or references.
+```bash
+docker run --rm \
+  -v "$(pwd):/work" -w /work \
+  -e CI=true \
+  mcr.microsoft.com/playwright:v1.62.1-noble \
+  sh -c "npm ci && npm run build && npx playwright test --update-snapshots"
+git add tests/__screenshots__/
+git commit -m "test(visual): refresh baselines (linux)"
 ```
 
-## 🌍 Adding Translations
+After this, the macOS/Linux differential disappears. Keep the image tag in
+step with `@playwright/test` in `package.json` (a newer package cannot find
+the browsers of an older image).
 
-### Supported Languages
+### First-time local setup
 
-- English (en)
-- Spanish (es)
-- French (fr)
+If Playwright's Chromium browser is not yet installed on your machine:
 
-### Adding a New Language
+```bash
+npx playwright install --with-deps chromium
+```
 
-1. **Create translation file**: `public/locales/{code}/translation.json`
-2. **Add to i18n config**: Update `src/i18n.ts`
-3. **Update types**: Add to `MultiLangText` interface
-4. **Test thoroughly**: Ensure all strings are translated
-5. **Submit PR**: Include screenshots of translated UI
-
-### Translation Guidelines
-
-- **Keep context**: Translations should make sense in context
-- **Preserve formatting**: Maintain placeholders like `{{count}}`
-- **Cultural adaptation**: Adapt for cultural differences
-- **Consistency**: Use consistent terminology
-- **Native speakers**: Have translations reviewed by native speakers
-
-## 📞 Getting Help
-
-- **Questions**: Use [GitHub Discussions](https://github.com/artemiopadilla/foodie/discussions)
-- **Chat**: Join our community chat (if available)
-- **Email**: Contact maintainers at foodie@example.com
-
-## 🙏 Recognition
-
-Contributors will be:
-- Listed in CHANGELOG.md
-- Credited in release notes
-- Added to GitHub's contributors page
-- Featured on our website (with permission)
-
----
-
-**Thank you for contributing to Foodie! Your contributions help make meal planning easier for everyone.** 🍽️❤️
+CI runs this step automatically (see `.github/workflows/visual.yml`).

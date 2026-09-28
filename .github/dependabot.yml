@@ -1,0 +1,91 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    ignore:
+      # Foodie runs Astro 7 although @vite-pwa/astro@1.2.0 caps its astro peer
+      # at ^5: package.json `overrides` bridges the cap (ADR 0011). A future
+      # astro/@astrojs/* major needs the same deliberate check (build, PWA,
+      # e2e, visual), so dependabot must not propose it as a routine group
+      # bump (see closed #74, #80, #87, ADR 0004).
+      # Wildcard entry covers all current and future @astrojs/* packages in one rule.
+      - dependency-name: "astro"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@astrojs/*"
+        update-types: ["version-update:semver-major"]
+      # typescript@7 is peer-capped out by @astrojs/check@0.9.9 -> @astrojs/
+      # language-server -> @volar/kit (peer typescript ^5||^6). It's grouped
+      # under "tooling" below, so a bare typescript-major bump reliably breaks
+      # the whole group's npm ci (see closed #236).
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # eslint@10 is peer-capped out by eslint-plugin-jsx-a11y@6.10.2 (peer
+      # eslint ^3..^9). Ignore until jsx-a11y ships an eslint-10-compatible
+      # release (see closed #219).
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # @tanstack/react-table@9 removes/renames APIs data-table.tsx depends
+      # on directly (getIsSomeRowsSelected, toggleAllRowsSelected,
+      # getIsSelected, toggleSelected, toggleExpanded, getIsExpanded, the
+      # VisibilityState export, column-pinning generics) — a real, verified
+      # tsc failure, not a peer-dep resolution issue. It's grouped under
+      # "tanstack" below with @tanstack/react-query and @tanstack/react-virtual
+      # (which bump safely), so a bare major-bump ignore is needed to stop the
+      # group from reliably shipping a broken PR every release (see closed #239).
+      # A deliberate, scoped v9 migration is future work, not a drive-by bump.
+      - dependency-name: "@tanstack/react-table"
+        update-types: ["version-update:semver-major"]
+      # motion@13 (roadmap Issue 047): `motion/react` drives the islands'
+      # enter/exit animations and the reduced-motion handling; a major needs
+      # a deliberate pass over the visual baselines and the ux-motion tokens,
+      # not a routine bump.
+      - dependency-name: "motion"
+        update-types: ["version-update:semver-major"]
+      # @types/node follows the Node runtime the project supports (engines
+      # ">=22", CI on Node 22); a new @types/node major tracks a newer Node
+      # release and is taken together with a runtime bump (roadmap Issue 047).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      astro:
+        patterns:
+          - "astro"
+          - "@astrojs/*"
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      tooling:
+        patterns:
+          - "@playwright/*"
+          - "@testing-library/*"
+          - "vitest"
+          - "jsdom"
+          - "typescript"
+          - "prettier"
+      # Firebase Auth adapter (roadmap D9, Issue 035): the SDK ships as one
+      # umbrella package plus scoped internals — bump them together.
+      # Lighthouse CI (npm run lighthouse / perf). Its vulnerable transitive
+      # deps are pinned through package.json `overrides` (SECURITY.md).
+      lighthouse:
+        patterns:
+          - "@lhci/*"
+          - "@axe-core/*"
+      firebase:
+        patterns:
+          - "firebase"
+          - "@firebase/*"
+    commit-message:
+      prefix: chore
+      include: scope
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: ci

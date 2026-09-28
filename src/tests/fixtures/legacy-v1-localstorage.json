@@ -1,0 +1,409 @@
+{
+  "$comment": "Foodie v1 (legacy React 18 + Vite SPA on main) localStorage, one value per ADR 0002 key, shaped exactly as the legacy code wrote them: string values were written raw (theme, i18nextLng and the v1 GitHub token, key 12), every other value with JSON.stringify. Seed with: for (const [k, v] of Object.entries(fixture)) if (k !== '$comment') localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)). See docs/runbooks/cutover.md and src/tests/legacy-data-compat.test.ts.",
+  "theme": "dark",
+  "i18nextLng": "es",
+  "favoriteRecipes": [
+    "rec_001",
+    "rec_007",
+    "rec_036"
+  ],
+  "currentMealPlan": {
+    "id": "plan_1758189600000",
+    "name": {
+      "en": "New Plan",
+      "es": "Nuevo Plan",
+      "fr": "Nouveau Plan"
+    },
+    "description": {
+      "en": "",
+      "es": "",
+      "fr": ""
+    },
+    "servings": 2,
+    "dietaryRestrictions": [],
+    "difficulty": "easy",
+    "estimatedCost": 0,
+    "currency": "USD",
+    "days": [
+      {
+        "dayNumber": 1,
+        "dayName": "monday",
+        "meals": {
+          "breakfast": {
+            "recipeId": "rec_007",
+            "servings": 2
+          }
+        }
+      },
+      {
+        "dayNumber": 2,
+        "dayName": "tuesday",
+        "meals": {}
+      },
+      {
+        "dayNumber": 3,
+        "dayName": "wednesday",
+        "meals": {
+          "dinner": {
+            "recipeId": "rec_001",
+            "servings": 4
+          },
+          "lunch": {
+            "recipeId": "rec_003",
+            "servings": 2
+          }
+        }
+      },
+      {
+        "dayNumber": 4,
+        "dayName": "thursday",
+        "meals": {}
+      },
+      {
+        "dayNumber": 5,
+        "dayName": "friday",
+        "meals": {
+          "snacks": [
+            {
+              "recipeId": "rec_019",
+              "servings": 2
+            },
+            {
+              "recipeId": "rec_035",
+              "servings": 1
+            }
+          ]
+        }
+      },
+      {
+        "dayNumber": 6,
+        "dayName": "saturday",
+        "meals": {
+          "snacks": []
+        }
+      },
+      {
+        "dayNumber": 7,
+        "dayName": "sunday",
+        "meals": {}
+      }
+    ],
+    "tags": [],
+    "isPublic": false
+  },
+  "savedMealPlans": [
+    {
+      "id": "plan_1758189600000",
+      "name": {
+        "en": "New Plan",
+        "es": "Nuevo Plan",
+        "fr": "Nouveau Plan"
+      },
+      "description": {
+        "en": "",
+        "es": "",
+        "fr": ""
+      },
+      "servings": 2,
+      "dietaryRestrictions": [],
+      "difficulty": "easy",
+      "estimatedCost": 0,
+      "currency": "USD",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayName": "monday",
+          "meals": {
+            "breakfast": {
+              "recipeId": "rec_007",
+              "servings": 2
+            }
+          }
+        },
+        {
+          "dayNumber": 2,
+          "dayName": "tuesday",
+          "meals": {}
+        },
+        {
+          "dayNumber": 3,
+          "dayName": "wednesday",
+          "meals": {
+            "dinner": {
+              "recipeId": "rec_001",
+              "servings": 4
+            },
+            "lunch": {
+              "recipeId": "rec_003",
+              "servings": 2
+            }
+          }
+        },
+        {
+          "dayNumber": 4,
+          "dayName": "thursday",
+          "meals": {}
+        },
+        {
+          "dayNumber": 5,
+          "dayName": "friday",
+          "meals": {
+            "snacks": [
+              {
+                "recipeId": "rec_019",
+                "servings": 2
+              },
+              {
+                "recipeId": "rec_035",
+                "servings": 1
+              }
+            ]
+          }
+        },
+        {
+          "dayNumber": 6,
+          "dayName": "saturday",
+          "meals": {
+            "snacks": []
+          }
+        },
+        {
+          "dayNumber": 7,
+          "dayName": "sunday",
+          "meals": {}
+        }
+      ],
+      "tags": [],
+      "isPublic": false
+    },
+    {
+      "id": "template_1758276000000",
+      "name": {
+        "en": "Busy week",
+        "es": "Busy week",
+        "fr": "Busy week"
+      },
+      "description": {
+        "en": "",
+        "es": "",
+        "fr": ""
+      },
+      "servings": 2,
+      "dietaryRestrictions": [],
+      "difficulty": "easy",
+      "estimatedCost": 0,
+      "currency": "USD",
+      "days": [
+        {
+          "dayNumber": 1,
+          "dayName": "monday",
+          "meals": {
+            "breakfast": {
+              "recipeId": "rec_007",
+              "servings": 2
+            }
+          }
+        },
+        {
+          "dayNumber": 2,
+          "dayName": "tuesday",
+          "meals": {}
+        },
+        {
+          "dayNumber": 3,
+          "dayName": "wednesday",
+          "meals": {
+            "dinner": {
+              "recipeId": "rec_001",
+              "servings": 4
+            },
+            "lunch": {
+              "recipeId": "rec_003",
+              "servings": 2
+            }
+          }
+        },
+        {
+          "dayNumber": 4,
+          "dayName": "thursday",
+          "meals": {}
+        },
+        {
+          "dayNumber": 5,
+          "dayName": "friday",
+          "meals": {
+            "snacks": [
+              {
+                "recipeId": "rec_019",
+                "servings": 2
+              },
+              {
+                "recipeId": "rec_035",
+                "servings": 1
+              }
+            ]
+          }
+        },
+        {
+          "dayNumber": 6,
+          "dayName": "saturday",
+          "meals": {
+            "snacks": []
+          }
+        },
+        {
+          "dayNumber": 7,
+          "dayName": "sunday",
+          "meals": {}
+        }
+      ],
+      "tags": [],
+      "isPublic": false,
+      "createdAt": "2026-09-19T10:00:00.000Z"
+    }
+  ],
+  "shoppingList": [
+    {
+      "ingredientId": "ing_025",
+      "quantity": 1,
+      "unit": "piece",
+      "usedIn": [
+        "Banana Pancakes"
+      ],
+      "checked": true
+    },
+    {
+      "ingredientId": "ing_026",
+      "quantity": 1,
+      "unit": "cup",
+      "usedIn": [
+        "Banana Pancakes"
+      ],
+      "checked": false,
+      "notes": "unbleached"
+    },
+    {
+      "ingredientId": "ing",
+      "quantity": 4,
+      "unit": "piece",
+      "checked": false,
+      "usedIn": [
+        "Scrambled Eggs with Spinach"
+      ],
+      "notes": ""
+    }
+  ],
+  "pantryItems": [
+    {
+      "ingredientId": "ing_026",
+      "quantity": 2,
+      "unit": "cup",
+      "expirationDate": "2026-12-01",
+      "location": "Cabinet",
+      "id": "pantry_1758189600000_k3j9x2a1q",
+      "addedAt": "2026-09-18T10:00:00.000Z"
+    },
+    {
+      "ingredientId": "Olive oil",
+      "quantity": 1,
+      "unit": "piece",
+      "id": "pantry_1758189700000_p0o9i8u7y",
+      "addedAt": "2026-09-18T10:01:40.000Z"
+    }
+  ],
+  "trackingEntries": [
+    {
+      "date": "2026-09-18",
+      "time": "08:15:00",
+      "mealType": "breakfast",
+      "recipeId": "rec_007",
+      "quantity": 1,
+      "unit": "servings",
+      "servings": 1,
+      "nutrition": {
+        "servingSize": "3 pancakes",
+        "calories": 85,
+        "protein": 2.8,
+        "carbs": 13,
+        "fat": 2.5,
+        "fiber": 0.8,
+        "sugar": 3.8,
+        "sodium": 105,
+        "cholesterol": 19
+      },
+      "id": "tracking_1758183300000_ab12cd3",
+      "loggedAt": "2026-09-18T08:15:00.000Z"
+    },
+    {
+      "date": "2026-09-18",
+      "time": "10:30:00",
+      "mealType": "beverage",
+      "beverageId": "bev_water",
+      "quantity": 250,
+      "unit": "ml",
+      "nutrition": {
+        "servingSize": "250ml",
+        "calories": 0,
+        "protein": 0,
+        "carbs": 0,
+        "fat": 0,
+        "fiber": 0,
+        "sugar": 0,
+        "sodium": 0,
+        "cholesterol": 0
+      },
+      "id": "tracking_1758191400000_ef45gh6",
+      "loggedAt": "2026-09-18T10:30:00.000Z"
+    },
+    {
+      "date": "2026-09-18",
+      "time": "13:00:00",
+      "mealType": "lunch",
+      "ingredientId": "ing_025",
+      "quantity": 120,
+      "unit": "g",
+      "nutrition": {
+        "servingSize": "100g",
+        "calories": 60,
+        "protein": 0.6,
+        "carbs": 15.6,
+        "fat": 0.2,
+        "fiber": 3,
+        "sugar": 12,
+        "sodium": 1,
+        "cholesterol": 0
+      },
+      "id": "tracking_1758200400000_ij78kl9",
+      "loggedAt": "2026-09-18T13:00:00.000Z"
+    }
+  ],
+  "nutritionGoals": {
+    "calories": 1800,
+    "protein": 90,
+    "carbs": 200,
+    "fat": 60,
+    "fiber": 30,
+    "sodium": 2300,
+    "sugar": 50,
+    "water": 2000
+  },
+  "user-preferences-Xk2mP9qLr4TzW8vB1nYc": {
+    "language": "es",
+    "theme": "dark",
+    "defaultServings": 4,
+    "dietaryRestrictions": [
+      "vegetarian"
+    ],
+    "allergies": [
+      "peanuts"
+    ],
+    "excludedIngredients": [
+      "ing_101"
+    ],
+    "unitSystem": "auto"
+  },
+  "user-favorites-Xk2mP9qLr4TzW8vB1nYc": [
+    "rec_003"
+  ],
+  "github-access-token": "legacy-fixture-oauth-token-not-real"
+}

@@ -1,96 +1,76 @@
 name: Deploy to GitHub Pages
 
+# Node 22 + ASTRO_BASE only — no MkDocs/Python step (roadmap D12, Issue 006).
+# Deploys on push to `main`. Until the cutover (Issue 030) `main` still holds
+# the legacy SPA with its own deploy.yml; this file lives on `inceptor` and
+# becomes the live deploy when `inceptor` is merged into `main`.
 on:
   push:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'public/**'
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'requirements.txt'
-      - 'package.json'
-      - 'vite.config.ts'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
+
+# Single concurrent deployment — newer pushes cancel older runs in progress
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
         with:
-          fetch-depth: 0  # Full history for git-based MkDocs plugins
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
+          node-version: '22'
           cache: 'npm'
-
-      - name: Install Node dependencies
-        run: npm ci
-
-      - name: Create .env file
-        run: |
-          cat << EOF > .env
-          VITE_FIREBASE_API_KEY=${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN=${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID=${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET=${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID=${{ secrets.VITE_FIREBASE_APP_ID }}
-          EOF
-
-      - name: Build React App
+      - run: npm ci
+      # The release version (package.json, bumped per CHANGELOG release;
+      # roadmap Issue 048) is inlined as PUBLIC_VERSION and shown in the
+      # FeedbackFAB diagnostics next to PUBLIC_BUILD_SHA.
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Build
         run: npm run build
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Cache pip dependencies
-        uses: actions/cache@v4
-        with:
-          key: mkdocs-material-${{ github.run_id }}
-          path: ~/.cache/pip
-          restore-keys: |
-            mkdocs-material-
-
-      - name: Install MkDocs dependencies
-        run: pip install -r requirements.txt
-
-      - name: Build MkDocs Documentation
-        run: mkdocs build
-
-      - name: Merge builds (docs into React dist)
-        run: |
-          mkdir -p dist/docs
-          cp -r site/* dist/docs/
-
-      - name: Upload combined artifact
-        uses: actions/upload-pages-artifact@v3
+        env:
+          # GitHub *project* pages serve at `<domain>/<repo>/`, so the build
+          # needs the repo name as its base path. Defaults to this repo's slug;
+          # override with an ASTRO_BASE repo secret (e.g. set it to `/` if you
+          # later move to a root/custom-domain user-pages deploy).
+          ASTRO_BASE: ${{ secrets.ASTRO_BASE || '/foodie' }}
+          # Where the FeedbackFAB / report-issue links file issues (roadmap
+          # Issue 007). Inlined at build; forks override with a repo variable.
+          PUBLIC_REPO_SLUG: ${{ vars.PUBLIC_REPO_SLUG || 'ArtemioPadilla/foodie' }}
+          PUBLIC_BUILD_SHA: ${{ github.sha }}
+          PUBLIC_VERSION: ${{ steps.version.outputs.version }}
+          # Marks the production build: astro.config.mjs refuses to build
+          # if PUBLIC_AUTH_MOCK (the dev/test mock auth adapter) is also set.
+          FOODIE_DEPLOY: '1'
+          # Firebase Auth (roadmap D9, Issue 035, ADR 0012). Repository
+          # secrets; any one missing → auth is disabled in the build (the
+          # site still deploys). No GitHub client secret: the OAuth app's
+          # secret lives only in the Firebase console (D10).
+          PUBLIC_FIREBASE_API_KEY: ${{ secrets.PUBLIC_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ secrets.PUBLIC_FIREBASE_APP_ID }}
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: ./dist
 
   deploy:
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5

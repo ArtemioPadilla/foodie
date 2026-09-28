@@ -1,0 +1,300 @@
+---
+import { REPO_URL } from '@/lib/site-meta';
+import { fileURLToPath } from 'node:url';
+import { withBase } from '@/lib/href';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { galleryManifest, type GalleryEntry } from '../../content/gallery';
+import { galleryRecipes } from '../../content/gallery-recipes';
+import { galleryPlaygrounds } from '../../content/gallery-playgrounds';
+import CodeSnippet from '../../components/gallery/CodeSnippet.astro';
+import { extractPropsForSource } from '../../lib/component-docs';
+import { stabilityGlyph, getHydrationDirective } from '../../lib/gallery-badges';
+import Playground from '../../components/islands/Playground';
+
+// Import every gallery island statically so Astro can wire hydration.
+// (Dynamic lookups via a registry don't work for `client:*` directives.)
+import ShowcaseSimples from '../../components/islands/ShowcaseSimples';
+import ShowcaseFormControls from '../../components/islands/ShowcaseFormControls';
+import ShowcaseOverlays from '../../components/islands/ShowcaseOverlays';
+import ShowcaseDisclosure from '../../components/islands/ShowcaseDisclosure';
+import ShowcaseFeedback from '../../components/islands/ShowcaseFeedback';
+import ShowcaseAdvanced from '../../components/islands/ShowcaseAdvanced';
+import ShowcaseInputPrimitives from '../../components/islands/ShowcaseInputPrimitives';
+import ShowcaseNav from '../../components/islands/ShowcaseNav';
+import ShowcaseExtras from '../../components/islands/ShowcaseExtras';
+import ShowcaseDialog from '../../components/islands/ShowcaseDialog';
+import ShowcaseDropdown from '../../components/islands/ShowcaseDropdown';
+import ShowcaseTabs from '../../components/islands/ShowcaseTabs';
+import ShowcaseToast from '../../components/islands/ShowcaseToast';
+import ShowcaseForm from '../../components/islands/ShowcaseForm';
+import ShowcaseFieldType from '../../components/islands/ShowcaseFieldType';
+import ShowcaseDataTable from '../../components/islands/ShowcaseDataTable';
+import ShowcaseKpis from '../../components/islands/ShowcaseKpis';
+import ShowcaseCharts from '../../components/islands/ShowcaseCharts';
+import MotionDemo from '../../components/islands/MotionDemo';
+import ShowcasePWA from '../../components/islands/ShowcasePWA';
+import ShowcaseErrorBoundary from '../../components/islands/ShowcaseErrorBoundary';
+import ShowcaseSplitter from '../../components/islands/ShowcaseSplitter';
+import ShowcaseActionBar from '../../components/islands/ShowcaseActionBar';
+import ShowcaseDownloadTrigger from '../../components/islands/ShowcaseDownloadTrigger';
+import ShowcaseFoodie from '../../components/islands/ShowcaseFoodie';
+
+export async function getStaticPaths() {
+  return galleryManifest.map((entry) => ({
+    params: { component: entry.slug },
+    props: { entry },
+  }));
+}
+
+interface Props {
+  entry: GalleryEntry;
+}
+
+const { entry } = Astro.props;
+const repoBlob = `${REPO_URL}/blob/main/${entry.source}`;
+const recipe = galleryRecipes[entry.slug];
+const playground = galleryPlaygrounds[entry.slug];
+// The live Playground compiles user-typed code with `new Function`. The
+// site-wide CSP (csp.config.mjs) has no 'unsafe-eval'; only the gallery pages
+// that mount a Playground opt in. `Astro.csp` is undefined when CSP is off
+// (dev server).
+if (playground) Astro.csp?.insertScriptResource("'unsafe-eval'");
+
+// Build-time props extraction via the TypeScript compiler API.
+// `repoRoot` is resolved from this file's location (src/flagged-pages/gallery/ → three
+// levels up). extractPropsForSource never throws — returns [] on any error.
+const repoRoot = fileURLToPath(new URL('../../..', import.meta.url));
+const propsTables = extractPropsForSource(entry.source, repoRoot);
+---
+
+<BaseLayout title={`${entry.name} — Gallery`} description={entry.summary}>
+  <main id="main-content" class="mx-auto max-w-6xl px-4 py-12">
+    <nav class="mb-6 text-sm">
+      <a href={withBase('/gallery/')} class="text-muted-foreground hover:text-foreground">← Gallery</a>
+    </nav>
+
+    <header class="mb-8 border-b border-border pb-6">
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h1
+            class="text-3xl font-bold tracking-tight text-foreground"
+            style="view-transition-name: page-title"
+          >
+            {entry.name}
+          </h1>
+          <p class="mt-2 text-muted-foreground">{entry.summary}</p>
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+          {/* Stability glyph (ROADMAP Epic 16) — same ✅/🔵/🧪 legend as docs/component-catalog.md,
+              now inline at the point of use instead of only in the standalone doc table. */}
+          <span
+            class:list={[
+              'inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide',
+              entry.status === 'stable' &&
+                'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30',
+              entry.status === 'beta' &&
+                'bg-yellow-500/15 text-yellow-300 border border-yellow-500/30',
+              entry.status === 'experimental' &&
+                'bg-orange-500/15 text-orange-300 border border-orange-500/30',
+            ]}
+            title={`Stability: ${entry.status}`}
+          >
+            <span aria-hidden="true">{stabilityGlyph(entry.status)}</span>
+            {entry.status}
+          </span>
+          {/* Hydration-cost badge (ROADMAP Epic 16) — falls back to client:visible
+              (getHydrationDirective) when the manifest entry doesn't set one. */}
+          <span
+            class="inline-flex items-center rounded-full border border-border bg-muted px-2.5 py-1 font-mono text-[11px] text-muted-foreground"
+            title="Recommended hydration directive for real-page usage"
+          >
+            {getHydrationDirective(entry)}
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+        <span>
+          Source:
+          <a href={repoBlob} target="_blank" rel="noopener noreferrer"
+             class="font-mono text-foreground hover:underline">
+            {entry.source}
+          </a>
+        </span>
+        {entry.install && (
+          <span>
+            Install:
+            <code class="ml-1 rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-foreground border border-border">
+              {entry.install}
+            </code>
+          </span>
+        )}
+      </div>
+    </header>
+
+    <section class="space-y-6">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+        Rendered example — light + dark
+      </h2>
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="light rounded-lg border border-border bg-background p-6 text-foreground dark:border-neutral-400/30 dark:shadow-[0_0_0_6px_rgba(255,255,255,0.04)]">
+          <p class="mb-4 text-xs uppercase tracking-wide text-muted-foreground">Light</p>
+          {entry.island === 'ShowcaseSimples' && <ShowcaseSimples client:visible />}
+          {entry.island === 'ShowcaseFormControls' && <ShowcaseFormControls client:visible />}
+          {entry.island === 'ShowcaseOverlays' && <ShowcaseOverlays client:visible />}
+          {entry.island === 'ShowcaseDisclosure' && <ShowcaseDisclosure client:visible />}
+          {entry.island === 'ShowcaseFeedback' && <ShowcaseFeedback client:visible />}
+          {entry.island === 'ShowcaseAdvanced' && <ShowcaseAdvanced client:visible />}
+          {entry.island === 'ShowcaseInputPrimitives' && <ShowcaseInputPrimitives client:visible />}
+          {entry.island === 'ShowcaseNav' && <ShowcaseNav client:visible />}
+          {entry.island === 'ShowcaseExtras' && <ShowcaseExtras client:visible />}
+          {entry.island === 'ShowcaseDialog' && <ShowcaseDialog client:visible />}
+          {entry.island === 'ShowcaseDropdown' && <ShowcaseDropdown client:visible />}
+          {entry.island === 'ShowcaseTabs' && <ShowcaseTabs client:visible />}
+          {entry.island === 'ShowcaseToast' && <ShowcaseToast client:visible />}
+          {entry.island === 'ShowcaseForm' && <ShowcaseForm client:visible />}
+          {entry.island === 'ShowcaseFieldType' && <ShowcaseFieldType client:visible />}
+          {entry.island === 'ShowcaseDataTable' && <ShowcaseDataTable client:visible />}
+          {entry.island === 'ShowcaseKpis' && <ShowcaseKpis client:visible />}
+          {entry.island === 'ShowcaseCharts' && <ShowcaseCharts client:visible />}
+          {entry.island === 'MotionDemo' && <MotionDemo client:visible />}
+          {entry.island === 'ShowcasePWA' && <ShowcasePWA client:visible />}
+          {entry.island === 'ShowcaseErrorBoundary' && <ShowcaseErrorBoundary client:visible />}
+          {entry.island === 'ShowcaseSplitter' && <ShowcaseSplitter client:visible />}
+          {entry.island === 'ShowcaseActionBar' && <ShowcaseActionBar client:visible />}
+          {entry.island === 'ShowcaseDownloadTrigger' && <ShowcaseDownloadTrigger client:visible />}
+          {entry.island === 'ShowcaseFoodie' && <ShowcaseFoodie client:visible demo={entry.slug} />}
+        </div>
+        <div class="dark rounded-lg border border-border bg-background p-6 text-foreground">
+          <p class="mb-4 text-xs uppercase tracking-wide text-muted-foreground">Dark</p>
+          {entry.island === 'ShowcaseSimples' && <ShowcaseSimples client:visible />}
+          {entry.island === 'ShowcaseFormControls' && <ShowcaseFormControls client:visible />}
+          {entry.island === 'ShowcaseOverlays' && <ShowcaseOverlays client:visible />}
+          {entry.island === 'ShowcaseDisclosure' && <ShowcaseDisclosure client:visible />}
+          {entry.island === 'ShowcaseFeedback' && <ShowcaseFeedback client:visible />}
+          {entry.island === 'ShowcaseAdvanced' && <ShowcaseAdvanced client:visible />}
+          {entry.island === 'ShowcaseInputPrimitives' && <ShowcaseInputPrimitives client:visible />}
+          {entry.island === 'ShowcaseNav' && <ShowcaseNav client:visible />}
+          {entry.island === 'ShowcaseExtras' && <ShowcaseExtras client:visible />}
+          {entry.island === 'ShowcaseDialog' && <ShowcaseDialog client:visible />}
+          {entry.island === 'ShowcaseDropdown' && <ShowcaseDropdown client:visible />}
+          {entry.island === 'ShowcaseTabs' && <ShowcaseTabs client:visible />}
+          {entry.island === 'ShowcaseToast' && <ShowcaseToast client:visible />}
+          {entry.island === 'ShowcaseForm' && <ShowcaseForm client:visible />}
+          {entry.island === 'ShowcaseFieldType' && <ShowcaseFieldType client:visible />}
+          {entry.island === 'ShowcaseDataTable' && <ShowcaseDataTable client:visible />}
+          {entry.island === 'ShowcaseKpis' && <ShowcaseKpis client:visible />}
+          {entry.island === 'ShowcaseCharts' && <ShowcaseCharts client:visible />}
+          {entry.island === 'MotionDemo' && <MotionDemo client:visible />}
+          {entry.island === 'ShowcasePWA' && <ShowcasePWA client:visible />}
+          {entry.island === 'ShowcaseErrorBoundary' && <ShowcaseErrorBoundary client:visible />}
+          {entry.island === 'ShowcaseSplitter' && <ShowcaseSplitter client:visible />}
+          {entry.island === 'ShowcaseActionBar' && <ShowcaseActionBar client:visible />}
+          {entry.island === 'ShowcaseDownloadTrigger' && <ShowcaseDownloadTrigger client:visible />}
+          {entry.island === 'ShowcaseFoodie' && <ShowcaseFoodie client:visible demo={entry.slug} />}
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-12 rounded-lg border border-border bg-card p-6">
+      <h2 class="mb-1 text-sm font-semibold text-foreground">Recipes &amp; props</h2>
+      <p class="mb-4 text-sm text-muted-foreground">
+        A realistic usage snippet for this component. Imports come from
+        <code class="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground border border-border">@/components/ui/…</code>.
+        See the
+        <a href={repoBlob} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+          source
+        </a>
+        for the full API.
+      </p>
+
+      {recipe ? (
+        <CodeSnippet code={recipe.code} lang={recipe.lang} />
+      ) : (
+        <p class="text-sm text-muted-foreground">
+          No snippet yet for this component — open the
+          <a href={repoBlob} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+            source link
+          </a>
+          above, or read the
+          <a href={withBase('/docs/guides/development/#adding-a-ui-component')} class="text-primary hover:underline">
+            contribution guide
+          </a>.
+        </p>
+      )}
+    </section>
+
+    {playground && (
+      <section class="mt-8 rounded-lg border border-border bg-card p-6">
+        <h2 class="mb-1 text-sm font-semibold text-foreground">Live playground</h2>
+        <p class="mb-4 text-sm text-muted-foreground">
+          Edit the snippet below — it transpiles and re-renders as you type. No
+          bundler, no imports needed: the components used here are already in
+          scope (see
+          <code class="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground border border-border">src/lib/playground-scope.ts</code>).
+        </p>
+        <Playground client:visible initialCode={playground.code} />
+      </section>
+    )}
+
+    {propsTables.length > 0 && (
+      <section class="mt-8 space-y-8" id="props-api">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          Props API
+        </h2>
+
+        {propsTables.map((table) => (
+          <div class="rounded-lg border border-border overflow-hidden">
+            <div class="border-b border-border bg-muted/40 px-4 py-2">
+              <code class="text-sm font-semibold text-foreground">{table.interfaceName}</code>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-border bg-muted/20">
+                    <th class="px-4 py-2 text-left font-medium text-muted-foreground w-36">Prop</th>
+                    <th class="px-4 py-2 text-left font-medium text-muted-foreground w-48">Type</th>
+                    <th class="px-4 py-2 text-left font-medium text-muted-foreground w-28">Default</th>
+                    <th class="px-4 py-2 text-left font-medium text-muted-foreground">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {table.props.map((prop, i) => (
+                    <tr class:list={['border-b border-border last:border-0', i % 2 === 1 && 'bg-muted/10']}>
+                      <td class="px-4 py-2 align-top">
+                        <code class="font-mono text-foreground text-[13px]">{prop.name}</code>
+                        {prop.optional && (
+                          <span class="ml-1 text-[10px] text-muted-foreground">opt</span>
+                        )}
+                      </td>
+                      <td class="px-4 py-2 align-top">
+                        <code
+                          class="font-mono text-[12px] text-primary break-all"
+                          title={prop.fullType !== prop.type ? prop.fullType : undefined}
+                        >
+                          {prop.type}
+                        </code>
+                      </td>
+                      <td class="px-4 py-2 align-top">
+                        {prop.defaultValue ? (
+                          <code class="font-mono text-[12px] text-muted-foreground">
+                            {prop.defaultValue}
+                          </code>
+                        ) : (
+                          <span class="text-muted-foreground/50">—</span>
+                        )}
+                      </td>
+                      <td class="px-4 py-2 align-top text-muted-foreground text-[13px]">
+                        {prop.description || <span class="text-muted-foreground/40">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </section>
+    )}
+  </main>
+</BaseLayout>

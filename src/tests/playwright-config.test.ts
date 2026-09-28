@@ -1,0 +1,81 @@
+import { describe, expect, it } from 'vitest';
+import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+// Resolve a path relative to the repo root. The test file sits at
+// src/tests/playwright-config.test.ts, so we step up two levels.
+function rel(p: string): string {
+  return fileURLToPath(new URL('../../' + p, import.meta.url));
+}
+
+describe('Playwright setup', () => {
+  it('playwright.config.ts exists', () => {
+    expect(existsSync(rel('playwright.config.ts'))).toBe(true);
+  });
+
+  it('declares a webServer so CI knows how to start the Astro preview server', () => {
+    const cfg = readFileSync(rel('playwright.config.ts'), 'utf-8');
+    expect(cfg).toMatch(/webServer/);
+    expect(cfg).toMatch(/npm run preview/);
+  });
+
+  it('keeps astro preview in the foreground under agent env (Astro 7 auto-background)', () => {
+    // Without --ignore-lock, Astro 7 backgrounds `astro preview` when it
+    // detects an AI agent and Playwright reports "webServer exited early".
+    for (const file of ['playwright.config.ts', 'playwright.e2e.config.ts']) {
+      const cfg = readFileSync(rel(file), 'utf-8');
+      expect(cfg, file).toMatch(/npm run preview -- --port \$\{PORT\} --ignore-lock/);
+    }
+  });
+
+  it('snapshots both chromium-light and chromium-dark projects', () => {
+    const cfg = readFileSync(rel('playwright.config.ts'), 'utf-8');
+    expect(cfg).toMatch(/chromium-light/);
+    expect(cfg).toMatch(/chromium-dark/);
+  });
+
+  it('ships a dedicated e2e config (roadmap Issue 005) wired to npm run test:e2e', () => {
+    const cfg = readFileSync(rel('playwright.e2e.config.ts'), 'utf-8');
+    expect(cfg).toMatch(/testDir:\s*'\.\/tests\/e2e'/);
+    expect(cfg).toMatch(/ASTRO_BASE/);
+    expect(cfg).toMatch(/npm run preview/);
+    expect(existsSync(rel('tests/e2e/journeys.spec.ts'))).toBe(true);
+    const pkg = JSON.parse(readFileSync(rel('package.json'), 'utf-8')) as { scripts: Record<string, string> };
+    expect(pkg.scripts['test:e2e']).toContain('playwright.e2e.config.ts');
+    expect(pkg.scripts['test:e2e:list']).toContain('--list');
+  });
+
+  it('the default config also runs the e2e journeys as its own project', () => {
+    const cfg = readFileSync(rel('playwright.config.ts'), 'utf-8');
+    expect(cfg).toMatch(/testDir:\s*'\.\/tests\/e2e'/);
+  });
+
+  it('has a visual spec for /gallery (the dashboard demo left in roadmap Issue 046)', () => {
+    expect(existsSync(rel('tests/visual/gallery.spec.ts'))).toBe(true);
+    expect(existsSync(rel('tests/visual/dashboard.spec.ts'))).toBe(false);
+  });
+
+  it('CONTRIBUTING.md documents the baseline-update flow', () => {
+    expect(existsSync(rel('CONTRIBUTING.md'))).toBe(true);
+    const md = readFileSync(rel('CONTRIBUTING.md'), 'utf-8');
+    // Either the npm script alias or the raw flag is acceptable evidence.
+    expect(md).toMatch(/test:visual:update|--update-snapshots/);
+  });
+
+  it('baseline screenshot directories exist for both light and dark', () => {
+    // visual.yml gates without `continue-on-error` since roadmap Issue 029, so
+    // the directory structure must be in place (baselines are refreshed with
+    // `npm run refresh-baselines` — see CONTRIBUTING.md).
+    expect(existsSync(rel('tests/__screenshots__/chromium-light'))).toBe(true);
+    expect(existsSync(rel('tests/__screenshots__/chromium-dark'))).toBe(true);
+  });
+
+  it('pins light + dark baselines for the planning pages (roadmap Issue 029)', () => {
+    expect(existsSync(rel('tests/visual/planning.spec.ts'))).toBe(true);
+    for (const theme of ['chromium-light', 'chromium-dark']) {
+      for (const page of ['planner', 'shopping', 'pantry']) {
+        expect(existsSync(rel(`tests/__screenshots__/${theme}/${page}.png`)), `${theme}/${page}.png`).toBe(true);
+      }
+    }
+  });
+});

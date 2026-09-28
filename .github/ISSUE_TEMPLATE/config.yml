@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 General question or discussion
+    url: https://github.com/ArtemioPadilla/foodie/discussions
+    about: For questions, ideas, or open discussions about Foodie
+  - name: 🗺️ Migration roadmap (Foodie on Inceptor)
+    url: https://github.com/ArtemioPadilla/foodie/blob/inceptor/docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md
+    about: The canonical plan — check whether your idea is already a roadmap issue before filing a new one

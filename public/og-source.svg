@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#059669"/>
+      <stop offset="1" stop-color="#10b981"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <g transform="translate(880 315) scale(0.95) translate(-256 -268)"><g transform="translate(128, 100)">
+    <!-- Hat top -->
+    <circle cx="64" cy="64" r="48" fill="white" opacity="0.9"/>
+    <circle cx="128" cy="48" r="56" fill="white"/>
+    <circle cx="192" cy="64" r="48" fill="white" opacity="0.9"/>
+
+    <!-- Hat band -->
+    <rect x="32" y="96" width="192" height="24" rx="4" fill="white"/>
+
+    <!-- Hat base -->
+    <path d="M 32 120 L 32 180 Q 32 200 52 200 L 204 200 Q 224 200 224 180 L 224 120 Z"
+          fill="white" opacity="0.95"/>
+
+    <!-- Fork accent -->
+    <g transform="translate(80, 240)" fill="white" opacity="0.3">
+      <rect x="0" y="0" width="8" height="80" rx="4"/>
+      <rect x="16" y="0" width="8" height="80" rx="4"/>
+      <rect x="32" y="0" width="8" height="80" rx="4"/>
+      <rect x="-4" y="0" width="48" height="12" rx="6"/>
+    </g>
+
+    <!-- Spoon accent -->
+    <g transform="translate(160, 240)" fill="white" opacity="0.3">
+      <ellipse cx="12" cy="12" rx="12" ry="16"/>
+      <rect x="8" y="24" width="8" height="56" rx="4"/>
+    </g>
+  </g></g>
+  <g transform="translate(72, 78)">
+    <rect rx="999" width="236" height="40" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1"/>
+    <circle cx="22" cy="20" r="6" fill="#fbbf24"/>
+    <text x="40" y="26" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#ffffff" font-weight="600">EN · ES · FR · offline-first</text>
+  </g>
+  <text x="72" y="300" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="132" font-weight="800" fill="#ffffff" letter-spacing="-4">Foodie</text>
+  <text x="76" y="372" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="34" font-weight="500" fill="#ecfdf5">Your Personal Meal Planning Assistant</text>
+  <text x="76" y="440" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="22" fill="#d1fae5">Recipes · Meal planner · Shopping list · Pantry · Nutrition</text>
+  <text x="76" y="570" font-family="'DejaVu Sans Mono', ui-monospace, monospace" font-size="18" fill="#a7f3d0">artemiopadilla.github.io/foodie</text>
+</svg>

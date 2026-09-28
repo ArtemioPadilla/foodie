@@ -1,0 +1,23 @@
+---
+/**
+ * `/tracking/` wrapper for `en` (roadmap Issue 031). The page body lives in
+ * `components/pages/Tracking.astro`; this file owns the layout metadata for
+ * this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Tracking from '@/components/pages/Tracking.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'en' as const;
+const alternates = hreflangAlternates('/tracking/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'tracking.title')}`}
+  description={t(lang, 'tracking.pageDescription')}
+  lang={lang}
+  alternates={alternates}
+>
+  <Tracking lang={lang} />
+</BaseLayout>

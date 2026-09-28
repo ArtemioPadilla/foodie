@@ -1,79 +1,103 @@
-name: Validate Recipe PR
+name: Validate recipe PR
+
+# ---------------------------------------------------------------------------
+# Catalog validation for community data PRs (roadmap Issue 006, D6).
+#
+# `public/data/*.json` is the single catalog source. Any PR touching it runs
+# the Zod-backed catalog test and comments the outcome on the PR, replacing the
+# legacy ajv-cli + JSON-schema step (Zod schemas in src/schemas are the only
+# cross-boundary contract in this codebase).
+#
+# `src/tests/catalog-schema.test.ts` landed with roadmap Issue 011 (content
+# collections validated with the Zod schemas from Issue 010): it parses the
+# four catalog files in full, enforces unique ids, trilingual text and
+# cross-file references. The existence guard below is now a no-op safety net —
+# if the test file were ever removed the workflow emits a ::warning:: instead
+# of silently passing. How to add a recipe: docs/recipes/catalog-data.md.
+# ---------------------------------------------------------------------------
 
 on:
   pull_request:
     paths:
-      - 'public/data/recipes.json'
-      - 'public/data/ingredients.json'
+      - 'public/data/*.json'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   validate:
-    name: Validate Recipe Files
+    name: Catalog schema (Zod)
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
         with:
-          node-version: '20.x'
+          node-version: '22'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v46
-        with:
-          files: |
-            public/data/recipes.json
-            public/data/ingredients.json
-
-      - name: Validate JSON schema
-        if: steps.changed-files.outputs.any_changed == 'true'
+      - name: Run catalog schema test
+        id: catalog
+        # `continue-on-error` so the comment step below always reports; the
+        # final step re-raises the failure so the check stays red.
+        continue-on-error: true
         run: |
-          echo "Changed files:"
-          echo "${{ steps.changed-files.outputs.all_changed_files }}"
-          npm run validate:json
+          set -o pipefail
+          if [ ! -f src/tests/catalog-schema.test.ts ]; then
+            echo "::warning::src/tests/catalog-schema.test.ts does not exist yet (roadmap Issue 011) — catalog validation skipped"
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if npm run test -- src/tests/catalog-schema.test.ts 2>&1 | tee catalog-test.log; then
+            echo "status=passed" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
 
-      - name: Check for duplicates
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: node scripts/checkDuplicates.js
-
-      - name: Validate translations
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: node scripts/validateTranslations.js
-
-      - name: Check recipe images exist
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          echo "Image validation skipped for consolidated JSON structure"
-          echo "Images should be validated manually or through separate tooling"
-
-      - name: Comment PR with validation results
-        if: always()
+      - name: Comment result on the PR
+        # PRs from forks get a read-only token: the comment is best-effort and
+        # never turns a green validation red.
+        continue-on-error: true
+        # First-party action: a version tag is accepted by ci.yml's unpinned-ref scan.
         uses: actions/github-script@v7
+        env:
+          CATALOG_STATUS: ${{ steps.catalog.outputs.status || 'failed' }}
         with:
           script: |
             const fs = require('fs');
-            const output = `### Recipe Validation Results
+            const status = process.env.CATALOG_STATUS;
+            const icon = { passed: '✅', failed: '❌', skipped: '⚠️' }[status] ?? '❔';
+            let details = '';
+            if (fs.existsSync('catalog-test.log')) {
+              const log = fs.readFileSync('catalog-test.log', 'utf8').trim().split('\n').slice(-40).join('\n');
+              details = `\n\n<details><summary>vitest output (last 40 lines)</summary>\n\n\`\`\`\n${log}\n\`\`\`\n</details>`;
+            }
+            const note = status === 'skipped'
+              ? 'The catalog schema test does not exist yet (roadmap Issue 011); validation was skipped.'
+              : `\`npm run test -- src/tests/catalog-schema.test.ts\` **${status}**.`;
+            const marker = '<!-- validate-recipe-pr -->';
+            const body = `${marker}\n### ${icon} Catalog validation — ${status}\n\n${note}${details}`;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number, per_page: 100 });
+            const existing = comments.find((c) => c.user?.type === 'Bot' && c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }
 
-            ✅ JSON Schema validation passed
-            ✅ No duplicate recipes found
-            ✅ All translations complete
-
-            **Changed files:** ${{ steps.changed-files.outputs.all_changed_files_count }}
-
-            Great work! Your recipe contribution looks good.`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            });
+      - name: Fail the check if validation failed
+        if: steps.catalog.outputs.status == 'failed'
+        run: |
+          echo "::error::Catalog schema validation failed — see the PR comment and catalog-test.log"
+          exit 1

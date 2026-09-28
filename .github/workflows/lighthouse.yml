@@ -1,0 +1,83 @@
+name: Lighthouse
+
+# ---------------------------------------------------------------------------
+# Lighthouse CI over the static build (roadmap Issues 006, 045).
+#
+# The build is production-shaped: dummy PUBLIC_FIREBASE_* values turn the
+# auth UI on (the deployed site has it) without contacting anything — the SDK
+# chunk is lazy. On that build: the bundle-split checks (Recharts/Firebase
+# only where used, no chunk > 250 KB gz) and the chunk report; then
+# `lhci autorun` reads .lighthouserc.json: it serves ./dist itself
+# (staticDistDir), audits /, /es/, /fr/, /recipes/, a recipe detail,
+# /planner/ and /tracking/progress/, and asserts the category scores
+# (performance ≥ 0.9, accessibility ≥ 0.95, best-practices = 1, SEO ≥ 0.95,
+# all ERROR; Core Web Vitals warn). A second `lhci assert` enforces the byte
+# budgets in lighthouse-budgets.json. Same steps locally: `npm run perf`.
+#
+# Kept out of ci.yml on purpose: it needs a full build + a served preview and
+# its numbers wobble on shared runners, so it must never slow down or flake
+# the `npm run check` gate. It gates PRs to the long-lived branches only.
+# ---------------------------------------------------------------------------
+
+on:
+  pull_request:
+    branches: [inceptor, main]
+  push:
+    branches: [inceptor, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: lhci autorun (dist/)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      # Root base path: .lighthouserc.json addresses pages as
+      # http://localhost/<route>/index.html, which lhci's static server maps
+      # onto dist/. The GitHub Pages build (ASTRO_BASE=/foodie) is audited by
+      # the same assertions locally via `npm run lighthouse`.
+      - name: Build
+        run: npm run build
+        env:
+          PUBLIC_FIREBASE_API_KEY: perf-build-not-a-real-key
+          PUBLIC_FIREBASE_AUTH_DOMAIN: foodie-perf.firebaseapp.com
+          PUBLIC_FIREBASE_PROJECT_ID: foodie-perf
+          PUBLIC_FIREBASE_APP_ID: '1:000000000000:web:0000000000000000'
+
+      - name: Bundle checks + chunk report
+        run: |
+          npx vitest run --mode dist src/tests/bundle-split.test.ts src/tests/auth-chunk.test.ts
+          node scripts/chunk-report.mjs --out .lighthouseci/chunk-report.md
+        env:
+          PUBLIC_FIREBASE_API_KEY: perf-build-not-a-real-key
+
+      - name: Lighthouse CI
+        run: npx lhci autorun --config=.lighthouserc.json
+
+      - name: Lighthouse budgets
+        run: npx lhci assert --no-lighthouserc --budgetsFile=./lighthouse-budgets.json
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          if-no-files-found: ignore
+          retention-days: 14

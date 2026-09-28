@@ -1,0 +1,23 @@
+---
+/**
+ * `/plan/shared/` wrapper for `en` (roadmap Issue 040). The page body lives in
+ * `components/pages/SharedPlan.astro`; this file owns the layout metadata for
+ * this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SharedPlan from '@/components/pages/SharedPlan.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'en' as const;
+const alternates = hreflangAlternates('/plan/shared/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'sharedPlan.title')}`}
+  description={t(lang, 'sharedPlan.description')}
+  lang={lang}
+  alternates={alternates}
+>
+  <SharedPlan lang={lang} />
+</BaseLayout>

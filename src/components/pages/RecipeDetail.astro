@@ -1,0 +1,78 @@
+---
+/**
+ * RecipeDetail — the `/recipes/[id]/` page body (roadmap Issue 018, port of
+ * legacy `RecipeDetailPage`).
+ *
+ * Rendered by the thin wrappers `pages/recipes/[id].astro`,
+ * `pages/es/recipes/[id].astro` and `pages/fr/recipes/[id].astro`, which own
+ * `getStaticPaths()` (one page per catalog recipe) and the `<BaseLayout>`
+ * metadata (title, description, OG, hreflang, `Recipe` JSON-LD).
+ *
+ * Static HTML: header, times, difficulty, cuisines, dietary badges, tips,
+ * equipment (`RecipeDetailHeader` / `RecipeDetailExtras`, shared with the
+ * contribute wizard's preview — roadmap Issue 038) and the related recipes
+ * (computed at build). Everything that
+ * reacts to the selected yield — servings, ingredients, per-step timers,
+ * nutrition, favourite / plan / shopping actions — is the single
+ * `RecipeDetailActions` island (`client:visible`), which is also rendered on
+ * the server so the page is complete without JavaScript.
+ */
+import { ArrowLeftIcon } from 'lucide-react';
+import RecipeDetailActions from '@/components/islands/RecipeDetailActions';
+import { RecipeCard } from '@/components/domain/RecipeCard';
+import { RecipeDetailExtras, RecipeDetailHeader } from '@/components/domain/RecipeDetailView';
+import { localizedRoute, t, type Locale } from '@/i18n';
+import { withBase } from '@/lib/href';
+import type { RecipeDetailProps } from '@/lib/domain/recipe-detail';
+
+interface Props extends RecipeDetailProps {
+  lang: Locale;
+}
+
+const { lang, recipe, related, ingredientMeta, cuisineNames, mealTypeName } = Astro.props;
+const recipesHref = withBase(localizedRoute('/recipes/', lang));
+---
+
+<main
+  id="main-content"
+  class="mx-auto max-w-7xl px-4 py-10 sm:py-14"
+  data-page="recipe-detail"
+  data-recipe-id={recipe.id}
+  data-pagefind-body
+>
+  {/* Pagefind indexes the recipe (header, ingredients, steps, extras) but not
+      the back link or the related-recipe cards (roadmap #043). */}
+  <nav aria-label={t(lang, 'nav.recipes')} class="mb-6" data-pagefind-ignore>
+    <a
+      href={recipesHref}
+      class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
+      data-testid="back-to-recipes"
+    >
+      <ArrowLeftIcon className="size-4" aria-hidden="true" />
+      {t(lang, 'recipe.backToRecipes')}
+    </a>
+  </nav>
+
+  <RecipeDetailHeader recipe={recipe} lang={lang} cuisineNames={cuisineNames} mealTypeName={mealTypeName} />
+
+  <div class="mt-10">
+    <RecipeDetailActions client:visible recipe={recipe} lang={lang} ingredientMeta={ingredientMeta} />
+  </div>
+
+  <RecipeDetailExtras recipe={recipe} lang={lang} />
+
+  {related.length > 0 && (
+    <section aria-labelledby="related-recipes-heading" class="mt-14" data-testid="related-recipes" data-pagefind-ignore>
+      <h2 id="related-recipes-heading" class="font-display text-2xl font-semibold text-foreground">
+        {t(lang, 'recipe.relatedRecipes')}
+      </h2>
+      <ul class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((item) => (
+          <li>
+            <RecipeCard recipe={item} lang={lang} href={withBase(localizedRoute(`/recipes/${item.id}/`, lang))} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</main>

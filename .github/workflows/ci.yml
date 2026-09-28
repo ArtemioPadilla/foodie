@@ -1,0 +1,144 @@
+name: CI
+
+# Foodie → Inceptor migration (roadmap Issue 006, D3): the integration branch
+# is `inceptor`; every issue lands from `phase-N/issue-NNN-slug` via PR to
+# `inceptor`, and `inceptor` is merged into `main` at the cutover (Issue 030).
+# Until then `main` still deploys the legacy SPA, so CI must gate both.
+on:
+  push:
+    branches:
+      - main
+      - inceptor
+      - 'phase-*/**'
+      - 'feat/**'
+      - 'fix/**'
+      - 'docs/**'
+      - 'chore/**'
+  pull_request:
+    branches: [inceptor, main]
+
+# One run per branch: a new push cancels the in-flight run instead of
+# queueing N parallel runs (rapid PR bursts previously dropped/duplicated
+# runs — audit Wave 1b).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      # `check` already ends with a full build (npm-run-all --serial build),
+      # so no separate build step — the old duplicate cost ~3-4 min per run.
+      #
+      # DEGRADATION PATH (see docs/SETUP.md — "astro check scale fallback"):
+      # At large content-tree scale, `astro check` can OOM. Set the
+      # CHECK_SKIP_ASTRO=1 env var as a repo/environment secret to fall back
+      # to `tsc --noEmit` + `npm run build` instead. The step below picks this
+      # up automatically.
+      - name: Check (astro check + build, or tsc fallback)
+        run: |
+          if [ "$CHECK_SKIP_ASTRO" = "1" ]; then
+            echo "::warning::CHECK_SKIP_ASTRO=1 — running tsc --noEmit + build instead of astro check (OOM escape hatch)"
+            npm run type-check
+            npm run build
+          else
+            npm run check
+          fi
+        env:
+          CHECK_SKIP_ASTRO: ${{ vars.CHECK_SKIP_ASTRO || '' }}
+
+  # ---------------------------------------------------------------------------
+  # actionlint — static analysis for all workflow files
+  #
+  # Catches the class of bug found in Watchboard (#168):
+  #   - env var conditions that always evaluate false
+  #   - mutable `uses: action@main` refs among pinned `@v1` refs
+  #   - unquoted ${{ inputs.* }} interpolations in run: blocks
+  #   - invalid event names / step syntax
+  #
+  # We download the binary directly (SHA-pinned version + checksum) rather
+  # than using an Action wrapper, so the only third-party code running here
+  # is the pinned actionlint binary itself.
+  #
+  # Lighthouse note:
+  #   Lighthouse runs in its own workflow (lighthouse.yml — `lhci autorun`
+  #   over the static dist/ with .lighthouserc.json, roadmap Issue 006) rather
+  #   than here: it needs a full build plus a preview server and its numbers are
+  #   flaky enough on shared runners that they must not block the fast
+  #   `npm run check` gate. The budget file (lighthouse-budgets.json) is
+  #   enforced there and locally via `npm run lighthouse`.
+  #
+  # axe a11y smoke note:
+  #   The axe/Playwright smoke already runs in visual.yml (one AxeBuilder scan
+  #   per smoke route, failing on serious/critical). Wiring a duplicate here
+  #   would double the cost. See visual.yml for the implementation.
+  # ---------------------------------------------------------------------------
+  actionlint:
+    name: Lint workflows (actionlint)
+    runs-on: ubuntu-latest
+    # Only on PRs and pushes to the long-lived branches (main, inceptor) — not
+    # on every feature branch push, which would be redundant since the PR
+    # check already covers it.
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/inceptor'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+
+      - name: Download actionlint v1.7.12 (SHA-pinned)
+        # The SHA is the sha256 of actionlint_1.7.12_linux_amd64.tar.gz,
+        # taken from the official checksums file published with the release.
+        # Update this comment + the checksum when bumping the version.
+        run: |
+          ACTIONLINT_VERSION="1.7.12"
+          ACTIONLINT_SHA256="8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+          curl -sSL \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
+            -o actionlint.tar.gz
+          echo "${ACTIONLINT_SHA256}  actionlint.tar.gz" | sha256sum --check --strict
+          tar -xzf actionlint.tar.gz actionlint
+          chmod +x actionlint
+
+      - name: Run actionlint
+        run: |
+          ./actionlint -color .github/workflows/*.yml
+
+      - name: Scan for unpinned third-party action refs (mutable @branch refs)
+        # Flags `uses: owner/repo@main` or `@master` — mutable refs that can
+        # be silently updated. SHA pins are required for all third-party actions.
+        # First-party `actions/*` are trusted runners; they can use @vN tags.
+        run: |
+          # BUGFIX: the original pattern used a PCRE negative-lookahead
+          # `(?!...)`, which GNU `grep -E` (POSIX ERE) does not support — so it
+          # never matched and this security scan silently never ran. The form
+          # below is valid ERE: it flags any third-party `uses:` ref that is
+          # NOT pinned to a 40-hex commit SHA. First-party actions/* and
+          # github/*, and local ./ refs, are exempt.
+          #
+          # Use `-rn` (file + line numbers), not `-rh`: on failure the report
+          # must say WHICH workflow and line holds the unpinned ref so it's
+          # actionable without a manual search. The `file:line:` prefix does
+          # not affect the filters below — the first-party check matches on the
+          # `uses:` token and the SHA check is `$`-anchored on the trailing ref.
+          UNPINNED=$(grep -rnE "^[[:space:]]*-?[[:space:]]*uses:[[:space:]]+" \
+              .github/workflows/*.yml \
+            | sed -E 's/#.*$//' \
+            | grep -vE "uses:[[:space:]]+(actions/|github/|\\./)" \
+            | grep -vE "@[0-9a-f]{40}[[:space:]]*$" \
+            || true)
+          if [ -n "$UNPINNED" ]; then
+            echo "ERROR: unpinned third-party action refs found:"
+            echo "$UNPINNED"
+            exit 1
+          fi
+          echo "OK: all third-party action refs appear to be SHA-pinned."
+
+  # No backend jobs: Foodie is a fully static site (D12 — no Python/MkDocs, no
+  # server-node/server-flask archetypes). If a backend ever lands (ADR 0006
+  # opt-in), add its job here with its own cache-dependency-path.

@@ -1,0 +1,125 @@
+---
+/**
+ * Global navigation header. Rendered by BaseLayout on every page so the
+ * wordmark (→ home) and the definitive Foodie sections are always reachable
+ * (roadmap Issue 005): Home · Recipes · Ingredients · Planner · Shopping ·
+ * Pantry · Tracking · Contribute, plus ThemeToggle, LangSwitcher, GlobalSearch
+ * and the account slot, filled with the `AccountMenu` island (Issue 036).
+ *
+ * Labels and hrefs follow the page locale (detected from the route, never from
+ * the browser), so `/es/recipes/` links stay inside `/es/`. Below `md` the
+ * links collapse into the `MobileNav` island (a `Sheet`).
+ */
+import ThemeToggle from './ThemeToggle.astro';
+import { withBase } from '@/lib/href';
+import { REPO_URL } from '@/lib/site-meta';
+import GlobalSearch from '@/components/islands/GlobalSearch';
+import MobileNav from '@/components/islands/MobileNav';
+import AccountMenu from '@/components/islands/AccountMenu';
+import LangSwitcher from './LangSwitcher.astro';
+import { detectLocale, localizedPath, localizedRoute, stripBase, t } from '@/i18n';
+import { flags } from '@/lib/flags';
+
+const SECTIONS = [
+  { route: '/', key: 'home' },
+  { route: '/recipes/', key: 'recipes' },
+  { route: '/ingredients/', key: 'ingredients' },
+  { route: '/planner/', key: 'planner' },
+  { route: '/shopping/', key: 'shopping' },
+  { route: '/pantry/', key: 'pantry' },
+  { route: '/tracking/', key: 'tracking' },
+  { route: '/contribute/', key: 'contribute' },
+] as const;
+
+// Compare on the path *after* the base and locale prefix, so the active state
+// works under /foodie/ and inside /es/ or /fr/ alike.
+const route = stripBase(Astro.url.pathname, import.meta.env.BASE_URL);
+const locale = detectLocale(route);
+const here = `${localizedPath(route, 'en').replace(/\/+$/, '')}/`;
+const isActive = (r: string) => (r === '/' ? here === '/' : here.startsWith(r));
+
+const nav = SECTIONS.map((s) => ({
+  href: withBase(localizedRoute(s.route, locale)),
+  label: t(locale, `nav.${s.key}`),
+  active: isActive(s.route),
+}));
+
+// ⌘K palette commands: the sections above plus the docs and — only in builds
+// that ship it (flags.experimentalGallery, roadmap Issue 046) — the gallery.
+const searchCommands = [
+  ...nav.map(({ href, label }) => ({ href, label })),
+  { href: withBase(localizedRoute('/docs/', locale)), label: t(locale, 'nav.docs') },
+  ...(flags.experimentalGallery
+    ? [{ href: withBase(localizedRoute('/gallery/', locale)), label: t(locale, 'nav.gallery') }]
+    : []),
+];
+
+const menuLabels = {
+  open: t(locale, 'nav.openMenu'),
+  close: t(locale, 'nav.closeMenu'),
+  title: t(locale, 'nav.menuTitle'),
+  description: t(locale, 'nav.menuDescription'),
+  github: t(locale, 'nav.github'),
+};
+---
+
+<header class="sticky top-0 z-40 border-b border-border/60 bg-background/75 backdrop-blur-md">
+  <nav class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2.5 sm:px-5" aria-label={t(locale, 'nav.main')}>
+    <a
+      href={withBase(localizedRoute('/', locale))}
+      class="group flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-foreground"
+      aria-label="Foodie — home"
+    >
+      <img src={withBase('/favicon.svg')} width="20" height="20" alt="" aria-hidden="true" class="rounded-[0.2em] transition-transform group-hover:-rotate-6" />
+      <span>Foodie</span>
+    </a>
+
+    <!-- Desktop section links -->
+    <div class="ml-auto hidden items-center gap-0.5 font-mono text-xs md:flex lg:gap-1 lg:text-sm">
+      {
+        nav.map((n) => (
+          <a
+            href={n.href}
+            aria-current={n.active ? 'page' : undefined}
+            class:list={[
+              'rounded-md px-1.5 py-1 transition-colors hover:text-primary lg:px-2',
+              n.active ? 'text-primary underline decoration-2 underline-offset-[0.6em]' : 'text-muted-foreground',
+            ]}
+          >
+            {n.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
+      <a
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hidden rounded-md px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-primary lg:inline lg:text-sm"
+      >
+        {t(locale, 'nav.github')} ↗
+      </a>
+      {/* EN/ES/FR switcher — keeps the current route via localizedPath().
+          The footer has a more prominent version. */}
+      <LangSwitcher class="hidden sm:inline-flex" />
+      {/* GlobalSearch — mounted client:idle so it's available site-wide without
+          blocking first paint. Renders a magnifier trigger button + the ⌘K
+          dialog in one island (compound-component constraint). */}
+      <GlobalSearch client:idle commands={searchCommands} />
+      <span class="ml-1"><ThemeToggle /></span>
+      {/* Account slot (reserved in Issue 005, filled in Issue 036): "Sign in"
+          or the avatar menu. One island holds the menu AND the AuthDialog
+          (compound-component rule). Renders nothing when the build has no
+          auth adapter. Pages may still append to the `account` slot. */}
+      <AccountMenu client:idle lang={locale} />
+      <slot name="account" />
+      {/* Mobile menu — one island wraps the whole Sheet compound so the Base UI
+          Dialog context never crosses an island boundary. */}
+      <span class="md:hidden">
+        <MobileNav client:idle lang={locale} items={nav} repoUrl={REPO_URL} labels={menuLabels} />
+      </span>
+    </div>
+  </nav>
+</header>

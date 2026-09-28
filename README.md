@@ -1,232 +1,104 @@
-# 🍽️ Foodie - Meal Planning PWA
+# Foodie
 
-A comprehensive, multilingual Progressive Web Application for meal planning, recipe management, and shopping list generation.
+[![CI](https://github.com/ArtemioPadilla/foodie/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/ci.yml)
+[![Deploy](https://github.com/ArtemioPadilla/foodie/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/deploy.yml)
+[![Visual & e2e](https://github.com/ArtemioPadilla/foodie/actions/workflows/visual.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/visual.yml)
+[![Security](https://github.com/ArtemioPadilla/foodie/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/security.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
 
-![Foodie Banner](public/images/banner.svg)
+**Plan your meals, shop once, eat well — in English, Spanish or French, even offline.**
 
-## ✨ Features
+Foodie is an offline-first meal-planning web app: a catalog of 50 recipes and
+105 ingredients in three languages, a weekly planner with drag and drop, a
+shopping list generated from the plan, a pantry with expiry dates, and a food
+diary with nutrition goals. Everything you enter stays in your browser;
+signing in is optional.
 
-- 🔍 **Recipe Browser**: Search and filter recipes by cuisine, dietary tags, prep time, and more
-- 📅 **Meal Planner**: Create weekly meal plans with drag-and-drop interface
-- 🛒 **Shopping Lists**: Auto-generate organized shopping lists from meal plans
-- 📦 **Pantry Management**: Track ingredients and get recipe suggestions
-- 🌍 **Multilingual**: Full support for English, Spanish, and French
-- 🌙 **Dark Mode**: Beautiful dark theme for comfortable viewing
-- 📱 **PWA**: Install as an app, works offline
-- 🔐 **User Accounts**: Save favorites and sync across devices (optional Firebase)
-- 🤝 **Community**: GitHub-integrated recipe contribution system
+- **Use it:** <https://artemiopadilla.github.io/foodie/> (also [`/es/`](https://artemiopadilla.github.io/foodie/es/) and [`/fr/`](https://artemiopadilla.github.io/foodie/fr/))
+- **Docs:** <https://artemiopadilla.github.io/foodie/docs/> — getting started, guides, the data model and how to contribute, with search
+- **v1:** the React 18 + Vite app is frozen at the tag
+  [`legacy-vite-1.0.0`](https://github.com/ArtemioPadilla/foodie/tree/legacy-vite-1.0.0).
+  Data saved by v1 in your browser carries over to v2, and old links redirect.
 
-## 🚀 Quick Start
+| Landing | Recipe detail |
+|---|---|
+| ![Foodie landing page](docs/assets/screenshot-landing.png) | ![A recipe page with servings, units, favourites and plan actions](docs/assets/screenshot-recipe-detail.png) |
+| **Planner** | **Tracking progress** |
+| ![The weekly meal planner with cost and nutrition summary](docs/assets/screenshot-planner.png) | ![The progress dashboard with calories per day and the trend against the goal](docs/assets/screenshot-tracking-progress.png) |
 
-### Prerequisites
+## Features
 
-- Node.js 20+ and npm
-- Git
+- **Recipes** — search, filter (meal type, cuisine, diet, difficulty, time)
+  and sort, with the state in the URL; every recipe has a static page with a
+  servings scaler, metric/imperial units, step timers, nutrition and JSON-LD.
+- **Ingredients** — nutrition, composition, prices and the recipes that use
+  each one; add to the pantry or the shopping list.
+- **Planner** — seven days of breakfast, lunch, dinner and snacks; drag and
+  drop with pointer or keyboard; templates; cost and nutrition summary; share
+  a plan as a link, no server involved.
+- **Shopping list** — generated from the plan, merged and converted, grouped
+  by category and priced; your own items; CSV and text export.
+- **Pantry** — quantities, locations and expiry dates, and "what can I cook"
+  from what you have.
+- **Tracking** — a food diary, daily goals and progress charts.
+- **Accounts (optional)** — email, Google or GitHub sign-in keeps preferences
+  and favourites per account; export or clear your data at any time.
+- **Contribute** — a wizard turns your recipe into catalog JSON and a
+  prefilled GitHub issue; Foodie never asks for a token.
+- **PWA** — installable, works offline after the first visit.
 
-### Installation
+## Stack
+
+Built on the [Inceptor](https://github.com/ArtemioPadilla/inceptor) template:
+**Astro 7** static pages with **React 19** islands, Tailwind v4, Base UI
+primitives, Nano Stores, TanStack Query, react-hook-form + Zod, Recharts,
+Motion, `@vite-pwa/astro` and Pagefind. Foodie adds `@dnd-kit` (planner),
+`firebase` (optional sign-in, loaded on demand) and `fflate` (plan sharing).
+The catalog is plain JSON in `public/data/`, validated with Zod at build time.
+Deployed to GitHub Pages.
+
+## Quick start
 
 ```bash
-# Clone the repository
-git clone https://github.com/artemiopadilla/foodie.git
+git clone https://github.com/ArtemioPadilla/foodie.git
 cd foodie
-
-# Install dependencies
-npm install
-
-# Copy environment variables
-cp .env.example .env
-
-# Start development server
-npm run dev
+npm ci               # Node 22 (.nvmrc)
+npm run dev          # http://localhost:4321/
 ```
 
-The app will be available at `http://localhost:5173`
+| Command | What it does |
+|---|---|
+| `npm run check` | astro check, tsc, Vitest, ESLint, pragma check, build and built-site tests — the gate before every commit |
+| `npm run test` | Unit tests (Vitest) |
+| `npm run build && npx playwright test` | Screenshots, accessibility, smoke and the e2e journeys |
+| `npm run test:e2e` | E2E journeys and the Content Security Policy gate |
+| `npm run docs:screenshots` | Regenerate the images above from a running preview |
 
-## 📦 Tech Stack
+Configuration (base path, Firebase, feature flags) is documented in
+[Configuration](https://artemiopadilla.github.io/foodie/docs/getting-started/configuration/)
+and `.env.example`.
 
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite 5
-- **Styling**: Tailwind CSS
-- **State Management**: React Context API
-- **Internationalization**: i18next
-- **PWA**: vite-plugin-pwa
-- **Icons**: Lucide React
-- **Backend (Optional)**: Firebase (Auth, Firestore, Storage)
-- **Deployment**: GitHub Pages
+## Contributing
 
-## 📝 Available Scripts
+Recipes and code are both welcome — see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-### Using npm
+- **A recipe:** use the in-app [Contribute](https://artemiopadilla.github.io/foodie/contribute/)
+  wizard, or open a PR that edits `public/data/recipes.json`
+  ([format](https://artemiopadilla.github.io/foodie/docs/contributing/recipe-format/)).
+- **Code:** every change starts as an issue and lands as a PR against `main`
+  (issue → plan → implement → validate → PR). Read [`CLAUDE.md`](./CLAUDE.md)
+  for the rules the codebase follows.
 
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run lint         # Run ESLint
-npm test             # Run unit tests
-npm run test:e2e     # Run E2E tests
-```
+## Documentation map
 
-### Using Makefile (Recommended)
+- [Docs site](https://artemiopadilla.github.io/foodie/docs/) — sources in `src/content/docs/`
+- [Migration roadmap](./docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md) — the plan behind v2 (48 issues, decisions D1–D14)
+- [Architecture decisions](./docs/decisions/) — Foodie ADRs 0001, 0002, 0010–0014
+- [`CLAUDE.md`](./CLAUDE.md) — conventions, stack and workflow for contributors and Claude Code
+- [Component guide](./docs/COMPONENTS.md) and [catalog](./docs/component-catalog.md) — the UI kit
+- [Runbooks](./docs/runbooks/) — cutover, offline PWA, repository cleanup
+- [`CHANGELOG.md`](./CHANGELOG.md)
 
-We provide a comprehensive Makefile for easier development and testing:
+## License
 
-```bash
-make help            # Show all available commands
-make dev             # Start development server
-make build           # Build for production
-make test:all        # Run all tests
-make validate:all    # Run all validations
-make act:lighthouse  # Run Lighthouse checks locally
-make doctor          # Check environment setup
-```
-
-See [MAKEFILE.md](./MAKEFILE.md) for complete documentation and all available commands.
-
-**Benefits of using Makefile:**
-- Run GitHub Actions locally with `make act:*` commands
-- Pre-push validation to catch CI failures early
-- Convenient shortcuts for common tasks
-- Color-coded output for better readability
-
-## 🏗️ Project Structure
-
-```
-foodie/
-├── public/           # Static assets
-│   ├── images/       # Images and icons
-│   └── locales/      # Translation files
-├── src/
-│   ├── components/   # React components
-│   ├── contexts/     # Context providers
-│   ├── hooks/        # Custom hooks
-│   ├── pages/        # Page components
-│   ├── types/        # TypeScript types
-│   ├── utils/        # Utility functions
-│   ├── data/         # JSON data files
-│   └── styles/       # Global styles
-├── .github/
-│   └── workflows/    # CI/CD workflows
-└── scripts/          # Build scripts
-```
-
-## 🌍 Internationalization
-
-Foodie supports multiple languages out of the box:
-
-- 🇬🇧 English
-- 🇪🇸 Spanish
-- 🇫🇷 French
-
-Translation files are located in `public/locales/{lang}/translation.json`.
-
-### Adding a New Language
-
-1. Create translation file: `public/locales/{code}/translation.json`
-2. Add language to supported list in `src/i18n.ts`
-3. Update `MultiLangText` interface in `src/types/index.ts`
-
-## 🤝 Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-### Contributing Recipes
-
-Use the in-app recipe contribution wizard at `/contribute`. It will:
-- Guide you through a 7-step process
-- Validate your recipe
-- Generate proper JSON
-- Create a Pull Request automatically
-
-### Development Workflow
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Run tests: `npm test`
-5. Commit: `git commit -m 'Add amazing feature'`
-6. Push: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
-## 📖 Documentation
-
-- [CLAUDE.md](CLAUDE.md) - Comprehensive technical documentation
-- [Architecture Overview](CLAUDE.md#architecture)
-- [API Documentation](CLAUDE.md#data-model)
-- [Contributing Guide](CONTRIBUTING.md)
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Copy `.env.example` to `.env` and configure:
-
-```env
-# Firebase (optional)
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-
-# GitHub OAuth (optional)
-VITE_GITHUB_CLIENT_ID=your_client_id
-VITE_GITHUB_REPO_OWNER=your_username
-VITE_GITHUB_REPO_NAME=foodie
-```
-
-### Customization
-
-- **Theme Colors**: Edit `tailwind.config.js`
-- **App Config**: Edit `src/data/config.json`
-- **Base Path**: Edit `vite.config.ts` for deployment URL
-
-## 🚀 Deployment
-
-### GitHub Pages
-
-Push to `main` branch triggers automatic deployment via GitHub Actions.
-
-### Custom Domain
-
-1. Add `CNAME` file to `public/` directory
-2. Configure DNS at your domain provider
-3. Enable HTTPS in GitHub Pages settings
-
-## 📊 Performance
-
-- Lighthouse Score: >90 (Performance, Accessibility, Best Practices, SEO)
-- Bundle Size: <500KB (gzipped)
-- Time to Interactive: <3s on 3G
-- Offline Support: Full app shell cached
-
-## 🧪 Testing
-
-```bash
-# Unit tests
-npm test
-
-# E2E tests
-npm run test:e2e
-
-# Coverage
-npm run test:coverage
-```
-
-## 📄 License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
-## 🙏 Acknowledgments
-
-- Built with [Claude Code](https://claude.ai/claude-code) by Anthropic
-- Icons by [Lucide](https://lucide.dev/)
-- UI inspired by modern design systems
-
-## 📧 Support
-
-- **Issues**: [GitHub Issues](https://github.com/artemiopadilla/foodie/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/artemiopadilla/foodie/discussions)
-- **Email**: foodie@example.com
-
----
-
-**Made with ❤️ and Claude Code**
+[MIT](./LICENSE) © Artemio Padilla

@@ -1,0 +1,1627 @@
+/**
+ * E2E journeys — the critical paths of the Foodie shell (roadmap Issue 005).
+ *
+ * These run under two configs:
+ *  - `npm run test:e2e` (playwright.e2e.config.ts) builds + previews on its
+ *    own port; `ASTRO_BASE=/foodie npm run test:e2e` exercises the GitHub
+ *    Pages layout because baseURL carries the base path.
+ *  - `npx playwright test` (playwright.config.ts) runs them alongside the
+ *    visual suite against the existing build on 4321.
+ *
+ * Every navigation uses `page.goto('./…')`-style relative paths so the same
+ * spec works with and without a base path, and assertions on URLs match the
+ * route *suffix* rather than an absolute path.
+ */
+import { test, expect } from '@playwright/test';
+
+const SECTIONS = ['recipes', 'ingredients', 'planner', 'shopping', 'pantry', 'tracking', 'contribute'] as const;
+
+test('landing loads and the "Browse recipes" CTA reaches the /recipes/ browser', async ({ page }) => {
+  await page.goto('./');
+
+  await expect(page.locator('main h1').first()).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+
+  const cta = page.getByTestId('hero-cta-recipes');
+  await expect(cta).toHaveText(/browse recipes/i);
+  await cta.click();
+
+  await page.waitForURL(/\/recipes\/$/);
+  // Roadmap Issue 017: the real page renders the RecipeBrowser island — the
+  // heading is static, the search box hydrates, and the catalog cards follow.
+  await expect(page.locator('main[data-page="recipes"] h1')).toContainText(/recipes/i);
+  await expect(page.getByTestId('recipe-search')).toBeVisible();
+  await expect(page.getByTestId('recipe-card').first()).toBeVisible();
+});
+
+test('the recipe browser keeps its filters in the URL and applies them from it', async ({ page }) => {
+  await page.goto('./recipes/?type=breakfast&sort=time-asc');
+
+  const results = page.getByTestId('recipe-results');
+  await expect(results).toBeVisible();
+  const cards = page.getByTestId('recipe-card');
+  const withFilter = await cards.count();
+  expect(withFilter).toBeGreaterThan(0);
+  await expect(page.getByTestId('active-filter-count')).toHaveText('1');
+
+  // Typing a search narrows the list and lands in `?q=`.
+  await page.getByTestId('recipe-search').fill('zzzz-no-such-recipe');
+  await expect(page.getByTestId('empty-filtered')).toBeVisible();
+  await expect(page).toHaveURL(/q=zzzz-no-such-recipe/);
+
+  // "Clear filters" resets to the full catalog and cleans the URL.
+  await page.getByTestId('reset-all').click();
+  await expect(page.getByTestId('empty-filtered')).toHaveCount(0);
+  expect(await cards.count()).toBeGreaterThan(withFilter);
+  await expect(page).not.toHaveURL(/type=|q=/);
+});
+
+test('a recipe card opens the static detail page, which scales, favourites and plans (roadmap #018)', async ({ page }) => {
+  await page.goto('./recipes/');
+  const firstCard = page.getByTestId('recipe-card').first();
+  await expect(firstCard).toBeVisible();
+  await firstCard.getByRole('link').click();
+  await page.waitForURL(/\/recipes\/rec_\d+\/$/);
+
+  const main = page.locator('main[data-page="recipe-detail"]');
+  await expect(main.locator('h1')).toBeVisible();
+  // Static SEO surface: one Recipe JSON-LD block and hreflang alternates.
+  const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').first().textContent()) ?? '{}');
+  expect(ld['@type']).toBe('Recipe');
+  expect(Array.isArray(ld.recipeIngredient) && ld.recipeIngredient.length).toBeTruthy();
+  await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute('href', /\/es\/recipes\/rec_\d+\/$/);
+
+  // The island hydrates on visibility; scaling doubles the servings value.
+  const actions = page.getByTestId('recipe-detail-actions');
+  await actions.scrollIntoViewIfNeeded();
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
+  const value = page.getByTestId('servings-value');
+  const before = Number(await value.textContent());
+  await page.getByRole('button', { name: /increase servings/i }).click();
+  await expect(value).toHaveText(String(before + 1));
+  await expect(page.getByTestId('scaled-note')).toBeVisible();
+
+  // Favourite persists under the legacy key.
+  const favorite = page.getByTestId('favorite-button');
+  await favorite.click();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toMatch(/rec_\d+/);
+
+  // Add to plan through the day/meal dialog.
+  await page.getByTestId('add-to-plan-button').click();
+  await expect(page.getByTestId('add-to-plan-dialog')).toBeVisible();
+  await page.getByTestId('confirm-add-to-plan').click();
+  await expect(page.getByTestId('add-to-plan-dialog')).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('currentMealPlan'))).toMatch(/rec_\d+/);
+
+  // Add ingredients to the shopping list.
+  await page.getByTestId('add-to-shopping-button').click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]').length)).toBeGreaterThan(0);
+
+  // Related recipes are static links to other detail pages.
+  const related = page.getByTestId('related-recipes').getByRole('link').first();
+  await expect(related).toHaveAttribute('href', /\/recipes\/rec_\d+\/$/);
+});
+
+test('recipe detail pages exist in every locale with localised copy', async ({ page }) => {
+  await page.goto('./es/recipes/rec_001/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.getByTestId('back-to-recipes')).toHaveAttribute('href', /\/es\/recipes\/$/);
+  await expect(page.getByRole('heading', { name: 'Ingredientes' })).toBeVisible();
+
+  await page.goto('./fr/recipes/rec_001/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(page.getByRole('heading', { name: 'Instructions' })).toBeVisible();
+});
+
+test('a favourite marked on the detail page is listed at /recipes/?favorites=1 and on the landing (roadmap #020)', async ({ page }) => {
+  await page.goto('./recipes/rec_002/');
+  const actions = page.getByTestId('recipe-detail-actions');
+  await actions.scrollIntoViewIfNeeded();
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
+  const favorite = page.getByTestId('favorite-button');
+  await expect(favorite).toHaveAttribute('aria-pressed', 'false');
+  await favorite.click();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText(/added to your favorites/)).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toBe('["rec_002"]');
+
+  // The favourites-only filter is the `?favorites=1` URL contract.
+  await page.goto('./recipes/?favorites=1');
+  const cards = page.getByTestId('recipe-card');
+  await expect(cards).toHaveCount(1);
+  await expect(cards.first()).toHaveAttribute('data-recipe-id', 'rec_002');
+  await expect(page.getByTestId('active-filter-count')).toHaveText('1');
+  await expect(cards.first().getByTestId('recipe-card-favorite-button')).toHaveAttribute('aria-pressed', 'true');
+
+  // The landing's "Your favorites" island shows it and links back to the filter.
+  await page.goto('./');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const section = page.getByTestId('favorite-recipes');
+  await expect(section).toBeVisible();
+  await expect(section.locator('[data-recipe-id="rec_002"]')).toBeVisible();
+  await section.getByTestId('favorites-view-all').click();
+  await page.waitForURL(/\/recipes\/\?favorites=1$/);
+
+  // Unfavouriting from the card empties the filtered list and the storage.
+  await page.getByTestId('recipe-card-favorite-button').first().click();
+  await expect(page.getByTestId('empty-filtered')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toBe('[]');
+});
+
+test('the ingredient browser filters in the URL and opens the static detail, which stocks pantry and shopping (roadmap #019)', async ({ page }) => {
+  await page.goto('./ingredients/');
+  await expect(page.locator('main[data-page="ingredients"] h1')).toBeVisible();
+  const cards = page.getByTestId('ingredient-card');
+  await expect(cards.first()).toBeVisible();
+  const total = await cards.count();
+  expect(total).toBe(105);
+
+  // Category chip narrows to one group and lands in `?category=`.
+  await page.getByTestId('category-filter').getByRole('button', { name: /Spices/ }).click();
+  await expect(page).toHaveURL(/category=spices/);
+  await expect(page.getByTestId('ingredient-group')).toHaveCount(1);
+  expect(await cards.count()).toBeLessThan(total);
+
+  // Search + open the static page.
+  await page.getByTestId('ingredient-search').fill('garlic');
+  await expect(page).toHaveURL(/q=garlic/);
+  await expect(cards).toHaveCount(1);
+  await cards.first().getByRole('link', { name: 'Garlic' }).click();
+  await page.waitForURL(/\/ingredients\/ing_006\/$/);
+
+  const main = page.locator('main[data-page="ingredient-detail"]');
+  await expect(main.locator('h1')).toHaveText('Garlic');
+  await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute('href', /\/fr\/ingredients\/ing_006\/$/);
+  // "Recipes with this ingredient" is static and links to recipe pages.
+  const recipeLinks = page.getByTestId('ingredient-recipes').getByRole('link');
+  expect(await recipeLinks.count()).toBeGreaterThan(0);
+  await expect(recipeLinks.first()).toHaveAttribute('href', /\/recipes\/rec_\d+\/$/);
+
+  // The IngredientActions island writes the legacy pantry / shopping keys.
+  const actions = page.getByTestId('ingredient-actions');
+  await actions.scrollIntoViewIfNeeded();
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
+  await page.getByTestId('ingredient-quantity').fill('2');
+  await page.getByTestId('add-to-pantry-button').click();
+  await expect(page.getByTestId('ingredient-in-pantry')).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]')[0]?.ingredientId)).toBe('ing_006');
+  await page.getByTestId('add-ingredient-to-shopping-button').click();
+  await expect(page.getByTestId('ingredient-on-list')).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]')[0]?.quantity)).toBe(2);
+});
+
+test('recipe ingredients link to their ingredient page, which lists the recipe back (roadmap #019)', async ({ page }) => {
+  await page.goto('./es/recipes/rec_001/');
+  const actions = page.getByTestId('recipe-detail-actions');
+  await actions.scrollIntoViewIfNeeded();
+  const link = page.getByTestId('ingredient-link').first();
+  await expect(link).toHaveAttribute('href', /\/es\/ingredients\/ing_\d+\/$/);
+  await link.click();
+  await page.waitForURL(/\/es\/ingredients\/ing_\d+\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.getByTestId('ingredient-recipes').locator('a[data-recipe-id="rec_001"]')).toHaveAttribute(
+    'href',
+    /\/es\/recipes\/rec_001\/$/,
+  );
+});
+
+test('the language switcher keeps the current route (EN → ES → FR)', async ({ page }) => {
+  await page.goto('./recipes/');
+
+  await page.locator('a[data-lang-switch="es"]').first().click();
+  await page.waitForURL(/\/es\/recipes\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.locator('main h1')).toContainText('Recetas');
+
+  await page.locator('a[data-lang-switch="fr"]').first().click();
+  await page.waitForURL(/\/fr\/recipes\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(page.locator('main h1')).toContainText('Recettes');
+
+  // The explicit choice is persisted so the first-visit redirect never
+  // bounces the visitor back (LangSwitcher contract).
+  const stored = await page.evaluate(() => localStorage.getItem('foodie:locale'));
+  expect(stored).toBe('fr');
+});
+
+test('the header links every section in the page locale', async ({ page }) => {
+  await page.goto('./es/');
+  const nav = page.getByRole('navigation', { name: 'Navegación principal' });
+  await expect(nav).toBeVisible();
+  for (const section of SECTIONS) {
+    const link = nav.locator(`a[href$="/es/${section}/"]`).first();
+    await expect(link, `header should link /es/${section}/`).toHaveCount(1);
+  }
+  // Home is the active item on the landing.
+  await expect(nav.locator('a[aria-current="page"]').first()).toHaveAttribute('href', /\/es\/$/);
+});
+
+test('on a phone the menu opens in a sheet and navigates', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 720 });
+  await page.goto('./');
+
+  const trigger = page.getByTestId('mobile-nav-trigger');
+  await expect(trigger).toBeVisible();
+  // MobileNav hydrates client:idle; Astro drops the `ssr` attribute from the
+  // <astro-island> once the React root is live — click only after that, or
+  // the SSR button is inert and the sheet never opens.
+  await page.waitForSelector('astro-island:not([ssr]) [data-testid="mobile-nav-trigger"]');
+  await trigger.click();
+
+  const sheet = page.getByTestId('mobile-nav');
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole('link', { name: 'Planner' })).toBeVisible();
+  await sheet.getByRole('link', { name: 'Planner' }).click();
+
+  await page.waitForURL(/\/planner\/$/);
+  // Roadmap Issue 024: /planner/ is the real MealPlanner page now.
+  await expect(page.locator('main[data-page="planner"] h1')).toHaveText('Meal Planner');
+});
+
+test('unknown paths render the Foodie 404 with a way home per language', async ({ page }) => {
+  const response = await page.goto('./this-page-does-not-exist/');
+  // `astro preview` answers 404 with dist/404.html; GitHub Pages does the same.
+  expect(response?.status()).toBe(404);
+  await expect(page.locator('main h1')).toHaveText('Page not found');
+  // Scoped to <main>: the header/footer LangSwitcher also carries hreflang links.
+  await expect(page.locator('main a[hreflang="es"][lang="es"]')).toHaveAttribute('href', /\/es\/$/);
+  await expect(page.locator('main a[hreflang="fr"][lang="fr"]')).toHaveAttribute('href', /\/fr\/$/);
+});
+
+// ── Catalog journeys (roadmap Issue 023) ─────────────────────────────────────
+// Port of legacy `tests/e2e/recipe-browsing.spec.ts` (homepage, cards, search,
+// type filter, detail, ingredients + instructions, scaling, language) and of
+// the catalog part of `translations.spec.ts` (no raw translation keys; the
+// network assertions on /locales/*.json are gone with i18next — dictionaries
+// are compiled into each static page). Selectors are accessible roles and
+// names first, data-testids only where no role/name is stable.
+
+test.describe('catalog journeys (roadmap #023)', () => {
+  test('home → recipes → search "salad" → filter type → detail → scale → Español → ingredients → detail', async ({ page }) => {
+    // Home.
+    await page.goto('./');
+    await expect(page).toHaveTitle(/Foodie/);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    // → Recipes through the primary navigation.
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Recipes', exact: true }).click();
+    await page.waitForURL(/\/recipes\/$/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(/recipes/i);
+    const cards = page.getByTestId('recipe-card');
+    await expect(cards.first()).toBeVisible();
+    const all = await cards.count();
+
+    // Search "salad": the list narrows and every hit mentions salad.
+    await page.getByRole('searchbox', { name: 'Search recipes' }).fill('salad');
+    await expect(page).toHaveURL(/q=salad/);
+    await expect.poll(() => cards.count()).toBeLessThan(all);
+    const salads = await cards.count();
+    expect(salads).toBeGreaterThan(0);
+
+    // Filter by meal type "Lunch" (a checkbox in the "Meal Type" section).
+    const filters = page.getByRole('complementary', { name: 'Filters' });
+    await filters.getByRole('checkbox', { name: 'Lunch' }).check();
+    await expect(page).toHaveURL(/type=lunch/);
+    await expect.poll(() => cards.count()).toBeLessThanOrEqual(salads);
+    await expect(cards.filter({ hasText: 'Greek Salad' })).toHaveCount(1);
+    await expect(cards.filter({ hasText: 'Fruit Salad' })).toHaveCount(0); // a dessert
+
+    // Open the detail through the card's (only) link.
+    await cards.filter({ hasText: 'Greek Salad' }).getByRole('link', { name: 'Greek Salad' }).click();
+    await page.waitForURL(/\/recipes\/rec_039\/$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Greek Salad');
+    await expect(page.getByRole('heading', { name: 'Ingredients' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Instructions' })).toBeVisible();
+
+    // Scale servings: the ingredient quantities change with them.
+    const actions = page.getByTestId('recipe-detail-actions');
+    await actions.scrollIntoViewIfNeeded();
+    await expect(actions).toHaveAttribute('data-hydrated', 'true');
+    const amounts = page.getByTestId('ingredient-amount');
+    const before = await amounts.allTextContents();
+    const servings = page.getByTestId('servings-value');
+    const initial = Number(await servings.textContent());
+    await page.getByRole('button', { name: 'Increase servings' }).click();
+    await page.getByRole('button', { name: 'Increase servings' }).click();
+    await expect(servings).toHaveText(String(initial + 2));
+    await expect.poll(() => amounts.allTextContents()).not.toEqual(before);
+    await expect(page.getByTestId('scaled-note')).toBeVisible();
+
+    // Switch to Spanish: same recipe, localised URL and copy.
+    await page.locator('a[data-lang-switch="es"]').first().click();
+    await page.waitForURL(/\/es\/recipes\/rec_039\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ensalada Griega');
+    await expect(page.getByRole('heading', { name: 'Ingredientes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Instrucciones' })).toBeVisible();
+
+    // → Ingredients (Spanish navigation) → an ingredient detail.
+    await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: 'Ingredientes', exact: true }).click();
+    await page.waitForURL(/\/es\/ingredients\/$/);
+    const ingredientCards = page.getByTestId('ingredient-card');
+    await expect(ingredientCards.first()).toBeVisible();
+    await page.getByRole('searchbox', { name: 'Buscar ingredientes' }).fill('ajo');
+    await expect(ingredientCards).toHaveCount(1);
+    await ingredientCards.first().getByRole('link', { name: 'Ajo' }).click();
+    await page.waitForURL(/\/es\/ingredients\/ing_006\/$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ajo');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  });
+
+  // Raw dictionary keys look like `recipe.filters` / `nav.home`: a namespace
+  // of the dictionary, a dot, a camelCase/snake_case leaf.
+  const RAW_KEY = new RegExp(
+    `\\b(${[
+      'nav', 'home', 'gallery', 'common', 'footer', 'app', 'tracking', 'goals', 'progress', 'errors', 'recipe',
+      'planner', 'shopping', 'pantry', 'contribute', 'profile', 'auth', 'filter', 'dietary', 'cuisine', 'tags',
+      'category', 'ingredients', 'ingredient', 'season', 'nutrition', 'offline', 'accessibility', 'units', 'days',
+      'sharedPlan',
+    ].join('|')})\\.[a-z][A-Za-z_]+\\b`,
+  );
+
+  for (const prefix of ['', 'es/', 'fr/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/', 'tracking/', 'tracking/goals/', 'tracking/progress/', 'contribute/', 'plan/shared/']) {
+      test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
+        await page.goto(`./${prefix}${route}`);
+        await page.waitForLoadState('networkidle');
+        // Let the page's island render its catalog before reading the text.
+        if (route === 'recipes/') await expect(page.getByTestId('recipe-card').first()).toBeVisible();
+        if (route === 'ingredients/') await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
+        if (route === 'planner/') await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+        if (route === 'shopping/') await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+        if (route === 'contribute/') await expect(page.getByTestId('contribute-wizard')).toHaveAttribute('data-status', 'ready');
+        if (route === 'plan/shared/') await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-error', 'empty');
+        // Tracking pages (roadmap #034); the progress dashboard is client:visible.
+        for (const [path, island] of [['tracking/', 'tracking-today'], ['tracking/goals/', 'goals-form'], ['tracking/progress/', 'progress-dashboard']]) {
+          if (route !== path) continue;
+          await page.getByTestId(island).scrollIntoViewIfNeeded();
+          await expect(page.getByTestId(island)).toHaveAttribute('data-status', 'ready');
+        }
+
+        const text = await page.locator('body').innerText();
+        expect(text.match(RAW_KEY)?.[0], `raw key in the text of /${prefix}${route}`).toBeUndefined();
+
+        // Accessible names and hints count too (aria-label, placeholder, title, alt).
+        const attrs = await page.$$eval('[aria-label], [placeholder], [title], img[alt]', (els) =>
+          els.flatMap((el) => ['aria-label', 'placeholder', 'title', 'alt'].map((a) => el.getAttribute(a) ?? '')).filter(Boolean),
+        );
+        expect(attrs.filter((value) => RAW_KEY.test(value)), `raw key in attributes of /${prefix}${route}`).toEqual([]);
+
+        // The page speaks its own language.
+        await expect(page.locator('html')).toHaveAttribute('lang', prefix ? prefix.slice(0, 2) : 'en');
+      });
+    }
+  }
+});
+
+// ── Planner journeys (roadmap Issue 024) ─────────────────────────────────────
+// Port of legacy `tests/e2e/meal-planning.spec.ts` ("loads", "switches between
+// week and month view" — `week-view` / `month-view` test ids kept — and the
+// skipped "adds meal" / "removes meal" cases, now real), plus the new
+// @dnd-kit pointer and keyboard paths.
+test.describe('planner journeys (roadmap #024)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./planner/');
+    await expect(page.locator('main[data-page="planner"] h1')).toBeVisible();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    // The catalog feeds the side panel.
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+  });
+
+  test('creates a plan and switches between week and month view', async ({ page }) => {
+    await expect(page.getByTestId('week-view')).toBeVisible();
+    await expect(page.getByTestId('week-view').getByRole('article')).toHaveCount(7);
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null')?.days?.length)).toBe(7);
+
+    await page.getByRole('tab', { name: 'Month View' }).click();
+    await expect(page.getByTestId('month-view')).toBeVisible();
+    await expect(page.getByTestId('week-view')).toHaveCount(0);
+
+    await page.getByRole('tab', { name: 'Week View' }).click();
+    await expect(page.getByTestId('week-view')).toBeVisible();
+
+    const range = await page.getByTestId('week-range').textContent();
+    await page.getByTestId('next-week').click();
+    await expect(page.getByTestId('week-range')).not.toHaveText(range ?? '');
+    await page.getByTestId('current-week').click();
+    await expect(page.getByTestId('week-range')).toHaveText(range ?? '');
+  });
+
+  test('"+" adds a recipe through the picker, it persists, and it can be removed', async ({ page }) => {
+    const slot = page.getByTestId('meal-slot-monday-breakfast');
+    await slot.getByTestId('add-meal-button').click();
+    const picker = page.getByTestId('recipe-picker');
+    await expect(picker).toBeVisible();
+    await picker.getByTestId('recipe-picker-add').first().click();
+    await expect(picker).toHaveCount(0);
+    await expect(slot.getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.reload();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('meal-slot-monday-breakfast').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.getByTestId('meal-slot-monday-breakfast').getByTestId('remove-meal').click();
+    await expect(page.getByTestId('meal-slot-monday-breakfast').getByTestId('planned-meal')).toHaveCount(0);
+  });
+
+  test('drags a recipe from the panel onto a slot with the pointer', async ({ page }) => {
+    const source = page.getByTestId('draggable-recipe').first();
+    const target = page.getByTestId('meal-slot-tuesday-dinner');
+    // Centre the target: near the viewport edge dnd-kit auto-scrolls the page
+    // under the pointer (by design), which would move the drop target.
+    await target.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const from = await source.boundingBox();
+    const to = await target.boundingBox();
+    if (!from || !to) throw new Error('no layout');
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + from.width / 2 + 20, from.y + from.height / 2, { steps: 5 });
+    await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 15 });
+    await expect(target).toHaveAttribute('data-over', 'true');
+    await page.mouse.up();
+
+    await expect(target.getByTestId('planned-meal')).toHaveCount(1);
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null'));
+    expect(stored.days[1].meals.dinner.recipeId).toMatch(/^rec_\d+$/);
+  });
+
+  test('drags a recipe with the keyboard (Space, arrows, Enter) and announces it', async ({ page }) => {
+    const source = page.getByTestId('draggable-recipe').first();
+    await source.focus();
+    await page.keyboard.press('Space');
+    await expect(page.getByText(/^Picked up .+\.$/)).toBeAttached();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('[data-slot][data-over="true"]')).toHaveCount(1);
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByTestId('planned-meal')).toHaveCount(1);
+    await expect(page.getByText(/ was dropped on /)).toBeAttached();
+  });
+
+  test('clears the plan after confirming', async ({ page }) => {
+    await page.getByTestId('clear-plan').click();
+    await expect(page.getByTestId('clear-plan-dialog')).toBeVisible();
+    await page.getByTestId('confirm-clear-plan').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    expect(await page.evaluate(() => localStorage.getItem('currentMealPlan'))).toBe('null');
+  });
+});
+
+// ── Planner picker, templates and summary (roadmap Issue 025) ────────────────
+test.describe('planner picker, templates and summary (roadmap #025)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./planner/');
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+  });
+
+  test('the picker is keyboard operable and the summary counts the new meal', async ({ page }) => {
+    await expect(page.getByTestId('summary-recipes')).toContainText('0');
+    await page.getByTestId('meal-slot-tuesday-lunch').getByTestId('add-meal-button').click();
+    const picker = page.getByTestId('recipe-picker');
+    await expect(picker).toBeVisible();
+
+    await picker.getByRole('button', { name: /^Fits Lunch$/ }).click();
+    const search = picker.getByTestId('recipe-picker-search');
+    await search.focus();
+    await page.keyboard.press('ArrowDown');
+    const previewed = (await picker.getByTestId('recipe-picker-preview-name').textContent())?.trim() ?? '';
+    expect(previewed).not.toBe('');
+    await expect(picker.getByRole('option', { selected: true })).toContainText(previewed);
+    await page.keyboard.press('Enter');
+
+    await expect(picker).toHaveCount(0);
+    await expect(page.getByTestId('meal-slot-tuesday-lunch').getByTestId('planned-meal')).toContainText(previewed);
+    await expect(page.getByTestId('summary-recipes')).toContainText('1');
+    await expect(page.getByTestId('summary-days')).toContainText('1 / 7');
+  });
+
+  test('saves the plan as a template, loads it back and deletes it after confirming', async ({ page }) => {
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('add-meal-button').click();
+    await page.getByTestId('recipe-picker').getByTestId('recipe-picker-add').click();
+    await expect(page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.getByTestId('plan-templates-button').click();
+    const manager = page.getByTestId('plan-templates');
+    await expect(manager.getByTestId('templates-empty')).toBeVisible();
+    await manager.getByPlaceholder('e.g. Busy weeknights').fill('E2E week');
+    await manager.getByTestId('save-template').click();
+    await expect(manager.getByTestId('template-item')).toContainText('E2E week');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('savedMealPlans') ?? '[]').length)).toBe(1);
+    await page.keyboard.press('Escape');
+    await expect(manager).toHaveCount(0);
+
+    // Empty the Monday dinner, then bring it back from the template (no confirmation: the plan has no meals left).
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('remove-meal').click();
+    await expect(page.getByTestId('planned-meal')).toHaveCount(0);
+    await page.getByTestId('plan-templates-button').click();
+    await manager.getByRole('button', { name: 'Load E2E week' }).click();
+    await expect(manager).toHaveCount(0);
+    await expect(page.getByTestId('plan-name')).toHaveText('E2E week');
+    await expect(page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.getByTestId('plan-templates-button').click();
+    await manager.getByRole('button', { name: 'Delete E2E week' }).click();
+    const confirm = page.getByTestId('template-confirm-dialog');
+    await expect(confirm).toBeVisible();
+    await confirm.getByTestId('confirm-template-action').click();
+    await expect(manager.getByTestId('templates-empty')).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('savedMealPlans'))).toBe('[]');
+  });
+});
+
+// ── Shopping list (roadmap Issue 026) ────────────────────────────────────────
+// Port of legacy `tests/e2e/shopping-list.spec.ts`: its three live tests
+// ("loads shopping list page", "checks off items", "groups items by category")
+// keep their assertions — `h1`, `shopping-item` + checkbox + `checked` class,
+// `category-group` + category headers — now against a seeded list instead of
+// an `if (visible)` guard. The skipped legacy cases (custom item, export,
+// WhatsApp, clear completed) are real here, plus generate-from-plan.
+test.describe('shopping list journeys (roadmap #026)', () => {
+  const SEEDED = [
+    { ingredientId: 'ing_001', quantity: 1.5, unit: 'lb', checked: false, usedIn: ['rec_001'], category: 'protein' },
+    { ingredientId: 'ing_005', quantity: 3, unit: 'piece', checked: false, usedIn: ['rec_001'], category: 'vegetables' },
+    { ingredientId: 'ing_016', quantity: 1, unit: 'cup', checked: false, usedIn: [], category: 'dairy' },
+  ];
+
+  async function seed(page: import('@playwright/test').Page, items: unknown[] = SEEDED) {
+    await page.goto('./shopping/');
+    await page.evaluate((list) => localStorage.setItem('shoppingList', JSON.stringify(list)), items);
+    await page.reload();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    // Group order and labels come from the catalog; wait for it so rows stop
+    // reordering under the locators below.
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+  }
+
+  test('loads shopping list page', async ({ page }) => {
+    await page.goto('./shopping/');
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('main[data-page="shopping"] h1')).toHaveText('Shopping List');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    await expect(page.getByTestId('shopping-empty')).toBeVisible();
+    for (const [prefix, title] of [['es/', 'Lista de Compras'], ['fr/', 'Liste de Courses']] as const) {
+      await page.goto(`./${prefix}shopping/`);
+      await expect(page.locator('main[data-page="shopping"] h1')).toHaveText(title);
+    }
+  });
+
+  test('checks off items', async ({ page }) => {
+    await seed(page);
+    // Anchor the row by ingredient id (legacy used `.first()`), so a re-sort
+    // can never retarget the locator between the click and the assertions.
+    const firstId = await page.getByTestId('shopping-item').first().getAttribute('data-ingredient-id');
+    expect(firstId).toBeTruthy();
+    const firstItem = page.locator(`[data-testid="shopping-item"][data-ingredient-id="${firstId}"]`);
+    await expect(firstItem).toBeVisible();
+    const checkbox = firstItem.getByRole('checkbox');
+    await checkbox.click();
+    await expect(checkbox).toBeChecked();
+    // Item should have checked style
+    await expect(firstItem).toHaveClass(/checked/);
+    await expect(firstItem).toHaveAttribute('data-checked', 'true');
+
+    await page.reload();
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+    await expect(firstItem.getByRole('checkbox')).toBeChecked();
+  });
+
+  test('groups items by category', async ({ page }) => {
+    await seed(page);
+    const categories = page.getByTestId('category-group');
+    await expect(categories.first()).toBeVisible();
+    await expect(categories).toHaveCount(3);
+    // Should have category headers (catalog names; legacy matched Produce|Dairy|Meat)
+    await expect(page.getByTestId('category-toggle').filter({ hasText: /Proteins|Vegetables|Dairy/ })).toHaveCount(3);
+  });
+
+  test('generates the list from the plan, consolidated and grouped', async ({ page }) => {
+    await page.goto('./planner/');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('add-meal-button').click();
+    await page.getByTestId('recipe-picker').getByTestId('recipe-picker-add').click();
+    await expect(page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    const generate = page.getByTestId('generate-from-plan');
+    await expect(generate).toBeEnabled();
+    await generate.click();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('category-group').first()).toBeVisible();
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]'));
+    expect(stored.length).toBeGreaterThan(0);
+    expect(stored.every((i: { usedIn: string[] }) => i.usedIn.length === 1)).toBe(true);
+  });
+
+  test('adds a custom item', async ({ page }) => {
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('add-item-button').click();
+    const dialog = page.getByTestId('add-item-dialog');
+    await dialog.getByTestId('item-name-input').fill('Custom Item');
+    await dialog.getByTestId('item-quantity-input').fill('2');
+    await dialog.getByTestId('item-unit-select').click();
+    await page.getByRole('option', { name: 'cup', exact: true }).click();
+    await dialog.getByTestId('submit-add-item').click();
+    await expect(dialog).toHaveCount(0);
+
+    const item = page.getByTestId('shopping-item').filter({ hasText: 'Custom Item' });
+    await expect(item).toBeVisible();
+    await expect(item.getByTestId('shopping-item-custom')).toBeVisible();
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]'));
+    expect(stored[0].ingredientId).toMatch(/^custom-/);
+    expect(stored[0]).toMatchObject({ name: 'Custom Item', quantity: 2, unit: 'cup' });
+  });
+
+  test('exports CSV and text (downloads) and shares via WhatsApp (wa.me link)', async ({ page }) => {
+    await seed(page);
+    await page.getByTestId('export-menu').click();
+    const dialog = page.getByTestId('export-dialog');
+
+    const csvDownload = page.waitForEvent('download');
+    await dialog.getByTestId('export-csv').click();
+    const csv = await csvDownload;
+    expect(csv.suggestedFilename()).toBe('shopping-list.csv');
+
+    const textDownload = page.waitForEvent('download');
+    await dialog.getByTestId('export-text').click();
+    expect((await textDownload).suggestedFilename()).toContain('shopping-list');
+
+    const whatsapp = dialog.getByTestId('whatsapp-share');
+    await expect(whatsapp).toHaveAttribute('href', /^https:\/\/wa\.me\/\?text=/);
+    await expect(whatsapp).toHaveAttribute('target', '_blank');
+  });
+
+  test('clears completed items after confirming', async ({ page }) => {
+    await seed(page);
+    const items = page.getByTestId('shopping-item');
+    await expect(items).toHaveCount(3);
+    await items.first().getByRole('checkbox').click();
+    await page.getByTestId('clear-completed').click();
+    await page.getByTestId('shopping-confirm-dialog').getByTestId('confirm-shopping-action').click();
+    // Checked items should be removed
+    await expect(items).toHaveCount(2);
+  });
+});
+
+test.describe('pantry journeys (roadmap #027)', () => {
+  /** `YYYY-MM-DD` `offset` days from today in the browser's local calendar. */
+  async function dayKey(page: import('@playwright/test').Page, offset: number) {
+    return page.evaluate((days) => {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }, offset);
+  }
+
+  async function seed(page: import('@playwright/test').Page, items: (keys: { soon: string; past: string }) => unknown[]) {
+    await page.goto('./pantry/');
+    const keys = { soon: await dayKey(page, 2), past: await dayKey(page, -2) };
+    await page.evaluate((list) => localStorage.setItem('pantryItems', JSON.stringify(list)), items(keys));
+    await page.reload();
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('pantry-board')).toHaveAttribute('data-catalog', 'success');
+  }
+
+  const base = { unit: 'piece', addedAt: '2026-09-01T10:00:00.000Z' };
+
+  test('loads the pantry page in every locale, empty', async ({ page }) => {
+    for (const [prefix, title] of [['', 'My Pantry'], ['es/', 'Mi Despensa'], ['fr/', 'Mon Garde-Manger']] as const) {
+      await page.goto(`./${prefix}pantry/`);
+      await expect(page.locator('main[data-page="pantry"] h1')).toHaveText(title);
+      await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+      await expect(page.getByTestId('pantry-empty')).toBeVisible();
+    }
+  });
+
+  test('adds a catalog ingredient with an expiration date, which is flagged and persists', async ({ page }) => {
+    await page.goto('./pantry/');
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('add-pantry-item').click();
+    const dialog = page.getByTestId('pantry-item-dialog');
+    await dialog.getByTestId('pantry-name-input').fill('Greek Yogurt');
+    // The catalog match brings its unit (cup) and hides the custom category.
+    await expect(dialog.getByTestId('pantry-unit-select')).toHaveText(/cup/);
+    await expect(dialog.getByTestId('pantry-category-select')).toHaveCount(0);
+    await dialog.getByTestId('pantry-quantity-input').fill('2');
+    await dialog.getByTestId('pantry-expiry-trigger').click();
+    const soon = await dayKey(page, 3);
+    await page.locator(`[data-day="${soon}"] button`).click();
+    await expect(dialog.getByTestId('pantry-expiry-trigger')).not.toHaveText(/Pick a date/);
+    await dialog.getByTestId('submit-pantry-item').click();
+    await expect(dialog).toHaveCount(0);
+
+    const row = page.getByTestId('pantry-item').filter({ hasText: 'Greek Yogurt' });
+    await expect(row).toHaveAttribute('data-status', 'soon');
+    await expect(row.getByTestId('pantry-item-expiration')).toHaveText('Expires in 3 days');
+    await expect(page.getByTestId('pantry-expiring')).toContainText('Greek Yogurt');
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]'));
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({ ingredientId: 'ing_016', quantity: 2, unit: 'cup', expirationDate: soon });
+
+    await page.reload();
+    await expect(page.getByTestId('pantry-item').filter({ hasText: 'Greek Yogurt' })).toBeVisible();
+  });
+
+  test('flags expired and low-stock items; "add to shopping list" reaches /shopping/', async ({ page }) => {
+    await seed(page, ({ soon, past }) => [
+      { ...base, id: 'p1', ingredientId: 'ing_001', quantity: 1, expirationDate: soon },
+      { ...base, id: 'p2', ingredientId: 'ing_005', quantity: 4, expirationDate: past },
+    ]);
+    await expect(page.getByTestId('pantry-expired')).toContainText('Tomato');
+    await expect(page.getByTestId('pantry-item').filter({ hasText: 'Tomato' })).toHaveAttribute('data-status', 'expired');
+    const low = page.getByTestId('pantry-low-stock');
+    await expect(low.getByTestId('low-stock-entry')).toHaveCount(1);
+    await low.getByTestId('low-stock-add-to-shopping').click();
+    await expect(page.getByText('Egg added to your shopping list')).toBeVisible();
+
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-item').filter({ hasText: 'Egg' })).toBeVisible();
+  });
+
+  test('"What can I cook" ranks a fully stocked recipe first and links to it', async ({ page }) => {
+    await seed(page, () => [
+      { ...base, id: 'p1', ingredientId: 'ing_026', quantity: 2, unit: 'cup' },
+      { ...base, id: 'p2', ingredientId: 'ing_025', quantity: 3 },
+    ]);
+    const first = page.getByTestId('pantry-suggestion').first();
+    await expect(first).toHaveAttribute('data-percent', '100');
+    await expect(first.getByTestId('suggestion-ready')).toBeVisible();
+    const link = first.getByRole('link');
+    const name = await link.textContent();
+    await link.click();
+    await expect(page).toHaveURL(/\/recipes\/rec_\d+\/$/);
+    await expect(page.locator('h1')).toHaveText(name ?? '');
+  });
+
+  test('edits, removes and clears after confirming', async ({ page }) => {
+    await seed(page, () => [
+      { ...base, id: 'p1', ingredientId: 'ing_001', quantity: 6 },
+      { ...base, id: 'p2', ingredientId: 'ing_005', quantity: 4 },
+      { ...base, id: 'p3', ingredientId: 'ing_016', quantity: 1, unit: 'cup' },
+    ]);
+    const egg = page.getByTestId('pantry-item').filter({ hasText: 'Egg' });
+    await egg.getByTestId('edit-pantry-item').click();
+    const dialog = page.getByTestId('pantry-item-dialog');
+    await expect(dialog.getByTestId('pantry-name-input')).toHaveValue('Egg');
+    await dialog.getByTestId('pantry-quantity-input').fill('12');
+    await dialog.getByTestId('submit-pantry-item').click();
+    await expect(dialog).toHaveCount(0);
+    await expect(egg.getByTestId('pantry-item-quantity')).toHaveText('12 piece');
+
+    await page.getByTestId('pantry-item').filter({ hasText: 'Tomato' }).getByTestId('remove-pantry-item').click();
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+
+    await page.getByTestId('clear-pantry').click();
+    await page.getByTestId('pantry-confirm-dialog').getByTestId('confirm-clear-pantry').click();
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]'))).toEqual([]);
+  });
+});
+
+test.describe('food diary journeys (roadmap #031)', () => {
+  test('loads the tracking page in every locale', async ({ page }) => {
+    for (const [prefix, title] of [['', 'Food Diary'], ['es/', 'Diario de Comidas'], ['fr/', 'Journal Alimentaire']] as const) {
+      await page.goto(`./${prefix}tracking/`);
+      await expect(page.locator('main[data-page="tracking"] h1')).toHaveText(title);
+      await expect(page.getByTestId('tracking-today')).toHaveAttribute('data-status', 'ready');
+      await expect(page.getByTestId('tracking-meal')).toHaveCount(5);
+    }
+  });
+
+  test('logs a recipe and water, sees the totals move, and it all survives a reload', async ({ page }) => {
+    await page.goto('./tracking/');
+    await expect(page.getByTestId('tracking-day')).toHaveAttribute('data-catalog', 'success');
+    await expect(page.getByTestId('tracking-calories')).toHaveText(/^0 \//);
+
+    await page.getByRole('button', { name: 'Add to Lunch' }).click();
+    const dialog = page.getByTestId('quick-add-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('searchbox', { name: 'Search recipes' }).fill('pancakes');
+    await dialog.getByTestId('quick-add-recipe-option').first().click();
+    await dialog.getByRole('button', { name: 'Log Meal' }).click();
+    await expect(dialog).toBeHidden();
+    const lunch = page.locator('[data-testid="tracking-meal"][data-meal="lunch"]');
+    await expect(lunch.getByTestId('tracking-entry')).toHaveCount(1);
+    await expect(page.getByTestId('tracking-calories')).not.toHaveText(/^0 \//);
+
+    await page.getByTestId('tracking-quick-add').click();
+    await dialog.getByRole('tab', { name: 'Water' }).click();
+    await dialog.getByRole('button', { name: 'Log 1 glass' }).click();
+    await expect(dialog).toBeHidden();
+    const water = page.locator('[data-testid="tracking-metric"][data-metric="water"]');
+    await expect(water).toContainText('250 / 2,000 ml');
+
+    await page.reload();
+    await expect(page.getByTestId('tracking-entry')).toHaveCount(2);
+    await expect(water).toContainText('250 / 2,000 ml');
+
+    // Delete asks first (alert-dialog), then removes.
+    await lunch.getByTestId('tracking-entry-delete').click();
+    await page.getByTestId('confirm-delete-entry').click();
+    await expect(lunch.getByTestId('tracking-entry')).toHaveCount(0);
+  });
+});
+
+// ── Nutrition tracking journeys (roadmap Issue 034) ──────────────────────────
+// US-4.x end to end: log a recipe in the diary → the progress dashboard counts
+// it → change the goals → the dashboard recalculates against them → charts
+// render; everything is localStorage (ADR 0002) and survives a reload.
+// Legacy had no tracking e2e (only the jsdom integration suites GoalsPage /
+// ProgressPage / TrackingPage / QuickAddModal, ported in #031–#033).
+// The clock is frozen on Wednesday 2026-09-30 so the Monday-based week and
+// the "7 days" of the goals-met KPI never move.
+test.describe('nutrition tracking journeys (roadmap #034)', () => {
+  test.use({ timezoneId: 'UTC', locale: 'en-US' });
+  const TODAY = '2026-09-30';
+
+  test.beforeEach(async ({ page }) => {
+    await page.clock.setFixedTime(new Date(`${TODAY}T12:00:00Z`));
+  });
+
+  /** Types into a Base UI NumberField (select-all first so the old value is replaced) and commits on blur. */
+  async function setNumber(input: import('@playwright/test').Locator, value: string) {
+    await input.click();
+    await input.press('ControlOrMeta+a');
+    await input.pressSequentially(value);
+    await input.press('Tab');
+  }
+
+  async function openProgress(page: import('@playwright/test').Page) {
+    const dashboard = page.getByTestId('progress-dashboard');
+    await dashboard.scrollIntoViewIfNeeded();
+    await expect(dashboard).toHaveAttribute('data-status', 'ready');
+    return page.locator(`[data-testid="progress-day"][data-date="${TODAY}"]`);
+  }
+
+  test('log a recipe → progress → set goals → progress recalculated → charts, and it survives a reload', async ({ page }) => {
+    // 1. Diary: Banana Pancakes for lunch. The catalog's nutrition is for the
+    // whole recipe (4 servings: 340 kcal, 11 g protein), so 12 servings = 3 ×.
+    await page.goto('./tracking/');
+    await expect(page.getByTestId('tracking-day')).toHaveAttribute('data-catalog', 'success');
+    await page.getByRole('button', { name: 'Add to Lunch' }).click();
+    const dialog = page.getByTestId('quick-add-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('searchbox', { name: 'Search recipes' }).fill('banana pancakes');
+    await dialog.getByTestId('quick-add-recipe-option').filter({ hasText: 'Banana Pancakes' }).first().click();
+    const servings = dialog.getByRole('textbox', { name: 'Servings' });
+    await setNumber(servings, '12');
+    await expect(servings).toHaveValue('12');
+    await expect(dialog.getByTestId('preview-calories')).toHaveText(/^1,020 /);
+    await dialog.getByRole('button', { name: 'Log Meal' }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page.getByTestId('tracking-calories')).toHaveText(/^1,020 \/ 2,000/);
+
+    // 2. Progress (via the diary's link): one logged day, below the default 2 000 kcal goal.
+    await page.getByRole('link', { name: 'View progress' }).click();
+    await page.waitForURL(/\/tracking\/progress\/$/);
+    let today = await openProgress(page);
+    await expect(page.getByTestId('progress-view')).toHaveAttribute('data-logged-days', '1');
+    await expect(page.getByTestId('progress-average-value')).toHaveText('1,020');
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('0/7');
+    await expect(page.getByTestId('progress-streak-value')).toHaveText('0');
+    await expect(page.getByTestId('progress-most-logged-value')).toHaveText('Banana Pancakes');
+    await expect(today).toContainText('1,020 / 2,000 kcal');
+    await expect(today).toContainText('51%');
+    await expect(today).not.toHaveAttribute('data-met', 'true');
+
+    // 3. Goals (via the dashboard's link): 1 000 kcal and 30 g protein, saved.
+    await page.getByRole('link', { name: 'Edit goals' }).click();
+    await page.waitForURL(/\/tracking\/goals\/$/);
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    const calories = page.locator('[data-goal="calories"]').getByRole('textbox');
+    const protein = page.locator('[data-goal="protein"]').getByRole('textbox');
+    await expect(calories).toHaveValue('2,000');
+    await setNumber(calories, '1000');
+    await setNumber(protein, '30');
+    await expect(calories).toHaveValue('1,000');
+    await expect(page.getByTestId('goals-status')).toHaveText('You have unsaved changes.');
+    await page.getByRole('button', { name: 'Save Goals' }).click();
+    await expect(page.getByText('Goals saved successfully')).toBeVisible();
+    await expect(page.getByTestId('goals-status')).toHaveText('');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('nutritionGoals') ?? '{}'))).toMatchObject({ calories: 1000, protein: 30 });
+
+    // 4. Progress recalculated against the new goals: the day is on track (102 %, protein 110 %).
+    await page.goto('./tracking/progress/');
+    today = await openProgress(page);
+    await expect(today).toContainText('1,020 / 1,000 kcal');
+    await expect(today).toContainText('102%');
+    await expect(today).toHaveAttribute('data-met', 'true');
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('1/7');
+    await expect(page.getByTestId('progress-streak-value')).toHaveText('1');
+
+    // 5. Charts: calories per day, the trend against the goal, the macro sparklines,
+    // each an SVG inside a labelled role="img" plus an sr-only data table.
+    await expect(page.getByTestId('progress-empty')).toHaveCount(0);
+    for (const chart of ['progress-calories-chart', 'progress-trend-chart']) {
+      const img = page.getByTestId(chart).getByRole('img');
+      await expect(img).toBeVisible();
+      await expect(img.locator('svg').first()).toBeVisible();
+    }
+    await expect(page.getByTestId('progress-macros').getByRole('img').first()).toBeVisible();
+    await expect(page.getByTestId('progress-calories-table')).toContainText('1,020');
+    await page.getByRole('button', { name: 'Month' }).click();
+    await expect(page.getByTestId('progress-view')).toHaveAttribute('data-view', 'month');
+    await expect(page.getByTestId('progress-calories-chart').getByRole('img').locator('svg').first()).toBeVisible();
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('1/30');
+
+    // 6. Persistence: a reload keeps the entry, the goals and the recalculated progress.
+    await page.reload();
+    today = await openProgress(page);
+    await expect(today).toHaveAttribute('data-met', 'true');
+    await expect(page.getByTestId('progress-average-value')).toHaveText('1,020');
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('1/7');
+    await page.goto('./tracking/goals/');
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    await expect(calories).toHaveValue('1,000');
+    await expect(protein).toHaveValue('30');
+    await page.goto('./tracking/');
+    await expect(page.getByTestId('tracking-calories')).toHaveText(/^1,020 \/ 1,000/);
+  });
+
+  test('a preset fills the form without saving; "Reset to Defaults" restores the legacy goals', async ({ page }) => {
+    await page.goto('./tracking/goals/');
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    const calories = page.locator('[data-goal="calories"]').getByRole('textbox');
+    await page.locator('[data-preset="deficit"]').click();
+    await expect(calories).not.toHaveValue('2,000');
+    await expect(page.getByTestId('goals-status')).toContainText('applied');
+    expect(await page.evaluate(() => localStorage.getItem('nutritionGoals'))).toBeNull();
+    await page.getByRole('button', { name: 'Save Goals' }).click();
+    await expect(page.getByText('Goals saved successfully')).toBeVisible();
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('nutritionGoals') ?? '{}'));
+    expect(saved.calories).toBeLessThan(2000);
+
+    await page.reload();
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    await expect(calories).toHaveValue(new Intl.NumberFormat('en-US').format(saved.calories));
+    await page.getByRole('button', { name: 'Reset to Defaults' }).click();
+    await expect(calories).toHaveValue('2,000');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('nutritionGoals') ?? '{}'))).toMatchObject({ calories: 2000, protein: 50 });
+  });
+
+  test('goals and progress load in every locale; an empty diary shows the empty state', async ({ page }) => {
+    const pages = [
+      ['', 'Nutrition Goals', 'Your Progress'],
+      ['es/', 'Objetivos Nutricionales', 'Tu Progreso'],
+      ['fr/', 'Objectifs Nutritionnels', 'Votre Progrès'],
+    ] as const;
+    for (const [prefix, goalsTitle, progressTitle] of pages) {
+      await page.goto(`./${prefix}tracking/goals/`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(goalsTitle);
+      await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+      await expect(page.locator('html')).toHaveAttribute('lang', prefix ? prefix.slice(0, 2) : 'en');
+      await page.goto(`./${prefix}tracking/progress/`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(progressTitle);
+      await openProgress(page);
+      await expect(page.getByTestId('progress-empty')).toBeVisible();
+      await expect(page.getByTestId('progress-view')).toHaveAttribute('data-logged-days', '0');
+    }
+  });
+});
+
+test.describe('offline PWA (roadmap #028)', () => {
+  // The generated service worker precaches ~1 300 files on first visit.
+  test.setTimeout(120_000);
+
+  test('once the service worker is active, /recipes/ and /planner/ work offline', async ({ page, context }) => {
+    await page.goto('./');
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+    });
+    await page.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 90_000 });
+
+    // Load the catalog once through the SW so its NetworkFirst data cache holds it.
+    await page.goto('./recipes/');
+    await expect(page.locator('a[href*="/recipes/rec_"]').first()).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(async () => (await caches.keys()).includes('foodie-data')))
+      .toBe(true);
+
+    // Diagnostics printed only when the offline assertions fail (they are
+    // otherwise hard to observe on a CI runner).
+    const trail: string[] = [];
+    page.on('console', (m) => trail.push(`console.${m.type()}: ${m.text()}`));
+    page.on('pageerror', (e) => trail.push(`pageerror: ${e.message}`));
+    page.on('requestfailed', (r) => trail.push(`requestfailed: ${r.url()} ${r.failure()?.errorText ?? ''}`));
+
+    await context.setOffline(true);
+    try {
+      await page.goto('./recipes/');
+      await expect(page.locator('h1').first()).toHaveText('Recipes');
+      await expect(page.locator('a[href*="/recipes/rec_"]').first()).toBeVisible();
+      // Playwright's offline emulation does not flip navigator.onLine on every
+      // runner (on GitHub's it stayed true, PR #36), so send the browser's own
+      // connectivity signal. The initial navigator.onLine read is pinned by
+      // src/stores/online.dom.test.ts.
+      await page.evaluate(() => window.dispatchEvent(new Event('offline')));
+      try {
+        await expect(page.getByText(/You're offline/)).toBeVisible();
+      } catch (error) {
+        const state = await page.evaluate(() => ({
+          onLine: navigator.onLine,
+          controller: !!navigator.serviceWorker.controller,
+          islands: Array.from(document.querySelectorAll('astro-island')).map((el) => ({
+            component: el.getAttribute('component-url'),
+            client: el.getAttribute('client'),
+            ssr: el.hasAttribute('ssr'),
+          })),
+        }));
+        console.log(`[offline diagnostics] ${JSON.stringify(state)}\n${trail.join('\n')}`);
+        throw error;
+      }
+
+      await page.goto('./planner/');
+      await expect(page.locator('h1').first()).toHaveText('Meal Planner');
+      await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+      await page.getByTestId('create-plan-button').click();
+      await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+
+      // A recipe detail page is precached too.
+      await page.goto('./recipes/rec_001/');
+      await expect(page.locator('h1').first()).not.toBeEmpty();
+    } finally {
+      await context.setOffline(false);
+    }
+  });
+});
+
+// ── Planning end to end (roadmap Issue 029) ──────────────────────────────────
+// US-3.1–3.4 in one run: plan → picker → pointer drag → servings → generate
+// the shopping list → check an item → add a custom item → CSV download →
+// stock the pantry → "What can I cook" suggests the planned recipe, and a
+// reload of each page keeps plan, list and pantry (localStorage).
+// Banana Pancakes (rec_007) needs exactly flour (ing_026) + banana (ing_025),
+// so stocking those two makes it a 100 % match.
+test.describe('planning end to end (roadmap #029)', () => {
+  test.setTimeout(90_000);
+
+  test('plan → shopping → CSV → pantry → "what can I cook", and everything survives a reload', async ({ page }) => {
+    // 1. Create a plan and add Banana Pancakes to Monday breakfast with the picker.
+    await page.goto('./planner/');
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+
+    await page.getByTestId('meal-slot-monday-breakfast').getByTestId('add-meal-button').click();
+    const picker = page.getByTestId('recipe-picker');
+    await expect(picker).toBeVisible();
+    await picker.getByTestId('recipe-picker-search').fill('Banana Pancakes');
+    await expect(picker.getByTestId('recipe-picker-option').first()).toHaveAttribute('data-recipe-id', 'rec_007');
+    await picker.getByTestId('recipe-picker-add').click();
+    await expect(picker).toHaveCount(0);
+    const monday = page.getByTestId('meal-slot-monday-breakfast');
+    await expect(monday.getByTestId('planned-meal')).toHaveAttribute('data-recipe-id', 'rec_007');
+
+    // 2. Drag it with the pointer (grip handle) to Wednesday breakfast.
+    const wednesday = page.getByTestId('meal-slot-wednesday-breakfast');
+    await wednesday.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const handle = monday.getByTestId('meal-drag-handle');
+    const from = await handle.boundingBox();
+    const to = await wednesday.boundingBox();
+    if (!from || !to) throw new Error('no layout');
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + from.width / 2 + 20, from.y + from.height / 2, { steps: 5 });
+    await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 15 });
+    await expect(wednesday).toHaveAttribute('data-over', 'true');
+    await page.mouse.up();
+    await expect(monday.getByTestId('planned-meal')).toHaveCount(0);
+    const meal = wednesday.getByTestId('planned-meal');
+    await expect(meal).toHaveAttribute('data-recipe-id', 'rec_007');
+
+    // 3. Change its servings: 2 (plan default) → 3.
+    await expect(meal.getByTestId('meal-servings-value')).toContainText('2');
+    await meal.getByRole('button', { name: 'More servings of Banana Pancakes' }).click();
+    await expect(meal.getByTestId('meal-servings-value')).toContainText('3');
+    const plan = await page.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null'));
+    expect(plan.days[2].meals.breakfast).toEqual({ recipeId: 'rec_007', servings: 3 });
+    expect(plan.days[0].meals.breakfast).toBeUndefined();
+
+    // 4. Generate the shopping list from the plan: 2 bananas for 4 servings → 1.5 for 3.
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    const generate = page.getByTestId('generate-from-plan');
+    await expect(generate).toBeEnabled();
+    await generate.click();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+    await expect(page.getByTestId('shopping-item')).toHaveCount(2);
+    const generated = await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]'));
+    expect(generated.find((i: { ingredientId: string }) => i.ingredientId === 'ing_025')).toMatchObject({
+      quantity: 1.5,
+      unit: 'piece',
+      usedIn: ['rec_007'],
+    });
+
+    // 5. Check the banana off.
+    const banana = page.locator('[data-testid="shopping-item"][data-ingredient-id="ing_025"]');
+    await banana.getByRole('checkbox').click();
+    await expect(banana).toHaveAttribute('data-checked', 'true');
+
+    // 6. Add a custom item.
+    await page.getByTestId('add-item-button').click();
+    const addDialog = page.getByTestId('add-item-dialog');
+    await addDialog.getByTestId('item-name-input').fill('Maple syrup');
+    await addDialog.getByTestId('item-quantity-input').fill('1');
+    await addDialog.getByTestId('submit-add-item').click();
+    await expect(addDialog).toHaveCount(0);
+    await expect(page.getByTestId('shopping-item').filter({ hasText: 'Maple syrup' })).toBeVisible();
+    await expect(page.getByTestId('shopping-item')).toHaveCount(3);
+
+    // 7. Export CSV — a real download whose rows carry the list.
+    await page.getByTestId('export-menu').click();
+    const exportDialog = page.getByTestId('export-dialog');
+    const download = page.waitForEvent('download');
+    await exportDialog.getByTestId('export-csv').click();
+    const csvFile = await download;
+    expect(csvFile.suggestedFilename()).toBe('shopping-list.csv');
+    const csvPath = await csvFile.path();
+    const csv = (await import('node:fs')).readFileSync(csvPath, 'utf-8');
+    const rows = csv.trim().split('\n');
+    expect(rows).toHaveLength(4); // header + 3 lines
+    expect(rows.find((r) => r.includes('"Banana"'))).toContain('"Yes"');
+    expect(rows.find((r) => r.includes('"Maple syrup"'))).toContain('"No"');
+    await page.keyboard.press('Escape');
+    await expect(exportDialog).toHaveCount(0);
+
+    // 8. Stock the pantry with what the recipe needs.
+    await page.goto('./pantry/');
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+    for (const [name, quantity] of [['All-Purpose Flour', '3'], ['Banana', '4']] as const) {
+      await page.getByTestId('add-pantry-item').first().click();
+      const dialog = page.getByTestId('pantry-item-dialog');
+      await dialog.getByTestId('pantry-name-input').fill(name);
+      // A catalog match hides the custom-category select.
+      await expect(dialog.getByTestId('pantry-category-select')).toHaveCount(0);
+      await dialog.getByTestId('pantry-quantity-input').fill(quantity);
+      await dialog.getByTestId('submit-pantry-item').click();
+      await expect(dialog).toHaveCount(0);
+    }
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+
+    // 9. "What can I cook" suggests the planned recipe at 100 %.
+    const suggestion = page.locator('[data-testid="pantry-suggestion"][data-recipe-id="rec_007"]');
+    await expect(suggestion).toHaveAttribute('data-percent', '100');
+    await expect(suggestion.getByRole('link')).toHaveText('Banana Pancakes');
+
+    // 10. Persistence: every page comes back from localStorage after a reload.
+    await page.reload();
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+    await expect(page.locator('[data-testid="pantry-item"][data-ingredient-id="ing_026"]')).toBeVisible();
+    await expect(suggestion).toHaveAttribute('data-percent', '100');
+
+    await page.goto('./shopping/');
+    await page.reload();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('shopping-item')).toHaveCount(3);
+    await expect(banana).toHaveAttribute('data-checked', 'true');
+    await expect(page.getByTestId('shopping-item').filter({ hasText: 'Maple syrup' })).toBeVisible();
+
+    await page.goto('./planner/');
+    await page.reload();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    const persisted = page.getByTestId('meal-slot-wednesday-breakfast').getByTestId('planned-meal');
+    await expect(persisted).toHaveAttribute('data-recipe-id', 'rec_007');
+    await expect(persisted.getByTestId('meal-servings-value')).toContainText('3');
+    await expect(page.getByTestId('planned-meal')).toHaveCount(1);
+  });
+});
+
+// ── v1 → v2 cutover compatibility (roadmap Issue 030) ────────────────────────
+test.describe('v1 compatibility (roadmap #030)', () => {
+  test('v1 encoded deep links (?/path, ~and~) land once on the static v2 route', async ({ page }) => {
+    // Served by the English root (index.html), as /foodie/?/… is on Pages.
+    await page.goto('./?/recipes/rec_001');
+    await expect(page).toHaveURL(/\/recipes\/rec_001\/$/);
+    await expect(page.locator('main h1').first()).not.toBeEmpty();
+
+    // Served by 404.html: the query survives, ~and~ becomes &.
+    await page.goto('./no-such-v1-page/?/recipes&type=breakfast~and~q=egg');
+    await expect(page).toHaveURL(/\/recipes\/\?type=breakfast&q=egg$/);
+    await expect(page.locator('main h1').first()).toHaveText('Recipes');
+  });
+
+  test('a v1 visitor who chose Spanish is sent to the Spanish page', async ({ page }) => {
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem('seeded')) {
+        localStorage.setItem('i18nextLng', 'es');
+        sessionStorage.setItem('seeded', '1');
+      }
+    });
+    await page.goto('./?/shopping');
+    await expect(page).toHaveURL(/\/es\/shopping\/$/);
+    await expect(page.locator('main[data-page="shopping"] h1')).toHaveText('Lista de Compras');
+  });
+
+  test('v1 localStorage (all 12 keys) opens with plan, list, pantry, favourites and tracking intact', async ({ page }) => {
+    const fixture = JSON.parse(
+      (await import('node:fs')).readFileSync(new URL('../../src/tests/fixtures/legacy-v1-localstorage.json', import.meta.url), 'utf-8'),
+    ) as Record<string, unknown>;
+    delete fixture.$comment;
+    await page.addInitScript((entries) => {
+      if (sessionStorage.getItem('seeded')) return;
+      for (const [key, value] of Object.entries(entries)) {
+        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+      }
+      sessionStorage.setItem('seeded', '1');
+    }, fixture);
+
+    await page.goto('./planner/');
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('planned-meal')).toHaveCount(5);
+    await expect(page.getByTestId('meal-slot-monday-breakfast').getByTestId('planned-meal')).toHaveAttribute('data-recipe-id', 'rec_007');
+    // v1 wrote `theme: "dark"` raw; the head script applies it.
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('shopping-item')).toHaveCount(3);
+    await expect(page.locator('[data-testid="shopping-item"][data-ingredient-id="ing_025"]')).toHaveAttribute('data-checked', 'true');
+
+    await page.goto('./pantry/');
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+    await expect(page.getByTestId('pantry-item').filter({ hasText: /olive oil/i })).toBeVisible();
+
+    await page.goto('./recipes/?favorites=1');
+    await expect(page.getByTestId('recipe-card')).toHaveCount(3);
+
+    // Tracking (roadmap #031): the v1 diary shows up on its day, grouped by meal.
+    await page.goto('./tracking/?date=2026-09-18');
+    await expect(page.getByTestId('tracking-today')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('tracking-entry')).toHaveCount(3);
+    await expect(page.locator('[data-testid="tracking-meal"][data-meal="beverage"]').getByTestId('tracking-entry')).toHaveCount(1);
+    await expect(page.getByTestId('tracking-calories')).toContainText('/ 1,800 kcal');
+
+    const stored = await page.evaluate(() => ({
+      tracking: JSON.parse(localStorage.getItem('trackingEntries') ?? '[]').length,
+      goals: JSON.parse(localStorage.getItem('nutritionGoals') ?? 'null')?.calories,
+    }));
+    expect(stored).toEqual({ tracking: 3, goals: 1800 });
+  });
+});
+
+test.describe('accounts (roadmap #036)', () => {
+  // Runs against the mock adapter (`playwright.e2e.config.ts` builds with
+  // PUBLIC_AUTH_MOCK=1). A build without any auth adapter (the visual build,
+  // production without PUBLIC_FIREBASE_*) shows no account UI — skip there.
+  const DEMO = { email: 'demo@foodie.test', password: 'foodie-demo', name: 'Demo Cook' };
+
+  test('sign in → profile → change units → shopping shows them → sign out → /profile/ redirects', async ({ page }) => {
+    // One item on the list so the quantities show the unit system.
+    await page.goto('./shopping/');
+    await page.evaluate(() =>
+      localStorage.setItem(
+        'shoppingList',
+        JSON.stringify([{ ingredientId: 'ing_001', quantity: 1.5, unit: 'lb', checked: false, usedIn: [], category: 'protein' }]),
+      ),
+    );
+    await page.reload();
+    const badge = page.getByTestId('unit-system');
+    await expect(badge).toHaveAttribute('data-system', /metric|imperial/);
+    const before = (await badge.getAttribute('data-system')) as 'metric' | 'imperial';
+    const target = before === 'imperial' ? 'metric' : 'imperial';
+
+    const signIn = page.getByTestId('account-signin');
+    // `isVisible()` does not wait; the header island hydrates on idle.
+    const hasAuth = await signIn
+      .waitFor({ state: 'visible', timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
+    test.skip(!hasAuth, 'this build has no auth adapter (no PUBLIC_FIREBASE_* / PUBLIC_AUTH_MOCK)');
+
+    // Sign in from the header.
+    await signIn.click();
+    const dialog = page.getByTestId('auth-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.getByPlaceholder('Email').fill(DEMO.email);
+    await dialog.getByPlaceholder('Password').fill(DEMO.password);
+    await dialog.getByTestId('signin-submit').click();
+    await expect(dialog).toBeHidden();
+    const trigger = page.getByTestId('account-menu-trigger');
+    await expect(trigger).toHaveAccessibleName(`Account menu for ${DEMO.name}`);
+
+    // Avatar menu → Profile.
+    await trigger.click();
+    await page.getByTestId('account-profile').click();
+    await page.waitForURL(/\/profile\/$/);
+    await expect(page.getByTestId('profile')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('profile-name')).toHaveText(DEMO.name);
+
+    // Change the unit system; it is saved as it changes.
+    await page.getByTestId(`profile-units-${target}`).click();
+    await expect(page.getByTestId('profile-preferences-status')).toHaveText('Preferences saved');
+
+    // The shopping list now shows the new units (same session, another page).
+    await page.goto('./shopping/');
+    await expect(badge).toHaveAttribute('data-system', target);
+    await expect(page.getByTestId('account-menu-trigger')).toBeVisible();
+
+    // Sign out from the header menu.
+    await page.getByTestId('account-menu-trigger').click();
+    await page.getByTestId('account-signout').click();
+    await expect(page.getByTestId('account-signin')).toBeVisible();
+
+    // /profile/ is guarded: home, with the sign-in dialog opened for them.
+    await page.goto('./profile/');
+    await page.waitForURL((url) => !url.pathname.endsWith('/profile/'));
+    await expect(page.getByTestId('auth-dialog')).toBeVisible();
+    expect(new URL(page.url()).search).toBe('');
+  });
+
+  test('signing in merges guest favourites into the account once, with Undo (roadmap #037)', async ({ page }) => {
+    await page.goto('./');
+    await page.evaluate(() => localStorage.setItem('favoriteRecipes', JSON.stringify(['rec_001', 'rec_002'])));
+    await page.reload();
+    const signIn = page.getByTestId('account-signin');
+    const hasAuth = await signIn
+      .waitFor({ state: 'visible', timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
+    test.skip(!hasAuth, 'this build has no auth adapter (no PUBLIC_FIREBASE_* / PUBLIC_AUTH_MOCK)');
+
+    await signIn.click();
+    await page.getByTestId('auth-google').click();
+    await expect(page.getByText('Guest data added to your account')).toBeVisible();
+    await expect(page.getByText('2 favourite recipes added.')).toBeVisible();
+    const accountFavorites = () =>
+      page.evaluate(() => JSON.parse(localStorage.getItem('user-favorites-mock-google-user') ?? '[]') as string[]);
+    expect(await accountFavorites()).toEqual(['rec_001', 'rec_002']);
+
+    await page.getByTestId('merge-undo').click();
+    await expect(page.getByText('Merge undone — your account data is as it was.')).toBeVisible();
+    expect(await accountFavorites()).toEqual([]);
+
+    // Never twice: a reload (session restored) proposes nothing.
+    await page.reload();
+    await expect(page.getByTestId('account-menu-trigger')).toBeVisible();
+    await expect(page.getByText('Guest data added to your account')).toHaveCount(0);
+    // The guest favourites are still there for when they sign out.
+    expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toBe('["rec_001","rec_002"]');
+  });
+
+  test('the profile page exists in every locale and is guarded when signed out', async ({ page }) => {
+    for (const prefix of ['', 'es/', 'fr/']) {
+      await page.goto(`./${prefix}profile/`);
+      await page.waitForURL((url) => !url.pathname.endsWith('/profile/'));
+      await expect(page.locator('html')).toHaveAttribute('lang', prefix ? prefix.slice(0, 2) : 'en');
+    }
+  });
+});
+
+// ── Contribute wizard (roadmap Issue 038) ────────────────────────────────────
+// Stepper + Form over RecipeSubmissionSchema, catalog Combobox, nutrition
+// estimate, preview built from the public detail components, draft in
+// localStorage['foodie:contribute-draft'].
+test.describe('contribute wizard (roadmap #038, #039)', () => {
+  test('loads in every locale with the first step ready', async ({ page }) => {
+    for (const [prefix, title, step] of [['', 'Contribute a Recipe', 'Basic Info'], ['es/', 'Contribuir una Receta', 'Info Básica'], ['fr/', 'Contribuer une Recette', 'Info de Base']] as const) {
+      await page.goto(`./${prefix}contribute/`);
+      await expect(page.locator('main[data-page="contribute"] h1')).toHaveText(title);
+      await expect(page.getByTestId('contribute-wizard')).toHaveAttribute('data-status', 'ready');
+      await expect(page.getByRole('heading', { level: 2, name: step })).toBeVisible();
+    }
+  });
+
+  test('blocks Next with translated errors, walks every step, survives a reload and submits as a prefilled issue', async ({ page }) => {
+    await page.goto('./es/contribute/');
+    const wizard = page.getByTestId('contribute-wizard');
+    await expect(wizard).toHaveAttribute('data-status', 'ready');
+    await page.getByTestId('contribute-next').click();
+    await expect(page.getByTestId('contribute-step-errors')).toContainText('El nombre de la receta (inglés) es requerido');
+    await expect(wizard).toHaveAttribute('data-step', 'basic');
+
+    // 1 · basic
+    await page.getByTestId('contribute-name-en').fill('Weeknight Green Skillet');
+    await page.getByTestId('contribute-name-es').fill('Sartén verde entre semana');
+    await page.getByTestId('contribute-description-en').fill('Chicken and spinach in one pan, on the table in 30 minutes.');
+    await page.getByTestId('contribute-cuisine').click();
+    await page.getByRole('option', { name: 'Mexicana' }).click();
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'timings');
+
+    // 2 · timings
+    await page.getByTestId('contribute-prep-time').fill('10');
+    await page.getByTestId('contribute-cook-time').fill('20');
+    await page.getByTestId('contribute-servings').fill('2');
+    await page.getByRole('textbox', { name: 'Añadir utensilio' }).fill('sartén');
+    await page.getByRole('textbox', { name: 'Añadir utensilio' }).press('Enter');
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'ingredients');
+
+    // 3 · ingredients from the catalog
+    await expect(page.getByTestId('contribute-step-ingredients')).toHaveAttribute('data-catalog', 'success');
+    await page.getByTestId('contribute-add-ingredient').click();
+    const row = page.getByTestId('contribute-ingredient-row').first();
+    await row.getByTestId('contribute-ingredient-picker').fill('Ajo');
+    await page.getByRole('option', { name: 'Ajo', exact: true }).click();
+    await row.getByTestId('contribute-ingredient-quantity').fill('2');
+    await row.getByTestId('contribute-ingredient-unit').click();
+    await page.getByRole('option', { name: 'diente', exact: true }).click();
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'instructions');
+
+    // 4 · instructions
+    await page.getByTestId('contribute-add-step').click();
+    await page.getByTestId('contribute-instruction').first().fill('Dora el ajo en una sartén con aceite.');
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'nutrition');
+
+    // 5 · nutrition estimate
+    await page.getByTestId('contribute-estimate-nutrition').click();
+    await expect(page.getByTestId('contribute-nutrition-calories')).not.toHaveValue('');
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'preview');
+
+    // 6 · preview = the public detail components
+    await expect(page.getByTestId('contribute-validation-summary')).toContainText('¡Todas las verificaciones de validación pasaron!');
+    const detail = page.getByTestId('contribute-preview-detail');
+    await expect(detail.getByRole('heading', { level: 2, name: 'Sartén verde entre semana' })).toBeVisible();
+    await expect(detail.getByTestId('recipe-meta')).toContainText('Mexicana');
+    await expect(detail.getByTestId('ingredient-link')).toHaveText('Ajo');
+    await expect(detail.getByTestId('recipe-equipment')).toContainText('sartén');
+    await expect(page.getByTestId('contribute-preview-card').getByRole('heading')).toHaveText('Sartén verde entre semana');
+
+    const draft = await page.evaluate(() => JSON.parse(localStorage.getItem('foodie:contribute-draft') ?? 'null'));
+    expect(draft).toMatchObject({ version: 1, step: 5, data: { nameEn: 'Weeknight Green Skillet', cuisine: 'mexican', ingredients: [{ ingredientId: 'ing_006', unit: 'clove' }] } });
+
+    await page.reload();
+    await expect(wizard).toHaveAttribute('data-step', 'preview');
+    await expect(page.getByTestId('contribute-draft-restored')).toBeVisible();
+
+    // 7 · submit without secrets (roadmap #039): "Enviar" opens the prefilled
+    // recipe-submission issue (window.open intercepted) and downloads the JSON.
+    await page.evaluate(() => {
+      const w = window as unknown as { __opened: unknown[][] };
+      w.__opened = [];
+      window.open = (...args: unknown[]) => {
+        w.__opened.push(args);
+        return null;
+      };
+    });
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'submit');
+    const submitStep = page.getByTestId('contribute-step-submit');
+    await expect(submitStep).toHaveAttribute('data-recipe-id', /^weeknight-green-skillet-/);
+    await expect(submitStep).toHaveAttribute('data-json-in-url', 'true');
+    const recipeId = await submitStep.getAttribute('data-recipe-id');
+
+    const download = page.waitForEvent('download');
+    await page.getByTestId('contribute-submit').click();
+    expect((await download).suggestedFilename()).toBe(`recipe-${recipeId}.json`);
+    const opened = await page.evaluate(() => (window as unknown as { __opened: unknown[][] }).__opened);
+    expect(opened).toHaveLength(1);
+    const [url, target] = opened[0] as [string, string];
+    expect(target).toBe('_blank');
+    expect(url).toMatch(/^https:\/\/github\.com\/ArtemioPadilla\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
+    const params = new URL(url).searchParams;
+    expect(params.get('title')).toBe('[recipe] Weeknight Green Skillet');
+    expect(params.get('meal-type')).toBe('dinner');
+    expect(params.get('cuisine')).toBe('mexican');
+    expect(JSON.parse(params.get('recipe-json') ?? '{}')).toMatchObject({ id: recipeId, name: { en: 'Weeknight Green Skillet', es: 'Sartén verde entre semana' } });
+    await expect(submitStep).toHaveAttribute('data-sent', 'true');
+    await expect(page.getByTestId('contribute-issue-link')).toHaveAttribute('href', url);
+    // The draft is gone and no GitHub token was ever written.
+    const storage = await page.evaluate(() => ({ draft: localStorage.getItem('foodie:contribute-draft'), keys: Object.keys(localStorage) }));
+    expect(storage.draft).toBeNull();
+    expect(storage.keys.filter((key) => /github|token/i.test(key))).toEqual([]);
+  });
+});
+
+
+// ── Share a plan by URL (roadmap Issue 040) ──────────────────────────────────
+// The plan travels in the link's fragment (`/plan/shared/#p=…`); a second
+// browser context (a friend with empty storage) opens it read-only and
+// imports it.
+test.describe('share a plan by URL (roadmap #040)', () => {
+  test('planner → share link → friend opens /es/plan/shared/ → import as my plan', async ({ page, browser, baseURL }) => {
+    await page.goto('./planner/');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('add-meal-button').click();
+    await page.getByTestId('recipe-picker').getByTestId('recipe-picker-add').click();
+    const planned = (await page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal').textContent()) ?? '';
+    expect(planned.trim()).not.toBe('');
+
+    await page.getByTestId('share-plan-button').click();
+    const dialog = page.getByTestId('share-plan-dialog');
+    const input = dialog.getByTestId('share-url-input');
+    await expect(input).toHaveValue(/\/plan\/shared\/#p=[A-Za-z0-9_-]+$/);
+    const link = await input.inputValue();
+    expect(link.length).toBeLessThan(2048);
+    await expect(dialog.getByTestId('share-whatsapp')).toHaveAttribute('href', /^https:\/\/wa\.me\/\?text=/);
+    await expect(dialog.getByTestId('share-qr')).toBeVisible();
+
+    // A friend in a fresh context, on the Spanish page.
+    const friend = await browser.newContext({ baseURL });
+    const other = await friend.newPage();
+    await other.goto(link.replace('/plan/shared/', '/es/plan/shared/'));
+    const shared = other.getByTestId('shared-plan');
+    await expect(shared).toHaveAttribute('data-status', 'ready');
+    await expect(other.locator('main[data-page="plan-shared"] h1')).toHaveText('Plan de comidas compartido');
+    await expect(other.getByTestId('shared-plan-name')).toHaveText('Mi plan de comidas');
+    await expect(other.getByTestId('shared-plan-board')).toHaveAttribute('data-catalog', 'success');
+    await expect(other.getByTestId('shared-day-monday').getByTestId('shared-meal')).toHaveAttribute('data-available', 'true');
+
+    await other.getByTestId('import-shared-plan').click();
+    await expect(other.getByTestId('shared-plan-imported')).toBeVisible();
+    const imported = await other.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null'));
+    expect(imported.days).toHaveLength(7);
+    expect(imported.days[0].meals.dinner.recipeId).toMatch(/^rec_\d+$/);
+
+    await other.getByTestId('open-planner').click();
+    await expect(other.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(other.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+    await friend.close();
+  });
+
+  test('a damaged link explains itself in every locale', async ({ page }) => {
+    for (const [prefix, title] of [['', 'This link is damaged'], ['es/', 'Este enlace está dañado'], ['fr/', 'Ce lien est endommagé']] as const) {
+      await page.goto(`./${prefix}plan/shared/#p=bm90LWEtcGxhbg`);
+      await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-status', 'error');
+      await expect(page.getByTestId('shared-plan-error')).toContainText(title);
+    }
+    await page.goto('./plan/shared/');
+    await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-error', 'empty');
+  });
+});
+
+test.describe('ingredient prices (roadmap #041)', () => {
+  test('shopping cost → manage prices → custom price persists → reset all', async ({ page }) => {
+    const list = [
+      // Egg is priced per piece: 1.5 lb cannot be converted, so it stays unpriced.
+      { ingredientId: 'ing_001', quantity: 1.5, unit: 'lb', checked: false, usedIn: [], category: 'protein' },
+      { ingredientId: 'ing_005', quantity: 3, unit: 'piece', checked: false, usedIn: [], category: 'vegetables' },
+      { ingredientId: 'ing_016', quantity: 1, unit: 'cup', checked: false, usedIn: [], category: 'dairy' },
+    ];
+    await page.goto('./shopping/');
+    await page.evaluate((items) => localStorage.setItem('shoppingList', JSON.stringify(items)), list);
+    await page.reload();
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+
+    // Tomato 3 × $1.00 + Greek yogurt 1 × $1.50 (catalogue prices).
+    const cost = page.getByTestId('shopping-cost');
+    await expect(cost).toHaveAttribute('data-cost', '4.5');
+    await expect(cost).toContainText('$4.50');
+    await expect(page.getByTestId('shopping-cost-coverage')).toHaveText('2 of 3 items priced');
+
+    await page.getByTestId('manage-prices-button').click();
+    const dialog = page.getByTestId('price-dialog');
+    await expect(dialog.getByRole('heading', { name: 'Ingredient prices' })).toBeVisible();
+    await dialog.getByRole('textbox', { name: 'Search ingredients' }).fill('tomato');
+    await expect(dialog.getByTestId('catalog-price-ing_005')).toContainText('Store: $2.49 / lb');
+    await dialog.getByRole('button', { name: 'Edit the price of Tomato' }).click();
+    const input = dialog.getByRole('textbox', { name: /Your price for Tomato/ });
+    await input.fill('2');
+    await input.press('Enter');
+    await expect(dialog.getByTestId('custom-price-ing_005')).toHaveAttribute('data-custom', 'true');
+    await expect(dialog.getByTestId('price-custom-count')).toHaveText('1 custom price');
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+
+    await expect(cost).toHaveAttribute('data-cost', '7.5');
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('foodie:custom-prices') ?? '{}'));
+    expect(stored).toEqual({ ing_005: { price: 2, currency: 'USD' } });
+
+    // The choice survives a reload.
+    await page.reload();
+    await expect(page.getByTestId('shopping-cost')).toHaveAttribute('data-cost', '7.5');
+
+    await page.getByTestId('manage-prices-button').click();
+    await dialog.getByTestId('price-reset-all').click();
+    await dialog.getByTestId('price-reset-all-confirm').click();
+    await expect(dialog.getByTestId('price-custom-count')).toHaveText('0 custom prices');
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('shopping-cost')).toHaveAttribute('data-cost', '4.5');
+  });
+});

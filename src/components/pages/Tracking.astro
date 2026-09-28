@@ -1,0 +1,36 @@
+---
+/**
+ * Tracking — the `/tracking/` page body (roadmap Issue 031, D4 "una página
+ * por ruta, una isla por página"; port of legacy `TrackingPage`).
+ *
+ * Rendered by the thin wrappers `pages/tracking/index.astro`,
+ * `pages/es/tracking/index.astro` and `pages/fr/tracking/index.astro`, which
+ * own the `<BaseLayout>` metadata. The heading is static HTML; the diary
+ * lives in `localStorage` (`trackingEntries`, `nutritionGoals` — ADR 0002)
+ * and depends on the visitor's "today", so everything else is the
+ * `TrackingToday` island, hydrated with `client:load`.
+ */
+import TrackingToday from '@/components/islands/TrackingToday';
+import { t, type Locale } from '@/i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+---
+
+<main id="main-content" class="mx-auto max-w-5xl px-4 py-10 sm:py-14" data-page="tracking">
+  <header class="mb-8 max-w-3xl">
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t(lang, 'tracking.kicker')}</p>
+    <h1
+      class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+      style="view-transition-name: page-title"
+    >
+      {t(lang, 'tracking.title')}
+    </h1>
+    <p class="mt-4 text-muted-foreground">{t(lang, 'tracking.pageDescription')}</p>
+  </header>
+
+  <TrackingToday lang={lang} client:load />
+</main>

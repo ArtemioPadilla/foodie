@@ -1,0 +1,23 @@
+---
+/**
+ * `/profile/` wrapper for `fr` (roadmap Issue 036). The page body lives in
+ * `components/pages/Profile.astro`; this file owns the layout metadata for
+ * this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Profile from '@/components/pages/Profile.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'fr' as const;
+const alternates = hreflangAlternates('/profile/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'profile.title')}`}
+  description={t(lang, 'profile.description')}
+  lang={lang}
+  alternates={alternates}
+>
+  <Profile lang={lang} />
+</BaseLayout>

@@ -1,0 +1,53 @@
+---
+title: Foodie documentation
+description: How Foodie works, how to run it, and how to contribute code or recipes — for the Astro 7 + React 19 islands app.
+---
+
+Foodie is an offline-first meal-planning web app: a trilingual (English,
+Spanish, French) catalog of 50 recipes and 105 ingredients, a weekly planner
+with drag and drop, a consolidated shopping list with prices, a pantry, and a
+food diary with nutrition goals. Everything you enter stays in your browser;
+signing in is optional.
+
+These docs are in English and shared by the three language versions of the
+site. The search box on the left covers the docs and every recipe.
+
+## What Foodie does
+
+| Area | Pages | What you get |
+|---|---|---|
+| Catalog | `/recipes/`, `/recipes/<id>/`, `/ingredients/`, `/ingredients/<id>/` | Filter and sort recipes by meal type, cuisine, diet and time; scale servings; step timers; favourites; ingredient nutrition and prices |
+| Planning | `/planner/`, `/shopping/`, `/pantry/`, `/plan/shared/` | A 7-day plan (drag recipes between slots), saved templates, a shopping list generated from the plan and grouped by aisle, pantry stock with expiry dates, sharing a plan by link |
+| Tracking | `/tracking/`, `/tracking/goals/`, `/tracking/progress/` | A food diary, daily nutrition goals and progress charts |
+| Account | `/profile/` | Optional sign-in (email, Google, GitHub) that keeps preferences and favourites per account; export or clear your data |
+| Contributing | `/contribute/` | A wizard that turns your recipe into catalog JSON and a prefilled GitHub issue, with no token or secret |
+
+Each page exists at `/`, `/es/` and `/fr/`.
+
+## Where to start
+
+- **Run it locally:** [Quick start](getting-started/quick-start/), then
+  [Installation](getting-started/installation/) and
+  [Configuration](getting-started/configuration/).
+- **Change the code:** [Development](guides/development/),
+  [Testing](guides/testing/) and [Deployment](guides/deployment/).
+- **Look something up:** the [data model](reference/api/) (generated from the
+  Zod schemas), [state and storage](reference/state/) and
+  [i18n](reference/i18n/).
+- **Contribute:** [add a recipe](contributing/recipe-format/) or
+  [contribute code](contributing/code/).
+
+## The stack in one paragraph
+
+Foodie v2 is built on the Inceptor template: **Astro 7** renders every page to
+static HTML (one page per route, three languages, one page per recipe and
+ingredient), and **React 19** runs only in islands, the interactive parts such
+as the planner or the recipe browser. Styling is Tailwind v4 with Base UI
+primitives. Shared state lives in Nano Stores persisted to `localStorage` and
+validated with Zod. The catalog is plain JSON in `public/data/`, validated at
+build time. The site is deployed to GitHub Pages under `/foodie/` and works
+offline as a PWA.
+
+v1 was a React 18 + Vite single-page app; it is frozen at the git tag
+`legacy-vite-1.0.0`. The migration plan and every decision behind v2 are in the
+repository under `docs/superpowers/specs/` and `docs/decisions/`.
