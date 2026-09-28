@@ -73,10 +73,10 @@ function GlobalSearchInner() {
     try {
       const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       const url = [base, '/_pagefind', '/pagefind.js'].join('');
-      // new Function() bypasses Vite's static import analysis — intentional so
-      // the bundler never sees the literal /_pagefind/pagefind.js path.
-      const dyn = new Function('u', 'return import(u)');
-      const mod = (await dyn(url)) as PagefindModule;
+      // A runtime URL + @vite-ignore keeps the bundler from resolving the
+      // /_pagefind/pagefind.js path (it only exists after the Pagefind step).
+      // Not `new Function('return import(u)')`: the CSP has no 'unsafe-eval'.
+      const mod = (await import(/* @vite-ignore */ url)) as PagefindModule;
       await mod.init?.();
       pagefindRef.current = mod;
       return mod;

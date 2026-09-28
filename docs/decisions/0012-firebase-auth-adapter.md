@@ -87,51 +87,62 @@ must receive a `GuardUser` adapted once at the boundary.
    `AuthUser` to `{ id: uid, roles: ['user'], flags: { verified } }`.
    `/profile` gates with `allow={['user']}`; deny by default.
 
-### CSP — recommended, not yet enforced
+### CSP — enforced via Astro `security.csp`
 
-`BaseLayout.astro` has **no** Content-Security-Policy today. Adding a meta CSP
-by hand would block Astro's inline scripts (the zero-flash theme script, the
-locale redirect with `define:vars`, island hydration bootstraps) unless every
-hash is maintained manually, and the React SSR `style="…"` attributes would
-need `'unsafe-inline'`/`'unsafe-hashes'` for styles. Enforcing CSP is
-therefore left to a follow-up that turns on Astro 7's built-in
-`security.csp` (which emits the `<meta http-equiv="content-security-policy">`
-with SHA-256 hashes for the scripts/styles Astro renders) and runs the full
-visual/a11y/smoke suites against it. The policy that follow-up must use, so
-that Firebase Auth keeps working, is:
+Every built page carries a `<meta http-equiv="content-security-policy">` in
+`BaseLayout.astro`'s `<head>`, produced by Astro 7's built-in `security.csp`
+(`astro.config.mjs`), with the policy defined in `csp.config.mjs`:
 
-```js
-// astro.config.mjs — recommended (not enabled yet)
-security: {
-  csp: {
-    algorithm: 'SHA-256',
-    directives: [
-      "default-src 'self'",
-      "img-src 'self' data: https://lh3.googleusercontent.com https://avatars.githubusercontent.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      // Firebase Auth REST + token endpoints
-      "connect-src 'self' https://*.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com",
-      // signInWithPopup: the auth handler iframe + Google account chooser
-      "frame-src https://foodie-cc553.firebaseapp.com https://accounts.google.com",
-      "form-action 'self'",
-      "base-uri 'self'",
-      "object-src 'none'",
-    ],
-    scriptDirective: {
-      // Astro hashes its own inline scripts; add the Google APIs loader used by the popup flow.
-      resources: ["'self'", 'https://apis.google.com', 'https://accounts.google.com'],
-    },
-    styleDirective: {
-      resources: ["'self'", 'https://fonts.googleapis.com'],
-    },
-  },
-},
-```
+| Directive | Sources | Why |
+|---|---|---|
+| `default-src` | `'self'` | Everything else stays same-origin |
+| `script-src` | `'self'` `https://apis.google.com` `https://accounts.google.com` + SHA-256 hashes | Firebase's Google popup loader; hashes cover every inline script (below) |
+| `style-src` | `'self'` `https://fonts.googleapis.com` + SHA-256 hashes | Google Fonts stylesheet; Astro's inlined `<style>`; Base UI's scrollbar sheet and zag-js's splitter drag cursor (fixed texts, hashed in `csp.config.mjs`) |
+| `style-src-attr` | `'unsafe-inline'` | `style="…"` attributes from React SSR, Astro and Shiki (attributes only, never `<style>` elements) |
+| `connect-src` | `'self'` `https://*.googleapis.com` `https://api.github.com` | Firebase Auth REST (identitytoolkit, securetoken, www.googleapis.com); GitHub REST (FeedbackFAB duplicate search, API demos) |
+| `frame-src` | `'self'` `https://foodie-cc553.firebaseapp.com` `https://accounts.google.com` | `signInWithPopup`'s auth-handler iframe and the Google account chooser |
+| `img-src` | `'self'` `data:` `blob:` `lh3.googleusercontent.com` `avatars.githubusercontent.com` `img.shields.io` | Provider profile photos, README badges |
+| `font-src` | `'self'` `data:` `https://fonts.gstatic.com` | Google Fonts files |
+| `worker-src` / `manifest-src` / `form-action` / `base-uri` | `'self'` | PWA service worker + manifest; no cross-origin form posts or `<base>` hijack |
+| `object-src` | `'none'` | No plugins |
 
-`foodie-cc553.firebaseapp.com` is `PUBLIC_FIREBASE_AUTH_DOMAIN`; a fork with
-its own project must substitute its domain. If the site moves to a host that
-supports response headers, prefer the equivalent HTTP header (it also allows
-`frame-ancestors`).
+- **Inline scripts.** Astro hashes the scripts it renders (island
+  bootstraps, inlined module scripts, client directives). It does **not**
+  hash `is:inline` scripts — BaseLayout's zero-flash theme script, the
+  first-visit locale redirect (`define:vars`) and FeedbackFAB's diagnostics
+  capture. The `cspInlineScriptHashes()` integration (`csp.config.mjs`,
+  registered before `AstroPWA`) hashes every executable inline script left
+  in each built page, adds it to that page's `script-src`, and moves the meta
+  right after `<meta charset>`, ahead of every script and stylesheet (Astro
+  emits it just before `</head>`, where it would not govern what precedes
+  it). There is no `'unsafe-inline'` for scripts.
+- **No `eval`.** The Pagefind loaders (`GlobalSearch.tsx`, `DocsSearch.astro`)
+  and the Sentry skeleton used `new Function('return import(u)')` to hide a
+  dynamic import from Vite; they now use `import(/* @vite-ignore */ url)`.
+  Only the template's gallery pages that mount the live `Playground` (it
+  compiles user-typed code with `new Function`) add `'unsafe-eval'`, per page,
+  through `Astro.csp.insertScriptResource()`. Zod v4 probes
+  `new Function('')` once to decide whether to JIT; under the CSP the probe
+  is refused (a `securitypolicyviolation` event, no console error) and Zod
+  falls back to its interpreter — behaviour is unchanged.
+- **Auth domain.** `foodie-cc553.firebaseapp.com` is the default; when
+  `PUBLIC_FIREBASE_AUTH_DOMAIN` is set at build time (deploy secrets, a fork's
+  own project) that domain replaces it. Flag-gated analytics
+  (`PUBLIC_FLAG_ANALYTICS`) and Sentry (`PUBLIC_FLAG_SENTRY` +
+  `PUBLIC_SENTRY_DSN`) add their origins only when enabled.
+- **Guarded.** `src/tests/csp.test.ts` (`npm run test:dist`, part of
+  `npm run check`) checks every page in `dist/`: one CSP meta, placed before
+  any script/stylesheet, the Firebase origins present, no `'unsafe-inline'`
+  for scripts, `'unsafe-eval'` only on Playground pages, and every inline
+  script and `<style>` covered by a hash. The visual, a11y, smoke and e2e
+  Playwright suites run against the CSP build (the smoke suite fails on a
+  "Refused to …" console error).
+- **Limits.** Dev (`astro dev`) serves no CSP. A meta policy cannot express
+  `frame-ancestors`, `report-uri` or `sandbox`; if the site moves to a host
+  that sets response headers, send the same policy as a header. The real
+  Google/GitHub popup flow cannot run in CI (no credentials); Issue 036 must
+  exercise it against a Pages preview with the `PUBLIC_FIREBASE_*` secrets
+  set before merging (roadmap risk table).
 
 ## Stakeholder analysis
 
@@ -183,7 +194,10 @@ tracking of anonymous visitors.
    origin-restricted and rotated; Firebase quotas cap abuse. (b) *Account
    enumeration*: collapsed error codes, reset succeeds for any address.
    (c) *Mock shipped to production*: `PUBLIC_AUTH_MOCK` is only set by the e2e
-   config; the deploy workflow never sets it (reviewers: keep it that way).
+   config, and `astro.config.mjs` refuses to build when it is set together
+   with `FOODIE_DEPLOY=1` (set by the deploy workflow) or with a complete
+   `PUBLIC_FIREBASE_*` config, so the mock's plaintext demo passwords in
+   `foodie:mock-auth` cannot reach real users.
    (d) *Provider outage / SDK blocked*: `$authReady` still settles to
    anonymous, and every feature keeps working.
 
@@ -194,7 +208,9 @@ visitors; provider swap is one adapter; credential-free CI through the mock;
 smaller GitHub permission footprint.
 
 **Negative** — A returning signed-in user pays the SDK download on first
-page load (the hint path); CSP is still not enforced (tracked above); the
+page load (the hint path); a hand-written `is:inline` script or a new
+library-injected `<style>` needs a hash (the dist test and smoke suite say
+which); the
 four `PUBLIC_FIREBASE_*` repository secrets must be created before the first
 deploy that needs auth, otherwise auth is silently disabled.
 

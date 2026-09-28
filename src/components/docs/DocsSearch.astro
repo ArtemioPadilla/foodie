@@ -43,11 +43,9 @@ const enabled = flags.docsSearch;
         // exist; we gracefully degrade.
         const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         const url = [base, '/_pagefind', '/pagefind.js'].join('');
-        // Use a Function constructor to evaluate the dynamic import so the
-        // bundler never sees the literal string.
-        // eslint-disable-next-line @typescript-eslint/no-implied-eval
-        const dyn = new Function('u', 'return import(u)');
-        const mod = await dyn(url);
+        // A runtime URL + @vite-ignore keeps the bundler from resolving the
+        // literal path. Not `new Function(…)`: the CSP has no 'unsafe-eval'.
+        const mod = await import(/* @vite-ignore */ url);
         pf = mod;
         await pf.init?.();
         return pf;

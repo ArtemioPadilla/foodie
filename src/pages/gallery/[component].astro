@@ -55,6 +55,11 @@ const { entry } = Astro.props;
 const repoBlob = `${REPO_URL}/blob/main/${entry.source}`;
 const recipe = galleryRecipes[entry.slug];
 const playground = galleryPlaygrounds[entry.slug];
+// The live Playground compiles user-typed code with `new Function`. The
+// site-wide CSP (csp.config.mjs) has no 'unsafe-eval'; only the gallery pages
+// that mount a Playground opt in. `Astro.csp` is undefined when CSP is off
+// (dev server).
+if (playground) Astro.csp?.insertScriptResource("'unsafe-eval'");
 
 // Build-time props extraction via the TypeScript compiler API.
 // `repoRoot` is resolved from this file's location (src/pages/gallery/ → three

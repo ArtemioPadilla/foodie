@@ -36,9 +36,10 @@ export async function initSentry(): Promise<void> {
   try {
     // Vite needs the dynamic import to be opaque so it doesn't try to
     // resolve @sentry/browser at build time when the package is absent.
-    // Using `new Function` keeps Vite's static analyzer out of it.
-    const importer = new Function('m', 'return import(m)') as (m: string) => Promise<unknown>;
-    const mod = (await importer('@sentry/browser')) as {
+    // A non-literal specifier + @vite-ignore keeps Vite's static analyzer
+    // out of it (not `new Function`: the CSP has no 'unsafe-eval').
+    const specifier = '@sentry/browser';
+    const mod = (await import(/* @vite-ignore */ specifier)) as {
       init: (opts: Record<string, unknown>) => void;
     };
     sentryModule = mod;

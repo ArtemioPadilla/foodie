@@ -8,6 +8,9 @@ import sitemap from '@astrojs/sitemap';
 // astro.config.mjs cannot import site-meta.ts directly because it runs in
 // Node before Vite starts (import.meta.env is unavailable here).
 import { SITE_ORIGIN } from './site.config.mjs';
+import { loadEnv } from 'vite';
+// Content-Security-Policy (roadmap Issue 035, ADR 0012) — see csp.config.mjs.
+import { buildCsp, cspInlineScriptHashes } from './csp.config.mjs';
 
 // Subpath the site is served under. GitHub *project* pages live at
 // `<domain>/<repo>/`, so the Pages build sets ASTRO_BASE=/foodie
@@ -20,6 +23,10 @@ const asset = (p) => `${BASE.replace(/\/$/, '')}/${p.replace(/^\//, '')}`;
 // BASE as a path with both slashes ('/' or '/foodie/'), for the service
 // worker's URL patterns.
 const BASE_PATH = asset('/');
+// PUBLIC_* values (.env files + process env) for the CSP's configurable
+// origins (Firebase auth domain, flag-gated analytics/Sentry).
+// CSP is emitted by `astro build` only, so read the production env files.
+const PUBLIC_ENV = loadEnv('production', process.cwd(), 'PUBLIC_');
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({
@@ -49,7 +56,17 @@ export default defineConfig({
     '/data/large': asset('demos/data/large'),
     '/showcase': asset('gallery'),
   },
+  // Per-page <meta http-equiv="content-security-policy"> rendered into
+  // BaseLayout's <head>, with SHA-256 hashes for Astro's inline scripts and
+  // styles. Build-only (dev serves no CSP). Policy + rationale:
+  // csp.config.mjs and docs/decisions/0012-firebase-auth-adapter.md.
+  security: {
+    csp: buildCsp(PUBLIC_ENV),
+  },
   integrations: [
+    // Must precede AstroPWA: rewrites the built HTML (adds is:inline script
+    // hashes to the CSP meta) before the service-worker precache is hashed.
+    cspInlineScriptHashes(),
     // MDX for the /docs/* content collection — lets pages embed React components
     mdx(),
     sitemap({
