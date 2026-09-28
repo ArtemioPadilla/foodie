@@ -76,6 +76,10 @@ export const es: typeof en = {
     recipesAvailable: 'Recetas Disponibles',
     averageRating: 'Calificación Promedio',
     languagesSupported: 'Idiomas Soportados',
+    favoritesKicker: 'guardadas para después',
+    favoritesHeading: 'Tus favoritos',
+    favoritesViewAll: 'Ver todos tus favoritos',
+    favoritesMore: '+{{count}} más en tus favoritos',
   },
   gallery: {
     title: 'Galería de componentes',
@@ -407,6 +411,7 @@ export const es: typeof en = {
     detailActions: 'Acciones de la receta',
     addedToFavorites: '{{name}} añadida a tus favoritos',
     removedFromFavorites: '{{name}} quitada de tus favoritos',
+    favoriteToggle: 'Favorito: {{name}}',
   },
   planner: {
     title: 'Planificador de Comidas',

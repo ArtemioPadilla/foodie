@@ -80,6 +80,10 @@ export const fr: typeof en = {
     recipesAvailable: 'Recettes Disponibles',
     averageRating: 'Note Moyenne',
     languagesSupported: 'Langues Prises en Charge',
+    favoritesKicker: 'gardées pour plus tard',
+    favoritesHeading: 'Vos favoris',
+    favoritesViewAll: 'Voir tous vos favoris',
+    favoritesMore: '+{{count}} de plus dans vos favoris',
   },
   gallery: {
     title: 'Galerie de composants',
@@ -410,6 +414,7 @@ export const fr: typeof en = {
     detailActions: 'Actions de la recette',
     addedToFavorites: '{{name}} ajoutée à vos favoris',
     removedFromFavorites: '{{name}} retirée de vos favoris',
+    favoriteToggle: 'Favori : {{name}}',
   },
   planner: {
     title: 'Planificateur de Repas',

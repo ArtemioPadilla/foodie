@@ -4,7 +4,9 @@
  *
  * Rendered by the thin wrappers `pages/index.astro`, `pages/es/index.astro`
  * and `pages/fr/index.astro`, which own the `<BaseLayout>` (title, hreflang
- * alternates, JSON-LD). Everything here is static HTML: the six feature cards
+ * alternates, JSON-LD). Everything here is static HTML except the "Your
+ * favorites" section (`FavoriteRecipes`, `client:visible`, roadmap Issue
+ * 020), which stays an empty slot until the visitor has favourites. The six feature cards
  * come from the legacy `HomePage.tsx` (four) plus the two sections the
  * definitive navigation adds (ingredients, tracking).
  *
@@ -12,6 +14,7 @@
  * single catalog source (D6) — so the landing never claims more recipes than
  * the site ships.
  */
+import FavoriteRecipes from '@/components/islands/FavoriteRecipes';
 import { withBase } from '@/lib/href';
 import { REPO_URL } from '@/lib/site-meta';
 import { LOCALES, localizedRoute, t, type Locale } from '@/i18n';
@@ -177,6 +180,9 @@ const features = [
       </ul>
     </div>
   </section>
+
+  <!-- ═══ Your favorites (roadmap Issue 020) — island, empty until the visitor has favourites ═══ -->
+  <FavoriteRecipes client:visible lang={lang} />
 
   <!-- ═══ Contribute CTA ══════════════════════════════════════════════════ -->
   <section class="border-t border-border" aria-labelledby="contribute-heading">

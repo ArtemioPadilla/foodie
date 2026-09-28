@@ -10,6 +10,7 @@ import { ErrorState } from '@/components/ui/error-state';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Toaster } from '@/components/ui/toast';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { RecipeCard, RecipeCardSkeleton } from '@/components/domain/RecipeCard';
 import { getTranslated, localizedRoute, t, type Locale } from '@/i18n';
@@ -40,7 +41,8 @@ import QueryProvider from './QueryProvider';
  * `RecipesPage` + `RecipeFilters` + `RecipeSorter` + `RecipeGrid`/`RecipeList`).
  *
  * - Catalog via `useCatalog()` (TanStack Query + IDB), favourites via
- *   `$favorites`; every filter/sort/view lives in the URL query string
+ *   `$favorites` (each card carries a `FavoriteButton`, roadmap #020, and
+ *   "Favorites only" is `?favorites=1`); every filter/sort/view lives in the URL query string
  *   (`lib/domain/recipe-browser.ts`) so results are shareable and Issue 020
  *   can deep-link `/recipes/?favorites=1`.
  * - The URL is read AFTER hydration (`useRecipeBrowserUrlState`): the server
@@ -384,7 +386,7 @@ export function RecipeBrowserView({ lang, initialState }: RecipeBrowserProps) {
                     lang={lang}
                     view={state.view}
                     href={withBase(localizedRoute(`/recipes/${recipe.id}/`, lang))}
-                    isFavorite={favorites.includes(recipe.id)}
+                    showFavoriteButton
                     className="w-full"
                   />
                 </li>
@@ -393,6 +395,9 @@ export function RecipeBrowserView({ lang, initialState }: RecipeBrowserProps) {
           )}
         </section>
       </div>
+
+      {/* One Toaster for this React root: the cards' FavoriteButton toasts here. */}
+      <Toaster />
     </div>
   );
 }

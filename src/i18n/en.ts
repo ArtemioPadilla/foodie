@@ -78,6 +78,10 @@ export const en = {
     recipesAvailable: 'Recipes Available',
     averageRating: 'Average Rating',
     languagesSupported: 'Languages Supported',
+    favoritesKicker: 'saved for later',
+    favoritesHeading: 'Your favorites',
+    favoritesViewAll: 'See all your favorites',
+    favoritesMore: '+{{count}} more in your favorites',
   },
   gallery: {
     title: 'Component gallery',
@@ -414,6 +418,7 @@ export const en = {
     detailActions: 'Recipe actions',
     addedToFavorites: '{{name}} added to your favorites',
     removedFromFavorites: '{{name}} removed from your favorites',
+    favoriteToggle: 'Favorite: {{name}}',
   },
   planner: {
     title: 'Meal Planner',

@@ -122,3 +122,19 @@ describe('RecipeCard — Foodie additions', () => {
     expect(screen.getByTestId('recipe-card-skeleton')).toBeInTheDocument();
   });
 });
+
+describe('RecipeCard — FavoriteButton (roadmap #020)', () => {
+  it('renders the interactive button above the stretched link instead of the read-only heart', () => {
+    render(<RecipeCard recipe={mockRecipe} href="/recipes/recipe-1/" showFavoriteButton isFavorite />);
+    const button = screen.getByRole('button', { name: 'Favorite: Grilled Chicken' });
+    expect(button.parentElement).toHaveClass('z-10');
+    expect(screen.queryByTestId('recipe-card-favorite')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+
+  it('keeps the read-only heart for static renders', () => {
+    render(<RecipeCard recipe={mockRecipe} isFavorite />);
+    expect(screen.getByTestId('recipe-card-favorite')).toBeInTheDocument();
+    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+});

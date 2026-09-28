@@ -114,6 +114,41 @@ test('recipe detail pages exist in every locale with localised copy', async ({ p
   await expect(page.getByRole('heading', { name: 'Instructions' })).toBeVisible();
 });
 
+test('a favourite marked on the detail page is listed at /recipes/?favorites=1 and on the landing (roadmap #020)', async ({ page }) => {
+  await page.goto('./recipes/rec_002/');
+  const actions = page.getByTestId('recipe-detail-actions');
+  await actions.scrollIntoViewIfNeeded();
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
+  const favorite = page.getByTestId('favorite-button');
+  await expect(favorite).toHaveAttribute('aria-pressed', 'false');
+  await favorite.click();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText(/added to your favorites/)).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toBe('["rec_002"]');
+
+  // The favourites-only filter is the `?favorites=1` URL contract.
+  await page.goto('./recipes/?favorites=1');
+  const cards = page.getByTestId('recipe-card');
+  await expect(cards).toHaveCount(1);
+  await expect(cards.first()).toHaveAttribute('data-recipe-id', 'rec_002');
+  await expect(page.getByTestId('active-filter-count')).toHaveText('1');
+  await expect(cards.first().getByTestId('recipe-card-favorite-button')).toHaveAttribute('aria-pressed', 'true');
+
+  // The landing's "Your favorites" island shows it and links back to the filter.
+  await page.goto('./');
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const section = page.getByTestId('favorite-recipes');
+  await expect(section).toBeVisible();
+  await expect(section.locator('[data-recipe-id="rec_002"]')).toBeVisible();
+  await section.getByTestId('favorites-view-all').click();
+  await page.waitForURL(/\/recipes\/\?favorites=1$/);
+
+  // Unfavouriting from the card empties the filtered list and the storage.
+  await page.getByTestId('recipe-card-favorite-button').first().click();
+  await expect(page.getByTestId('empty-filtered')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toBe('[]');
+});
+
 test('the ingredient browser filters in the URL and opens the static detail, which stocks pantry and shopping (roadmap #019)', async ({ page }) => {
   await page.goto('./ingredients/');
   await expect(page.locator('main[data-page="ingredients"] h1')).toBeVisible();

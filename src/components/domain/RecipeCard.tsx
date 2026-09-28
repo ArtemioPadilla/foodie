@@ -7,6 +7,7 @@ import { getTranslated, t, type Locale } from '@/i18n';
 import { cn } from '@/lib/utils';
 import type { Difficulty, MealType, Recipe, RecipeView } from '@/schemas';
 import { DietaryBadges } from './DietaryBadges';
+import { FavoriteButton } from './FavoriteButton';
 
 /**
  * RecipeCard — the catalog card of the Foodie domain (roadmap Issue 017; port
@@ -19,6 +20,8 @@ import { DietaryBadges } from './DietaryBadges';
  * - `href` makes the whole card a link (stretched-link pattern: the title is
  *   the only anchor, so screen readers hear one link per card); `onClick`
  *   keeps the legacy clickable-card behaviour for pickers.
+ * - Favourites: `showFavoriteButton` puts the interactive `FavoriteButton`
+ *   on the art (islands); `isFavorite` is the read-only heart (static HTML).
  * - Strings come from the dictionaries via `lang` (never `navigator.language`).
  */
 export interface RecipeCardProps extends Omit<React.HTMLAttributes<HTMLElement>, 'onClick'> {
@@ -29,8 +32,14 @@ export interface RecipeCardProps extends Omit<React.HTMLAttributes<HTMLElement>,
   onClick?: () => void;
   /** `grid` (vertical card, default) or `list` (horizontal row). */
   view?: RecipeView;
-  /** Shows a filled heart on the art when true (read from `$favorites`). */
+  /** Shows a filled heart on the art when true (read-only mark for static renders). */
   isFavorite?: boolean;
+  /**
+   * Renders the interactive `FavoriteButton` on the art instead of the
+   * read-only heart (roadmap Issue 020). Only inside a hydrated island that
+   * mounts a `<Toaster />` — in static Astro markup the button would be inert.
+   */
+  showFavoriteButton?: boolean;
   /** Legacy `showNutrition`: calories / protein / carbs footer. */
   showNutrition?: boolean;
 }
@@ -100,6 +109,7 @@ export function RecipeCard({
   onClick,
   view = 'grid',
   isFavorite = false,
+  showFavoriteButton = false,
   showNutrition = false,
   className,
   ...props
@@ -173,7 +183,12 @@ export function RecipeCard({
     >
       <div className={cn('relative shrink-0 overflow-hidden bg-muted', isList ? 'h-24 w-24 rounded-md sm:h-28 sm:w-28' : 'h-44')}>
         <RecipeArt recipe={recipe} lang={lang} />
-        {isFavorite && (
+        {showFavoriteButton ? (
+          // Above the stretched title link (z-10) so it stays clickable.
+          <div className="absolute left-2 top-2 z-10">
+            <FavoriteButton recipeId={recipe.id} recipeName={name} lang={lang} appearance="icon" data-testid="recipe-card-favorite-button" />
+          </div>
+        ) : isFavorite && (
           <span
             className="absolute left-2 top-2 inline-flex size-7 items-center justify-center rounded-full bg-background/90 text-rose-500 shadow-sm"
             title={t(lang, 'recipe.favorited')}

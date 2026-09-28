@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { useStore } from '@nanostores/react';
 import {
   CalendarPlusIcon,
   CheckIcon,
-  HeartIcon,
   ScaleIcon,
   ShoppingCartIcon,
   TimerIcon,
 } from 'lucide-react';
+import { FavoriteButton } from '@/components/domain/FavoriteButton';
 import { NutritionFacts } from '@/components/domain/NutritionFacts';
 import { RecipeTimer } from '@/components/domain/RecipeTimer';
 import { ServingsAdjuster } from '@/components/domain/ServingsAdjuster';
@@ -38,7 +37,6 @@ import { withBase } from '@/lib/href';
 import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import type { Recipe } from '@/schemas';
-import { $favorites, toggleFavorite } from '@/stores/favorites';
 import { $currentPlan, addRecipeToPlan, createPlan, WEEKDAYS, type PlanSlot } from '@/stores/planner';
 import { addShoppingItem } from '@/stores/shopping';
 
@@ -52,7 +50,7 @@ import { addShoppingItem } from '@/stores/shopping';
  * together: servings stepper, ingredient quantities (scaled, then expressed in
  * the user's unit system through `useUnitConversion`), per-step timers (a
  * `Dialog`), the scaled `NutritionFacts` table, the favourite toggle
- * (`$favorites`), "Add to meal plan" (a `Dialog` with day + meal → `$planner`)
+ * (`FavoriteButton` → `$favorites`), "Add to meal plan" (a `Dialog` with day + meal → `$planner`)
  * and "Add ingredients to shopping list" (`$shopping`).
  *
  * - Hydrated with `client:visible`; the server render already carries the
@@ -76,8 +74,6 @@ const PLAN_SLOTS: ReadonlyArray<PlanSlot> = ['breakfast', 'lunch', 'dinner', 'sn
 
 export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: RecipeDetailActionsProps) {
   const hydrated = useHydrated();
-  const favorites = useStore($favorites);
-  const favorite = hydrated && favorites.includes(recipe.id);
   const name = getTranslated(recipe.name, lang);
 
   const [servings, setServings] = React.useState(recipe.servings);
@@ -106,12 +102,6 @@ export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: Re
       else next.add(value);
       return next;
     });
-
-  const onToggleFavorite = () => {
-    const wasFavorite = favorites.includes(recipe.id);
-    toggleFavorite(recipe.id);
-    toast({ title: t(lang, wasFavorite ? 'recipe.removedFromFavorites' : 'recipe.addedToFavorites', { name }) });
-  };
 
   const onAddToShopping = () => {
     const items = shoppingItemsFor(recipe, servings, ingredientMeta);
@@ -142,16 +132,7 @@ export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: Re
         aria-label={t(lang, 'recipe.detailActions')}
         className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-3"
       >
-        <Button
-          type="button"
-          variant={favorite ? 'default' : 'outline'}
-          aria-pressed={favorite}
-          onClick={onToggleFavorite}
-          data-testid="favorite-button"
-        >
-          <HeartIcon className={cn('size-4', favorite && 'fill-current')} aria-hidden="true" />
-          {favorite ? t(lang, 'recipe.favorited') : t(lang, 'recipe.addToFavorites')}
-        </Button>
+        <FavoriteButton recipeId={recipe.id} recipeName={name} lang={lang} data-testid="favorite-button" />
         <Button type="button" variant="outline" onClick={() => setPlanOpen(true)} data-testid="add-to-plan-button">
           <CalendarPlusIcon className="size-4" aria-hidden="true" />
           {t(lang, 'recipe.addToPlanner')}

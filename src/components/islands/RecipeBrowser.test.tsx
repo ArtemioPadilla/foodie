@@ -234,9 +234,14 @@ describe('RecipeBrowser — search, filters, sort', () => {
     $favorites.set(['rec_003']);
     renderBrowser(<RecipeBrowserView lang="en" />);
     await ready();
-    // Only the favourite card (Onion Soup) carries the heart mark.
-    const marked = screen.getAllByTestId('recipe-card').filter((card) => within(card).queryByTestId('recipe-card-favorite'));
-    expect(marked.map((card) => within(card).getByRole('heading', { level: 3 }).textContent)).toEqual(['Onion Soup']);
+    // Roadmap #020: every card carries a FavoriteButton; only Onion Soup's is pressed
+    // (adapted from the #017 read-only heart mark, which the button replaces here).
+    await waitFor(() => {
+      const pressed = screen.getAllByTestId('recipe-card').filter(
+        (card) => within(card).getByTestId('recipe-card-favorite-button').getAttribute('aria-pressed') === 'true',
+      );
+      expect(pressed.map((card) => within(card).getByRole('heading', { level: 3 }).textContent)).toEqual(['Onion Soup']);
+    });
 
     await user.click(screen.getByTestId('favorites-only'));
     await waitFor(() => expect(cardNames()).toEqual(['Onion Soup']));
@@ -244,6 +249,21 @@ describe('RecipeBrowser — search, filters, sort', () => {
 
     $favorites.set(['rec_003', 'rec_001']);
     await waitFor(() => expect(cardNames()).toEqual(['Scrambled Eggs', 'Onion Soup']));
+  });
+
+  it('toggles a favourite from its card: $favorites, toast, and the favourites-only list update (roadmap #020)', async () => {
+    const user = userEvent.setup();
+    setUrl('?favorites=1');
+    $favorites.set(['rec_003', 'rec_002']);
+    renderBrowser(<RecipeBrowserView lang="es" />);
+    await ready();
+    expect(cardNames()).toEqual(['Tacos de Res', 'Sopa de Cebolla']);
+
+    await user.click(screen.getByRole('button', { name: 'Favorito: Tacos de Res' }));
+    expect($favorites.get()).toEqual(['rec_003']);
+    expect(await screen.findByText('Tacos de Res quitada de tus favoritos')).toBeInTheDocument();
+    await waitFor(() => expect(cardNames()).toEqual(['Sopa de Cebolla']));
+    expect(localStorage.getItem('favoriteRecipes')).toBe('["rec_003"]');
   });
 
   it('sorts by time, cost and name from the URL and exposes the sorter', async () => {
