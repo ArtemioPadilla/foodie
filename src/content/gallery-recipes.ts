@@ -386,7 +386,7 @@ import { Form, FormField } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
-const schema = z.object({ email: z.string().email() });
+const schema = z.object({ email: z.email() });
 
 export default function Subscribe() {
   const form = useForm({ resolver: zodResolver(schema) });

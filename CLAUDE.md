@@ -27,7 +27,7 @@ SPA) is frozen at the tag `legacy-vite-1.0.0`; read it with
 (`nanostores`, `@nanostores/react`) · TanStack Query/Table/Virtual ·
 react-hook-form + Zod 4 · lucide-react · recharts · `motion/react` ·
 `@vite-pwa/astro` · Pagefind. Foodie additions allowed by the roadmap:
-`@dnd-kit/core` + `@dnd-kit/utilities` (ADR 0010), `firebase` (only
+`@dnd-kit/core` (ADR 0010), `firebase` (only
 `firebase/app` + `firebase/auth`, dynamic import, ADR 0012), `fflate` (ADR 0013).
 Tests: Vitest + Testing Library, Playwright + axe-core. Node 22 (`.nvmrc`).
 
