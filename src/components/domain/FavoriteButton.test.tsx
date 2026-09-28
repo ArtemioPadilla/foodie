@@ -73,6 +73,18 @@ describe('FavoriteButton', () => {
     const html = renderToString(<FavoriteButton recipeId="rec_001" recipeName="Eggs" lang="en" />);
     expect(html).toContain('aria-pressed="false"');
   });
+
+  it('server-renders disabled and becomes operable once hydrated (roadmap #020 flaky journey)', () => {
+    const html = renderToString(<FavoriteButton recipeId="rec_001" recipeName="Eggs" lang="en" />);
+    expect(html).toMatch(/<button[^>]*disabled=""/);
+    renderButton();
+    expect(screen.getByRole('button')).toBeEnabled();
+  });
+
+  it('honours an explicit disabled prop after hydration', () => {
+    render(<FavoriteButton recipeId="rec_001" recipeName="Eggs" lang="en" disabled />);
+    expect(screen.getByRole('button')).toBeDisabled();
+  });
 });
 
 describe('FavoriteButton — legacy data', () => {

@@ -21,6 +21,12 @@ import { $favorites, toggleFavorite } from '@/stores/favorites';
  *   never span islands).
  * - Store state is only reflected after hydration (`useHydrated`), so the
  *   SSR markup (never pressed) and the first client render always agree.
+ * - The button is `disabled` until its island has hydrated. Islands hydrate
+ *   lazily (`client:visible` on the recipe detail), and before that there is
+ *   no React root to receive — or replay — a click: an enabled SSR button
+ *   silently swallowed early clicks (the flaky favourites journey, roadmap
+ *   #020). Disabled-until-live means neither a user nor Playwright's
+ *   actionability check can press a control that cannot work yet.
  */
 export interface FavoriteButtonProps
   extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'onToggle' | 'children' | 'aria-pressed'> {
@@ -41,11 +47,13 @@ export function FavoriteButton({
   appearance = 'full',
   onFavoriteChange,
   className,
+  disabled,
   ...props
 }: FavoriteButtonProps) {
   const hydrated = useHydrated();
   const favorites = useStore($favorites);
   const favorite = hydrated && favorites.includes(recipeId);
+  const inert = !hydrated || disabled;
 
   const onClick = () => {
     const wasFavorite = $favorites.get().includes(recipeId);
@@ -67,6 +75,7 @@ export function FavoriteButton({
         aria-label={label}
         title={favorite ? t(lang, 'recipe.removeFromFavorites') : t(lang, 'recipe.addToFavorites')}
         onClick={onClick}
+        disabled={inert}
         data-favorite={favorite ? 'true' : 'false'}
         className={cn(
           'size-9 rounded-full border-transparent bg-background/90 shadow-sm backdrop-blur hover:bg-background',
@@ -86,6 +95,7 @@ export function FavoriteButton({
       variant={favorite ? 'default' : 'outline'}
       aria-pressed={favorite}
       onClick={onClick}
+      disabled={inert}
       data-favorite={favorite ? 'true' : 'false'}
       className={className}
       {...props}

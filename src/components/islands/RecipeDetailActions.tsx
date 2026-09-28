@@ -61,7 +61,10 @@ import { addShoppingItem } from '@/stores/shopping';
  * - The recipe arrives as a serialisable prop and `lang` as a prop; nothing
  *   reads `navigator.language` during render. Store-backed state
  *   (favourite) is only shown after hydration so the SSR markup and the
- *   first client render always agree.
+ *   first client render always agree, and the store-writing actions
+ *   (favourite, add to plan, add to shopping) stay `disabled` until the island
+ *   is live — `client:visible` hydrates lazily and a click on the inert SSR
+ *   buttons would otherwise be lost.
  */
 export interface RecipeDetailActionsProps {
   recipe: Recipe;
@@ -133,11 +136,23 @@ export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: Re
         className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-3"
       >
         <FavoriteButton recipeId={recipe.id} recipeName={name} lang={lang} data-testid="favorite-button" />
-        <Button type="button" variant="outline" onClick={() => setPlanOpen(true)} data-testid="add-to-plan-button">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setPlanOpen(true)}
+          disabled={!hydrated}
+          data-testid="add-to-plan-button"
+        >
           <CalendarPlusIcon className="size-4" aria-hidden="true" />
           {t(lang, 'recipe.addToPlanner')}
         </Button>
-        <Button type="button" variant="outline" onClick={onAddToShopping} data-testid="add-to-shopping-button">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onAddToShopping}
+          disabled={!hydrated}
+          data-testid="add-to-shopping-button"
+        >
           <ShoppingCartIcon className="size-4" aria-hidden="true" />
           {t(lang, 'recipe.addIngredientsToShopping')}
         </Button>
