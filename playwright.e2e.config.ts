@@ -52,6 +52,11 @@ export default defineConfig({
     // server process in every environment — and the visual (4321) and e2e
     // (4322) servers can run side by side from the same root.
     command: `npm run build && npm run preview -- --port ${PORT} --ignore-lock`,
+    // Auth journeys (roadmap Issues 035/036) run against the in-memory mock
+    // adapter (`src/lib/auth/mock.ts`): no Firebase project, no network, no
+    // credentials in CI. Playwright merges this over process.env. NOTE: the
+    // resulting dist/ has the mock enabled — rebuild before the visual suite.
+    env: { PUBLIC_AUTH_MOCK: '1' },
     url: `http://localhost:${PORT}${BASE_PATH}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,

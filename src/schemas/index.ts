@@ -38,5 +38,8 @@ export * from './shopping';
 export * from './pantry';
 export * from './goals';
 export * from './tracking';
+
+// ── Auth (roadmap Issue 035) ──────────────────────────────────────────────────
+export * from './auth';
 export * from './preferences';
 export * from './recipe-submission';
