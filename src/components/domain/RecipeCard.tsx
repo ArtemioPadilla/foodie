@@ -3,6 +3,7 @@ import { CakeIcon, CookieIcon, HeartIcon, MoonIcon, StarIcon, SunIcon, SunriseIc
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getTranslated, t, type Locale } from '@/i18n';
+import { RECIPE_IMAGE_SIZE, recipeImageSources } from '@/lib/recipe-image';
 import { cn } from '@/lib/utils';
 import type { MealType, Recipe, RecipeView } from '@/schemas';
 import { DietaryBadges } from './DietaryBadges';
@@ -53,7 +54,7 @@ const MEAL_TYPE_ART: Record<MealType, { Icon: React.ComponentType<{ className?: 
   dessert: { Icon: CakeIcon, tint: 'bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300' },
 };
 
-/** Recipe art: the image when present, otherwise the per-meal-type placeholder. */
+/** Recipe art: the photo (WebP `srcset`) when present, otherwise the per-meal-type placeholder. */
 export function RecipeArt({
   recipe,
   lang = 'en',
@@ -65,9 +66,15 @@ export function RecipeArt({
 }) {
   const name = getTranslated(recipe.name, lang);
   if (recipe.imageUrl) {
+    // Pre-optimised WebP at three widths (docs/recipes/catalog-data.md § Images).
+    const { src, srcSet, sizes } = recipeImageSources(recipe.imageUrl);
     return (
       <img
-        src={recipe.imageUrl}
+        src={src}
+        srcSet={srcSet}
+        sizes={sizes}
+        width={RECIPE_IMAGE_SIZE.width}
+        height={RECIPE_IMAGE_SIZE.height}
         alt={name}
         loading="lazy"
         decoding="async"
