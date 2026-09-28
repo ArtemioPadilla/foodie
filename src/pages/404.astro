@@ -8,8 +8,15 @@
  *
  * This page is English-only (there is one 404.html per site) and therefore
  * offers the way home in every language.
+ *
+ * v1 URLs (roadmap Issue 030): links captured from the legacy trick carry the
+ * route in the query — `?/recipes/rec_001&q~and~…` — and `LegacyRedirect`
+ * decodes it and replaces the location once with the static v2 route
+ * (`src/lib/legacy-redirect.ts`). The English site root includes it too,
+ * because `/foodie/?/…` is served by `index.html`, not by this page.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
+import LegacyRedirect from '../components/common/LegacyRedirect.astro';
 import { withBase } from '../lib/href';
 import { LOCALES, LOCALE_NAMES, localizedRoute, t } from '../i18n';
 
@@ -22,6 +29,7 @@ const homes = LOCALES.map((locale) => ({
 ---
 
 <BaseLayout title={`${t('en', 'notFound.title')} — Foodie`} description={t('en', 'notFound.body')} lang="en">
+  <LegacyRedirect />
   <main id="main-content" class="mx-auto flex max-w-3xl flex-col px-4 py-24">
     <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t('en', 'notFound.kicker')}</p>
     <h1

@@ -1,58 +1,48 @@
 # Contributing to Foodie
 
-## 🚧 Migration to Inceptor — temporary branching policy
+## Branches and pull requests
 
-> **Temporary section** (roadmap Phase 0 → Phase 3). It is removed at the
-> cutover (roadmap Issue 030). Canonical plan:
-> [`docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md`](docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md).
+Foodie v2 runs on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
+template (Astro 5 + React 19 + Tailwind v4 + Base UI). The roadmap cutover
+(Issue 030, runbook [`docs/runbooks/cutover.md`](docs/runbooks/cutover.md))
+merged the integration branch `inceptor` into `main` and deleted it. From then
+on there is **one line of development**:
 
-Foodie is being rebuilt on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
-template (Astro 5 + React 19 + Tailwind v4 + Base UI). While that happens the
-repository has **two live lines of development**:
-
-| Branch | What it holds | Deploys? |
+| Branch / tag | What it holds | Deploys? |
 |---|---|---|
-| `main` | The **legacy** React 18 + Vite SPA, frozen at `ac89bf1` (tag `legacy-vite-1.0.0`, mirrored by the `legacy` branch) | Yes — `https://artemiopadilla.github.io/foodie/` keeps serving legacy until the cutover |
-| `inceptor` | The **integration branch** for the new app (roadmap Phases 0–3). Created by the maintainer from the Phase-0 working branch; protected (PR required, checks `build`, `test`, `type-check`) | Not yet — enabled at the cutover |
+| `main` | Foodie v2, the Inceptor app | Yes. Each push runs `deploy.yml` and publishes `https://artemiopadilla.github.io/foodie/` |
+| tag `legacy-vite-1.0.0` | The frozen v1 (React 18 + Vite SPA, `ac89bf1`) | No. Rollback only (see the runbook) |
 
 ### Where do PRs go?
 
-- **Migration work** (any roadmap issue `001`–`030`): branch from `inceptor` as
-  `phase-N/issue-NNN-short-slug` and open the PR **against `inceptor`**, not
-  `main`. Example: `phase-0/issue-003-rebrand-foodie` → PR base `inceptor`.
-- **Legacy hotfixes only** (something broken on the live site): PR against
-  `main`. Keep them minimal — `main` is frozen apart from urgent fixes and the
-  legacy code is not being ported line-by-line.
-- **Never** merge `inceptor` into `main` or vice-versa outside the cutover PR
-  (roadmap Issue 030). `main` stays the legacy deploy until the new app reaches
-  parity on catalog + planner + shopping + pantry (end of Phase 3).
+- **Every PR targets `main`**: roadmap work (issues `031` onwards), fixes and
+  docs. Branch from `main` as `phase-N/issue-NNN-short-slug`, for example
+  `phase-4/issue-031-tracking-today`, and open the PR with base `main`.
+- `inceptor` no longer exists. If an older branch was cut from it, rebase it
+  onto `main` (`git fetch origin && git rebase origin/main`) before opening the
+  PR.
+- There is no v1 branch to fix. To read v1 code, run
+  `git show legacy-vite-1.0.0:src/<path>`. The v1 phase reports and changelog
+  are archived under `docs/archive/legacy-vite/`.
 
-### Conventions on `inceptor`
+### Conventions
 
-- Commit messages: Conventional Commits with the roadmap id —
+- Commit messages follow Conventional Commits with the roadmap id:
   `type(scope): summary (roadmap #NNN)`.
-- Every PR must keep `npm run check` green (astro check + tsc + vitest + eslint
-  + pragmas + build) and follow the Inceptor rules listed in `CLAUDE.md`
-  (no `@astrojs/tailwind`, no React Context across islands, `withBase()` for
-  every href/asset, Zod schemas in `src/schemas/` for cross-boundary types).
-- Labels `phase-0`…`phase-6`, `type:chore|feat|docs|test`, `risk:high` and
-  milestones `v0.1`…`v1.0` classify the work (created by
-  `scripts/create-issues.sh`, roadmap Issue 007).
-- Reading legacy code from the `inceptor` branch: `git show main:src/<path>`
-  (or `git show legacy:src/<path>`). The read-only `legacy/` working copy was
-  removed in roadmap Issue 008; the legacy phase reports and changelog are
-  archived under `docs/archive/legacy-vite/`.
-
-### After the cutover
-
-Once Issue 030 lands, `inceptor` is merged into `main`, `main` deploys the new
-app and all PRs target `main` again. This section is deleted in that PR.
-
+- Every PR must keep `npm run check` green (astro check, tsc, vitest, eslint,
+  pragmas, build). It must also follow the Inceptor rules in `CLAUDE.md`: no
+  `@astrojs/tailwind`, no React Context across islands, `withBase()` for every
+  href and asset, and Zod schemas in `src/schemas/` for cross-boundary types.
+- Labels `phase-0` to `phase-6`, `type:chore|feat|docs|test` and `risk:high`,
+  and milestones `v0.1` to `v1.0`, classify the work. They are created by
+  `scripts/create-issues.sh` (roadmap Issue 007).
+- Record user-visible changes under `## [Unreleased]` in
+  [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Development workflow
 
 1. Find or open a GitHub issue for the work you want to do.
-2. Branch naming: `phase-N/issue-NNN-short-slug` (e.g. `phase-0/issue-001-upgrade-astro-5`).
+2. Branch from `main` as `phase-N/issue-NNN-short-slug` (e.g. `phase-4/issue-031-tracking-today`) and open the PR against `main`.
 3. Commit messages: Conventional Commits + issue ref (e.g. `feat(ui): add Button component (#6)`).
 4. Open a PR that includes `Closes #N` in the body so the issue auto-closes on merge.
 5. Every PR must pass `npm run build`, `npm run check`, and `npm run test` before merge.

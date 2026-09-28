@@ -1,4 +1,27 @@
-# Inceptor
+# Foodie
+
+> **Foodie v2 is built on Inceptor.** Foodie is an offline-first meal-planning
+> app with a trilingual (EN/ES/FR) catalog of recipes and ingredients, a weekly
+> planner, a shopping list and a pantry. It has been rebuilt from a React 18 +
+> Vite single-page app on the Inceptor template (Astro 5 islands + React 19).
+>
+> - **Live:** <https://artemiopadilla.github.io/foodie/>
+> - **What's new:** [`CHANGELOG.md`](./CHANGELOG.md) (`2.0.0-beta.1`)
+> - **Plan:** [migration roadmap](./docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md)
+>   and ADRs [0001](./docs/decisions/0001-foodie-inceptor-migration.md) and
+>   [0002](./docs/decisions/0002-local-first-user-data.md)
+> - **v1 (React 18 + Vite):** frozen at the tag
+>   [`legacy-vite-1.0.0`](https://github.com/ArtemioPadilla/foodie/tree/legacy-vite-1.0.0).
+>   Data saved by v1 in your browser carries over, and old `?/recipes/…`
+>   links redirect to the new pages.
+> - **Contributing:** PRs target `main`. See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+>
+> The rest of this README still describes the Inceptor template. A full Foodie
+> README comes with roadmap Issue 044.
+
+---
+
+# Built on Inceptor
 
 > An Astro 5 + React 19 starter where every feature ships through a GitHub issue: **issue → Claude Code → PR → merge → deploy.** Batteries-included UI, zero JS by default.
 

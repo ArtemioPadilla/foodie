@@ -980,3 +980,71 @@ test.describe('planning end to end (roadmap #029)', () => {
     await expect(page.getByTestId('planned-meal')).toHaveCount(1);
   });
 });
+
+// ── v1 → v2 cutover compatibility (roadmap Issue 030) ────────────────────────
+test.describe('v1 compatibility (roadmap #030)', () => {
+  test('v1 encoded deep links (?/path, ~and~) land once on the static v2 route', async ({ page }) => {
+    // Served by the English root (index.html), as /foodie/?/… is on Pages.
+    await page.goto('./?/recipes/rec_001');
+    await expect(page).toHaveURL(/\/recipes\/rec_001\/$/);
+    await expect(page.locator('main h1').first()).not.toBeEmpty();
+
+    // Served by 404.html: the query survives, ~and~ becomes &.
+    await page.goto('./no-such-v1-page/?/recipes&type=breakfast~and~q=egg');
+    await expect(page).toHaveURL(/\/recipes\/\?type=breakfast&q=egg$/);
+    await expect(page.locator('main h1').first()).toHaveText('Recipes');
+  });
+
+  test('a v1 visitor who chose Spanish is sent to the Spanish page', async ({ page }) => {
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem('seeded')) {
+        localStorage.setItem('i18nextLng', 'es');
+        sessionStorage.setItem('seeded', '1');
+      }
+    });
+    await page.goto('./?/shopping');
+    await expect(page).toHaveURL(/\/es\/shopping\/$/);
+    await expect(page.locator('main[data-page="shopping"] h1')).toHaveText('Lista de Compras');
+  });
+
+  test('v1 localStorage (all 12 keys) opens with plan, list, pantry, favourites and tracking intact', async ({ page }) => {
+    const fixture = JSON.parse(
+      (await import('node:fs')).readFileSync(new URL('../../src/tests/fixtures/legacy-v1-localstorage.json', import.meta.url), 'utf-8'),
+    ) as Record<string, unknown>;
+    delete fixture.$comment;
+    await page.addInitScript((entries) => {
+      if (sessionStorage.getItem('seeded')) return;
+      for (const [key, value] of Object.entries(entries)) {
+        localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
+      }
+      sessionStorage.setItem('seeded', '1');
+    }, fixture);
+
+    await page.goto('./planner/');
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('planned-meal')).toHaveCount(5);
+    await expect(page.getByTestId('meal-slot-monday-breakfast').getByTestId('planned-meal')).toHaveAttribute('data-recipe-id', 'rec_007');
+    // v1 wrote `theme: "dark"` raw; the head script applies it.
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('shopping-item')).toHaveCount(3);
+    await expect(page.locator('[data-testid="shopping-item"][data-ingredient-id="ing_025"]')).toHaveAttribute('data-checked', 'true');
+
+    await page.goto('./pantry/');
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+    await expect(page.getByTestId('pantry-item').filter({ hasText: /olive oil/i })).toBeVisible();
+
+    await page.goto('./recipes/?favorites=1');
+    await expect(page.getByTestId('recipe-card')).toHaveCount(3);
+
+    // Tracking has no v2 page before Phase 4; its data must simply be untouched.
+    const stored = await page.evaluate(() => ({
+      tracking: JSON.parse(localStorage.getItem('trackingEntries') ?? '[]').length,
+      goals: JSON.parse(localStorage.getItem('nutritionGoals') ?? 'null')?.calories,
+    }));
+    expect(stored).toEqual({ tracking: 3, goals: 1800 });
+  });
+});

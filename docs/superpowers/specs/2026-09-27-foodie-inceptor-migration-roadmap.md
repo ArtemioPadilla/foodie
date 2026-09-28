@@ -756,7 +756,7 @@ npm run build && npm run test:e2e && npx playwright test tests/visual
 Port de `MealPlannerCalendar`, `WeekView`, `MonthView`, `DayMealSlot`, `DraggableRecipe`, `DroppableSlot`, `ServingsAdjuster`, `PlannerControls` (1.771 líneas) sobre `@dnd-kit/core` (D8) y `$planner`. `risk:high` por escritura de datos de usuario (cubierto por ADR 0002).
 
 **Acceptance criteria**
-- [ ] `npm i @dnd-kit/core @dnd-kit/utilities`; ADR 0003 justificando la dependencia (cierra la lista del stack)
+- [ ] `npm i @dnd-kit/core @dnd-kit/utilities`; ADR `docs/decisions/0010-dnd-kit.md` justificando la dependencia (cierra la lista del stack)
 - [ ] `DndContext` con sensores `Pointer` + `Keyboard` (anuncios `aria-live`); arrastrar receta desde panel lateral a slot (desayuno/comida/cena/snack) por día; mover entre slots; quitar
 - [ ] `Tabs` semana/mes (`data-testid="week-view"`/`"month-view"` conservados); navegación de semanas; porciones globales y por comida; duplicar día; crear/limpiar plan
 - [ ] Fallback sin drag: botón "+" en slot abre `RecipePicker` (Issue 025)

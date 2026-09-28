@@ -13,7 +13,10 @@ Date: 2026-09-27
 > decides whether they are archived. The migration roadmap refers to _this_
 > series by number (ADR 0001 = this file, ADR 0002 = local-first user data,
 > ADR 0004 = auth), so the collision is deliberate and documented rather than
-> renumbered.
+> renumbered. Foodie ADRs written after these two take the next number that
+> is free in the folder instead of colliding again. The first was
+> `0010-dnd-kit.md` (Issue 024), which the roadmap once called "ADR 0003".
+> Only the three numbers above are shared with the template series.
 
 ## Context
 

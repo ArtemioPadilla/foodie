@@ -1,0 +1,16 @@
+---
+/**
+ * v1 → v2 URL compatibility (roadmap Issue 030). Renders nothing; its script
+ * decodes Foodie v1's spa-github-pages URLs (`/foodie/?/recipes/rec_001&…`)
+ * and replaces the location once with the static v2 route — see
+ * `src/lib/legacy-redirect.ts`. Included by `404.astro` and by the English
+ * site root in `BaseLayout.astro` (where `/foodie/?/…` lands); the root's
+ * inline locale redirect steps aside for these URLs so this runs first.
+ */
+---
+
+<script>
+  import { runLegacyRedirect } from '../../lib/legacy-redirect';
+
+  runLegacyRedirect(window, import.meta.env.BASE_URL);
+</script>
