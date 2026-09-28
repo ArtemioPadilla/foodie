@@ -56,7 +56,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.9",
     "@zag-js/editable": "^1.43.0",
-    "@zag-js/react": "^1.43.0",
+    "@zag-js/react": "^1.44.0",
     "@zag-js/splitter": "^1.43.0",
     "astro": "^7.3.5",
     "class-variance-authority": "^0.7.1",
