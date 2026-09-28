@@ -20,10 +20,13 @@ test('ingredient detail page screenshot', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('foodie:privacy-ack', 'true'));
   await page.goto('/ingredients/ing_101/');
 
-  // Scroll so the client:visible island hydrates before the capture.
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  // Bring the client:visible island itself into view so its
+  // IntersectionObserver fires (scrolling straight to the page bottom can jump
+  // past it, which made this capture flaky on a GitHub runner, PR #36).
+  const actions = page.getByTestId('ingredient-actions');
+  await actions.scrollIntoViewIfNeeded();
   await page.waitForLoadState('networkidle');
-  await expect(page.getByTestId('ingredient-actions')).toHaveAttribute('data-hydrated', 'true');
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
   await page.evaluate(() => window.scrollTo(0, 0));
 
   await expect(page.locator('main[data-page="ingredient-detail"] h1')).toHaveText('Basil Pesto');

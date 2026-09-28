@@ -1025,12 +1025,33 @@ test.describe('offline PWA (roadmap #028)', () => {
       .poll(() => page.evaluate(async () => (await caches.keys()).includes('foodie-data')))
       .toBe(true);
 
+    // Diagnostics printed only when the offline assertions fail (they are
+    // otherwise hard to observe on a CI runner).
+    const trail: string[] = [];
+    page.on('console', (m) => trail.push(`console.${m.type()}: ${m.text()}`));
+    page.on('pageerror', (e) => trail.push(`pageerror: ${e.message}`));
+    page.on('requestfailed', (r) => trail.push(`requestfailed: ${r.url()} ${r.failure()?.errorText ?? ''}`));
+
     await context.setOffline(true);
     try {
       await page.goto('./recipes/');
       await expect(page.locator('h1').first()).toHaveText('Recipes');
       await expect(page.locator('a[href*="/recipes/rec_"]').first()).toBeVisible();
-      await expect(page.getByText(/You're offline/)).toBeVisible();
+      try {
+        await expect(page.getByText(/You're offline/)).toBeVisible();
+      } catch (error) {
+        const state = await page.evaluate(() => ({
+          onLine: navigator.onLine,
+          controller: !!navigator.serviceWorker.controller,
+          islands: Array.from(document.querySelectorAll('astro-island')).map((el) => ({
+            component: el.getAttribute('component-url'),
+            client: el.getAttribute('client'),
+            ssr: el.hasAttribute('ssr'),
+          })),
+        }));
+        console.log(`[offline diagnostics] ${JSON.stringify(state)}\n${trail.join('\n')}`);
+        throw error;
+      }
 
       await page.goto('./planner/');
       await expect(page.locator('h1').first()).toHaveText('Meal Planner');

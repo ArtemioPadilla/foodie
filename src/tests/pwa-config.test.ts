@@ -120,7 +120,7 @@ describe('BaseLayout PWA wiring (roadmap #028)', () => {
   });
 
   it('mounts InstallButton, UpdateToast and OfflineBanner behind flags.pwaPrompts, localised', () => {
-    expect(layout).toContain('{flags.pwaPrompts && <OfflineBanner client:idle lang={lang} />}');
+    expect(layout).toContain('{flags.pwaPrompts && <OfflineBanner client:idle={{ timeout: 1000 }} lang={lang} />}');
     expect(layout).toContain('{flags.pwaPrompts && <InstallButton client:idle lang={lang} />}');
     expect(layout).toContain('{flags.pwaPrompts && <UpdateToast client:idle lang={lang} />}');
   });

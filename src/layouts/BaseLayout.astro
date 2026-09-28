@@ -235,8 +235,11 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
       OfflineBanner is mounted with client:idle so the online/offline event
       listeners are live as soon as the browser finishes loading, without
       blocking first paint. position: fixed means it doesn't affect layout.
+      The 1 s idle timeout caps the wait: on a busy main thread (a page
+      hydrating the catalog offline) requestIdleCallback can starve, and the
+      offline status must still show promptly.
     -->
-    {flags.pwaPrompts && <OfflineBanner client:idle lang={lang} />}
+    {flags.pwaPrompts && <OfflineBanner client:idle={{ timeout: 1000 }} lang={lang} />}
     <!--
       HydrationCanary: listens for React hydration-mismatch error signatures
       and writes a pre-filled GitHub issue URL to sessionStorage so the FAB
