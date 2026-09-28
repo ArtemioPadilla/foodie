@@ -22,6 +22,10 @@ import AxeBuilder from '@axe-core/playwright';
 // `/ingredients/` + `/es/ingredients/ing_101/` (roadmap Issue 019): the
 // browser's filter chips / toggle buttons and a composite ingredient detail
 // with the IngredientActions form.
+// `/recipes/` + `/es/recipes/` (roadmap Issue 023): the RecipeBrowser island
+// — search, sort select, view toggle, filter accordion with checkboxes and
+// radios, 50 cards with FavoriteButtons. Every route runs in both the
+// chromium-light and chromium-dark projects (light + dark themes).
 const routes = [
   '/',
   '/gallery/',
@@ -31,6 +35,8 @@ const routes = [
   '/contact/',
   '/recipes/rec_001/',
   '/fr/recipes/rec_001/',
+  '/recipes/',
+  '/es/recipes/',
   '/ingredients/',
   '/es/ingredients/ing_101/',
 ];
@@ -39,6 +45,9 @@ for (const route of routes) {
   test(`a11y — ${route}`, async ({ page }) => {
     await page.goto(route);
     await page.waitForLoadState('networkidle');
+    // Catalog browsers: scan the hydrated island (cards rendered), not its skeleton.
+    if (/recipes\/$/.test(route)) await expect(page.getByTestId('recipe-card').first()).toBeVisible();
+    if (/ingredients\/$/.test(route)) await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
     // Disable animations + transitions before scanning so axe doesn't
     // see transient mid-animation states.
     await page.addStyleTag({

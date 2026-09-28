@@ -9,7 +9,8 @@ import { test, expect, devices } from '@playwright/test';
  */
 const PHONE = devices['iPhone 12'].viewport; // 390×844
 
-const routes = ['/', '/gallery/', '/docs/'];
+// `/recipes/` (roadmap Issue 023): the catalog browser — filter sidebar collapses on phones.
+const routes = ['/', '/gallery/', '/docs/', '/recipes/'];
 
 for (const route of routes) {
   test(`mobile ${route} — no horizontal overflow, nav reachable`, async ({ page }) => {
@@ -26,7 +27,13 @@ for (const route of routes) {
       `${route} must not scroll horizontally at ${PHONE.width}px (overflow: ${overflow}px)`,
     ).toBeLessThanOrEqual(1); // allow a 1px rounding artifact
 
-    // Primary nav links stay reachable on phones.
-    await expect(page.locator('header a[href*="gallery"]').first()).toBeVisible();
+    // Primary nav stays reachable on phones. Foodie's header (roadmap Issue
+    // 005) collapses the section links into the MobileNav sheet, so the
+    // reachable controls are the brand link home and the menu trigger — the
+    // template's inline `header a[href*="gallery"]` assertion no longer
+    // applies (adapted deliberately in roadmap Issue 023; the sheet itself
+    // is exercised by the e2e journey "on a phone the menu opens…").
+    await expect(page.locator('header a[href]').first()).toBeVisible();
+    await expect(page.getByTestId('mobile-nav-trigger')).toBeVisible();
   });
 }

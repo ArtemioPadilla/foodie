@@ -267,3 +267,118 @@ test('unknown paths render the Foodie 404 with a way home per language', async (
   await expect(page.locator('main a[hreflang="es"][lang="es"]')).toHaveAttribute('href', /\/es\/$/);
   await expect(page.locator('main a[hreflang="fr"][lang="fr"]')).toHaveAttribute('href', /\/fr\/$/);
 });
+
+// ── Catalog journeys (roadmap Issue 023) ─────────────────────────────────────
+// Port of legacy `tests/e2e/recipe-browsing.spec.ts` (homepage, cards, search,
+// type filter, detail, ingredients + instructions, scaling, language) and of
+// the catalog part of `translations.spec.ts` (no raw translation keys; the
+// network assertions on /locales/*.json are gone with i18next — dictionaries
+// are compiled into each static page). Selectors are accessible roles and
+// names first, data-testids only where no role/name is stable.
+
+test.describe('catalog journeys (roadmap #023)', () => {
+  test('home → recipes → search "salad" → filter type → detail → scale → Español → ingredients → detail', async ({ page }) => {
+    // Home.
+    await page.goto('./');
+    await expect(page).toHaveTitle(/Foodie/);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    // → Recipes through the primary navigation.
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Recipes', exact: true }).click();
+    await page.waitForURL(/\/recipes\/$/);
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(/recipes/i);
+    const cards = page.getByTestId('recipe-card');
+    await expect(cards.first()).toBeVisible();
+    const all = await cards.count();
+
+    // Search "salad": the list narrows and every hit mentions salad.
+    await page.getByRole('searchbox', { name: 'Search recipes' }).fill('salad');
+    await expect(page).toHaveURL(/q=salad/);
+    await expect.poll(() => cards.count()).toBeLessThan(all);
+    const salads = await cards.count();
+    expect(salads).toBeGreaterThan(0);
+
+    // Filter by meal type "Lunch" (a checkbox in the "Meal Type" section).
+    const filters = page.getByRole('complementary', { name: 'Filters' });
+    await filters.getByRole('checkbox', { name: 'Lunch' }).check();
+    await expect(page).toHaveURL(/type=lunch/);
+    await expect.poll(() => cards.count()).toBeLessThanOrEqual(salads);
+    await expect(cards.filter({ hasText: 'Greek Salad' })).toHaveCount(1);
+    await expect(cards.filter({ hasText: 'Fruit Salad' })).toHaveCount(0); // a dessert
+
+    // Open the detail through the card's (only) link.
+    await cards.filter({ hasText: 'Greek Salad' }).getByRole('link', { name: 'Greek Salad' }).click();
+    await page.waitForURL(/\/recipes\/rec_039\/$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Greek Salad');
+    await expect(page.getByRole('heading', { name: 'Ingredients' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Instructions' })).toBeVisible();
+
+    // Scale servings: the ingredient quantities change with them.
+    const actions = page.getByTestId('recipe-detail-actions');
+    await actions.scrollIntoViewIfNeeded();
+    await expect(actions).toHaveAttribute('data-hydrated', 'true');
+    const amounts = page.getByTestId('ingredient-amount');
+    const before = await amounts.allTextContents();
+    const servings = page.getByTestId('servings-value');
+    const initial = Number(await servings.textContent());
+    await page.getByRole('button', { name: 'Increase servings' }).click();
+    await page.getByRole('button', { name: 'Increase servings' }).click();
+    await expect(servings).toHaveText(String(initial + 2));
+    await expect.poll(() => amounts.allTextContents()).not.toEqual(before);
+    await expect(page.getByTestId('scaled-note')).toBeVisible();
+
+    // Switch to Spanish: same recipe, localised URL and copy.
+    await page.locator('a[data-lang-switch="es"]').first().click();
+    await page.waitForURL(/\/es\/recipes\/rec_039\/$/);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ensalada Griega');
+    await expect(page.getByRole('heading', { name: 'Ingredientes' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Instrucciones' })).toBeVisible();
+
+    // → Ingredients (Spanish navigation) → an ingredient detail.
+    await page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name: 'Ingredientes', exact: true }).click();
+    await page.waitForURL(/\/es\/ingredients\/$/);
+    const ingredientCards = page.getByTestId('ingredient-card');
+    await expect(ingredientCards.first()).toBeVisible();
+    await page.getByRole('searchbox', { name: 'Buscar ingredientes' }).fill('ajo');
+    await expect(ingredientCards).toHaveCount(1);
+    await ingredientCards.first().getByRole('link', { name: 'Ajo' }).click();
+    await page.waitForURL(/\/es\/ingredients\/ing_006\/$/);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Ajo');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  });
+
+  // Raw dictionary keys look like `recipe.filters` / `nav.home`: a namespace
+  // of the dictionary, a dot, a camelCase/snake_case leaf.
+  const RAW_KEY = new RegExp(
+    `\\b(${[
+      'nav', 'home', 'gallery', 'common', 'footer', 'app', 'tracking', 'goals', 'progress', 'errors', 'recipe',
+      'planner', 'shopping', 'pantry', 'contribute', 'profile', 'auth', 'filter', 'dietary', 'cuisine', 'tags',
+      'category', 'ingredients', 'ingredient', 'season', 'nutrition', 'offline', 'accessibility', 'units', 'days',
+    ].join('|')})\\.[a-z][A-Za-z_]+\\b`,
+  );
+
+  for (const prefix of ['', 'es/', 'fr/']) {
+    for (const route of ['', 'recipes/', 'ingredients/']) {
+      test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
+        await page.goto(`./${prefix}${route}`);
+        await page.waitForLoadState('networkidle');
+        // Let the page's island render its catalog before reading the text.
+        if (route === 'recipes/') await expect(page.getByTestId('recipe-card').first()).toBeVisible();
+        if (route === 'ingredients/') await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
+
+        const text = await page.locator('body').innerText();
+        expect(text.match(RAW_KEY)?.[0], `raw key in the text of /${prefix}${route}`).toBeUndefined();
+
+        // Accessible names and hints count too (aria-label, placeholder, title, alt).
+        const attrs = await page.$$eval('[aria-label], [placeholder], [title], img[alt]', (els) =>
+          els.flatMap((el) => ['aria-label', 'placeholder', 'title', 'alt'].map((a) => el.getAttribute(a) ?? '')).filter(Boolean),
+        );
+        expect(attrs.filter((value) => RAW_KEY.test(value)), `raw key in attributes of /${prefix}${route}`).toEqual([]);
+
+        // The page speaks its own language.
+        await expect(page.locator('html')).toHaveAttribute('lang', prefix ? prefix.slice(0, 2) : 'en');
+      });
+    }
+  }
+});

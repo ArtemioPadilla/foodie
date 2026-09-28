@@ -21,7 +21,8 @@ import { test, expect } from '@playwright/test';
  * exactly what a keyboard user would perceive.
  */
 
-const routes = ['/', '/gallery/', '/gallery/form-controls/', '/demos/dashboard/'];
+// `/recipes/` + `/ingredients/` (roadmap Issue 023): the catalog browsers.
+const routes = ['/', '/gallery/', '/gallery/form-controls/', '/demos/dashboard/', '/recipes/', '/ingredients/'];
 
 // Selector for elements we expect to be reachable + focus-styled.
 const INTERACTIVE_SELECTOR =
@@ -131,7 +132,10 @@ for (const route of routes) {
         // Drive real focus and read the resolved computed style. WCAG 2.4.7
         // accepts a focus indicator rendered by a container as well (the
         // `focus-within` pattern, e.g. TagInput's wrapper ring), so when the
-        // element itself shows nothing we also inspect up to two ancestors.
+        // element itself shows nothing we also inspect up to four ancestors —
+        // the catalog cards (roadmap Issue 023) put the ring on the whole card
+        // (`focus-within:ring-2`) around a stretched title link, which sits
+        // three (IngredientCard) or four (RecipeCard) levels down.
         const indicator = await el.evaluate((node) => {
           const e = node as HTMLElement;
           e.focus();
@@ -151,7 +155,7 @@ for (const route of routes) {
             (v.boxShadow !== 'none' && v.boxShadow !== '');
           let best = read(e);
           let ancestor: Element | null = e.parentElement;
-          for (let hops = 0; hops < 2 && ancestor && !visible(best); hops++) {
+          for (let hops = 0; hops < 4 && ancestor && !visible(best); hops++) {
             if (ancestor.matches(':focus-within')) {
               const v = read(ancestor);
               if (visible(v)) best = v;
@@ -191,3 +195,51 @@ for (const route of routes) {
     });
   });
 }
+
+/**
+ * Catalog filters are fully keyboard-operable (roadmap Issue 023): Tab walks
+ * from the search box through the filter panel, Space toggles a checkbox /
+ * chip, and the result lands in the URL — no pointer involved.
+ */
+test.describe('keyboard-nav — catalog filters', () => {
+  /** Press Tab until the focused element matches `selector` (max `limit` presses). */
+  async function tabUntil(page: import('@playwright/test').Page, selector: string, limit = 60): Promise<boolean> {
+    for (let i = 0; i < limit; i++) {
+      await page.keyboard.press('Tab');
+      if (await page.evaluate((sel) => document.activeElement?.matches(sel) ?? false, selector)) return true;
+    }
+    return false;
+  }
+
+  test('/recipes/ — Tab reaches the meal-type checkboxes and Space applies the filter', async ({ page }) => {
+    await page.goto('/recipes/');
+    await expect(page.getByTestId('recipe-card').first()).toBeVisible();
+    await page.getByTestId('recipe-search').focus();
+
+    // Walk the filter panel (favourites-only, accordion triggers) down to the "Meal Type" checkboxes.
+    const checkbox = '[data-testid="filter-section-type"] [role="checkbox"]';
+    expect(await tabUntil(page, checkbox), 'Tab never reached a meal-type checkbox').toBe(true);
+    await page.keyboard.press('Space');
+    await expect(page).toHaveURL(/type=/);
+    await expect(page.getByTestId('active-filter-count')).toHaveText('1');
+    await expect(page.locator(':focus')).toHaveAttribute('aria-checked', 'true');
+
+    // The next checkbox of the group is one Tab away and toggles too.
+    await page.keyboard.press('Tab');
+    await expect(page.locator(':focus')).toHaveAttribute('role', 'checkbox');
+    await page.keyboard.press('Space');
+    await expect(page.getByTestId('active-filter-count')).toHaveText('2');
+  });
+
+  test('/ingredients/ — Tab reaches the category chips and Enter filters by category', async ({ page }) => {
+    await page.goto('/ingredients/');
+    await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
+    await page.getByTestId('ingredient-search').focus();
+
+    expect(await tabUntil(page, '[data-testid="category-filter"] button'), 'Tab never reached a category chip').toBe(true);
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(/category=/);
+    await expect(page.locator(':focus')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByTestId('ingredient-group')).toHaveCount(1);
+  });
+});
