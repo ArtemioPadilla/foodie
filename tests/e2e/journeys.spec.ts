@@ -356,11 +356,12 @@ test.describe('catalog journeys (roadmap #023)', () => {
       'nav', 'home', 'gallery', 'common', 'footer', 'app', 'tracking', 'goals', 'progress', 'errors', 'recipe',
       'planner', 'shopping', 'pantry', 'contribute', 'profile', 'auth', 'filter', 'dietary', 'cuisine', 'tags',
       'category', 'ingredients', 'ingredient', 'season', 'nutrition', 'offline', 'accessibility', 'units', 'days',
+      'sharedPlan',
     ].join('|')})\\.[a-z][A-Za-z_]+\\b`,
   );
 
   for (const prefix of ['', 'es/', 'fr/']) {
-    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/', 'tracking/', 'tracking/goals/', 'tracking/progress/', 'contribute/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/', 'tracking/', 'tracking/goals/', 'tracking/progress/', 'contribute/', 'plan/shared/']) {
       test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
         await page.goto(`./${prefix}${route}`);
         await page.waitForLoadState('networkidle');
@@ -370,6 +371,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
         if (route === 'planner/') await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
         if (route === 'shopping/') await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
         if (route === 'contribute/') await expect(page.getByTestId('contribute-wizard')).toHaveAttribute('data-status', 'ready');
+        if (route === 'plan/shared/') await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-error', 'empty');
         // Tracking pages (roadmap #034); the progress dashboard is client:visible.
         for (const [path, island] of [['tracking/', 'tracking-today'], ['tracking/goals/', 'goals-form'], ['tracking/progress/', 'progress-dashboard']]) {
           if (route !== path) continue;
@@ -1490,3 +1492,60 @@ test.describe('contribute wizard (roadmap #038, #039)', () => {
   });
 });
 
+
+// ── Share a plan by URL (roadmap Issue 040) ──────────────────────────────────
+// The plan travels in the link's fragment (`/plan/shared/#p=…`); a second
+// browser context (a friend with empty storage) opens it read-only and
+// imports it.
+test.describe('share a plan by URL (roadmap #040)', () => {
+  test('planner → share link → friend opens /es/plan/shared/ → import as my plan', async ({ page, browser, baseURL }) => {
+    await page.goto('./planner/');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('add-meal-button').click();
+    await page.getByTestId('recipe-picker').getByTestId('recipe-picker-add').click();
+    const planned = (await page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal').textContent()) ?? '';
+    expect(planned.trim()).not.toBe('');
+
+    await page.getByTestId('share-plan-button').click();
+    const dialog = page.getByTestId('share-plan-dialog');
+    const input = dialog.getByTestId('share-url-input');
+    await expect(input).toHaveValue(/\/plan\/shared\/#p=[A-Za-z0-9_-]+$/);
+    const link = await input.inputValue();
+    expect(link.length).toBeLessThan(2048);
+    await expect(dialog.getByTestId('share-whatsapp')).toHaveAttribute('href', /^https:\/\/wa\.me\/\?text=/);
+    await expect(dialog.getByTestId('share-qr')).toBeVisible();
+
+    // A friend in a fresh context, on the Spanish page.
+    const friend = await browser.newContext({ baseURL });
+    const other = await friend.newPage();
+    await other.goto(link.replace('/plan/shared/', '/es/plan/shared/'));
+    const shared = other.getByTestId('shared-plan');
+    await expect(shared).toHaveAttribute('data-status', 'ready');
+    await expect(other.locator('main[data-page="plan-shared"] h1')).toHaveText('Plan de comidas compartido');
+    await expect(other.getByTestId('shared-plan-name')).toHaveText('Mi plan de comidas');
+    await expect(other.getByTestId('shared-plan-board')).toHaveAttribute('data-catalog', 'success');
+    await expect(other.getByTestId('shared-day-monday').getByTestId('shared-meal')).toHaveAttribute('data-available', 'true');
+
+    await other.getByTestId('import-shared-plan').click();
+    await expect(other.getByTestId('shared-plan-imported')).toBeVisible();
+    const imported = await other.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null'));
+    expect(imported.days).toHaveLength(7);
+    expect(imported.days[0].meals.dinner.recipeId).toMatch(/^rec_\d+$/);
+
+    await other.getByTestId('open-planner').click();
+    await expect(other.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(other.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+    await friend.close();
+  });
+
+  test('a damaged link explains itself in every locale', async ({ page }) => {
+    for (const [prefix, title] of [['', 'This link is damaged'], ['es/', 'Este enlace está dañado'], ['fr/', 'Ce lien est endommagé']] as const) {
+      await page.goto(`./${prefix}plan/shared/#p=bm90LWEtcGxhbg`);
+      await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-status', 'error');
+      await expect(page.getByTestId('shared-plan-error')).toContainText(title);
+    }
+    await page.goto('./plan/shared/');
+    await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-error', 'empty');
+  });
+});

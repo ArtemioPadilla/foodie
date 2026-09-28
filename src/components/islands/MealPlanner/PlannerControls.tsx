@@ -17,6 +17,7 @@ import type { MealPlan } from '@/schemas';
 import { adjustGlobalServings, clearPlan, savePlan } from '@/stores/planner';
 import { MAX_SERVINGS } from './MealSlot';
 import { PlanTemplates } from './PlanTemplates';
+import { SharePlanModal } from './SharePlanModal';
 
 export interface PlannerControlsProps {
   lang: Locale;
@@ -31,7 +32,7 @@ export interface PlannerControlsProps {
  * Toolbar of the planner (port of legacy `PlannerControls` +
  * `ServingsAdjuster`): week navigation, the plan's default servings, save,
  * "Clear plan" behind an `alert-dialog` confirmation, and the `PlanTemplates`
- * manager (Issue 025). Sharing is Issue 040.
+ * manager (Issue 025), and `SharePlanModal` (share by URL, Issue 040).
  */
 export function PlannerControls({ lang, plan, weekStart, currentWeekStart, onWeekChange }: PlannerControlsProps) {
   const fmt = (key: string) => formatDate(parseDateKey(key), lang, { month: 'short', day: 'numeric' });
@@ -113,6 +114,7 @@ export function PlannerControls({ lang, plan, weekStart, currentWeekStart, onWee
 
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <PlanTemplates lang={lang} plan={plan} />
+        <SharePlanModal lang={lang} plan={plan} />
         <Button
           type="button"
           size="sm"
