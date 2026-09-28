@@ -19,7 +19,21 @@ import AxeBuilder from '@axe-core/playwright';
 // the blind spot that let a downstream instantiation ship unlabelled inputs.
 // `/recipes/rec_001/` (roadmap Issue 018): a static recipe detail — the
 // island's servings stepper, unit toggle, checkboxes and nutrition table.
-const routes = ['/', '/gallery/', '/demos/dashboard/', '/docs/', '/login/', '/contact/', '/recipes/rec_001/', '/fr/recipes/rec_001/'];
+// `/ingredients/` + `/es/ingredients/ing_101/` (roadmap Issue 019): the
+// browser's filter chips / toggle buttons and a composite ingredient detail
+// with the IngredientActions form.
+const routes = [
+  '/',
+  '/gallery/',
+  '/demos/dashboard/',
+  '/docs/',
+  '/login/',
+  '/contact/',
+  '/recipes/rec_001/',
+  '/fr/recipes/rec_001/',
+  '/ingredients/',
+  '/es/ingredients/ing_101/',
+];
 
 for (const route of routes) {
   test(`a11y — ${route}`, async ({ page }) => {

@@ -28,6 +28,7 @@ import {
 } from '@/lib/domain/recipe-browser';
 import { withBase } from '@/lib/href';
 import { useListing } from '@/lib/use-listing';
+import { useUrlState, writeUrlSearch } from '@/lib/use-url-search';
 import { cn } from '@/lib/utils';
 import { DIFFICULTIES, MEAL_TYPES, type Category, type Recipe, type RecipeBrowserState, type RecipeView, type SortOption } from '@/schemas';
 import { $favorites } from '@/stores/favorites';
@@ -65,73 +66,15 @@ export default function RecipeBrowser(props: RecipeBrowserProps) {
 
 // ── URL state ────────────────────────────────────────────────────────────────
 //
-// The query string IS the state: `useSyncExternalStore` reads
-// `location.search` (server snapshot = '' → the SSR markup shows the defaults
-// and hydration never mismatches), `writeRecipeBrowserSearch` updates it with
-// `history.replaceState` and notifies subscribers (replaceState fires no
-// event), `popstate` re-reads it. Safari caps replaceState at 100 calls / 30 s
-// and throws past it — the write then falls back to an in-memory search so
-// the UI keeps working and the URL catches up on the next successful write.
-
-const listeners = new Set<() => void>();
-let fallbackSearch: string | null = null;
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  const onPopState = () => {
-    fallbackSearch = null;
-    listener();
-  };
-  window.addEventListener('popstate', onPopState);
-  return () => {
-    listeners.delete(listener);
-    window.removeEventListener('popstate', onPopState);
-  };
-}
-
-function getSnapshot(): string {
-  return fallbackSearch ?? window.location.search;
-}
-
-function getServerSnapshot(): string {
-  return '';
-}
+// The query string IS the state (`lib/use-url-search.ts`, shared with
+// `IngredientBrowser`): the server renders the defaults, the browser reads
+// `location.search` after hydration and writes back with `replaceState`.
 
 /** Replace the current query string (`query` without `?`) and notify every browser instance. */
-export function writeRecipeBrowserSearch(query: string): void {
-  const next = query ? `?${query}` : '';
-  if (getSnapshot() === next) return;
-  try {
-    window.history.replaceState(window.history.state, '', `${window.location.pathname}${next}${window.location.hash}`);
-    fallbackSearch = null;
-  } catch {
-    fallbackSearch = next;
-  }
-  for (const listener of listeners) listener();
-}
-
-type StateUpdater = RecipeBrowserState | ((prev: RecipeBrowserState) => RecipeBrowserState);
+export const writeRecipeBrowserSearch = writeUrlSearch;
 
 export function useRecipeBrowserUrlState(initialState?: RecipeBrowserState) {
-  const search = React.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const state = React.useMemo(() => parseRecipeBrowserState(search), [search]);
-
-  // Embedding/test hook: seed the URL once from the given state.
-  React.useEffect(() => {
-    if (initialState) writeRecipeBrowserSearch(serializeRecipeBrowserState(initialState));
-  }, [initialState]);
-
-  const setState = React.useCallback((next: StateUpdater) => {
-    const resolved = typeof next === 'function' ? next(parseRecipeBrowserState(getSnapshot())) : next;
-    writeRecipeBrowserSearch(serializeRecipeBrowserState(resolved));
-  }, []);
-
-  const update = React.useCallback(
-    (patch: Partial<RecipeBrowserState>) => setState((prev) => ({ ...prev, ...patch })),
-    [setState],
-  );
-
-  return { state, setState, update };
+  return useUrlState<RecipeBrowserState>(parseRecipeBrowserState, serializeRecipeBrowserState, initialState);
 }
 
 // ── Option helpers ───────────────────────────────────────────────────────────

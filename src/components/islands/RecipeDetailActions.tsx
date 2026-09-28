@@ -25,7 +25,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Toaster, toast } from '@/components/ui/toast';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { getTranslated, t, type Locale } from '@/i18n';
+import { getTranslated, localizedRoute, t, type Locale } from '@/i18n';
 import {
   defaultPlanSlot,
   scaledIngredientLines,
@@ -34,7 +34,8 @@ import {
 } from '@/lib/domain/recipe-detail';
 import type { ResolvedUnitSystem } from '@/lib/domain/units';
 import { useUnitConversion } from '@/lib/domain/use-unit-conversion';
-import { useClientPreference } from '@/lib/use-client-preference';
+import { withBase } from '@/lib/href';
+import { useHydrated } from '@/lib/use-hydrated';
 import { cn } from '@/lib/utils';
 import type { Recipe } from '@/schemas';
 import { $favorites, toggleFavorite } from '@/stores/favorites';
@@ -72,13 +73,6 @@ export interface RecipeDetailActionsProps {
 }
 
 const PLAN_SLOTS: ReadonlyArray<PlanSlot> = ['breakfast', 'lunch', 'dinner', 'snacks'];
-
-const subscribeNever = () => () => {};
-
-/** `true` once running in the browser after hydration (server + first client render: `false`). */
-function useHydrated(): boolean {
-  return useClientPreference(() => true, false, subscribeNever);
-}
 
 export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: RecipeDetailActionsProps) {
   const hydrated = useHydrated();
@@ -229,7 +223,18 @@ export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: Re
                           {line.amount}{' '}
                         </span>
                       )}
-                      <span className="text-foreground">{line.name}</span>
+                      {ingredientMeta[line.ingredientId]?.category ? (
+                        // Catalog ingredient → its static page (roadmap #019); unknown ids stay plain text.
+                        <a
+                          href={withBase(localizedRoute(`/ingredients/${line.ingredientId}/`, lang))}
+                          className="text-foreground underline decoration-primary/40 underline-offset-2 hover:text-primary hover:decoration-primary"
+                          data-testid="ingredient-link"
+                        >
+                          {line.name}
+                        </a>
+                      ) : (
+                        <span className="text-foreground">{line.name}</span>
+                      )}
                       {line.preparation && <span className="text-muted-foreground">{` (${line.preparation})`}</span>}
                       {line.optional && (
                         <span className="text-xs text-muted-foreground">{` · ${t(lang, 'common.optional')}`}</span>

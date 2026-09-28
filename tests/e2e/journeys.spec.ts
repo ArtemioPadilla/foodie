@@ -114,6 +114,63 @@ test('recipe detail pages exist in every locale with localised copy', async ({ p
   await expect(page.getByRole('heading', { name: 'Instructions' })).toBeVisible();
 });
 
+test('the ingredient browser filters in the URL and opens the static detail, which stocks pantry and shopping (roadmap #019)', async ({ page }) => {
+  await page.goto('./ingredients/');
+  await expect(page.locator('main[data-page="ingredients"] h1')).toBeVisible();
+  const cards = page.getByTestId('ingredient-card');
+  await expect(cards.first()).toBeVisible();
+  const total = await cards.count();
+  expect(total).toBe(105);
+
+  // Category chip narrows to one group and lands in `?category=`.
+  await page.getByTestId('category-filter').getByRole('button', { name: /Spices/ }).click();
+  await expect(page).toHaveURL(/category=spices/);
+  await expect(page.getByTestId('ingredient-group')).toHaveCount(1);
+  expect(await cards.count()).toBeLessThan(total);
+
+  // Search + open the static page.
+  await page.getByTestId('ingredient-search').fill('garlic');
+  await expect(page).toHaveURL(/q=garlic/);
+  await expect(cards).toHaveCount(1);
+  await cards.first().getByRole('link', { name: 'Garlic' }).click();
+  await page.waitForURL(/\/ingredients\/ing_006\/$/);
+
+  const main = page.locator('main[data-page="ingredient-detail"]');
+  await expect(main.locator('h1')).toHaveText('Garlic');
+  await expect(page.locator('link[rel="alternate"][hreflang="fr"]')).toHaveAttribute('href', /\/fr\/ingredients\/ing_006\/$/);
+  // "Recipes with this ingredient" is static and links to recipe pages.
+  const recipeLinks = page.getByTestId('ingredient-recipes').getByRole('link');
+  expect(await recipeLinks.count()).toBeGreaterThan(0);
+  await expect(recipeLinks.first()).toHaveAttribute('href', /\/recipes\/rec_\d+\/$/);
+
+  // The IngredientActions island writes the legacy pantry / shopping keys.
+  const actions = page.getByTestId('ingredient-actions');
+  await actions.scrollIntoViewIfNeeded();
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
+  await page.getByTestId('ingredient-quantity').fill('2');
+  await page.getByTestId('add-to-pantry-button').click();
+  await expect(page.getByTestId('ingredient-in-pantry')).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]')[0]?.ingredientId)).toBe('ing_006');
+  await page.getByTestId('add-ingredient-to-shopping-button').click();
+  await expect(page.getByTestId('ingredient-on-list')).toBeVisible();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]')[0]?.quantity)).toBe(2);
+});
+
+test('recipe ingredients link to their ingredient page, which lists the recipe back (roadmap #019)', async ({ page }) => {
+  await page.goto('./es/recipes/rec_001/');
+  const actions = page.getByTestId('recipe-detail-actions');
+  await actions.scrollIntoViewIfNeeded();
+  const link = page.getByTestId('ingredient-link').first();
+  await expect(link).toHaveAttribute('href', /\/es\/ingredients\/ing_\d+\/$/);
+  await link.click();
+  await page.waitForURL(/\/es\/ingredients\/ing_\d+\/$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.getByTestId('ingredient-recipes').locator('a[data-recipe-id="rec_001"]')).toHaveAttribute(
+    'href',
+    /\/es\/recipes\/rec_001\/$/,
+  );
+});
+
 test('the language switcher keeps the current route (EN → ES → FR)', async ({ page }) => {
   await page.goto('./recipes/');
 

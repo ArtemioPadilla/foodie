@@ -130,3 +130,13 @@ describe('RecipeDetailActions', () => {
     expect(screen.getByText('1 / 2 steps completed')).toBeInTheDocument();
   });
 });
+
+describe('RecipeDetailActions — ingredient links (roadmap #019)', () => {
+  it('links catalog ingredients to their localised static page; unknown ids stay plain text', () => {
+    renderIsland('fr');
+    const links = screen.getAllByTestId('ingredient-link');
+    expect(links.map((a) => a.textContent)).toEqual(['Egg', 'Cheese']);
+    expect(links[0]?.getAttribute('href')).toMatch(/\/fr\/ingredients\/ing_001\/$/);
+    expect(within(screen.getByTestId('ingredients-list')).getByText('Salt').tagName).toBe('SPAN');
+  });
+});

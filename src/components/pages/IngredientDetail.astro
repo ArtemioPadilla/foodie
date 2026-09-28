@@ -1,0 +1,270 @@
+---
+/**
+ * IngredientDetail — the `/ingredients/[id]/` page body (roadmap Issue 019,
+ * port of legacy `IngredientDetailPage` + `IngredientDetail`).
+ *
+ * Rendered by the thin wrappers `pages/ingredients/[id].astro`,
+ * `pages/es/ingredients/[id].astro` and `pages/fr/ingredients/[id].astro`,
+ * which own `getStaticPaths()` (one page per catalog ingredient) and the
+ * `<BaseLayout>` metadata.
+ *
+ * Static HTML: header, dietary tags, composition (composite ingredients),
+ * preparation, storage, seasonality, alternatives, quick info and "Recipes
+ * with this ingredient" (computed at build). The only island is
+ * `IngredientActions` (`client:visible`): add to pantry / shopping list.
+ */
+import { ArrowLeftIcon, CalendarIcon, ChefHatIcon, ClockIcon, InfoIcon, LayersIcon, LeafIcon, MapPinIcon, ScaleIcon } from 'lucide-react';
+import IngredientActions from '@/components/islands/IngredientActions';
+import { CategoryDot, IngredientTagBadges, categoryClasses } from '@/components/domain/IngredientCard';
+import { DifficultyBadge } from '@/components/domain/RecipeCard';
+import { getTranslated, localizedRoute, t, type Locale } from '@/i18n';
+import { withBase } from '@/lib/href';
+import { activeIngredientTags } from '@/lib/domain/ingredient-browser';
+import { formatUnitPrice, type IngredientDetailProps } from '@/lib/domain/ingredient-detail';
+import { unitLabel } from '@/lib/domain/recipe-detail';
+import { formatQuantity } from '@/lib/domain/units';
+import { cn } from '@/lib/utils';
+
+interface Props extends IngredientDetailProps {
+  lang: Locale;
+}
+
+const { lang, ingredient, categoryName, components, alternatives, recipes } = Astro.props;
+const name = getTranslated(ingredient.name, lang);
+const description = ingredient.description ? getTranslated(ingredient.description, lang) : '';
+const storage = getTranslated(ingredient.storageInstructions, lang);
+const preparation = ingredient.preparationNotes ? getTranslated(ingredient.preparationNotes, lang) : '';
+const tags = activeIngredientTags(ingredient.tags, { collapseVegetarian: false });
+const ingredientHref = (id: string) => withBase(localizedRoute(`/ingredients/${id}/`, lang));
+const backHref = withBase(localizedRoute('/ingredients/', lang));
+const seasonLabel = (season: string) => {
+  const key = `season.${season}`;
+  const label = t(lang, key);
+  return label === key ? season : label;
+};
+const hasUnresolvedAlternatives = alternatives.some((alt) => !alt.id);
+const cardClass = 'rounded-lg border border-border bg-card p-4 sm:p-6';
+const headingClass = 'flex items-center gap-2 font-display text-xl font-semibold text-foreground';
+---
+
+<main
+  id="main-content"
+  class="mx-auto max-w-7xl px-4 py-10 sm:py-14"
+  data-page="ingredient-detail"
+  data-ingredient-id={ingredient.id}
+>
+  <nav aria-label={t(lang, 'nav.ingredients')} class="mb-6">
+    <a
+      href={backHref}
+      class="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      data-testid="back-to-ingredients"
+    >
+      <ArrowLeftIcon className="size-4" aria-hidden="true" />
+      {t(lang, 'ingredient.backToIngredients')}
+    </a>
+  </nav>
+
+  <header class={cn('rounded-xl border border-l-8 border-border bg-card p-6 sm:p-8', categoryClasses(ingredient.category).stripe)}>
+    <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">{t(lang, 'ingredient.detailEyebrow')}</p>
+    <div class="mt-3 flex flex-wrap items-center gap-3">
+      <h1
+        class="font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
+        style={`view-transition-name: ingredient-${ingredient.id}`}
+      >
+        {name}
+      </h1>
+      {ingredient.isComposite && (
+        <span class="inline-flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-sm font-medium text-foreground" data-testid="ingredient-composite">
+          <LayersIcon className="size-4" aria-hidden="true" />
+          {t(lang, 'ingredient.composite')}
+        </span>
+      )}
+    </div>
+    {description && <p class="mt-4 max-w-3xl text-lg text-muted-foreground">{description}</p>}
+    <ul class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground" data-testid="ingredient-meta">
+      <li><CategoryDot category={ingredient.category} label={categoryName} /></li>
+      <li class="inline-flex items-center gap-1.5"><MapPinIcon className="size-4" aria-hidden="true" />{ingredient.region}</li>
+      <li class="tabular-nums">
+        <span class="sr-only">{t(lang, 'ingredient.avgPrice')}: </span>{formatUnitPrice(ingredient, lang)}
+      </li>
+    </ul>
+    {tags.length > 0 && (
+      <div class="mt-5 border-t border-border pt-4">
+        <h2 class="sr-only">{t(lang, 'ingredient.dietary')}</h2>
+        <IngredientTagBadges tags={tags} lang={lang} max={tags.length} />
+      </div>
+    )}
+  </header>
+
+  <div class="mt-8 grid gap-6 lg:grid-cols-3">
+    <div class="space-y-6 lg:col-span-2">
+      {components.length > 0 && (
+        <section aria-labelledby="ingredient-components-heading" class={cardClass} data-testid="ingredient-components">
+          <h2 id="ingredient-components-heading" class={headingClass}>
+            <LayersIcon className="size-5 text-primary" aria-hidden="true" />
+            {t(lang, 'ingredient.components')}
+          </h2>
+          <p class="mt-2 text-muted-foreground">{t(lang, 'ingredient.compositeDescription')}</p>
+          <ul class="mt-4 space-y-2">
+            {components.map((component) => (
+              <li class="rounded-md bg-muted/60 p-3">
+                <span class="font-medium tabular-nums text-foreground">{component.amount}</span>{' '}
+                {component.known ? (
+                  <a href={ingredientHref(component.ingredientId)} class="font-medium text-primary hover:underline">{component.name}</a>
+                ) : (
+                  <span class="text-foreground">{component.name}</span>
+                )}
+                {component.notes && <p class="mt-1 text-sm text-muted-foreground">{component.notes}</p>}
+              </li>
+            ))}
+          </ul>
+          {ingredient.yield && (
+            <p class="mt-4 flex items-center gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
+              <ScaleIcon className="size-4" aria-hidden="true" />
+              <span class="font-medium text-foreground">{t(lang, 'ingredient.yield')}:</span>
+              {formatQuantity(ingredient.yield.quantity)} {unitLabel(lang, ingredient.yield.unit)}
+            </p>
+          )}
+        </section>
+      )}
+
+      {preparation && (
+        <section aria-labelledby="ingredient-preparation-heading" class={cardClass}>
+          <h2 id="ingredient-preparation-heading" class={headingClass}>
+            <ChefHatIcon className="size-5 text-primary" aria-hidden="true" />
+            {t(lang, 'ingredient.preparation')}
+          </h2>
+          <p class="mt-3 whitespace-pre-wrap text-foreground">{preparation}</p>
+        </section>
+      )}
+
+      <section aria-labelledby="ingredient-storage-heading" class={cardClass} data-testid="ingredient-storage">
+        <h2 id="ingredient-storage-heading" class={headingClass}>
+          <InfoIcon className="size-5 text-primary" aria-hidden="true" />
+          {t(lang, 'ingredient.storage')}
+        </h2>
+        <p class="mt-3 text-foreground">{storage}</p>
+      </section>
+
+      {(ingredient.seasonality.length > 0 || alternatives.length > 0) && (
+        <div class="grid gap-6 md:grid-cols-2">
+          {ingredient.seasonality.length > 0 && (
+            <section aria-labelledby="ingredient-seasonality-heading" class={cardClass} data-testid="ingredient-seasonality">
+              <h2 id="ingredient-seasonality-heading" class={headingClass}>
+                <CalendarIcon className="size-5 text-primary" aria-hidden="true" />
+                {t(lang, 'ingredient.seasonality')}
+              </h2>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {ingredient.seasonality.map((season) => (
+                  <li class="rounded-full bg-muted px-3 py-1 text-sm text-foreground">{seasonLabel(season)}</li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {alternatives.length > 0 && (
+            <section aria-labelledby="ingredient-alternatives-heading" class={cardClass} data-testid="ingredient-alternatives">
+              <h2 id="ingredient-alternatives-heading" class={headingClass}>
+                <LeafIcon className="size-5 text-primary" aria-hidden="true" />
+                {t(lang, 'ingredient.alternatives')}
+              </h2>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {alternatives.map((alt) => (
+                  <li>
+                    {alt.id ? (
+                      <a href={ingredientHref(alt.id)} class="inline-block rounded-full border border-primary/40 px-3 py-1 text-sm font-medium text-primary hover:bg-primary/10">
+                        {alt.label}
+                      </a>
+                    ) : (
+                      <span class="inline-block rounded-full bg-muted px-3 py-1 text-sm text-foreground" lang="en">{alt.label}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              {hasUnresolvedAlternatives && lang !== 'en' && (
+                <p class="mt-3 text-xs text-muted-foreground">{t(lang, 'ingredient.alternativesHint')}</p>
+              )}
+            </section>
+          )}
+        </div>
+      )}
+    </div>
+
+    <!-- flex + gap, not space-y: the island's <astro-island> wrapper is display: contents, so margins on it are ignored. -->
+    <div class="flex flex-col gap-6">
+      <IngredientActions
+        client:visible
+        ingredientId={ingredient.id}
+        name={name}
+        unit={ingredient.unit}
+        category={ingredient.category}
+        lang={lang}
+      />
+
+      <section aria-labelledby="ingredient-recipes-heading" class={cardClass} data-testid="ingredient-recipes">
+        <h2 id="ingredient-recipes-heading" class={headingClass}>
+          <ChefHatIcon className="size-5 text-primary" aria-hidden="true" />
+          {t(lang, 'ingredient.usedInRecipes')}
+        </h2>
+        {recipes.length > 0 ? (
+          <>
+            <p class="mt-1 text-sm text-muted-foreground">{t(lang, 'ingredient.usedInCount', { count: recipes.length })}</p>
+            <ul class="mt-4 space-y-2">
+              {recipes.map((recipe) => (
+                <li>
+                  <a
+                    href={withBase(localizedRoute(`/recipes/${recipe.id}/`, lang))}
+                    class="block rounded-md bg-muted/60 p-3 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    data-recipe-id={recipe.id}
+                  >
+                    <span class="block font-medium text-foreground">{getTranslated(recipe.name, lang)}</span>
+                    <span class="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+                      <span class="inline-flex items-center gap-1">
+                        <ClockIcon className="size-3.5" aria-hidden="true" />
+                        {recipe.totalTime} {t(lang, 'common.minutesAbbr')}
+                      </span>
+                      <DifficultyBadge difficulty={recipe.difficulty} lang={lang} />
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p class="mt-3 text-sm text-muted-foreground">{t(lang, 'ingredient.noRecipesUsing')}</p>
+        )}
+      </section>
+
+      <section aria-labelledby="ingredient-quickinfo-heading" class={cardClass}>
+        <h2 id="ingredient-quickinfo-heading" class="font-display text-lg font-semibold text-foreground">
+          {t(lang, 'ingredient.quickInfo')}
+        </h2>
+        <dl class="mt-3 space-y-2 text-sm">
+          <div class="flex justify-between gap-4">
+            <dt class="text-muted-foreground">{t(lang, 'ingredient.region')}</dt>
+            <dd class="font-medium text-foreground">{ingredient.region}</dd>
+          </div>
+          <div class="flex justify-between gap-4">
+            <dt class="text-muted-foreground">{t(lang, 'ingredient.avgPrice')}</dt>
+            <dd class="font-medium tabular-nums text-foreground">{formatUnitPrice(ingredient, lang)}</dd>
+          </div>
+          <div class="flex justify-between gap-4">
+            <dt class="text-muted-foreground">{t(lang, 'ingredient.unit')}</dt>
+            <dd class="font-medium text-foreground">{unitLabel(lang, ingredient.unit)}</dd>
+          </div>
+          {ingredient.yield && (
+            <div class="flex justify-between gap-4">
+              <dt class="text-muted-foreground">{t(lang, 'ingredient.yield')}</dt>
+              <dd class="font-medium text-foreground">{formatQuantity(ingredient.yield.quantity)} {unitLabel(lang, ingredient.yield.unit)}</dd>
+            </div>
+          )}
+          {components.length > 0 && (
+            <div class="flex justify-between gap-4">
+              <dt class="text-muted-foreground">{t(lang, 'ingredient.components')}</dt>
+              <dd class="font-medium tabular-nums text-foreground">{components.length}</dd>
+            </div>
+          )}
+        </dl>
+      </section>
+    </div>
+  </div>
+</main>

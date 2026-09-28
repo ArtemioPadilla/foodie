@@ -13,7 +13,7 @@
 
 import { test, expect } from '../fixtures/console-guard';
 
-const ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/gallery/', '/demos/dashboard/', '/docs/'] as const;
+const ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/ingredients/', '/ingredients/ing_101/', '/gallery/', '/demos/dashboard/', '/docs/'] as const;
 
 for (const route of ROUTES) {
   test(`smoke — ${route} — no console errors`, async ({ page }) => {

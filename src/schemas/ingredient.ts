@@ -59,3 +59,32 @@ export type Ingredient = z.infer<typeof IngredientSchema>;
 
 /** The whole `ingredients.json` file. */
 export const IngredientsFileSchema = z.object({ ingredients: z.array(IngredientSchema) });
+
+/** The `IngredientTags` flags, in display order (most common first). */
+export const INGREDIENT_TAG_KEYS = [
+  'vegan',
+  'vegetarian',
+  'glutenFree',
+  'dairyFree',
+  'nutFree',
+  'kosher',
+  'halal',
+] as const satisfies ReadonlyArray<keyof IngredientTags>;
+export const IngredientTagKeySchema = z.enum(INGREDIENT_TAG_KEYS);
+export type IngredientTagKey = z.infer<typeof IngredientTagKeySchema>;
+
+/**
+ * `/ingredients/` browser state (roadmap Issue 019), mirrored in the query
+ * string (`?q=…&category=…&diet=…&have=…`) — the URL is untrusted input, so
+ * it is parsed into this shape before use.
+ */
+export const IngredientBrowserStateSchema = z.object({
+  search: z.string(),
+  /** `categories.ingredientCategories[].id` — OR between them. */
+  categories: z.array(z.string()),
+  /** `IngredientTags` flags that must all be true — AND between them. */
+  tags: z.array(IngredientTagKeySchema),
+  /** Ingredient ids the user has at hand ("what can I make?" selection). */
+  selected: z.array(z.string()),
+});
+export type IngredientBrowserState = z.infer<typeof IngredientBrowserStateSchema>;

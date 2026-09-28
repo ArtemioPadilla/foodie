@@ -20,3 +20,19 @@ export type PantryItem = z.infer<typeof PantryItemSchema>;
 
 export const PantryItemsSchema = z.array(PantryItemSchema);
 export type PantryItems = z.infer<typeof PantryItemsSchema>;
+
+/** Legacy `AddItemModal` locations (stored verbatim, capitalised, in `PantryItem.location`). */
+export const PANTRY_LOCATIONS = ['Pantry', 'Fridge', 'Freezer', 'Cabinet', 'Counter'] as const;
+export const PantryLocationSchema = z.enum(PANTRY_LOCATIONS);
+export type PantryLocation = z.infer<typeof PantryLocationSchema>;
+
+/**
+ * The quick-add form of `/ingredients/[id]/` (`IngredientActions`, roadmap
+ * Issue 019): a positive quantity in the ingredient's catalog unit, plus the
+ * pantry location.
+ */
+export const IngredientQuickAddSchema = z.object({
+  quantity: z.number().positive().finite(),
+  location: PantryLocationSchema,
+});
+export type IngredientQuickAdd = z.infer<typeof IngredientQuickAddSchema>;
