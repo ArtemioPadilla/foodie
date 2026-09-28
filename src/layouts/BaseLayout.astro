@@ -54,8 +54,15 @@ const ogImageUrl = ogImage ?? new URL(withBase('/og-image.png'), Astro.site ?? S
 // Canonical URL — derived from Astro.site + Astro.url.pathname so it always
 // reflects the live origin and the current subpath (e.g. /foodie/recipes/).
 // Falls back gracefully when Astro.site is not set (local dev without --site).
+// Directory-style paths always end in '/': under a base, Astro reports the
+// site root as `/foodie` (no slash), which GitHub Pages 301s to `/foodie/` —
+// a canonical must never point at a redirect (roadmap Issue 022).
+const canonicalPath =
+  Astro.url.pathname.endsWith('/') || /\.[a-z0-9]+$/i.test(Astro.url.pathname)
+    ? Astro.url.pathname
+    : `${Astro.url.pathname}/`;
 const canonicalUrl = Astro.site
-  ? new URL(Astro.url.pathname, Astro.site).toString()
+  ? new URL(canonicalPath, Astro.site).toString()
   : null;
 
 // First-visit locale redirect (roadmap Issue 004): only the English site root

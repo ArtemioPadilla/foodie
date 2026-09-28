@@ -289,6 +289,8 @@ export const en = {
     errorLoadingContent: 'We encountered an error while loading this content. Please try again.',
   },
   recipe: {
+    /** Page <title> body of /recipes/[id]/ (site name appended by the page). */
+    metaTitle: '{{name}} — Recipe',
     title: 'Recipes',
     addNew: 'Add New Recipe',
     viewDetails: 'View Details',
@@ -859,6 +861,8 @@ export const en = {
     quickInfo: 'Quick Info',
     region: 'Region',
     detailEyebrow: 'Ingredient',
+    /** Page <title> body of /ingredients/[id]/ (site name appended by the page). */
+    metaTitle: '{{name}} — Ingredient',
     metaDescription: '{{name}} ({{category}}): storage, seasonality, alternatives and the recipes that use it.',
     dietary: 'Dietary information',
     usedInCount: 'Used in {{count}} recipe',

@@ -7,6 +7,8 @@
         "http://localhost/es/index.html",
         "http://localhost/fr/index.html",
         "http://localhost/recipes/index.html",
+        "http://localhost/recipes/rec_001/index.html",
+        "http://localhost/ingredients/index.html",
         "http://localhost/docs/index.html"
       ],
       "numberOfRuns": 1,

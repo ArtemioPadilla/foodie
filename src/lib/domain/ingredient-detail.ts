@@ -110,6 +110,13 @@ export type IngredientDetailProps = {
   alternatives: ResolvedAlternative[];
   /** "Recipes with this ingredient", computed at build. */
   recipes: Recipe[];
+  /**
+   * Set when an earlier catalog ingredient has the same localised name (the
+   * catalog carries a few legacy duplicates, e.g. ing_024 / ing_095 "Chia
+   * Seeds"): the page title appends it so every `<title>` stays unique
+   * (roadmap Issue 022).
+   */
+  titleQualifier?: string;
 };
 
 export type IngredientDetailPath = {
@@ -121,16 +128,23 @@ export type IngredientDetailPath = {
 export function buildIngredientDetailPaths(catalog: IngredientDetailCatalog, lang: Locale): IngredientDetailPath[] {
   const byId = new Map(catalog.ingredients.map((ingredient) => [ingredient.id, ingredient]));
   const byEnglishName = new Map(catalog.ingredients.map((ingredient) => [ingredient.name.en.toLowerCase(), ingredient]));
-  return catalog.ingredients.map((ingredient) => ({
-    params: { id: ingredient.id },
-    props: {
-      ingredient,
-      categoryName: categoryLabel(ingredient.category, catalog.ingredientCategories, lang),
-      components: resolveComponents(ingredient, byId, lang),
-      alternatives: resolveAlternatives(ingredient, byId, byEnglishName, lang),
-      recipes: recipesUsingIngredient(ingredient.id, catalog.recipes),
-    },
-  }));
+  const seenNames = new Set<string>();
+  return catalog.ingredients.map((ingredient) => {
+    const localName = getTranslated(ingredient.name, lang).toLowerCase();
+    const titleQualifier = seenNames.has(localName) ? ingredient.id : undefined;
+    seenNames.add(localName);
+    return {
+      params: { id: ingredient.id },
+      props: {
+        ingredient,
+        categoryName: categoryLabel(ingredient.category, catalog.ingredientCategories, lang),
+        components: resolveComponents(ingredient, byId, lang),
+        alternatives: resolveAlternatives(ingredient, byId, byEnglishName, lang),
+        recipes: recipesUsingIngredient(ingredient.id, catalog.recipes),
+        ...(titleQualifier ? { titleQualifier } : {}),
+      },
+    };
+  });
 }
 
 // ── Page metadata ────────────────────────────────────────────────────────────
@@ -151,14 +165,15 @@ export interface IngredientDetailMeta {
 
 /** Localised title/description + hreflang alternates of one ingredient page. */
 export function ingredientDetailMeta(props: IngredientDetailProps, options: IngredientDetailMetaOptions): IngredientDetailMeta {
-  const { ingredient, categoryName, recipes } = props;
+  const { ingredient, categoryName, recipes, titleQualifier } = props;
   const { lang, origin, base, siteName } = options;
   const name = getTranslated(ingredient.name, lang);
+  const titleName = titleQualifier ? `${name} (${titleQualifier})` : name;
   const pathname = `/ingredients/${ingredient.id}/`;
   const alternates = hreflangAlternates(pathname, origin, base);
   const url = alternates.find((alt) => alt.hreflang === lang)?.href ?? localizedRoute(pathname, lang);
   const description = ingredient.description
     ? getTranslated(ingredient.description, lang)
     : t(lang, 'ingredient.metaDescription', { name, category: categoryName, count: recipes.length });
-  return { title: `${name} — ${siteName}`, description, url, alternates };
+  return { title: `${t(lang, 'ingredient.metaTitle', { name: titleName })} — ${siteName}`, description, url, alternates };
 }

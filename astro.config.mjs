@@ -52,6 +52,13 @@ export default defineConfig({
       // Don't bloat the sitemap with test artifacts or generated content
       filter: (page) =>
         !page.includes('/_') && !page.includes('/404') && !page.endsWith('.json'),
+      // Trilingual alternates (roadmap Issue 022): every URL that exists
+      // under /, /es/ and /fr/ gets `<xhtml:link rel="alternate"
+      // hreflang="…">` siblings. Keep in sync with `i18n.locales` above.
+      i18n: {
+        defaultLocale: 'en',
+        locales: { en: 'en', es: 'es', fr: 'fr' },
+      },
     }),
     react(),
     AstroPWA({

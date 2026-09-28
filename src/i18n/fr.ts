@@ -285,6 +285,8 @@ export const fr: typeof en = {
     errorLoadingContent: 'Nous avons rencontré une erreur lors du chargement de ce contenu. Veuillez réessayer.',
   },
   recipe: {
+    /** Page <title> body of /recipes/[id]/ (site name appended by the page). */
+    metaTitle: '{{name}} — Recette',
     title: 'Recettes',
     addNew: 'Ajouter Nouvelle Recette',
     viewDetails: 'Voir les Détails',
@@ -855,6 +857,8 @@ export const fr: typeof en = {
     quickInfo: 'Info Rapide',
     region: 'Région',
     detailEyebrow: 'Ingrédient',
+    /** Page <title> body of /ingredients/[id]/ (site name appended by the page). */
+    metaTitle: '{{name}} — Ingrédient',
     metaDescription: '{{name}} ({{category}}) : conservation, saisonnalité, alternatives et les recettes qui l\'utilisent.',
     dietary: 'Informations alimentaires',
     usedInCount: 'Utilisé dans {{count}} recette',

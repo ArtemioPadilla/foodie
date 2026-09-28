@@ -171,7 +171,7 @@ describe('recipeDetailMeta', () => {
       { recipe, related: [], ingredientMeta: buildIngredientMeta(recipe, [], 'fr'), cuisineNames: [], mealTypeName: '' },
       { lang: 'fr', origin: 'https://example.test', base: '/foodie/', siteName: 'Foodie', fallbackImage: 'https://example.test/foodie/og-image.png' },
     );
-    expect(meta.title).toBe('Œufs Brouillés — Foodie');
+    expect(meta.title).toBe('Œufs Brouillés — Recette — Foodie');
     expect(meta.description).toBe('Œufs moelleux');
     expect(meta.url).toBe('https://example.test/foodie/fr/recipes/rec_001/');
     expect(meta.alternates.map((a) => a.hreflang)).toEqual(['en', 'es', 'fr', 'x-default']);

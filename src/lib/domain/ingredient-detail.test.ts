@@ -47,6 +47,17 @@ describe('getStaticPaths (buildIngredientDetailPaths) on the real catalog', () =
     expect(new Set(ids).size).toBe(105);
   });
 
+  it('qualifies the titles of legacy duplicate names so every <title> is unique (roadmap #022)', () => {
+    for (const lang of LOCALES) {
+      const paths = buildIngredientDetailPaths(catalog, lang);
+      const titles = paths.map((p) => ingredientDetailMeta(p.props, { lang, origin: 'https://example.org', base: '/', siteName: 'Foodie' }).title);
+      expect(new Set(titles).size, `duplicate ingredient titles in ${lang}`).toBe(titles.length);
+    }
+    const en = buildIngredientDetailPaths(catalog, 'en');
+    expect(en.find((p) => p.params.id === 'ing_024')?.props.titleQualifier).toBeUndefined();
+    expect(en.find((p) => p.params.id === 'ing_095')?.props.titleQualifier).toBe('ing_095');
+  });
+
   it('computes "recipes with this ingredient" from every recipe line', () => {
     const paths = buildIngredientDetailPaths(catalog, 'en');
     for (const path of paths) {
@@ -147,7 +158,7 @@ describe('formatting and metadata', () => {
       { ingredient, categoryName: 'Proteínas', components: [], alternatives: [], recipes: [makeRecipe()] },
       { lang: 'es', origin: 'https://example.org', base: '/foodie/', siteName: 'Foodie' },
     );
-    expect(meta.title).toBe('Pechuga de Pollo — Foodie');
+    expect(meta.title).toBe('Pechuga de Pollo — Ingrediente — Foodie');
     expect(meta.description).toContain('Pechuga de Pollo (Proteínas)');
     expect(meta.url).toBe('https://example.org/foodie/es/ingredients/ing_001/');
     expect(meta.alternates.map((a) => a.hreflang)).toEqual(['en', 'es', 'fr', 'x-default']);

@@ -332,7 +332,7 @@ export function recipeDetailMeta(props: RecipeDetailProps, options: RecipeDetail
   const url = alternates.find((alt) => alt.hreflang === lang)?.href ?? localizedRoute(pathname, lang);
   const ogImage = absoluteRecipeImage(recipe, origin, base);
   return {
-    title: `${getTranslated(recipe.name, lang)} — ${siteName}`,
+    title: `${t(lang, 'recipe.metaTitle', { name: getTranslated(recipe.name, lang) })} — ${siteName}`,
     description: getTranslated(recipe.description, lang),
     url,
     alternates,
