@@ -13,7 +13,7 @@ Canonical plan for v2:
 
 Nothing yet. The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
 
-## [2.0.0] - unreleased
+## [2.0.0] - 2026-09-28
 
 The date is set when the maintainer tags the release
 ([`docs/runbooks/github-actions-pending.md`](docs/runbooks/github-actions-pending.md)).
