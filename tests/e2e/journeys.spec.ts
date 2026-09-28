@@ -479,3 +479,68 @@ test.describe('planner journeys (roadmap #024)', () => {
     expect(await page.evaluate(() => localStorage.getItem('currentMealPlan'))).toBe('null');
   });
 });
+
+// ── Planner picker, templates and summary (roadmap Issue 025) ────────────────
+test.describe('planner picker, templates and summary (roadmap #025)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./planner/');
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+  });
+
+  test('the picker is keyboard operable and the summary counts the new meal', async ({ page }) => {
+    await expect(page.getByTestId('summary-recipes')).toContainText('0');
+    await page.getByTestId('meal-slot-tuesday-lunch').getByTestId('add-meal-button').click();
+    const picker = page.getByTestId('recipe-picker');
+    await expect(picker).toBeVisible();
+
+    await picker.getByRole('button', { name: /^Fits Lunch$/ }).click();
+    const search = picker.getByTestId('recipe-picker-search');
+    await search.focus();
+    await page.keyboard.press('ArrowDown');
+    const previewed = (await picker.getByTestId('recipe-picker-preview-name').textContent())?.trim() ?? '';
+    expect(previewed).not.toBe('');
+    await expect(picker.getByRole('option', { selected: true })).toContainText(previewed);
+    await page.keyboard.press('Enter');
+
+    await expect(picker).toHaveCount(0);
+    await expect(page.getByTestId('meal-slot-tuesday-lunch').getByTestId('planned-meal')).toContainText(previewed);
+    await expect(page.getByTestId('summary-recipes')).toContainText('1');
+    await expect(page.getByTestId('summary-days')).toContainText('1 / 7');
+  });
+
+  test('saves the plan as a template, loads it back and deletes it after confirming', async ({ page }) => {
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('add-meal-button').click();
+    await page.getByTestId('recipe-picker').getByTestId('recipe-picker-add').click();
+    await expect(page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.getByTestId('plan-templates-button').click();
+    const manager = page.getByTestId('plan-templates');
+    await expect(manager.getByTestId('templates-empty')).toBeVisible();
+    await manager.getByPlaceholder('e.g. Busy weeknights').fill('E2E week');
+    await manager.getByTestId('save-template').click();
+    await expect(manager.getByTestId('template-item')).toContainText('E2E week');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('savedMealPlans') ?? '[]').length)).toBe(1);
+    await page.keyboard.press('Escape');
+    await expect(manager).toHaveCount(0);
+
+    // Empty the Monday dinner, then bring it back from the template (no confirmation: the plan has no meals left).
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('remove-meal').click();
+    await expect(page.getByTestId('planned-meal')).toHaveCount(0);
+    await page.getByTestId('plan-templates-button').click();
+    await manager.getByRole('button', { name: 'Load E2E week' }).click();
+    await expect(manager).toHaveCount(0);
+    await expect(page.getByTestId('plan-name')).toHaveText('E2E week');
+    await expect(page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.getByTestId('plan-templates-button').click();
+    await manager.getByRole('button', { name: 'Delete E2E week' }).click();
+    const confirm = page.getByTestId('template-confirm-dialog');
+    await expect(confirm).toBeVisible();
+    await confirm.getByTestId('confirm-template-action').click();
+    await expect(manager.getByTestId('templates-empty')).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('savedMealPlans'))).toBe('[]');
+  });
+});

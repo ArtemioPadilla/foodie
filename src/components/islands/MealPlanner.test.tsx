@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { withBase } from '@/lib/href';
 import { CATALOG_FILES } from '@/lib/catalog/use-catalog';
 import { CategoriesFileSchema } from '@/schemas';
-import { $currentPlan, addRecipeToPlan, CURRENT_PLAN_KEY } from '@/stores/planner';
+import { $currentPlan, $savedPlans, addRecipeToPlan, CURRENT_PLAN_KEY } from '@/stores/planner';
 import { makeIngredient, makePlan, makeRecipe, mockBeverages, mockIngredientCategories } from '@/tests/fixtures/foodie-domain';
 import { MealPlannerView } from './MealPlanner';
 import { PLAN_SLOTS } from './MealPlanner/dnd';
@@ -91,6 +91,7 @@ beforeEach(() => {
   installFetch();
   localStorage.clear();
   $currentPlan.set(null);
+  $savedPlans.set([]);
   const original = Element.prototype.getBoundingClientRect;
   Element.prototype.getBoundingClientRect = syntheticRect;
   restoreRect = () => {
@@ -352,5 +353,44 @@ describe('MealPlanner — keyboard drag and drop (@dnd-kit KeyboardSensor)', () 
     await tick();
     expect(plan()).toBe(before);
     expect(await screen.findByText('Moving Onion Soup was cancelled.')).toBeInTheDocument();
+  });
+});
+
+describe('MealPlanner — picker, templates and summary (roadmap #025)', () => {
+  it('the picker adds the previewed recipe with the chosen servings and the summary follows', async () => {
+    $currentPlan.set(makePlan({ servings: 2 }));
+    renderPlanner();
+    await ready();
+    const summary = screen.getByTestId('plan-summary');
+    expect(within(summary).getByTestId('summary-recipes')).toHaveTextContent('0');
+    // The summary sits above the week / month tabs.
+    expect(summary.compareDocumentPosition(screen.getByRole('tablist')) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    await userEvent.click(within(slot('friday', 'lunch')).getByTestId('add-meal-button'));
+    const picker = await screen.findByTestId('recipe-picker');
+    await userEvent.click(within(picker).getByRole('button', { name: 'Fits Lunch' }));
+    expect(within(picker).getAllByRole('option')).toHaveLength(1);
+    await userEvent.click(within(picker).getByRole('button', { name: 'Increase servings' }));
+    await userEvent.click(within(picker).getByRole('button', { name: 'Add Onion Soup' }));
+
+    expect(plan()?.days[4]?.meals.lunch).toEqual({ recipeId: 'rec_003', servings: 3 });
+    await waitFor(() => expect(within(summary).getByTestId('summary-recipes')).toHaveTextContent('1'));
+    expect(within(summary).getByTestId('summary-days')).toHaveTextContent('1 / 7');
+  });
+
+  it('the toolbar opens the templates manager; loading a template replaces the board', async () => {
+    const saved = makePlan({ id: 'template_9', name: { en: 'Soup week', es: 'Semana de sopa', fr: 'Semaine soupe' } });
+    saved.days[0]!.meals.dinner = { recipeId: 'rec_003', servings: 2 };
+    $savedPlans.set([saved]);
+    $currentPlan.set(makePlan());
+    renderPlanner();
+    await ready();
+
+    await userEvent.click(within(screen.getByTestId('planner-controls')).getByTestId('plan-templates-button'));
+    const dialog = await screen.findByTestId('plan-templates');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Load Soup week' }));
+
+    await waitFor(() => expect(screen.getByTestId('plan-name')).toHaveTextContent('Soup week'));
+    expect(within(slot('monday', 'dinner')).getByText('Onion Soup')).toBeInTheDocument();
   });
 });

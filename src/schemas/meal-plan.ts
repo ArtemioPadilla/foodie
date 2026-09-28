@@ -60,3 +60,24 @@ export const MealPlanSchema = z.object({
 export type MealPlan = z.infer<typeof MealPlanSchema>;
 
 export const SavedMealPlansSchema = z.array(MealPlanSchema);
+
+/** Longest template name the "Save as template" form accepts (roadmap Issue 025). */
+export const PLAN_TEMPLATE_NAME_MAX = 60;
+
+/**
+ * "Save as template" form (planner `PlanTemplates`, roadmap Issue 025). A
+ * factory so the island can pass localised messages; the default messages
+ * are English. The name is trimmed before it is stored in `savedMealPlans`.
+ */
+export function planTemplateFormSchema(
+  messages: { required: string; tooLong: string } = {
+    required: 'Give the template a name.',
+    tooLong: `Use ${PLAN_TEMPLATE_NAME_MAX} characters or fewer.`,
+  },
+) {
+  return z.object({
+    name: z.string().trim().min(1, messages.required).max(PLAN_TEMPLATE_NAME_MAX, messages.tooLong),
+  });
+}
+export const PlanTemplateFormSchema = planTemplateFormSchema();
+export type PlanTemplateFormValues = z.infer<typeof PlanTemplateFormSchema>;

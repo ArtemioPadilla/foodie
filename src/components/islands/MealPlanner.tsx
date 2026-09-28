@@ -37,6 +37,7 @@ import {
   type DropData,
 } from './MealPlanner/dnd';
 import { MonthView, type MonthCursor } from './MealPlanner/MonthView';
+import { PlanSummary } from './MealPlanner/PlanSummary';
 import { PlannerControls } from './MealPlanner/PlannerControls';
 import { RecipePanel } from './MealPlanner/RecipePanel';
 import { WeekView } from './MealPlanner/WeekView';
@@ -53,7 +54,10 @@ import { WeekView } from './MealPlanner/WeekView';
  *   `KeyboardSensor` whose arrows jump slot to slot; localised `aria-live`
  *   announcements. Drag a recipe from the side panel onto a slot to add it,
  *   drag a planned meal to move it (occupied slots swap).
- * - Fallback without drag: the "+" of every slot opens `RecipePicker`.
+ * - Fallback without drag: the "+" of every slot opens `RecipePicker`
+ *   (search, quick filters, preview, servings — Issue 025).
+ * - `PlanSummary` (KPIs + average day vs `$goals`) above the tabs and
+ *   `PlanTemplates` in the toolbar (Issue 025).
  * - `Tabs` week / month (`data-testid="week-view"` / `"month-view"` kept from
  *   the legacy e2e), week navigation, default + per-meal servings, copy /
  *   clear a day, create / save / clear the plan.
@@ -98,7 +102,7 @@ export function MealPlannerView({ lang, now }: MealPlannerProps) {
   return (
     <div data-testid="meal-planner" data-status={status} data-hydrated={hydrated ? 'true' : undefined}>
       {body}
-      <Toaster />
+      <Toaster closeLabel={t(lang, 'common.close')} />
     </div>
   );
 }
@@ -191,9 +195,9 @@ function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?:
 
   const openPicker = (dayIndex: number, slot: PlanSlot) => setPicker({ open: true, dayIndex, slot });
 
-  const onPick = (recipe: Recipe) => {
+  const onPick = (recipe: Recipe, servings: number) => {
     const { dayIndex, slot } = picker;
-    addRecipeToPlan(dayIndex, slot, recipe.id, plan.servings);
+    addRecipeToPlan(dayIndex, slot, recipe.id, servings);
     setPicker((previous) => ({ ...previous, open: false }));
     toast({
       title: t(lang, 'planner.addedToSlot', {
@@ -218,6 +222,8 @@ function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?:
         currentWeekStart={currentWeekStart}
         onWeekChange={setWeekStart}
       />
+
+      <PlanSummary lang={lang} plan={plan} recipes={catalog.recipes} ingredients={catalog.ingredients} />
 
       <Tabs value={view} onValueChange={(value) => setView(value as View)}>
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -281,6 +287,10 @@ function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?:
         onOpenChange={(open) => setPicker((previous) => ({ ...previous, open }))}
         lang={lang}
         recipes={catalog.recipes}
+        ingredients={catalog.ingredients}
+        currency={plan.currency}
+        slot={picker.slot}
+        defaultServings={plan.servings}
         targetLabel={t(lang, 'planner.pickerDescription', {
           day: dayLabel(lang, picker.dayIndex),
           meal: slotLabel(lang, picker.slot),
