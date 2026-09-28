@@ -100,6 +100,12 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
         } catch (_) {
           // localStorage / matchMedia unavailable — leave default (light)
         }
+        // Zod v4 without JIT: its `new Function('')` feature probe is refused
+        // by the CSP (no 'unsafe-eval') and reported as a
+        // securitypolicyviolation. Zod reads this global config when a schema
+        // is created, so it must be set before any module script runs
+        // (ADR 0012 § CSP; tests/e2e/csp.spec.ts).
+        globalThis.__zod_globalConfig = Object.assign(globalThis.__zod_globalConfig || {}, { jitless: true });
       })();
     </script>
     <!--

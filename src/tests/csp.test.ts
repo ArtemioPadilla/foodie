@@ -21,6 +21,8 @@ import { describe, expect, it } from 'vitest';
  *     pages that mount the live Playground;
  *   - no Google Fonts origin in the policy or the markup (fonts are
  *     self-hosted under public/fonts/);
+ *   - Zod's JIT is off (`__zod_globalConfig.jitless`) before any module
+ *     script, so its `new Function` probe never trips the policy;
  *   - every inline script the browser would execute and every inline
  *     <style> element is covered by a SHA-256 hash in the policy, so the
  *     page behaves the same with the CSP as without it.
@@ -106,6 +108,13 @@ describe.runIf(runDist)('built site — Content-Security-Policy (roadmap #035)',
       if (/fonts\.(googleapis|gstatic)\.com/.test(meta[1]!)) problems.push(`${rel}: CSP allows a Google Fonts origin`);
       if (/fonts\.(googleapis|gstatic)\.com/.test(html)) problems.push(`${rel}: references Google Fonts`);
       if (scriptSrc.includes("'unsafe-inline'")) problems.push(`${rel}: script-src allows 'unsafe-inline'`);
+      // Zod's JIT probe (`new Function('')`) is a CSP violation: the theme
+      // bootstrap turns it off before any module script can create a schema.
+      const jitless = html.indexOf('__zod_globalConfig');
+      const firstModule = html.search(/<script\b[^>]*type="module"/i);
+      if (jitless === -1 || (firstModule !== -1 && firstModule < jitless)) {
+        problems.push(`${rel}: Zod jitless config missing or set after a module script`);
+      }
       const isPlaygroundPage = rel.startsWith('gallery/') && html.includes('Playground');
       if (scriptSrc.includes("'unsafe-eval'") && !isPlaygroundPage) {
         problems.push(`${rel}: script-src allows 'unsafe-eval'`);

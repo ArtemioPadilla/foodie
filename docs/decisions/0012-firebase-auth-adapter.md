@@ -122,9 +122,38 @@ Every built page carries a `<meta http-equiv="content-security-policy">` in
   Only the template's gallery pages that mount the live `Playground` (it
   compiles user-typed code with `new Function`) add `'unsafe-eval'`, per page,
   through `Astro.csp.insertScriptResource()`. Zod v4 probes
-  `new Function('')` once to decide whether to JIT; under the CSP the probe
-  is refused (a `securitypolicyviolation` event, no console error) and Zod
-  falls back to its interpreter — behaviour is unchanged.
+  `new Function('')` once to decide whether to JIT; under the CSP that probe
+  is refused and — although Zod swallows the error — reported as a
+  `securitypolicyviolation`. The theme bootstrap script in `BaseLayout.astro`
+  therefore sets `globalThis.__zod_globalConfig.jitless = true` before any
+  module runs: Zod skips the probe and uses its interpreter (same results,
+  no violation).
+- **Style attributes: `style-src-attr 'unsafe-inline'`, deliberately.**
+  Correctness first: React SSR and Astro serialise `style={…}` props into
+  `style="…"` attributes (progress bars, recharts' wrappers and SVG text,
+  Base UI / floating-ui positioning in SSR'd popups, CSS custom properties
+  such as `--chart-*`), and Shiki colours every token with one. Hashing them
+  is impractical (thousands, many data-dependent) and `'unsafe-hashes'` would
+  still need each hash; refusing them breaks layout. Styles set at runtime
+  through the CSSOM (`el.style.x = …`, which React uses after hydration) are
+  not governed by CSP at all. The risk accepted is CSS-only (no script
+  execution): an injected attribute could restyle an element, which needs an
+  HTML-injection bug first — and `<style>` elements stay locked to `'self'` +
+  hashes.
+- **Audit on the real app.** `tests/e2e/csp.spec.ts` (run by
+  `npm run test:e2e` and by the default config's `chromium` project) visits
+  every route template in en/es/fr — landing, recipes list + detail,
+  ingredients list + detail, planner, shopping, pantry, tracking, goals,
+  progress, contribute, profile, plan/shared, docs, gallery, 404 — plus a
+  gallery component page, and then interacts: opens Dialogs (gallery, planner
+  share, tracking quick-add with Tabs), a Base UI Select, drags a recipe in
+  the planner, opens a shared plan link, renders recharts on
+  `/tracking/progress/` with seeded diary data (month view + tooltip). It
+  fails on any `securitypolicyviolation` event or console CSP refusal, and a
+  negative control proves the collector sees a refused `<style>`. The first
+  run (hardening pass after Phase 5) found one violation class on every
+  page: Zod's `eval` probe (fixed above); none from styles, the theme script
+  or fonts.
 - **Self-hosted fonts.** Fraunces, Hanken Grotesk and JetBrains Mono ship as
   variable `woff2` files in `public/fonts/` (latin + latin-ext subsets, OFL —
   `public/fonts/LICENSE.md`), declared with `@font-face` (`font-display:
@@ -145,7 +174,10 @@ Every built page carries a `<meta http-equiv="content-security-policy">` in
   for scripts, `'unsafe-eval'` only on Playground pages, and every inline
   script and `<style>` covered by a hash. The visual, a11y, smoke and e2e
   Playwright suites run against the CSP build (the smoke suite fails on a
-  "Refused to …" console error).
+  "Refused to …" console error; `tests/e2e/csp.spec.ts` fails on any
+  violation). Only the screenshot and axe specs, which inject a freeze
+  `<style>` with `page.addStyleTag`, opt into Playwright's `bypassCSP` —
+  a test-harness setting, not a policy change.
 - **Limits.** Dev (`astro dev`) serves no CSP. A meta policy cannot express
   `frame-ancestors`, `report-uri` or `sandbox`; if the site moves to a host
   that sets response headers, send the same policy as a header. The real
