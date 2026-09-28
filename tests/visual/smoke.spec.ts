@@ -10,6 +10,12 @@
  * all three locales (roadmap Issue 005), one coming-soon section, gallery
  * index, dashboard demo and docs, plus the planning islands (roadmap Issue
  * 029: /planner/, /es/shopping/, /fr/pantry/).
+ *
+ * Hermetic: the GitHub REST API (the dashboard demo's issue lists) is answered
+ * with deterministic fixtures, so a TLS-intercepting proxy or a rate limit on
+ * a third-party host cannot fail the gate — it checks this app's errors, not
+ * the network's. Runs under the production CSP (no bypassCSP), so a
+ * "Refused to …" console error also fails it.
  */
 
 import { test, expect } from '../fixtures/console-guard';
@@ -18,6 +24,13 @@ const ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/ingredients/', '/ingredients
 
 for (const route of ROUTES) {
   test(`smoke — ${route} — no console errors`, async ({ page }) => {
+    await page.route(/^https:\/\/api\.github\.com\//, (r) => {
+      const { pathname } = new URL(r.request().url());
+      const body = /\/issues$/.test(pathname)
+        ? []
+        : { full_name: 'ArtemioPadilla/foodie', stargazers_count: 0, forks_count: 0, open_issues_count: 0 };
+      return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
+    });
     await page.goto(route);
     await page.waitForLoadState('networkidle');
 

@@ -73,12 +73,17 @@ Web fonts are self-hosted (`public/fonts/`, `@font-face` in
 machine — no third-party font host is involved, and Playwright waits for
 `document.fonts.ready` before each screenshot.
 
-> The console-error smoke (`tests/visual/smoke.spec.ts`) needs the third-party
-> hosts the pages load (`api.github.com` for `/demos/dashboard/`) to answer
-> normally. On a network that intercepts TLS (corporate proxies, some
-> sandboxes) it can fail with `net::ERR_CERT_AUTHORITY_INVALID`; that is the
-> environment, not the app — on GitHub runners those hosts answer and the
-> smoke passes.
+Specs that inject a `<style>` to freeze animations (`page.addStyleTag`) and
+the axe scan opt into `test.use({ bypassCSP: true })`: the production CSP
+refuses injected styles. Everything else — smoke, keyboard, mobile, search and
+the e2e journeys, including `tests/e2e/csp.spec.ts` — runs under the real
+policy.
+
+> The console-error smoke (`tests/visual/smoke.spec.ts`) is hermetic: it
+> answers `api.github.com` (the `/demos/dashboard/` issue lists) with
+> fixtures, so a TLS-intercepting proxy or a GitHub rate limit cannot fail
+> it. It runs under the production CSP, so a "Refused to …" console error
+> fails it too.
 
 ### Update baselines after an intentional visual change
 

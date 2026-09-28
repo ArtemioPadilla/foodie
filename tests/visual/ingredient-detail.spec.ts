@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+// The production CSP (ADR 0012) refuses the freeze <style> injected with
+// page.addStyleTag, so this spec runs with Playwright's bypassCSP. The policy
+// itself is audited by tests/e2e/csp.spec.ts and the smoke suite.
+test.use({ bypassCSP: true });
+
 /**
  * Visual snapshot of a static ingredient detail (roadmap Issue 019):
  * `/ingredients/ing_101/` (Basil Pesto) is composite, so the page shows every

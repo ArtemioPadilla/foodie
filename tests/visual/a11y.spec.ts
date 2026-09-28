@@ -2,6 +2,11 @@ import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import { GOALS, PANTRY, PLAN, SHOPPING, TRACKING, TRACKING_HISTORY, seedPlanning } from '../fixtures/planning';
 
+// The production CSP (ADR 0012) refuses the freeze <style> injected with
+// page.addStyleTag, so this spec runs with Playwright's bypassCSP. The policy
+// itself is audited by tests/e2e/csp.spec.ts and the smoke suite.
+test.use({ bypassCSP: true });
+
 /**
  * Accessibility gate (Epic 12, criterion #1 of the 7-item UX quality bar).
  *
