@@ -44,7 +44,7 @@ export function DietaryBadges({ labels, lang = 'en', max = 3, className, ...prop
       ))}
       {overflow > 0 && (
         <li>
-          <Badge variant="outline" aria-label={active.slice(max).map((key) => t(lang, `dietary.${key}`)).join(', ')}>
+          <Badge variant="outline" className="border-border" aria-label={active.slice(max).map((key) => t(lang, `dietary.${key}`)).join(', ')}>
             +{overflow}
           </Badge>
         </li>

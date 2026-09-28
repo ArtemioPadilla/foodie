@@ -50,7 +50,7 @@ export function IngredientTagBadges({
       ))}
       {overflow > 0 && (
         <li>
-          <Badge variant="outline" aria-label={tags.slice(max).map((tag) => t(lang, `dietary.${tag}`)).join(', ')}>
+          <Badge variant="outline" className="border-border" aria-label={tags.slice(max).map((tag) => t(lang, `dietary.${tag}`)).join(', ')}>
             +{overflow}
           </Badge>
         </li>

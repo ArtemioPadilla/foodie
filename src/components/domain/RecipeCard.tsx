@@ -155,7 +155,8 @@ export function RecipeCard({
       data-recipe-id={recipe.id}
       data-view={view}
       className={cn(
-        'relative overflow-hidden motion-safe:transition-all',
+        // Explicit border colour: the kit Card's bare `border` is currentColor under Tailwind v4.
+        'relative overflow-hidden border-border motion-safe:transition-all',
         interactive && 'cursor-pointer motion-safe:hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10',
         href && 'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
         isList ? 'flex items-stretch gap-4 p-3' : 'flex flex-col',
