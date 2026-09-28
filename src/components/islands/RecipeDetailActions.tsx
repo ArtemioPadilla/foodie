@@ -356,7 +356,7 @@ export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: Re
         lang={lang}
       />
 
-      <Toaster />
+      <Toaster closeLabel={t(lang, 'common.close')} />
     </div>
   );
 }

@@ -397,7 +397,7 @@ export function RecipeBrowserView({ lang, initialState }: RecipeBrowserProps) {
       </div>
 
       {/* One Toaster for this React root: the cards' FavoriteButton toasts here. */}
-      <Toaster />
+      <Toaster closeLabel={t(lang, 'common.close')} />
     </div>
   );
 }

@@ -161,7 +161,7 @@ export default function IngredientActions({ ingredientId, name, unit, category, 
         </ul>
       )}
 
-      <Toaster />
+      <Toaster closeLabel={t(lang, 'common.close')} />
     </section>
   );
 }

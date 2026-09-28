@@ -32,7 +32,7 @@ export interface ToastData {
 }
 
 // Inner component that calls useToastManager (must be inside Provider)
-function ToastList() {
+function ToastList({ closeLabel }: { closeLabel: string }) {
   const { toasts } = BaseToast.useToastManager();
 
   return (
@@ -65,8 +65,11 @@ function ToastList() {
                 </BaseToast.Description>
               )}
             </div>
-            <BaseToast.Close className="absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100">
-              <XIcon className="h-4 w-4" />
+            <BaseToast.Close
+              aria-label={closeLabel}
+              className="absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100"
+            >
+              <XIcon className="h-4 w-4" aria-hidden="true" />
             </BaseToast.Close>
           </BaseToast.Root>
         );
@@ -77,10 +80,12 @@ function ToastList() {
 
 interface ToasterProps {
   className?: string;
+  /** Accessible name of each toast's close (×) button — pass the localised "Close". */
+  closeLabel?: string;
 }
 
 // Toaster mounts the Provider+Viewport pair. Place once in your layout.
-export function Toaster({ className }: ToasterProps) {
+export function Toaster({ className, closeLabel = 'Close' }: ToasterProps) {
   return (
     <BaseToast.Provider toastManager={toastManager}>
       <BaseToast.Viewport
@@ -90,7 +95,7 @@ export function Toaster({ className }: ToasterProps) {
           className,
         )}
       >
-        <ToastList />
+        <ToastList closeLabel={closeLabel} />
       </BaseToast.Viewport>
     </BaseToast.Provider>
   );

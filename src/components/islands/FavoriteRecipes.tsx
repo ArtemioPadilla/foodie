@@ -112,7 +112,7 @@ export function FavoriteRecipesView({ lang, limit = 3, favorites }: FavoriteReci
           </p>
         )}
       </div>
-      <Toaster />
+      <Toaster closeLabel={t(lang, 'common.close')} />
     </section>
   );
 }
