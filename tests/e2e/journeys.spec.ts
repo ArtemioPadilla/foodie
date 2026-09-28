@@ -1037,6 +1037,11 @@ test.describe('offline PWA (roadmap #028)', () => {
       await page.goto('./recipes/');
       await expect(page.locator('h1').first()).toHaveText('Recipes');
       await expect(page.locator('a[href*="/recipes/rec_"]').first()).toBeVisible();
+      // Playwright's offline emulation does not flip navigator.onLine on every
+      // runner (on GitHub's it stayed true, PR #36), so send the browser's own
+      // connectivity signal. The initial navigator.onLine read is pinned by
+      // src/stores/online.dom.test.ts.
+      await page.evaluate(() => window.dispatchEvent(new Event('offline')));
       try {
         await expect(page.getByText(/You're offline/)).toBeVisible();
       } catch (error) {
