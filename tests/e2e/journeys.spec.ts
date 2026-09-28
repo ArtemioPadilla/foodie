@@ -360,7 +360,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
   );
 
   for (const prefix of ['', 'es/', 'fr/']) {
-    for (const route of ['', 'recipes/', 'ingredients/', 'planner/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/']) {
       test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
         await page.goto(`./${prefix}${route}`);
         await page.waitForLoadState('networkidle');
@@ -368,6 +368,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
         if (route === 'recipes/') await expect(page.getByTestId('recipe-card').first()).toBeVisible();
         if (route === 'ingredients/') await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
         if (route === 'planner/') await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+        if (route === 'shopping/') await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
 
         const text = await page.locator('body').innerText();
         expect(text.match(RAW_KEY)?.[0], `raw key in the text of /${prefix}${route}`).toBeUndefined();
@@ -544,3 +545,132 @@ test.describe('planner picker, templates and summary (roadmap #025)', () => {
     expect(await page.evaluate(() => localStorage.getItem('savedMealPlans'))).toBe('[]');
   });
 });
+
+// ── Shopping list (roadmap Issue 026) ────────────────────────────────────────
+// Port of legacy `tests/e2e/shopping-list.spec.ts`: its three live tests
+// ("loads shopping list page", "checks off items", "groups items by category")
+// keep their assertions — `h1`, `shopping-item` + checkbox + `checked` class,
+// `category-group` + category headers — now against a seeded list instead of
+// an `if (visible)` guard. The skipped legacy cases (custom item, export,
+// WhatsApp, clear completed) are real here, plus generate-from-plan.
+test.describe('shopping list journeys (roadmap #026)', () => {
+  const SEEDED = [
+    { ingredientId: 'ing_001', quantity: 1.5, unit: 'lb', checked: false, usedIn: ['rec_001'], category: 'protein' },
+    { ingredientId: 'ing_005', quantity: 3, unit: 'piece', checked: false, usedIn: ['rec_001'], category: 'vegetables' },
+    { ingredientId: 'ing_016', quantity: 1, unit: 'cup', checked: false, usedIn: [], category: 'dairy' },
+  ];
+
+  async function seed(page: import('@playwright/test').Page, items: unknown[] = SEEDED) {
+    await page.goto('./shopping/');
+    await page.evaluate((list) => localStorage.setItem('shoppingList', JSON.stringify(list)), items);
+    await page.reload();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+  }
+
+  test('loads shopping list page', async ({ page }) => {
+    await page.goto('./shopping/');
+    await expect(page.locator('h1')).toBeVisible();
+    await expect(page.locator('main[data-page="shopping"] h1')).toHaveText('Shopping List');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    await expect(page.getByTestId('shopping-empty')).toBeVisible();
+    for (const [prefix, title] of [['es/', 'Lista de Compras'], ['fr/', 'Liste de Courses']] as const) {
+      await page.goto(`./${prefix}shopping/`);
+      await expect(page.locator('main[data-page="shopping"] h1')).toHaveText(title);
+    }
+  });
+
+  test('checks off items', async ({ page }) => {
+    await seed(page);
+    const firstItem = page.getByTestId('shopping-item').first();
+    await expect(firstItem).toBeVisible();
+    const checkbox = firstItem.getByRole('checkbox');
+    await checkbox.click();
+    await expect(checkbox).toBeChecked();
+    // Item should have checked style
+    await expect(firstItem).toHaveClass(/checked/);
+    await expect(firstItem).toHaveAttribute('data-checked', 'true');
+
+    await page.reload();
+    await expect(page.getByTestId('shopping-item').first().getByRole('checkbox')).toBeChecked();
+  });
+
+  test('groups items by category', async ({ page }) => {
+    await seed(page);
+    const categories = page.getByTestId('category-group');
+    await expect(categories.first()).toBeVisible();
+    await expect(categories).toHaveCount(3);
+    // Should have category headers (catalog names; legacy matched Produce|Dairy|Meat)
+    await expect(page.getByTestId('category-toggle').filter({ hasText: /Proteins|Vegetables|Dairy/ })).toHaveCount(3);
+  });
+
+  test('generates the list from the plan, consolidated and grouped', async ({ page }) => {
+    await page.goto('./planner/');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+    await page.getByTestId('meal-slot-monday-dinner').getByTestId('add-meal-button').click();
+    await page.getByTestId('recipe-picker').getByTestId('recipe-picker-add').click();
+    await expect(page.getByTestId('meal-slot-monday-dinner').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    const generate = page.getByTestId('generate-from-plan');
+    await expect(generate).toBeEnabled();
+    await generate.click();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('category-group').first()).toBeVisible();
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]'));
+    expect(stored.length).toBeGreaterThan(0);
+    expect(stored.every((i: { usedIn: string[] }) => i.usedIn.length === 1)).toBe(true);
+  });
+
+  test('adds a custom item', async ({ page }) => {
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('add-item-button').click();
+    const dialog = page.getByTestId('add-item-dialog');
+    await dialog.getByTestId('item-name-input').fill('Custom Item');
+    await dialog.getByTestId('item-quantity-input').fill('2');
+    await dialog.getByTestId('item-unit-select').click();
+    await page.getByRole('option', { name: 'cup', exact: true }).click();
+    await dialog.getByTestId('submit-add-item').click();
+    await expect(dialog).toHaveCount(0);
+
+    const item = page.getByTestId('shopping-item').filter({ hasText: 'Custom Item' });
+    await expect(item).toBeVisible();
+    await expect(item.getByTestId('shopping-item-custom')).toBeVisible();
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]'));
+    expect(stored[0].ingredientId).toMatch(/^custom-/);
+    expect(stored[0]).toMatchObject({ name: 'Custom Item', quantity: 2, unit: 'cup' });
+  });
+
+  test('exports CSV and text (downloads) and shares via WhatsApp (wa.me link)', async ({ page }) => {
+    await seed(page);
+    await page.getByTestId('export-menu').click();
+    const dialog = page.getByTestId('export-dialog');
+
+    const csvDownload = page.waitForEvent('download');
+    await dialog.getByTestId('export-csv').click();
+    const csv = await csvDownload;
+    expect(csv.suggestedFilename()).toBe('shopping-list.csv');
+
+    const textDownload = page.waitForEvent('download');
+    await dialog.getByTestId('export-text').click();
+    expect((await textDownload).suggestedFilename()).toContain('shopping-list');
+
+    const whatsapp = dialog.getByTestId('whatsapp-share');
+    await expect(whatsapp).toHaveAttribute('href', /^https:\/\/wa\.me\/\?text=/);
+    await expect(whatsapp).toHaveAttribute('target', '_blank');
+  });
+
+  test('clears completed items after confirming', async ({ page }) => {
+    await seed(page);
+    const items = page.getByTestId('shopping-item');
+    await expect(items).toHaveCount(3);
+    await items.first().getByRole('checkbox').click();
+    await page.getByTestId('clear-completed').click();
+    await page.getByTestId('shopping-confirm-dialog').getByTestId('confirm-shopping-action').click();
+    // Checked items should be removed
+    await expect(items).toHaveCount(2);
+  });
+});
+
