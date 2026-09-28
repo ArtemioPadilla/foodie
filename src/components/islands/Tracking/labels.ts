@@ -14,7 +14,7 @@ export interface TrackingCatalog {
   beverages: ReadonlyArray<Beverage>;
 }
 
-const BCP47: Record<Locale, string> = { en: 'en', es: 'es-419', fr: 'fr' };
+export const BCP47: Record<Locale, string> = { en: 'en', es: 'es-419', fr: 'fr' };
 
 /** `1234.5` → "1,234.5" / "1234,5" / "1 234,5" (max one decimal). */
 export function formatAmount(value: number, lang: Locale): string {
