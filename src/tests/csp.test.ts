@@ -42,21 +42,66 @@ const META_RE = /<meta\s+http-equiv="content-security-policy"\s+content="([^"]*)
 // whitespace or `/` (so `</script >` and `</SCRIPT\n>` close it too).
 const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script(?:[\s/][^>]*)?>/gi;
 const STYLE_RE = /<style\b[^>]*>([\s\S]*?)<\/style(?:[\s/][^>]*)?>/gi;
-const GOOGLE_FONTS_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+const GOOGLE_FONTS_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+/** `host` is a Google Fonts host or one of its subdomains (exact, anchored comparison). */
+const isGoogleFontsHost = (host: string) =>
+  GOOGLE_FONTS_HOSTS.some((g) => host === g || host.endsWith(`.${g}`));
+// Directives that decide where stylesheets and fonts load from (`default-src`
+// is the fallback when `font-src` / `style-src` are absent).
+const FONT_LOADING_DIRECTIVES = new Set(['default-src', 'style-src', 'style-src-elem', 'font-src']);
 
-/** Hostnames of every absolute or protocol-relative http(s) URL in `text`. */
-function hostsIn(text: string): Set<string> {
-  const hosts = new Set<string>();
-  for (const [url] of text.matchAll(/(?:https?:)?\/\/[^\s"'<>()\\;,]+/gi)) {
-    try {
-      hosts.add(new URL(url, 'https://base.invalid').hostname.toLowerCase());
-    } catch {
-      // not a URL (e.g. a `//` comment) — nothing to check
+/**
+ * Host of a CSP source expression, lowercased, without scheme, port or path —
+ * `https://fonts.gstatic.com:443/x`, `//fonts.gstatic.com` and the bare
+ * `fonts.gstatic.com` all give `fonts.gstatic.com`; `*.gstatic.com` keeps its
+ * wildcard; a scheme-only source (`https:`, `data:`) gives ''. Keywords,
+ * hashes and nonces (quoted) give undefined.
+ */
+function sourceHost(source: string): string | undefined {
+  if (source.startsWith("'")) return undefined;
+  return source
+    .toLowerCase()
+    .replace(/^[a-z][a-z0-9+.-]*:(?=\/\/|$)/, '')
+    .replace(/^\/\//, '')
+    .replace(/[/?#].*$/, '')
+    .replace(/:(?:\d+|\*)$/, '');
+}
+
+/**
+ * Whether a CSP policy lets a page load Google Fonts: any directive naming a
+ * Google Fonts host (with or without scheme), or a stylesheet/font directive
+ * whose wildcard (`*`, `*.gstatic.com`, `*.googleapis.com`) or bare
+ * `https:` / `http:` scheme source covers one.
+ */
+function cspAllowsGoogleFonts(policy: string): boolean {
+  for (const part of policy.split(';')) {
+    const [name = '', ...sources] = part.trim().toLowerCase().split(/\s+/);
+    const loadsFonts = FONT_LOADING_DIRECTIVES.has(name);
+    for (const source of sources) {
+      const host = sourceHost(source);
+      if (host === undefined) continue;
+      if (isGoogleFontsHost(host)) return true;
+      if (!loadsFonts) continue;
+      if (host === '*' || (host === '' && /^https?:$/.test(source))) return true;
+      if (host.startsWith('*.') && GOOGLE_FONTS_HOSTS.some((g) => g.endsWith(host.slice(1)))) return true;
     }
   }
-  return hosts;
+  return false;
 }
-const allowsGoogleFonts = (text: string) => [...hostsIn(text)].some((h) => GOOGLE_FONTS_HOSTS.has(h));
+
+/**
+ * Whether markup mentions a Google Fonts host anywhere — URL, protocol-relative
+ * reference, `@import` or bare text. Hostname-shaped tokens are compared
+ * exactly, so this flags everything the old `fonts\.(googleapis|gstatic)\.com`
+ * substring search flagged that is actually that host.
+ */
+const markupReferencesGoogleFonts = (html: string) =>
+  html
+    .toLowerCase()
+    // A dot not followed by a label character ends a token ("…gstatic.com.").
+    .split(/[^a-z0-9.-]+|\.(?![a-z0-9-])/)
+    .some(isGoogleFontsHost);
+
 const EXECUTABLE = new Set(['', 'text/javascript', 'application/javascript', 'module']);
 
 function walk(dir: string): string[] {
@@ -81,6 +126,44 @@ function typeOf(attrs: string): string {
   const m = /\btype\s*=\s*("([^"]*)"|'([^']*)'|([^\s>]+))/i.exec(attrs);
   return (m ? (m[2] ?? m[3] ?? m[4] ?? '') : '').trim().toLowerCase();
 }
+
+// The guard itself (runs in every mode): it must catch a Google Fonts source
+// however the policy spells it, without tripping on the Firebase wildcard.
+describe('Google Fonts guard', () => {
+  it.each([
+    "font-src 'self' fonts.gstatic.com",
+    "font-src 'self' FONTS.GSTATIC.COM:443",
+    "font-src 'self' https://fonts.gstatic.com/s/",
+    "font-src //fonts.gstatic.com",
+    "style-src 'self' https://fonts.googleapis.com",
+    "style-src-elem 'self' fonts.googleapis.com",
+    "connect-src 'self' fonts.googleapis.com",
+    "font-src 'self' *.gstatic.com",
+    "style-src 'self' https://*.googleapis.com",
+    "default-src 'self' *.gstatic.com",
+    "font-src *",
+    "font-src https:",
+  ])('flags %s', (policy) => {
+    expect(cspAllowsGoogleFonts(policy)).toBe(true);
+  });
+
+  it.each([
+    "default-src 'self'; connect-src 'self' https://*.googleapis.com; font-src 'self' data:",
+    "font-src 'self' fonts.gstatic.com.evil.test",
+    "img-src 'self' https: data:",
+    "style-src 'self' 'sha256-abc='",
+  ])('allows %s', (policy) => {
+    expect(cspAllowsGoogleFonts(policy)).toBe(false);
+  });
+
+  it('flags any Google Fonts host in markup, with or without a scheme', () => {
+    expect(markupReferencesGoogleFonts('<link href="https://fonts.googleapis.com/css2?family=X">')).toBe(true);
+    expect(markupReferencesGoogleFonts("@import url(//fonts.gstatic.com/s/x.woff2);")).toBe(true);
+    expect(markupReferencesGoogleFonts('<p>see fonts.gstatic.com.</p>')).toBe(true);
+    expect(markupReferencesGoogleFonts('<link href="/fonts/fraunces.woff2">')).toBe(false);
+    expect(markupReferencesGoogleFonts('<p>notfonts.gstatic.community</p>')).toBe(false);
+  });
+});
 
 describe.runIf(runDist)('built site — Content-Security-Policy (roadmap #035)', () => {
   const pages = existsSync(DIST) ? walk(DIST) : [];
@@ -108,7 +191,8 @@ describe.runIf(runDist)('built site — Content-Security-Policy (roadmap #035)',
         problems.push(`${rel}: CSP meta comes after a script/stylesheet`);
       }
 
-      const d = directives(meta[1]!.replace(/&#39;/g, "'").replace(/&quot;/g, '"'));
+      const policy = meta[1]!.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+      const d = directives(policy);
       const scriptSrc = d.get('script-src') ?? [];
       const styleSrc = d.get('style-src') ?? [];
       const need = (dir: string, value: string) => {
@@ -122,8 +206,8 @@ describe.runIf(runDist)('built site — Content-Security-Policy (roadmap #035)',
       need('object-src', "'none'");
       need('base-uri', "'self'");
       // Fonts are self-hosted (public/fonts/): no third-party font host.
-      if (allowsGoogleFonts(meta[1]!)) problems.push(`${rel}: CSP allows a Google Fonts origin`);
-      if (allowsGoogleFonts(html)) problems.push(`${rel}: references Google Fonts`);
+      if (cspAllowsGoogleFonts(policy)) problems.push(`${rel}: CSP allows a Google Fonts origin`);
+      if (markupReferencesGoogleFonts(html)) problems.push(`${rel}: references Google Fonts`);
       if (scriptSrc.includes("'unsafe-inline'")) problems.push(`${rel}: script-src allows 'unsafe-inline'`);
       // Zod's JIT probe (`new Function('')`) is a CSP violation: the theme
       // bootstrap turns it off before any module script can create a schema.
