@@ -360,7 +360,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
   );
 
   for (const prefix of ['', 'es/', 'fr/']) {
-    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/']) {
       test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
         await page.goto(`./${prefix}${route}`);
         await page.waitForLoadState('networkidle');
@@ -682,3 +682,117 @@ test.describe('shopping list journeys (roadmap #026)', () => {
   });
 });
 
+test.describe('pantry journeys (roadmap #027)', () => {
+  /** `YYYY-MM-DD` `offset` days from today in the browser's local calendar. */
+  async function dayKey(page: import('@playwright/test').Page, offset: number) {
+    return page.evaluate((days) => {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }, offset);
+  }
+
+  async function seed(page: import('@playwright/test').Page, items: (keys: { soon: string; past: string }) => unknown[]) {
+    await page.goto('./pantry/');
+    const keys = { soon: await dayKey(page, 2), past: await dayKey(page, -2) };
+    await page.evaluate((list) => localStorage.setItem('pantryItems', JSON.stringify(list)), items(keys));
+    await page.reload();
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('pantry-board')).toHaveAttribute('data-catalog', 'success');
+  }
+
+  const base = { unit: 'piece', addedAt: '2026-09-01T10:00:00.000Z' };
+
+  test('loads the pantry page in every locale, empty', async ({ page }) => {
+    for (const [prefix, title] of [['', 'My Pantry'], ['es/', 'Mi Despensa'], ['fr/', 'Mon Garde-Manger']] as const) {
+      await page.goto(`./${prefix}pantry/`);
+      await expect(page.locator('main[data-page="pantry"] h1')).toHaveText(title);
+      await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+      await expect(page.getByTestId('pantry-empty')).toBeVisible();
+    }
+  });
+
+  test('adds a catalog ingredient with an expiration date, which is flagged and persists', async ({ page }) => {
+    await page.goto('./pantry/');
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('add-pantry-item').click();
+    const dialog = page.getByTestId('pantry-item-dialog');
+    await dialog.getByTestId('pantry-name-input').fill('Greek Yogurt');
+    // The catalog match brings its unit (cup) and hides the custom category.
+    await expect(dialog.getByTestId('pantry-unit-select')).toHaveText(/cup/);
+    await expect(dialog.getByTestId('pantry-category-select')).toHaveCount(0);
+    await dialog.getByTestId('pantry-quantity-input').fill('2');
+    await dialog.getByTestId('pantry-expiry-trigger').click();
+    const soon = await dayKey(page, 3);
+    await page.locator(`[data-day="${soon}"] button`).click();
+    await expect(dialog.getByTestId('pantry-expiry-trigger')).not.toHaveText(/Pick a date/);
+    await dialog.getByTestId('submit-pantry-item').click();
+    await expect(dialog).toHaveCount(0);
+
+    const row = page.getByTestId('pantry-item').filter({ hasText: 'Greek Yogurt' });
+    await expect(row).toHaveAttribute('data-status', 'soon');
+    await expect(row.getByTestId('pantry-item-expiration')).toHaveText('Expires in 3 days');
+    await expect(page.getByTestId('pantry-expiring')).toContainText('Greek Yogurt');
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]'));
+    expect(stored).toHaveLength(1);
+    expect(stored[0]).toMatchObject({ ingredientId: 'ing_016', quantity: 2, unit: 'cup', expirationDate: soon });
+
+    await page.reload();
+    await expect(page.getByTestId('pantry-item').filter({ hasText: 'Greek Yogurt' })).toBeVisible();
+  });
+
+  test('flags expired and low-stock items; "add to shopping list" reaches /shopping/', async ({ page }) => {
+    await seed(page, ({ soon, past }) => [
+      { ...base, id: 'p1', ingredientId: 'ing_001', quantity: 1, expirationDate: soon },
+      { ...base, id: 'p2', ingredientId: 'ing_005', quantity: 4, expirationDate: past },
+    ]);
+    await expect(page.getByTestId('pantry-expired')).toContainText('Tomato');
+    await expect(page.getByTestId('pantry-item').filter({ hasText: 'Tomato' })).toHaveAttribute('data-status', 'expired');
+    const low = page.getByTestId('pantry-low-stock');
+    await expect(low.getByTestId('low-stock-entry')).toHaveCount(1);
+    await low.getByTestId('low-stock-add-to-shopping').click();
+    await expect(page.getByText('Egg added to your shopping list')).toBeVisible();
+
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-item').filter({ hasText: 'Egg' })).toBeVisible();
+  });
+
+  test('"What can I cook" ranks a fully stocked recipe first and links to it', async ({ page }) => {
+    await seed(page, () => [
+      { ...base, id: 'p1', ingredientId: 'ing_026', quantity: 2, unit: 'cup' },
+      { ...base, id: 'p2', ingredientId: 'ing_025', quantity: 3 },
+    ]);
+    const first = page.getByTestId('pantry-suggestion').first();
+    await expect(first).toHaveAttribute('data-percent', '100');
+    await expect(first.getByTestId('suggestion-ready')).toBeVisible();
+    const link = first.getByRole('link');
+    const name = await link.textContent();
+    await link.click();
+    await expect(page).toHaveURL(/\/recipes\/rec_\d+\/$/);
+    await expect(page.locator('h1')).toHaveText(name ?? '');
+  });
+
+  test('edits, removes and clears after confirming', async ({ page }) => {
+    await seed(page, () => [
+      { ...base, id: 'p1', ingredientId: 'ing_001', quantity: 6 },
+      { ...base, id: 'p2', ingredientId: 'ing_005', quantity: 4 },
+      { ...base, id: 'p3', ingredientId: 'ing_016', quantity: 1, unit: 'cup' },
+    ]);
+    const egg = page.getByTestId('pantry-item').filter({ hasText: 'Egg' });
+    await egg.getByTestId('edit-pantry-item').click();
+    const dialog = page.getByTestId('pantry-item-dialog');
+    await expect(dialog.getByTestId('pantry-name-input')).toHaveValue('Egg');
+    await dialog.getByTestId('pantry-quantity-input').fill('12');
+    await dialog.getByTestId('submit-pantry-item').click();
+    await expect(dialog).toHaveCount(0);
+    await expect(egg.getByTestId('pantry-item-quantity')).toHaveText('12 piece');
+
+    await page.getByTestId('pantry-item').filter({ hasText: 'Tomato' }).getByTestId('remove-pantry-item').click();
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+
+    await page.getByTestId('clear-pantry').click();
+    await page.getByTestId('pantry-confirm-dialog').getByTestId('confirm-clear-pantry').click();
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]'))).toEqual([]);
+  });
+});

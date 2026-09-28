@@ -34,6 +34,8 @@ export interface DatePickerProps {
   calendarProps?: Omit<React.ComponentProps<typeof Calendar>, 'mode' | 'selected' | 'onSelect'>;
   /** Forwarded onto the Popover trigger button — e.g. `id`/`aria-describedby`/`aria-invalid` from a `<FormControl>` wrapper (see field-type/form-item.tsx). */
   triggerProps?: React.ComponentPropsWithoutRef<'button'>;
+  /** Trigger text for the selected date (default: en-US "September 28, 2026") — pass a localised formatter for other locales. */
+  formatValue?: (date: Date) => string;
 }
 
 /** Single-date picker: Popover trigger showing the formatted date + Calendar in `mode="single"`. */
@@ -46,6 +48,7 @@ function DatePicker({
   className,
   calendarProps,
   triggerProps,
+  formatValue = formatDate,
 }: DatePickerProps) {
   const [internalValue, setInternalValue] = React.useState<Date | undefined>(defaultValue);
   const [open, setOpen] = React.useState(false);
@@ -78,7 +81,7 @@ function DatePicker({
         }
       >
         <CalendarIcon className="mr-2 size-4" />
-        {selected ? formatDate(selected) : <span>{placeholder}</span>}
+        {selected ? formatValue(selected) : <span>{placeholder}</span>}
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar mode="single" selected={selected} onSelect={handleSelect} {...calendarProps} />
