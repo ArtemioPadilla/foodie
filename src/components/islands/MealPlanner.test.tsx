@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderToString } from 'react-dom/server';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { withBase } from '@/lib/href';
 import { CATALOG_FILES } from '@/lib/catalog/use-catalog';
 import { CategoriesFileSchema } from '@/schemas';
@@ -13,6 +13,13 @@ import { makeIngredient, makePlan, makeRecipe, mockBeverages, mockIngredientCate
 import { MealPlannerView } from './MealPlanner';
 import { PLAN_SLOTS } from './MealPlanner/dnd';
 import { closeToastsAfterEach } from '@/tests/fixtures/toast-timers';
+
+// RecipePicker is React.lazy (roadmap #045). Warm its module once so the first
+// test that opens it does not race Vite's cold transform of the chunk against
+// Testing Library's 1 s findBy timeout (it did on a GitHub runner, PR #36).
+beforeAll(async () => {
+  await import('./RecipePicker');
+});
 
 closeToastsAfterEach();
 
