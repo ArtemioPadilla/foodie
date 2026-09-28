@@ -1175,6 +1175,12 @@ export const fr: typeof en = {
   offline: {
     connectionRestored: 'Connexion rétablie',
     youAreOffline: 'Vous êtes hors ligne. Certaines fonctionnalités peuvent être limitées.',
+    // PWA UI (roadmap Issue 028)
+    banner: 'Vous êtes hors ligne : Foodie utilise la copie enregistrée sur cet appareil.',
+    updateTitle: 'Mise à jour disponible',
+    updateBody: 'Une nouvelle version de Foodie est prête.',
+    reload: 'Recharger',
+    install: "Installer l'app",
   },
   accessibility: {
     toggleTheme: 'Changer le thème',

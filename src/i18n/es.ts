@@ -1172,6 +1172,12 @@ export const es: typeof en = {
   offline: {
     connectionRestored: 'Conexión restaurada',
     youAreOffline: 'Estás sin conexión. Algunas funciones pueden estar limitadas.',
+    // PWA UI (roadmap Issue 028)
+    banner: 'Estás sin conexión: Foodie usa la copia guardada en este dispositivo.',
+    updateTitle: 'Actualización disponible',
+    updateBody: 'Hay una nueva versión de Foodie lista.',
+    reload: 'Recargar',
+    install: 'Instalar app',
   },
   accessibility: {
     toggleTheme: 'Cambiar tema',

@@ -1179,6 +1179,12 @@ export const en = {
   offline: {
     connectionRestored: 'Connection restored',
     youAreOffline: 'You are offline. Some features may be limited.',
+    // PWA UI (roadmap Issue 028)
+    banner: "You're offline — Foodie is using the copy saved on this device.",
+    updateTitle: 'Update available',
+    updateBody: 'A new version of Foodie is ready.',
+    reload: 'Reload',
+    install: 'Install app',
   },
   accessibility: {
     toggleTheme: 'Toggle theme',

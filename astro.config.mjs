@@ -17,6 +17,10 @@ const BASE = process.env.ASTRO_BASE || '/';
 // Public-asset prefix that respects BASE (BASE already ends without a trailing
 // slash unless it's '/'). Used for the PWA manifest icon paths below.
 const asset = (p) => `${BASE.replace(/\/$/, '')}/${p.replace(/^\//, '')}`;
+// BASE as a path with both slashes ('/' or '/foodie/'), for the service
+// worker's URL patterns.
+const BASE_PATH = asset('/');
+const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({
   // Production origin — single-sourced from site.config.mjs.
@@ -82,8 +86,10 @@ export default defineConfig({
         lang: 'en',
         categories: ['food', 'lifestyle', 'health'],
         display: 'standalone',
-        start_url: BASE,
-        scope: BASE,
+        // Always with the trailing slash ('/foodie/'), so the start URL sits
+        // inside the service worker's scope (the SW lives at <base>/sw.js).
+        start_url: BASE_PATH,
+        scope: BASE_PATH,
         icons: [
           { src: asset('icons/pwa-192.png'), sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: asset('icons/pwa-512.png'), sizes: '512x512', type: 'image/png', purpose: 'any' },
@@ -97,15 +103,67 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Precache all static assets produced by the Astro build
+        // Precache the static build: every Foodie page (×3 locales) plus JS,
+        // CSS and icons, so the catalog pages, planner, shopping list and
+        // pantry open offline once the SW is installed (roadmap Issue 028).
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
-        // Fall back to index for any navigation that doesn't match a static file
+        // The template's reference surfaces (component gallery, demos, blocks,
+        // showcase) are not part of the app — leave them out of the install
+        // payload (~5 MB of HTML). Online they load as usual.
+        globIgnores: ['**/gallery/**', '**/demos/**', '**/blocks/**', '**/showcase/**'],
+        // Navigations that match no precached page fall back to the site root.
         navigateFallback: BASE,
-        // Never fall back for API routes — they must not serve the SPA shell
-        navigateFallbackDenylist: [/^\/api\//],
+        navigateFallbackDenylist: [
+          // Never fall back for API routes — they must not serve the app shell
+          // (with and without the GitHub Pages base path).
+          /^\/api\//,
+          ...(BASE_PATH === '/' ? [] : [new RegExp(`^${escapeRegExp(BASE_PATH)}api/`)]),
+          // The pages left out of the precache above load from the network
+          // instead of turning into the home page…
+          new RegExp(`^${escapeRegExp(BASE_PATH)}(?:(?:es|fr)/)?(?:gallery|demos|blocks|showcase)(?:/|$)`),
+          // …and so do plain files opened directly (llms.txt, sitemaps, JSON).
+          /\.(?:txt|xml|json|webmanifest)(?:\?.*)?$/,
+        ],
         runtimeCaching: [
           {
-            // GitHub REST API — stale-while-revalidate so the dashboard works offline
+            // Catalog JSON (`public/data/*.json`, read by useCatalog): fresh
+            // when online, the last copy when offline or when the network
+            // takes longer than 10 s. Workbox matches same-origin regexes
+            // anywhere in the URL, so no origin is needed here.
+            urlPattern: new RegExp(`${escapeRegExp(BASE_PATH)}data/[^/?#]+\\.json(?:\\?.*)?$`),
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'foodie-data',
+              networkTimeoutSeconds: 10,
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Google Fonts stylesheet — versioned by its query string.
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-stylesheets',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Google Fonts files — immutable URLs.
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-webfonts',
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // GitHub REST API (template dashboard demo) — stale-while-revalidate so it works offline
             urlPattern: /^https:\/\/api\.github\.com\/.*$/,
             handler: 'StaleWhileRevalidate',
             options: {

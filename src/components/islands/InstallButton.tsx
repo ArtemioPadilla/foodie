@@ -1,4 +1,5 @@
 import { useStore } from '@nanostores/react';
+import { t, type Locale } from '@/i18n';
 import { $installPrompt } from '@/stores/install';
 
 /**
@@ -13,7 +14,7 @@ import { $installPrompt } from '@/stores/install';
  *   3. We await `prompt.userChoice` — if accepted, we clear the store so
  *      the button disappears; if dismissed, it stays visible for next time.
  */
-export default function InstallButton() {
+export default function InstallButton({ lang = 'en' }: { lang?: Locale }) {
   const prompt = useStore($installPrompt);
   if (!prompt) return null;
 
@@ -28,10 +29,9 @@ export default function InstallButton() {
         }
       }}
       className="fixed bottom-4 left-4 z-50 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-lg hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-preset-slide-right-md motion-duration-300"
-      aria-label="Install app"
     >
       <span aria-hidden="true">&#11015;</span>
-      <span>Install app</span>
+      <span>{t(lang, 'offline.install')}</span>
     </button>
   );
 }

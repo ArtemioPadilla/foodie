@@ -796,3 +796,43 @@ test.describe('pantry journeys (roadmap #027)', () => {
     expect(await page.evaluate(() => JSON.parse(localStorage.getItem('pantryItems') ?? '[]'))).toEqual([]);
   });
 });
+
+test.describe('offline PWA (roadmap #028)', () => {
+  // The generated service worker precaches ~1 300 files on first visit.
+  test.setTimeout(120_000);
+
+  test('once the service worker is active, /recipes/ and /planner/ work offline', async ({ page, context }) => {
+    await page.goto('./');
+    await page.evaluate(async () => {
+      await navigator.serviceWorker.ready;
+    });
+    await page.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 90_000 });
+
+    // Load the catalog once through the SW so its NetworkFirst data cache holds it.
+    await page.goto('./recipes/');
+    await expect(page.locator('a[href*="/recipes/rec_"]').first()).toBeVisible();
+    await expect
+      .poll(() => page.evaluate(async () => (await caches.keys()).includes('foodie-data')))
+      .toBe(true);
+
+    await context.setOffline(true);
+    try {
+      await page.goto('./recipes/');
+      await expect(page.locator('h1').first()).toHaveText('Recipes');
+      await expect(page.locator('a[href*="/recipes/rec_"]').first()).toBeVisible();
+      await expect(page.getByText(/You're offline/)).toBeVisible();
+
+      await page.goto('./planner/');
+      await expect(page.locator('h1').first()).toHaveText('Meal Planner');
+      await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+      await page.getByTestId('create-plan-button').click();
+      await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+
+      // A recipe detail page is precached too.
+      await page.goto('./recipes/rec_001/');
+      await expect(page.locator('h1').first()).not.toBeEmpty();
+    } finally {
+      await context.setOffline(false);
+    }
+  });
+});

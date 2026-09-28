@@ -54,7 +54,7 @@ export const flags = {
   /** Enable the docs search bar (requires Pagefind index to exist). */
   docsSearch: asBool(env.PUBLIC_FLAG_DOCS_SEARCH, true),
 
-  /** Show the install + update prompts on every page. */
+  /** Show the PWA UI on every page: install + update prompts and the offline banner (Issue 028). */
   pwaPrompts: asBool(env.PUBLIC_FLAG_PWA_PROMPTS, true),
 
   /** Show the first-load privacy disclosure toast (ethics — Epic 12). */

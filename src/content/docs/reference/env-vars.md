@@ -35,7 +35,7 @@ Defaults are coded in `src/lib/flags.ts`.
 | `PUBLIC_FLAG_FEEDBACK_FAB` | `true` | Show the FeedbackFAB on every page |
 | `PUBLIC_FLAG_BLOG` | `true` | Enable `/blog` route; set `false` to hide |
 | `PUBLIC_FLAG_DOCS_SEARCH` | `true` | Enable Pagefind search in `/docs` |
-| `PUBLIC_FLAG_PWA_PROMPTS` | `true` | Show PWA install + update prompts |
+| `PUBLIC_FLAG_PWA_PROMPTS` | `true` | Show PWA install + update prompts and the offline banner |
 
 ## Self-hosted backend (opt-in, ADR 0006)
 
