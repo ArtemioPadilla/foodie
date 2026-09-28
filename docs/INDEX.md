@@ -32,8 +32,8 @@ Core visual and interaction principles every Inceptor contributor must know.
 | Check whether a component guideline doc alone builds working code (vibe-test) | [`docs/vibe-test.md`](./vibe-test.md) — `npm run vibe-test`                                                |
 | Compare Inceptor to Cloudscape and see the gap roadmap          | [`docs/CLOUDSCAPE-GAP-ROADMAP.md`](./CLOUDSCAPE-GAP-ROADMAP.md)                                                            |
 | Build auth + DB, an AI feature, or host a backend               | [`docs/recipes/`](./recipes/) (Supabase, BYOK, hosting, CI migrations)                                                     |
-| Ship a desktop app (Windows/macOS/Linux)                        | `npm run add-tauri` — [`docs/runbooks/tauri-desktop.md`](./runbooks/tauri-desktop.md)                                      |
-| Ship an Android app                                              | `npm run add-tauri-android` — [`docs/runbooks/tauri-android.md`](./runbooks/tauri-android.md)                              |
+| Ship a desktop app (Windows/macOS/Linux)                        | Deferred (see [`ROADMAP.md`](../ROADMAP.md)); Inceptor's reference runbook: [`docs/runbooks/tauri-desktop.md`](./runbooks/tauri-desktop.md)                                      |
+| Ship an Android app                                              | Deferred (see [`ROADMAP.md`](../ROADMAP.md)); Inceptor's reference runbook: [`docs/runbooks/tauri-android.md`](./runbooks/tauri-android.md)                              |
 | Improve the DX (FinSight learnings)                             | [`docs/DX-IMPROVEMENT-PLAN.md`](./DX-IMPROVEMENT-PLAN.md)                                                                  |
 | See the Inceptor workflow + sub-agents                          | [`CLAUDE.md`](../CLAUDE.md) — Workflow section                                                                             |
 | Pick the next thing to ship                                     | [`ROADMAP.md`](../ROADMAP.md)                                                                                              |
