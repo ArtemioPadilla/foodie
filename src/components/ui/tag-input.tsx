@@ -10,9 +10,29 @@ interface TagInputProps {
   onValueChange: (value: string[]) => void;
   placeholder?: string;
   className?: string;
+  /** Accessible name of the text input (default "Add item"). */
+  inputLabel?: string;
+  /** Accessible name of a tag's remove button (default "Remove <tag>"). */
+  removeLabel?: (tag: string) => string;
+  /** Forwarded to the text input (label / `FormControl` wiring). */
+  id?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean;
+  'data-testid'?: string;
 }
 
-function TagInput({ value, onValueChange, placeholder, className }: TagInputProps) {
+function TagInput({
+  value,
+  onValueChange,
+  placeholder,
+  className,
+  inputLabel = 'Add item',
+  removeLabel = (tag) => `Remove ${tag}`,
+  id,
+  'aria-describedby': describedBy,
+  'aria-invalid': invalid,
+  'data-testid': testId,
+}: TagInputProps) {
   const [draft, setDraft] = React.useState('');
 
   const add = (raw: string) => {
@@ -36,7 +56,7 @@ function TagInput({ value, onValueChange, placeholder, className }: TagInputProp
           {tag}
           <button
             type="button"
-            aria-label={`Remove ${tag}`}
+            aria-label={removeLabel(tag)}
             className="text-muted-foreground hover:text-foreground"
             onClick={() => onValueChange(value.filter((t) => t !== tag))}
           >
@@ -45,7 +65,11 @@ function TagInput({ value, onValueChange, placeholder, className }: TagInputProp
         </span>
       ))}
       <input
-        aria-label="Add item"
+        id={id}
+        aria-label={inputLabel}
+        aria-describedby={describedBy}
+        aria-invalid={invalid}
+        data-testid={testId}
         value={draft}
         placeholder={value.length === 0 ? placeholder : undefined}
         className="flex-1 bg-transparent outline-none placeholder:text-muted-foreground"

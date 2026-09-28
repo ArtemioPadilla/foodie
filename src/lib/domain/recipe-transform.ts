@@ -6,6 +6,7 @@
  */
 import type {
   DietaryLabels,
+  Ingredient,
   MultiLangText,
   NutritionInfo,
   Recipe,
@@ -36,23 +37,44 @@ const MEAT = ['chicken', 'beef', 'pork', 'fish', 'lamb', 'turkey'];
 const DAIRY = ['milk', 'cheese', 'butter', 'cream', 'yogurt'];
 const GLUTEN = ['flour', 'bread', 'pasta', 'wheat'];
 
+/** The catalog facts `determineDietaryLabels` can use for an ingredient id. */
+export type DietaryCatalogIngredient = Pick<Ingredient, 'id' | 'tags'>;
+
 /**
- * Keyword heuristics over ingredient ids (the legacy behaviour). `lowCarb`/
+ * Dietary labels of a submission. An ingredient found in `catalog` (the
+ * wizard picks catalog ids such as `ing_001`) contributes its own tags; any
+ * other id falls back to the legacy keyword heuristics over the id. `lowCarb`/
  * `keto` stay false: they need a nutrition analysis the form does not provide.
  */
 export function determineDietaryLabels(
   ingredients: ReadonlyArray<RecipeIngredient>,
+  catalog: ReadonlyArray<DietaryCatalogIngredient> = [],
 ): DietaryLabels {
-  const ids = ingredients.map((i) => i.ingredientId.toLowerCase());
-  const has = (keywords: string[]) => ids.some((id) => keywords.some((k) => id.includes(k)));
-  const hasMeat = has(MEAT);
-  const hasDairy = has(DAIRY);
-  const hasEggs = has(['egg']);
-  const hasGluten = has(GLUTEN);
+  const byId = new Map(catalog.map((ingredient) => [ingredient.id, ingredient]));
+  const matches = (id: string, keywords: string[]) => keywords.some((k) => id.includes(k));
+  let hasMeat = false;
+  let hasDairy = false;
+  let hasAnimal = false;
+  let hasGluten = false;
+  for (const line of ingredients) {
+    const known = byId.get(line.ingredientId);
+    if (known) {
+      hasMeat ||= !known.tags.vegetarian;
+      hasDairy ||= !known.tags.dairyFree;
+      hasAnimal ||= !known.tags.vegan;
+      hasGluten ||= !known.tags.glutenFree;
+      continue;
+    }
+    const id = line.ingredientId.toLowerCase();
+    hasMeat ||= matches(id, MEAT);
+    hasDairy ||= matches(id, DAIRY);
+    hasAnimal ||= matches(id, ['egg']);
+    hasGluten ||= matches(id, GLUTEN);
+  }
   return {
     glutenFree: !hasGluten,
     vegetarian: !hasMeat,
-    vegan: !hasMeat && !hasDairy && !hasEggs,
+    vegan: !hasMeat && !hasDairy && !hasAnimal,
     dairyFree: !hasDairy,
     lowCarb: false,
     keto: false,
@@ -129,8 +151,24 @@ export function extractEquipment(instructions: ReadonlyArray<string>): string[] 
   return [...found];
 }
 
+/** Listed equipment first, then the keywords found in the instructions; no duplicates (case-insensitive). */
+export function mergeEquipment(listed: ReadonlyArray<string>, extracted: ReadonlyArray<string>): string[] {
+  const seen = new Set<string>();
+  const merged: string[] = [];
+  for (const item of [...listed, ...extracted]) {
+    const value = item.trim();
+    const key = value.toLowerCase();
+    if (!value || seen.has(key)) continue;
+    seen.add(key);
+    merged.push(value);
+  }
+  return merged;
+}
+
 export type TransformOptions = {
   author?: string;
+  /** Catalog ingredients: their dietary tags replace the id keyword heuristics. */
+  ingredients?: ReadonlyArray<DietaryCatalogIngredient>;
   /** Injected for deterministic ids/dates in tests. */
   now?: Date;
 };
@@ -140,8 +178,9 @@ export function transformRecipeFormDataToRecipe(
   formData: RecipeSubmission,
   options: TransformOptions | string = {},
 ): Recipe {
-  const { author, now = new Date() } = typeof options === 'string' ? { author: options } : options;
-  const dietaryLabels = determineDietaryLabels(formData.ingredients);
+  const { author, now = new Date(), ingredients = [] } =
+    typeof options === 'string' ? { author: options } : options;
+  const dietaryLabels = determineDietaryLabels(formData.ingredients, ingredients);
   return {
     id: generateRecipeId(formData.nameEn, now.getTime()),
     name: createMultiLangText(formData.nameEn, formData.nameEs, formData.nameFr),
@@ -162,7 +201,7 @@ export function transformRecipeFormDataToRecipe(
     nutrition: createNutritionInfo(formData),
     ingredients: formData.ingredients,
     instructions: createInstructions(formData.instructions),
-    equipment: extractEquipment(formData.instructions),
+    equipment: mergeEquipment(formData.equipment ?? [], extractEquipment(formData.instructions)),
     imageUrl: formData.imageUrl || undefined,
     author: author || 'Community Contributor',
     dateAdded: toDateKey(now),

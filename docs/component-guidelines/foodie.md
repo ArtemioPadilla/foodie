@@ -233,3 +233,28 @@ first client render agree.
 **Common mistakes**: Forgetting the `<Toaster />` in the same island, or
 mounting two in one island (`toastManager` is a module singleton — each toast
 would render twice).
+
+## RecipeDetailView
+
+Source: [`src/components/domain/RecipeDetailView.tsx`](../../src/components/domain/RecipeDetailView.tsx)
+
+**Purpose**: The static parts of a recipe's detail page — `RecipeDetailHeader`
+(eyebrow, title, description, difficulty and dietary badges, the times /
+servings / calories / cuisine / rating grid and the art) and
+`RecipeDetailExtras` (tips and equipment).
+
+**When to use**: `components/pages/RecipeDetail.astro` (rendered at build, no
+client directive) and the contribute wizard's preview (roadmap Issue 038),
+which must look exactly like the public page. The yield-dependent body is the
+`RecipeDetailActions` island (`preview` hides the favourite / plan / shopping
+actions for a recipe that is not in the catalog yet).
+
+**API overview**: header — `recipe`, `lang`, `cuisineNames`, `mealTypeName`
+(resolved with `cuisineLabels` / `mealTypeLabel`), `titleAs` (`h1` default),
+`viewTransition` (default `true`: names the title `recipe-<id>` for the card →
+page transition). Extras — `recipe`, `lang`, `className` (default `mt-10`);
+renders nothing without tips or equipment.
+
+**Common mistakes**: Rendering a second `h1` or a duplicate
+`view-transition-name` when the header is nested in another page — pass
+`titleAs="h2"` and `viewTransition={false}`.

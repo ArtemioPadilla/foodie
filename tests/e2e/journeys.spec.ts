@@ -360,7 +360,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
   );
 
   for (const prefix of ['', 'es/', 'fr/']) {
-    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/', 'tracking/', 'tracking/goals/', 'tracking/progress/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/', 'tracking/', 'tracking/goals/', 'tracking/progress/', 'contribute/']) {
       test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
         await page.goto(`./${prefix}${route}`);
         await page.waitForLoadState('networkidle');
@@ -369,6 +369,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
         if (route === 'ingredients/') await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
         if (route === 'planner/') await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
         if (route === 'shopping/') await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+        if (route === 'contribute/') await expect(page.getByTestId('contribute-wizard')).toHaveAttribute('data-status', 'ready');
         // Tracking pages (roadmap #034); the progress dashboard is client:visible.
         for (const [path, island] of [['tracking/', 'tracking-today'], ['tracking/goals/', 'goals-form'], ['tracking/progress/', 'progress-dashboard']]) {
           if (route !== path) continue;
@@ -1369,3 +1370,91 @@ test.describe('accounts (roadmap #036)', () => {
     }
   });
 });
+
+// ── Contribute wizard (roadmap Issue 038) ────────────────────────────────────
+// Stepper + Form over RecipeSubmissionSchema, catalog Combobox, nutrition
+// estimate, preview built from the public detail components, draft in
+// localStorage['foodie:contribute-draft'].
+test.describe('contribute wizard (roadmap #038)', () => {
+  test('loads in every locale with the first step ready', async ({ page }) => {
+    for (const [prefix, title, step] of [['', 'Contribute a Recipe', 'Basic Info'], ['es/', 'Contribuir una Receta', 'Info Básica'], ['fr/', 'Contribuer une Recette', 'Info de Base']] as const) {
+      await page.goto(`./${prefix}contribute/`);
+      await expect(page.locator('main[data-page="contribute"] h1')).toHaveText(title);
+      await expect(page.getByTestId('contribute-wizard')).toHaveAttribute('data-status', 'ready');
+      await expect(page.getByRole('heading', { level: 2, name: step })).toBeVisible();
+    }
+  });
+
+  test('blocks Next with translated errors, then walks every step to the preview, and the draft survives a reload', async ({ page }) => {
+    await page.goto('./es/contribute/');
+    const wizard = page.getByTestId('contribute-wizard');
+    await expect(wizard).toHaveAttribute('data-status', 'ready');
+    await page.getByTestId('contribute-next').click();
+    await expect(page.getByTestId('contribute-step-errors')).toContainText('El nombre de la receta (inglés) es requerido');
+    await expect(wizard).toHaveAttribute('data-step', 'basic');
+
+    // 1 · basic
+    await page.getByTestId('contribute-name-en').fill('Weeknight Green Skillet');
+    await page.getByTestId('contribute-name-es').fill('Sartén verde entre semana');
+    await page.getByTestId('contribute-description-en').fill('Chicken and spinach in one pan, on the table in 30 minutes.');
+    await page.getByTestId('contribute-cuisine').click();
+    await page.getByRole('option', { name: 'Mexicana' }).click();
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'timings');
+
+    // 2 · timings
+    await page.getByTestId('contribute-prep-time').fill('10');
+    await page.getByTestId('contribute-cook-time').fill('20');
+    await page.getByTestId('contribute-servings').fill('2');
+    await page.getByRole('textbox', { name: 'Añadir utensilio' }).fill('sartén');
+    await page.getByRole('textbox', { name: 'Añadir utensilio' }).press('Enter');
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'ingredients');
+
+    // 3 · ingredients from the catalog
+    await expect(page.getByTestId('contribute-step-ingredients')).toHaveAttribute('data-catalog', 'success');
+    await page.getByTestId('contribute-add-ingredient').click();
+    const row = page.getByTestId('contribute-ingredient-row').first();
+    await row.getByTestId('contribute-ingredient-picker').fill('Ajo');
+    await page.getByRole('option', { name: 'Ajo', exact: true }).click();
+    await row.getByTestId('contribute-ingredient-quantity').fill('2');
+    await row.getByTestId('contribute-ingredient-unit').click();
+    await page.getByRole('option', { name: 'diente', exact: true }).click();
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'instructions');
+
+    // 4 · instructions
+    await page.getByTestId('contribute-add-step').click();
+    await page.getByTestId('contribute-instruction').first().fill('Dora el ajo en una sartén con aceite.');
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'nutrition');
+
+    // 5 · nutrition estimate
+    await page.getByTestId('contribute-estimate-nutrition').click();
+    await expect(page.getByTestId('contribute-nutrition-calories')).not.toHaveValue('');
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'preview');
+
+    // 6 · preview = the public detail components
+    await expect(page.getByTestId('contribute-validation-summary')).toContainText('¡Todas las verificaciones de validación pasaron!');
+    const detail = page.getByTestId('contribute-preview-detail');
+    await expect(detail.getByRole('heading', { level: 2, name: 'Sartén verde entre semana' })).toBeVisible();
+    await expect(detail.getByTestId('recipe-meta')).toContainText('Mexicana');
+    await expect(detail.getByTestId('ingredient-link')).toHaveText('Ajo');
+    await expect(detail.getByTestId('recipe-equipment')).toContainText('sartén');
+    await expect(page.getByTestId('contribute-preview-card').getByRole('heading')).toHaveText('Sartén verde entre semana');
+
+    const draft = await page.evaluate(() => JSON.parse(localStorage.getItem('foodie:contribute-draft') ?? 'null'));
+    expect(draft).toMatchObject({ version: 1, step: 5, data: { nameEn: 'Weeknight Green Skillet', cuisine: 'mexican', ingredients: [{ ingredientId: 'ing_006', unit: 'clove' }] } });
+
+    await page.reload();
+    await expect(wizard).toHaveAttribute('data-step', 'preview');
+    await expect(page.getByTestId('contribute-draft-restored')).toBeVisible();
+
+    // 7 · submit (Issue 039 fills in the sending flow)
+    await page.getByTestId('contribute-next').click();
+    await expect(wizard).toHaveAttribute('data-step', 'submit');
+    await expect(page.getByTestId('contribute-step-submit')).toHaveAttribute('data-recipe-id', /^weeknight-green-skillet-/);
+  });
+});
+

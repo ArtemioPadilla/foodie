@@ -9,37 +9,28 @@
  * metadata (title, description, OG, hreflang, `Recipe` JSON-LD).
  *
  * Static HTML: header, times, difficulty, cuisines, dietary badges, tips,
- * equipment and the related recipes (computed at build). Everything that
+ * equipment (`RecipeDetailHeader` / `RecipeDetailExtras`, shared with the
+ * contribute wizard's preview — roadmap Issue 038) and the related recipes
+ * (computed at build). Everything that
  * reacts to the selected yield — servings, ingredients, per-step timers,
  * nutrition, favourite / plan / shopping actions — is the single
  * `RecipeDetailActions` island (`client:visible`), which is also rendered on
  * the server so the page is complete without JavaScript.
  */
-import { ArrowLeftIcon, ChefHatIcon, ClockIcon, FlameIcon, StarIcon, UsersIcon } from 'lucide-react';
+import { ArrowLeftIcon } from 'lucide-react';
 import RecipeDetailActions from '@/components/islands/RecipeDetailActions';
-import { DietaryBadges } from '@/components/domain/DietaryBadges';
-import { DifficultyBadge } from '@/components/domain/DifficultyBadge';
-import { RecipeArt, RecipeCard } from '@/components/domain/RecipeCard';
-import { getTranslated, localizedRoute, t, type Locale } from '@/i18n';
+import { RecipeCard } from '@/components/domain/RecipeCard';
+import { RecipeDetailExtras, RecipeDetailHeader } from '@/components/domain/RecipeDetailView';
+import { localizedRoute, t, type Locale } from '@/i18n';
 import { withBase } from '@/lib/href';
-import { humanizeId, type RecipeDetailProps } from '@/lib/domain/recipe-detail';
+import type { RecipeDetailProps } from '@/lib/domain/recipe-detail';
 
 interface Props extends RecipeDetailProps {
   lang: Locale;
 }
 
 const { lang, recipe, related, ingredientMeta, cuisineNames, mealTypeName } = Astro.props;
-const name = getTranslated(recipe.name, lang);
-const description = getTranslated(recipe.description, lang);
-const tips = recipe.tips ? getTranslated(recipe.tips, lang) : '';
 const recipesHref = withBase(localizedRoute('/recipes/', lang));
-const minutes = t(lang, 'common.minutes');
-
-const times = [
-  { key: 'prep', label: t(lang, 'recipe.prepTime'), value: recipe.prepTime },
-  { key: 'cook', label: t(lang, 'recipe.cookTime'), value: recipe.cookTime },
-  { key: 'total', label: t(lang, 'recipe.totalTime'), value: recipe.totalTime },
-];
 ---
 
 <main id="main-content" class="mx-auto max-w-7xl px-4 py-10 sm:py-14" data-page="recipe-detail" data-recipe-id={recipe.id}>
@@ -54,101 +45,13 @@ const times = [
     </a>
   </nav>
 
-  <header class="grid gap-8 lg:grid-cols-5 lg:items-center">
-    <div class="lg:col-span-3">
-      <p class="font-mono text-xs uppercase tracking-[0.2em] text-primary">
-        {t(lang, 'recipe.detailEyebrow')} · {mealTypeName}
-      </p>
-      <h1
-        class="mt-3 font-display text-4xl font-semibold tracking-tight text-foreground sm:text-5xl"
-        style={`view-transition-name: recipe-${recipe.id}`}
-      >
-        {name}
-      </h1>
-      <p class="mt-4 text-lg text-muted-foreground">{description}</p>
-
-      <div class="mt-5 flex flex-wrap items-center gap-2">
-        <DifficultyBadge difficulty={recipe.difficulty} lang={lang} />
-        <DietaryBadges labels={recipe.dietaryLabels} lang={lang} max={8} />
-      </div>
-
-      <dl class="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-border bg-card p-4 sm:grid-cols-4" data-testid="recipe-meta">
-        {times.map((time) => (
-          <div data-time={time.key}>
-            <dt class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-              <ClockIcon className="size-3.5" aria-hidden="true" />
-              {time.label}
-            </dt>
-            <dd class="mt-1 font-semibold tabular-nums text-foreground">{time.value} {minutes}</dd>
-          </div>
-        ))}
-        <div>
-          <dt class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-            <UsersIcon className="size-3.5" aria-hidden="true" />
-            {t(lang, 'recipe.servings')}
-          </dt>
-          <dd class="mt-1 font-semibold tabular-nums text-foreground">{recipe.servings}</dd>
-        </div>
-        <div>
-          <dt class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-            <FlameIcon className="size-3.5" aria-hidden="true" />
-            {t(lang, 'nutrition.calories')}
-          </dt>
-          <dd class="mt-1 font-semibold tabular-nums text-foreground">{recipe.nutrition.calories} {t(lang, 'nutrition.kcal')}</dd>
-        </div>
-        <div>
-          <dt class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-            <ChefHatIcon className="size-3.5" aria-hidden="true" />
-            {t(lang, 'recipe.cuisine')}
-          </dt>
-          <dd class="mt-1 font-semibold text-foreground">{cuisineNames.join(', ')}</dd>
-        </div>
-        <div>
-          <dt class="flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground">
-            <StarIcon className="size-3.5" aria-hidden="true" />
-            {t(lang, 'recipe.rating')}
-          </dt>
-          <dd class="mt-1 font-semibold tabular-nums text-foreground">
-            {recipe.rating.toFixed(1)}
-            <span class="text-sm font-normal text-muted-foreground">
-              · {t(lang, 'recipe.reviewCount', { count: recipe.reviewCount })}
-            </span>
-          </dd>
-        </div>
-      </dl>
-    </div>
-
-    <div class="aspect-[4/3] overflow-hidden rounded-xl border border-border lg:col-span-2">
-      <RecipeArt recipe={recipe} lang={lang} />
-    </div>
-  </header>
+  <RecipeDetailHeader recipe={recipe} lang={lang} cuisineNames={cuisineNames} mealTypeName={mealTypeName} />
 
   <div class="mt-10">
     <RecipeDetailActions client:visible recipe={recipe} lang={lang} ingredientMeta={ingredientMeta} />
   </div>
 
-  {(tips || recipe.equipment.length > 0) && (
-    <div class="mt-10 grid gap-6 md:grid-cols-2">
-      {tips && (
-        <section aria-labelledby="recipe-tips-heading" class="rounded-lg border border-border bg-card p-4 sm:p-6">
-          <h2 id="recipe-tips-heading" class="font-display text-xl font-semibold text-foreground">{t(lang, 'recipe.tips')}</h2>
-          <p class="mt-3 text-muted-foreground">{tips}</p>
-        </section>
-      )}
-      {recipe.equipment.length > 0 && (
-        <section aria-labelledby="recipe-equipment-heading" class="rounded-lg border border-border bg-card p-4 sm:p-6">
-          <h2 id="recipe-equipment-heading" class="font-display text-xl font-semibold text-foreground">
-            {t(lang, 'recipe.equipment')}
-          </h2>
-          <ul class="mt-3 flex flex-wrap gap-2" data-testid="recipe-equipment">
-            {recipe.equipment.map((item) => (
-              <li class="rounded-full bg-muted px-3 py-1 text-sm capitalize text-foreground">{humanizeId(item)}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </div>
-  )}
+  <RecipeDetailExtras recipe={recipe} lang={lang} />
 
   {related.length > 0 && (
     <section aria-labelledby="related-recipes-heading" class="mt-14" data-testid="related-recipes">

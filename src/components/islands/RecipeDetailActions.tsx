@@ -71,11 +71,18 @@ export interface RecipeDetailActionsProps {
   lang: Locale;
   /** `ingredientId → { name, category }` resolved at build for this locale. */
   ingredientMeta: IngredientMetaMap;
+  /**
+   * Contribute wizard preview (roadmap Issue 038): the recipe is not in the
+   * catalog yet, so the favourite / plan / shopping actions are left out
+   * (they would store an id nothing can resolve). Servings, units, checked
+   * ingredients, steps and timers work as on the public page.
+   */
+  preview?: boolean;
 }
 
 const PLAN_SLOTS: ReadonlyArray<PlanSlot> = ['breakfast', 'lunch', 'dinner', 'snacks'];
 
-export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: RecipeDetailActionsProps) {
+export default function RecipeDetailActions({ recipe, lang, ingredientMeta, preview = false }: RecipeDetailActionsProps) {
   const hydrated = useHydrated();
   const name = getTranslated(recipe.name, lang);
 
@@ -130,36 +137,38 @@ export default function RecipeDetailActions({ recipe, lang, ingredientMeta }: Re
   return (
     <div data-testid="recipe-detail-actions" data-hydrated={hydrated ? 'true' : undefined}>
       {/* ── Actions ─────────────────────────────────────────────────────── */}
-      <div
-        role="group"
-        aria-label={t(lang, 'recipe.detailActions')}
-        className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-3"
-      >
-        <FavoriteButton recipeId={recipe.id} recipeName={name} lang={lang} data-testid="favorite-button" />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setPlanOpen(true)}
-          disabled={!hydrated}
-          data-testid="add-to-plan-button"
+      {!preview && (
+        <div
+          role="group"
+          aria-label={t(lang, 'recipe.detailActions')}
+          className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-card p-3"
         >
-          <CalendarPlusIcon className="size-4" aria-hidden="true" />
-          {t(lang, 'recipe.addToPlanner')}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onAddToShopping}
-          disabled={!hydrated}
-          data-testid="add-to-shopping-button"
-        >
-          <ShoppingCartIcon className="size-4" aria-hidden="true" />
-          {t(lang, 'recipe.addIngredientsToShopping')}
-        </Button>
-      </div>
+          <FavoriteButton recipeId={recipe.id} recipeName={name} lang={lang} data-testid="favorite-button" />
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setPlanOpen(true)}
+            disabled={!hydrated}
+            data-testid="add-to-plan-button"
+          >
+            <CalendarPlusIcon className="size-4" aria-hidden="true" />
+            {t(lang, 'recipe.addToPlanner')}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onAddToShopping}
+            disabled={!hydrated}
+            data-testid="add-to-shopping-button"
+          >
+            <ShoppingCartIcon className="size-4" aria-hidden="true" />
+            {t(lang, 'recipe.addIngredientsToShopping')}
+          </Button>
+        </div>
+      )}
 
       {/* ── Servings + units ────────────────────────────────────────────── */}
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+      <div className={cn('flex flex-wrap items-center justify-between gap-4', !preview && 'mt-6')}>
         <ServingsAdjuster
           servings={servings}
           originalServings={recipe.servings}

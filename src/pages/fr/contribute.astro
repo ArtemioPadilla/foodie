@@ -1,7 +1,23 @@
 ---
-// Placeholder until the section is migrated (roadmap Issue 005). Replace this
-// wrapper with the real page; keep the ES/FR twins in step (route-parity).
-import ComingSoon from '@/components/pages/ComingSoon.astro';
+/**
+ * `/contribute/` wrapper for `fr` (roadmap Issue 038). The page body lives in
+ * `components/pages/Contribute.astro`; this file owns the layout metadata for
+ * this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Contribute from '@/components/pages/Contribute.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'fr' as const;
+const alternates = hreflangAlternates('/contribute/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
 ---
 
-<ComingSoon lang="fr" route="/contribute/" section="contribute" />
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'contribute.title')}`}
+  description={t(lang, 'contribute.pageDescription')}
+  lang={lang}
+  alternates={alternates}
+>
+  <Contribute lang={lang} />
+</BaseLayout>

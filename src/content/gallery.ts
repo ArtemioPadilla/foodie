@@ -426,6 +426,16 @@ export const galleryManifest: GalleryEntry[] = [
     island: 'ShowcaseFoodie',
     hydration: 'client:visible',
   },
+  {
+    slug: 'recipe-detail-view',
+    name: 'Recipe detail view',
+    summary:
+      'The static parts of a recipe page — header (eyebrow, title, badges, times/servings/calories/cuisine/rating grid, art) and tips/equipment — shared by /recipes/[id]/ and the contribute wizard preview.',
+    source: 'src/components/domain/RecipeDetailView.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+  },
 ];
 
 export function getByCategory(category: GalleryEntry['category']): GalleryEntry[] {

@@ -7,6 +7,7 @@ import { FavoriteButton } from '@/components/domain/FavoriteButton';
 import { IngredientCard, IngredientCardSkeleton } from '@/components/domain/IngredientCard';
 import { NutritionFacts } from '@/components/domain/NutritionFacts';
 import { RecipeCard, RecipeCardSkeleton } from '@/components/domain/RecipeCard';
+import { RecipeDetailExtras, RecipeDetailHeader } from '@/components/domain/RecipeDetailView';
 import { RecipeTimer } from '@/components/domain/RecipeTimer';
 import { ServingsAdjuster } from '@/components/domain/ServingsAdjuster';
 import { TimeBadge } from '@/components/domain/TimeBadge';
@@ -33,7 +34,8 @@ export type FoodieDemo =
   | 'category-chip'
   | 'servings-adjuster'
   | 'recipe-timer'
-  | 'favorite-button';
+  | 'favorite-button'
+  | 'recipe-detail-view';
 
 const nutrition = { servingSize: '1 plate', calories: 420, protein: 24, carbs: 38, fat: 16, fiber: 6, sugar: 5, sodium: 480, cholesterol: 60 };
 
@@ -355,6 +357,16 @@ function FavoriteButtonDemo() {
   );
 }
 
+function RecipeDetailViewDemo() {
+  const recipe = { ...SAMPLE[1]!, tips: { en: 'Rest the dough overnight.', es: 'Deja reposar la masa toda la noche.', fr: 'Laissez reposer la pâte une nuit.' }, equipment: ['skillet', 'mixing-bowl'] };
+  return (
+    <div className="space-y-6">
+      <RecipeDetailHeader recipe={recipe} cuisineNames={['Mediterranean']} mealTypeName="Dinner" lang="en" titleAs="h2" viewTransition={false} />
+      <RecipeDetailExtras recipe={recipe} lang="en" className="mt-0" />
+    </div>
+  );
+}
+
 const DEMOS: Record<FoodieDemo, () => React.ReactElement> = {
   'recipe-card': RecipeCardDemo,
   'ingredient-card': IngredientCardDemo,
@@ -366,6 +378,7 @@ const DEMOS: Record<FoodieDemo, () => React.ReactElement> = {
   'servings-adjuster': ServingsAdjusterDemo,
   'recipe-timer': RecipeTimerDemo,
   'favorite-button': FavoriteButtonDemo,
+  'recipe-detail-view': RecipeDetailViewDemo,
 };
 
 export const FOODIE_DEMOS = Object.keys(DEMOS) as FoodieDemo[];

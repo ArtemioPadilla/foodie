@@ -151,6 +151,17 @@ export function RecipeActions({ recipe, name, lang }: { recipe: Recipe; name: st
   );
 }`,
   },
+  'recipe-detail-view': {
+    lang: 'tsx',
+    code: `import { RecipeDetailExtras, RecipeDetailHeader } from '@/components/domain/RecipeDetailView';
+
+// Static markup: fine in an .astro page body (no client directive) or inside an island.
+<RecipeDetailHeader recipe={recipe} lang={lang} cuisineNames={cuisineNames} mealTypeName={mealTypeName} />
+<RecipeDetailExtras recipe={recipe} lang={lang} />
+
+// Nested under another heading (e.g. a preview): demote the title, skip the view transition.
+<RecipeDetailHeader recipe={draft} lang={lang} cuisineNames={names} mealTypeName={meal} titleAs="h2" viewTransition={false} />`,
+  },
   primitives: {
     lang: 'tsx',
     code: `import { Button } from '@/components/ui/button';

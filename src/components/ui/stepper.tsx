@@ -17,7 +17,11 @@ function Stepper({ steps, current, className, ...props }: StepperProps) {
         const done = i < current;
         const active = i === current;
         return (
-          <li key={label} className={cn('flex items-center', i < steps.length - 1 && 'flex-1')}>
+          <li
+            key={label}
+            aria-current={active ? 'step' : undefined}
+            className={cn('flex items-center', i < steps.length - 1 && 'flex-1')}
+          >
             <div className="flex items-center gap-2">
               <span
                 className={cn(

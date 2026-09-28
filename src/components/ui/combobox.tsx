@@ -13,6 +13,17 @@ interface ComboboxProps {
   placeholder?: string;
   emptyMessage?: string;
   className?: string;
+  /**
+   * Forwarded to the text input so a `<label htmlFor>` / `FormControl` can
+   * name and describe it (`id`, `aria-*`, `data-testid`, `disabled`).
+   */
+  id?: string;
+  'aria-label'?: string;
+  'aria-labelledby'?: string;
+  'aria-describedby'?: string;
+  'aria-invalid'?: boolean;
+  'data-testid'?: string;
+  disabled?: boolean;
 }
 
 function Combobox({
@@ -22,15 +33,19 @@ function Combobox({
   placeholder = 'Search…',
   emptyMessage = 'No results.',
   className,
+  disabled,
+  ...inputProps
 }: ComboboxProps) {
   return (
     <BaseCombobox.Root
       items={items}
       value={value}
       onValueChange={(v) => onValueChange?.((v as string | null) ?? null)}
+      disabled={disabled}
     >
       <div className={cn('relative', className)}>
         <BaseCombobox.Input
+          {...inputProps}
           placeholder={placeholder}
           className="h-10 w-full rounded-md border border-input bg-background px-3 pr-9 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />

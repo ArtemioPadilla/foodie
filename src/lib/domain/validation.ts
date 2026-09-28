@@ -122,11 +122,28 @@ export function validateUniqueRecipeId(
   return !existingRecipeIds.includes(recipeId);
 }
 
-/** "All checks passed" | "2 error(s), 1 warning(s)". */
-export function getValidationSummary(result: ValidationResult): string {
-  if (result.valid && result.warnings.length === 0) return 'All checks passed';
+/** Localised wording for `getValidationSummary` (the wizard passes `t()`-backed strings). */
+export type ValidationSummaryWording = {
+  allPassed: string;
+  errors: (count: number) => string;
+  warnings: (count: number) => string;
+  separator?: string;
+};
+
+const ENGLISH_SUMMARY: ValidationSummaryWording = {
+  allPassed: 'All checks passed',
+  errors: (count) => `${count} error(s)`,
+  warnings: (count) => `${count} warning(s)`,
+};
+
+/** "All checks passed" | "2 error(s), 1 warning(s)" — or the same in `wording`'s language. */
+export function getValidationSummary(
+  result: ValidationResult,
+  wording: ValidationSummaryWording = ENGLISH_SUMMARY,
+): string {
+  if (result.valid && result.warnings.length === 0) return wording.allPassed;
   const parts: string[] = [];
-  if (result.errors.length > 0) parts.push(`${result.errors.length} error(s)`);
-  if (result.warnings.length > 0) parts.push(`${result.warnings.length} warning(s)`);
-  return parts.join(', ');
+  if (result.errors.length > 0) parts.push(wording.errors(result.errors.length));
+  if (result.warnings.length > 0) parts.push(wording.warnings(result.warnings.length));
+  return parts.join(wording.separator ?? ', ');
 }
