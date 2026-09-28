@@ -73,6 +73,32 @@ export const TRACKING = [
   { id: 't4', date: '2026-09-28', time: '09:00:00', mealType: 'beverage', beverageId: 'bev_coffee_black', quantity: 240, unit: 'ml', nutrition: n(2, 0.3, 0, 0), loggedAt: '2026-09-28T09:00:00.000Z' },
 ];
 
+/**
+ * Custom daily goals for the goals / progress pages (roadmap Issue 034): a
+ * 1 800 kcal target, so the seeded days land on both sides of "on track".
+ */
+export const GOALS = { calories: 1800, protein: 60, carbs: 220, fat: 60, fiber: 28, sodium: 2000, sugar: 40, water: 2500 };
+
+/**
+ * Two weeks of diary history before the frozen "today" (roadmap Issue 034),
+ * plus `TRACKING` itself: the progress dashboard's month view gets bars, a
+ * trend line, macro sparklines, a streak and a most-logged recipe. Days 4 and
+ * 9 back are left empty (gaps in the trend). Deterministic — no randomness.
+ */
+export const TRACKING_HISTORY = [
+  ...Array.from({ length: 13 }, (_, i) => i + 1)
+    .filter((back) => back !== 4 && back !== 9)
+    .flatMap((back) => {
+      const date = `2026-09-${String(28 - back).padStart(2, '0')}`;
+      const lunch = 900 + ((back * 137) % 700);
+      return [
+        { id: `h${back}b`, date, time: '08:00:00', mealType: 'breakfast', recipeId: 'rec_007', quantity: 2, unit: 'servings', servings: 2, nutrition: n(680, 22, 104, 20), loggedAt: `${date}T08:00:00.000Z` },
+        { id: `h${back}l`, date, time: '13:00:00', mealType: 'lunch', recipeId: 'rec_001', quantity: 1, unit: 'servings', servings: 1, nutrition: n(lunch, 30 + (back % 5) * 6, 90, 35), loggedAt: `${date}T13:00:00.000Z` },
+      ];
+    }),
+  ...TRACKING,
+];
+
 /** Freeze the clock and seed localStorage (plus the privacy ack) before the first `goto`. */
 export async function seedPlanning(page: Page, storage: Record<string, unknown>): Promise<void> {
   await page.clock.setFixedTime(PLANNING_NOW);

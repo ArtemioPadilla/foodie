@@ -360,7 +360,7 @@ test.describe('catalog journeys (roadmap #023)', () => {
   );
 
   for (const prefix of ['', 'es/', 'fr/']) {
-    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/', 'shopping/', 'pantry/', 'tracking/', 'tracking/goals/', 'tracking/progress/']) {
       test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
         await page.goto(`./${prefix}${route}`);
         await page.waitForLoadState('networkidle');
@@ -369,6 +369,12 @@ test.describe('catalog journeys (roadmap #023)', () => {
         if (route === 'ingredients/') await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
         if (route === 'planner/') await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
         if (route === 'shopping/') await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+        // Tracking pages (roadmap #034); the progress dashboard is client:visible.
+        for (const [path, island] of [['tracking/', 'tracking-today'], ['tracking/goals/', 'goals-form'], ['tracking/progress/', 'progress-dashboard']]) {
+          if (route !== path) continue;
+          await page.getByTestId(island).scrollIntoViewIfNeeded();
+          await expect(page.getByTestId(island)).toHaveAttribute('data-status', 'ready');
+        }
 
         const text = await page.locator('body').innerText();
         expect(text.match(RAW_KEY)?.[0], `raw key in the text of /${prefix}${route}`).toBeUndefined();
@@ -838,6 +844,163 @@ test.describe('food diary journeys (roadmap #031)', () => {
     await lunch.getByTestId('tracking-entry-delete').click();
     await page.getByTestId('confirm-delete-entry').click();
     await expect(lunch.getByTestId('tracking-entry')).toHaveCount(0);
+  });
+});
+
+// ── Nutrition tracking journeys (roadmap Issue 034) ──────────────────────────
+// US-4.x end to end: log a recipe in the diary → the progress dashboard counts
+// it → change the goals → the dashboard recalculates against them → charts
+// render; everything is localStorage (ADR 0002) and survives a reload.
+// Legacy had no tracking e2e (only the jsdom integration suites GoalsPage /
+// ProgressPage / TrackingPage / QuickAddModal, ported in #031–#033).
+// The clock is frozen on Wednesday 2026-09-30 so the Monday-based week and
+// the "7 days" of the goals-met KPI never move.
+test.describe('nutrition tracking journeys (roadmap #034)', () => {
+  test.use({ timezoneId: 'UTC', locale: 'en-US' });
+  const TODAY = '2026-09-30';
+
+  test.beforeEach(async ({ page }) => {
+    await page.clock.setFixedTime(new Date(`${TODAY}T12:00:00Z`));
+  });
+
+  /** Types into a Base UI NumberField (select-all first so the old value is replaced) and commits on blur. */
+  async function setNumber(input: import('@playwright/test').Locator, value: string) {
+    await input.click();
+    await input.press('ControlOrMeta+a');
+    await input.pressSequentially(value);
+    await input.press('Tab');
+  }
+
+  async function openProgress(page: import('@playwright/test').Page) {
+    const dashboard = page.getByTestId('progress-dashboard');
+    await dashboard.scrollIntoViewIfNeeded();
+    await expect(dashboard).toHaveAttribute('data-status', 'ready');
+    return page.locator(`[data-testid="progress-day"][data-date="${TODAY}"]`);
+  }
+
+  test('log a recipe → progress → set goals → progress recalculated → charts, and it survives a reload', async ({ page }) => {
+    // 1. Diary: Banana Pancakes for lunch. The catalog's nutrition is for the
+    // whole recipe (4 servings: 340 kcal, 11 g protein), so 12 servings = 3 ×.
+    await page.goto('./tracking/');
+    await expect(page.getByTestId('tracking-day')).toHaveAttribute('data-catalog', 'success');
+    await page.getByRole('button', { name: 'Add to Lunch' }).click();
+    const dialog = page.getByTestId('quick-add-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('searchbox', { name: 'Search recipes' }).fill('banana pancakes');
+    await dialog.getByTestId('quick-add-recipe-option').filter({ hasText: 'Banana Pancakes' }).first().click();
+    const servings = dialog.getByRole('textbox', { name: 'Servings' });
+    await setNumber(servings, '12');
+    await expect(servings).toHaveValue('12');
+    await expect(dialog.getByTestId('preview-calories')).toHaveText(/^1,020 /);
+    await dialog.getByRole('button', { name: 'Log Meal' }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page.getByTestId('tracking-calories')).toHaveText(/^1,020 \/ 2,000/);
+
+    // 2. Progress (via the diary's link): one logged day, below the default 2 000 kcal goal.
+    await page.getByRole('link', { name: 'View progress' }).click();
+    await page.waitForURL(/\/tracking\/progress\/$/);
+    let today = await openProgress(page);
+    await expect(page.getByTestId('progress-view')).toHaveAttribute('data-logged-days', '1');
+    await expect(page.getByTestId('progress-average-value')).toHaveText('1,020');
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('0/7');
+    await expect(page.getByTestId('progress-streak-value')).toHaveText('0');
+    await expect(page.getByTestId('progress-most-logged-value')).toHaveText('Banana Pancakes');
+    await expect(today).toContainText('1,020 / 2,000 kcal');
+    await expect(today).toContainText('51%');
+    await expect(today).not.toHaveAttribute('data-met', 'true');
+
+    // 3. Goals (via the dashboard's link): 1 000 kcal and 30 g protein, saved.
+    await page.getByRole('link', { name: 'Edit goals' }).click();
+    await page.waitForURL(/\/tracking\/goals\/$/);
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    const calories = page.locator('[data-goal="calories"]').getByRole('textbox');
+    const protein = page.locator('[data-goal="protein"]').getByRole('textbox');
+    await expect(calories).toHaveValue('2,000');
+    await setNumber(calories, '1000');
+    await setNumber(protein, '30');
+    await expect(calories).toHaveValue('1,000');
+    await expect(page.getByTestId('goals-status')).toHaveText('You have unsaved changes.');
+    await page.getByRole('button', { name: 'Save Goals' }).click();
+    await expect(page.getByText('Goals saved successfully')).toBeVisible();
+    await expect(page.getByTestId('goals-status')).toHaveText('');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('nutritionGoals') ?? '{}'))).toMatchObject({ calories: 1000, protein: 30 });
+
+    // 4. Progress recalculated against the new goals: the day is on track (102 %, protein 110 %).
+    await page.goto('./tracking/progress/');
+    today = await openProgress(page);
+    await expect(today).toContainText('1,020 / 1,000 kcal');
+    await expect(today).toContainText('102%');
+    await expect(today).toHaveAttribute('data-met', 'true');
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('1/7');
+    await expect(page.getByTestId('progress-streak-value')).toHaveText('1');
+
+    // 5. Charts: calories per day, the trend against the goal, the macro sparklines,
+    // each an SVG inside a labelled role="img" plus an sr-only data table.
+    await expect(page.getByTestId('progress-empty')).toHaveCount(0);
+    for (const chart of ['progress-calories-chart', 'progress-trend-chart']) {
+      const img = page.getByTestId(chart).getByRole('img');
+      await expect(img).toBeVisible();
+      await expect(img.locator('svg').first()).toBeVisible();
+    }
+    await expect(page.getByTestId('progress-macros').getByRole('img').first()).toBeVisible();
+    await expect(page.getByTestId('progress-calories-table')).toContainText('1,020');
+    await page.getByRole('button', { name: 'Month' }).click();
+    await expect(page.getByTestId('progress-view')).toHaveAttribute('data-view', 'month');
+    await expect(page.getByTestId('progress-calories-chart').getByRole('img').locator('svg').first()).toBeVisible();
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('1/30');
+
+    // 6. Persistence: a reload keeps the entry, the goals and the recalculated progress.
+    await page.reload();
+    today = await openProgress(page);
+    await expect(today).toHaveAttribute('data-met', 'true');
+    await expect(page.getByTestId('progress-average-value')).toHaveText('1,020');
+    await expect(page.getByTestId('progress-goals-met-value')).toHaveText('1/7');
+    await page.goto('./tracking/goals/');
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    await expect(calories).toHaveValue('1,000');
+    await expect(protein).toHaveValue('30');
+    await page.goto('./tracking/');
+    await expect(page.getByTestId('tracking-calories')).toHaveText(/^1,020 \/ 1,000/);
+  });
+
+  test('a preset fills the form without saving; "Reset to Defaults" restores the legacy goals', async ({ page }) => {
+    await page.goto('./tracking/goals/');
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    const calories = page.locator('[data-goal="calories"]').getByRole('textbox');
+    await page.locator('[data-preset="deficit"]').click();
+    await expect(calories).not.toHaveValue('2,000');
+    await expect(page.getByTestId('goals-status')).toContainText('applied');
+    expect(await page.evaluate(() => localStorage.getItem('nutritionGoals'))).toBeNull();
+    await page.getByRole('button', { name: 'Save Goals' }).click();
+    await expect(page.getByText('Goals saved successfully')).toBeVisible();
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('nutritionGoals') ?? '{}'));
+    expect(saved.calories).toBeLessThan(2000);
+
+    await page.reload();
+    await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+    await expect(calories).toHaveValue(new Intl.NumberFormat('en-US').format(saved.calories));
+    await page.getByRole('button', { name: 'Reset to Defaults' }).click();
+    await expect(calories).toHaveValue('2,000');
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('nutritionGoals') ?? '{}'))).toMatchObject({ calories: 2000, protein: 50 });
+  });
+
+  test('goals and progress load in every locale; an empty diary shows the empty state', async ({ page }) => {
+    const pages = [
+      ['', 'Nutrition Goals', 'Your Progress'],
+      ['es/', 'Objetivos Nutricionales', 'Tu Progreso'],
+      ['fr/', 'Objectifs Nutritionnels', 'Votre Progrès'],
+    ] as const;
+    for (const [prefix, goalsTitle, progressTitle] of pages) {
+      await page.goto(`./${prefix}tracking/goals/`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(goalsTitle);
+      await expect(page.getByTestId('goals-form')).toHaveAttribute('data-status', 'ready');
+      await expect(page.locator('html')).toHaveAttribute('lang', prefix ? prefix.slice(0, 2) : 'en');
+      await page.goto(`./${prefix}tracking/progress/`);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText(progressTitle);
+      await openProgress(page);
+      await expect(page.getByTestId('progress-empty')).toBeVisible();
+      await expect(page.getByTestId('progress-view')).toHaveAttribute('data-logged-days', '0');
+    }
   });
 });
 

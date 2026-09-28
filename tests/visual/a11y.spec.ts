@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { PANTRY, PLAN, SHOPPING, TRACKING, seedPlanning } from '../fixtures/planning';
+import { GOALS, PANTRY, PLAN, SHOPPING, TRACKING, TRACKING_HISTORY, seedPlanning } from '../fixtures/planning';
 
 /**
  * Accessibility gate (Epic 12, criterion #1 of the 7-item UX quality bar).
@@ -28,6 +28,8 @@ import { PANTRY, PLAN, SHOPPING, TRACKING, seedPlanning } from '../fixtures/plan
 // radios, 50 cards with FavoriteButtons. `/planner/`, `/es/shopping/`,
 // `/fr/pantry/` (roadmap Issue 029): the planning islands in their empty
 // state; the seeded (ready) state of each runs in the loop further down.
+// `/tracking/`, `/es/tracking/goals/`, `/fr/tracking/progress/` (roadmap
+// Issues 031–034): the three tracking pages, empty (default goals, no diary).
 // Every route runs in both the chromium-light and chromium-dark projects
 // (light + dark themes).
 const routes = [
@@ -47,7 +49,22 @@ const routes = [
   '/es/shopping/',
   '/fr/pantry/',
   '/tracking/',
+  '/es/tracking/goals/',
+  '/fr/tracking/progress/',
 ];
+
+/**
+ * Waits for the page's island to be hydrated before scanning. The progress
+ * dashboard is `client:visible`, so it is scrolled into view first.
+ */
+async function waitForIsland(page: import('@playwright/test').Page, testId: string) {
+  const island = page.getByTestId(testId);
+  await island.scrollIntoViewIfNeeded();
+  await expect(island).toHaveAttribute('data-status', 'ready');
+  // Back to the top: scrolled content under the translucent sticky header
+  // would be measured as the header's background by the contrast rule.
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
 
 /** Axe scan (WCAG 2.1 AA) that fails on critical/serious violations. */
 async function expectNoSeriousViolations(page: import('@playwright/test').Page, route: string) {
@@ -105,7 +122,9 @@ for (const route of routes) {
     // Catalog browsers: scan the hydrated island (cards rendered), not its skeleton.
     if (/recipes\/$/.test(route)) await expect(page.getByTestId('recipe-card').first()).toBeVisible();
     if (/ingredients\/$/.test(route)) await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
-    if (/tracking\/$/.test(route)) await expect(page.getByTestId('tracking-today')).toHaveAttribute('data-status', 'ready');
+    if (/tracking\/$/.test(route)) await waitForIsland(page, 'tracking-today');
+    if (/tracking\/goals\/$/.test(route)) await waitForIsland(page, 'goals-form');
+    if (/tracking\/progress\/$/.test(route)) await waitForIsland(page, 'progress-dashboard');
     await expectNoSeriousViolations(page, route);
   });
 }
@@ -119,6 +138,10 @@ const seeded = [
   { route: '/pantry/', storage: { pantryItems: PANTRY }, ready: 'pantry' },
   // Roadmap Issue 031: the diary's "today" (frozen clock) with entries in several meals.
   { route: '/tracking/', storage: { trackingEntries: TRACKING }, ready: 'tracking-today' },
+  // Roadmap Issue 034: custom goals in the form; two weeks of history against
+  // them in the dashboard (KPIs, charts, sr-only tables, daily meters).
+  { route: '/tracking/goals/', storage: { nutritionGoals: GOALS }, ready: 'goals-form' },
+  { route: '/tracking/progress/', storage: { trackingEntries: TRACKING_HISTORY, nutritionGoals: GOALS }, ready: 'progress-dashboard' },
 ] as const;
 
 for (const { route, storage, ready } of seeded) {
@@ -126,10 +149,38 @@ for (const { route, storage, ready } of seeded) {
     await seedPlanning(page, storage);
     await page.goto(route);
     await page.waitForLoadState('networkidle');
-    await expect(page.getByTestId(ready)).toHaveAttribute('data-status', 'ready');
+    await waitForIsland(page, ready);
     await expectNoSeriousViolations(page, route);
   });
 }
+
+// Roadmap Issue 034: the month view of the dashboard (bars for every logged
+// day, 7-day trend) and the goals form with an out-of-range value (inline
+// error + "fix the errors" live region).
+test('a11y — /tracking/progress/ month view', async ({ page }) => {
+  await seedPlanning(page, { trackingEntries: TRACKING_HISTORY, nutritionGoals: GOALS });
+  await page.goto('/tracking/progress/');
+  await waitForIsland(page, 'progress-dashboard');
+  await page.getByRole('button', { name: 'Month' }).click();
+  await expect(page.getByTestId('progress-view')).toHaveAttribute('data-view', 'month');
+  await expect(page.getByTestId('progress-calories-chart').getByRole('img')).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expectNoSeriousViolations(page, '/tracking/progress/ (month)');
+});
+
+test('a11y — /tracking/goals/ invalid value', async ({ page }) => {
+  await seedPlanning(page, { nutritionGoals: GOALS });
+  await page.goto('/tracking/goals/');
+  await waitForIsland(page, 'goals-form');
+  const calories = page.locator('[data-goal="calories"]').getByRole('textbox');
+  await calories.fill('100');
+  await calories.press('Tab');
+  await page.getByRole('button', { name: 'Save Goals' }).click();
+  await expect(page.getByTestId('goals-status')).toContainText('out of range');
+  // The hovered primary button (bg-primary/90) is a kit hover colour, not this page.
+  await page.mouse.move(0, 0);
+  await expectNoSeriousViolations(page, '/tracking/goals/ (invalid)');
+});
 
 // Roadmap Issue 031: the quick-add dialog (Tabs + Select + NumberField) open
 // with a recipe selected, then on the water tab.
