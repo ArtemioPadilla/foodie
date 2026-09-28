@@ -13,9 +13,9 @@ cannot: a real install and a real device.
 | Piece | Where | Behaviour |
 | --- | --- | --- |
 | Manifest | `AstroPWA({ manifest })` → `dist/manifest.webmanifest`, linked from `BaseLayout.astro` through `withBase()` | `name` "Foodie - Meal Planner", `short_name` "Foodie", `theme_color` `#10b981`, `background_color` `#ffffff` (light `--background`), `display` `standalone`, `start_url` = `scope` = base with trailing slash (`/` or `/foodie/`), icons 192, 512 and maskable 512 |
-| Service worker | `generateSW` → `dist/sw.js`, registered only by `virtual:pwa-register` (`src/lib/pwa-register.ts`, called from `BaseLayout.astro`); `autoUpdate` | Precaches every Foodie page ×3 locales, JS, CSS and icons. The template's gallery, demos, blocks and showcase are left out (online only) |
+| Service worker | `generateSW` → `dist/sw.js`, registered only by `virtual:pwa-register` (`src/lib/pwa-register.ts`, called from `BaseLayout.astro`); `autoUpdate` | Precaches every Foodie page ×3 locales, JS, CSS, icons and the self-hosted `woff2` fonts (`public/fonts/`). The template's gallery, demos, blocks and showcase are left out (online only) |
 | Catalog data | `runtimeCaching` → `foodie-data` | `<base>data/*.json` **NetworkFirst**: fresh when online, cached copy when offline or after a 10 s network timeout; entries expire after 7 days. `useCatalog` also persists the parsed catalog in IndexedDB (TanStack Query) |
-| Google Fonts | `google-fonts-stylesheets`, `google-fonts-webfonts` | **CacheFirst**, one year |
+| Fonts | `public/fonts/*.woff2`, `@font-face` in `src/styles/global.css` | Self-hosted and **precached** (`globPatterns` includes `woff2`); no runtime cache and no third-party font host |
 | Navigation fallback | `navigateFallback: BASE` | A navigation to a page that is not precached is answered with the home page — except `/api/`, `<base>api/`, the excluded template sections and plain files (`.txt`, `.xml`, `.json`, `.webmanifest`), which go to the network |
 | UI | `OfflineBanner`, `InstallButton`, `UpdateToast` in `BaseLayout.astro`, all behind `flags.pwaPrompts` (`PUBLIC_FLAG_PWA_PROMPTS`, default on), localised with the page `lang` | Offline banner while `navigator.onLine` is false; install button when the browser fires `beforeinstallprompt`; update toast when a new SW is waiting |
 
@@ -67,8 +67,9 @@ ASTRO_BASE=/foodie npm run preview   # http://localhost:4321/foodie/
 7. Back online: the pill disappears; the next catalog request refreshes the
    data cache.
 
-Expected gaps offline: web fonts fall back to the system stack until they have
-been cached once online; the template gallery/demos are not available.
+Expected gaps offline: the template gallery/demos are not available. Fonts
+are part of the precache, so typography is identical offline (DevTools →
+Application → Cache storage → `workbox-precache-…` lists `fonts/*.woff2`).
 
 ## 4. Updates
 

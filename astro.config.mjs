@@ -138,8 +138,8 @@ export default defineConfig({
       },
       workbox: {
         // Precache the static build: every Foodie page (×3 locales) plus JS,
-        // CSS and icons, so the catalog pages, planner, shopping list and
-        // pantry open offline once the SW is installed (roadmap Issue 028).
+        // CSS, icons and the self-hosted woff2 fonts (public/fonts/), so the
+        // catalog pages, planner, shopping list and pantry open offline once the SW is installed (roadmap Issue 028).
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
         // The template's reference surfaces (component gallery, demos, blocks,
         // showcase) are not part of the app — leave them out of the install
@@ -173,26 +173,6 @@ export default defineConfig({
                 maxEntries: 20,
                 maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
-            // Google Fonts stylesheet — versioned by its query string.
-            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-stylesheets',
-              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
-          {
-            // Google Fonts files — immutable URLs.
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts-webfonts',
-              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

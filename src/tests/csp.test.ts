@@ -19,6 +19,8 @@ import { describe, expect, it } from 'vitest';
  *     `accounts.google.com`, the auth domain) and nothing re-opens inline
  *     script execution (`'unsafe-inline'`) or `eval` outside the gallery
  *     pages that mount the live Playground;
+ *   - no Google Fonts origin in the policy or the markup (fonts are
+ *     self-hosted under public/fonts/);
  *   - every inline script the browser would execute and every inline
  *     <style> element is covered by a SHA-256 hash in the policy, so the
  *     page behaves the same with the CSP as without it.
@@ -100,6 +102,9 @@ describe.runIf(runDist)('built site — Content-Security-Policy (roadmap #035)',
       need('script-src', 'https://accounts.google.com');
       need('object-src', "'none'");
       need('base-uri', "'self'");
+      // Fonts are self-hosted (public/fonts/): no third-party font host.
+      if (/fonts\.(googleapis|gstatic)\.com/.test(meta[1]!)) problems.push(`${rel}: CSP allows a Google Fonts origin`);
+      if (/fonts\.(googleapis|gstatic)\.com/.test(html)) problems.push(`${rel}: references Google Fonts`);
       if (scriptSrc.includes("'unsafe-inline'")) problems.push(`${rel}: script-src allows 'unsafe-inline'`);
       const isPlaygroundPage = rel.startsWith('gallery/') && html.includes('Playground');
       if (scriptSrc.includes("'unsafe-eval'") && !isPlaygroundPage) {

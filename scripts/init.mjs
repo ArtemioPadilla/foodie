@@ -71,6 +71,9 @@ mkdirSync(out, { recursive: true });
 
 // --- reusable copies (self-contained: solo dependen de @/lib/utils, base-ui, etc.) ---
 copy('src/styles/global.css');
+// global.css declares self-hosted @font-face rules (Fraunces, Hanken Grotesk,
+// JetBrains Mono): the woff2 files + their OFL licenses travel with it.
+if (existsSync(join(ROOT, 'public/fonts'))) cpSync(join(ROOT, 'public/fonts'), dst('public/fonts'), { recursive: true });
 for (const f of LIB) copy(`src/lib/${f}.ts`);
 copy('src/lib/api.test.ts');
 copy('src/stores/theme.ts');
@@ -222,9 +225,7 @@ const { title = '${name}', description = '', lang = 'en' } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
+    <link rel="preload" href={withBase('/fonts/hanken-grotesk-latin.woff2')} as="font" type="font/woff2" crossorigin />
     <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <meta name="theme-color" content="#10b981" />

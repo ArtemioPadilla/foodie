@@ -66,12 +66,10 @@ describe('Workbox caching (roadmap #028)', () => {
     expect(rule).toMatch(/maxAgeSeconds:\s*60 \* 60 \* 24 \* 7\b/);
   });
 
-  it('keeps Google Fonts CacheFirst (stylesheets and font files)', () => {
-    for (const cacheName of ['google-fonts-stylesheets', 'google-fonts-webfonts']) {
-      expect(cacheRule(`cacheName: '${cacheName}'`)).toMatch(/handler:\s*'CacheFirst'/);
-    }
-    expect(pwa).toContain('fonts\\.googleapis\\.com');
-    expect(pwa).toContain('fonts\\.gstatic\\.com');
+  it('precaches the self-hosted fonts instead of caching Google Fonts at runtime', () => {
+    expect(pwa).toMatch(/globPatterns:\s*\[[^\]]*woff2/);
+    expect(pwa).not.toMatch(/fonts\\?\.(googleapis|gstatic)/);
+    expect(pwa).not.toContain('google-fonts-');
   });
 
   it('keeps the template GitHub API cache for the dashboard demo', () => {

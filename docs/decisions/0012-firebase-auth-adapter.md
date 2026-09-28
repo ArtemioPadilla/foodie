@@ -97,12 +97,12 @@ Every built page carries a `<meta http-equiv="content-security-policy">` in
 |---|---|---|
 | `default-src` | `'self'` | Everything else stays same-origin |
 | `script-src` | `'self'` `https://apis.google.com` `https://accounts.google.com` + SHA-256 hashes | Firebase's Google popup loader; hashes cover every inline script (below) |
-| `style-src` | `'self'` `https://fonts.googleapis.com` + SHA-256 hashes | Google Fonts stylesheet; Astro's inlined `<style>`; Base UI's scrollbar sheet and zag-js's splitter drag cursor (fixed texts, hashed in `csp.config.mjs`) |
+| `style-src` | `'self'` + SHA-256 hashes | Bundled CSS; Astro's inlined `<style>`; Base UI's scrollbar sheet and zag-js's splitter drag cursor (fixed texts, hashed in `csp.config.mjs`) |
 | `style-src-attr` | `'unsafe-inline'` | `style="…"` attributes from React SSR, Astro and Shiki (attributes only, never `<style>` elements) |
 | `connect-src` | `'self'` `https://*.googleapis.com` `https://api.github.com` | Firebase Auth REST (identitytoolkit, securetoken, www.googleapis.com); GitHub REST (FeedbackFAB duplicate search, API demos) |
 | `frame-src` | `'self'` `https://foodie-cc553.firebaseapp.com` `https://accounts.google.com` | `signInWithPopup`'s auth-handler iframe and the Google account chooser |
 | `img-src` | `'self'` `data:` `blob:` `lh3.googleusercontent.com` `avatars.githubusercontent.com` `img.shields.io` | Provider profile photos, README badges |
-| `font-src` | `'self'` `data:` `https://fonts.gstatic.com` | Google Fonts files |
+| `font-src` | `'self'` `data:` | Self-hosted woff2 in `public/fonts/` (no third-party font host) |
 | `worker-src` / `manifest-src` / `form-action` / `base-uri` | `'self'` | PWA service worker + manifest; no cross-origin form posts or `<base>` hijack |
 | `object-src` | `'none'` | No plugins |
 
@@ -125,6 +125,15 @@ Every built page carries a `<meta http-equiv="content-security-policy">` in
   `new Function('')` once to decide whether to JIT; under the CSP the probe
   is refused (a `securitypolicyviolation` event, no console error) and Zod
   falls back to its interpreter — behaviour is unchanged.
+- **Self-hosted fonts.** Fraunces, Hanken Grotesk and JetBrains Mono ship as
+  variable `woff2` files in `public/fonts/` (latin + latin-ext subsets, OFL —
+  `public/fonts/LICENSE.md`), declared with `@font-face` (`font-display:
+  swap`, `unicode-range`) at the top of `src/styles/global.css`;
+  `BaseLayout.astro` preloads the latin Hanken Grotesk face through
+  `withBase()`. No request leaves the origin for typography, so the policy
+  lists no `fonts.googleapis.com` / `fonts.gstatic.com` and the service
+  worker precaches the fonts with the rest of the build (hardening pass
+  after Phase 5).
 - **Auth domain.** `foodie-cc553.firebaseapp.com` is the default; when
   `PUBLIC_FIREBASE_AUTH_DOMAIN` is set at build time (deploy secrets, a fork's
   own project) that domain replaces it. Flag-gated analytics

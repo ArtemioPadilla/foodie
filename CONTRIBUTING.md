@@ -68,17 +68,17 @@ The CI workflow at `.github/workflows/visual.yml` runs `npx playwright test`
 push to `main`. It is a **hard gate** — no `continue-on-error` (roadmap Issue
 029; `src/tests/workflow-foodie-ci.test.ts` keeps it that way).
 
-Screenshot specs call `pinSystemFonts(page)` (`tests/helpers.ts`) before the
-first navigation: Google Fonts is answered with an empty stylesheet, so a
-baseline never depends on whether `fonts.googleapis.com` was reachable when it
-was captured. New screenshot specs must do the same.
+Web fonts are self-hosted (`public/fonts/`, `@font-face` in
+`src/styles/global.css`), so a baseline renders the same glyphs on every
+machine — no third-party font host is involved, and Playwright waits for
+`document.fonts.ready` before each screenshot.
 
 > The console-error smoke (`tests/visual/smoke.spec.ts`) needs the third-party
-> hosts the pages load (Google Fonts, and `api.github.com` for
-> `/demos/dashboard/`) to answer normally. On a network that intercepts TLS
-> (corporate proxies, some sandboxes) it fails with
-> `net::ERR_CERT_AUTHORITY_INVALID`; that is the environment, not the app — on
-> GitHub runners those hosts answer and the smoke passes.
+> hosts the pages load (`api.github.com` for `/demos/dashboard/`) to answer
+> normally. On a network that intercepts TLS (corporate proxies, some
+> sandboxes) it can fail with `net::ERR_CERT_AUTHORITY_INVALID`; that is the
+> environment, not the app — on GitHub runners those hosts answer and the
+> smoke passes.
 
 ### Update baselines after an intentional visual change
 

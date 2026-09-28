@@ -48,22 +48,3 @@ export async function mockDataRoutes(
     );
   }
 }
-
-/**
- * Answers Google Fonts (`fonts.googleapis.com` stylesheet + `fonts.gstatic.com`
- * files) with an empty stylesheet, so screenshots always render with the
- * system fallback stack (roadmap Issue 029).
- *
- * WHY: baselines must not depend on a third-party host. Where the fonts are
- * reachable (GitHub runners) the page swaps to Fraunces/Hanken Grotesk after
- * load; where they are not (proxied sandboxes, offline laptops) it keeps the
- * fallback — the same commit would produce two different pictures. Pinning the
- * fallback makes every environment render the same glyphs. Typography itself
- * is covered by Lighthouse and the a11y contrast checks, not by pixels.
- * Call it before the first `page.goto()`.
- */
-export async function pinSystemFonts(page: Page): Promise<void> {
-  await page.route(/^https:\/\/fonts\.(googleapis|gstatic)\.com\//, (route) =>
-    route.fulfill({ status: 200, contentType: 'text/css', body: '' }),
-  );
-}

@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { pinSystemFonts } from '../helpers';
 
 /**
  * Visual snapshot of a static ingredient detail (roadmap Issue 019):
@@ -12,7 +11,6 @@ import { pinSystemFonts } from '../helpers';
  * tests/__screenshots__/{chromium-light,chromium-dark}/ingredient-detail.png.
  */
 test('ingredient detail page screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   // Acknowledge the first-visit privacy notice so it never overlays the capture.
   await page.addInitScript(() => localStorage.setItem('foodie:privacy-ack', 'true'));
   await page.goto('/ingredients/ing_101/');

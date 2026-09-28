@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { pinSystemFonts } from '../helpers';
 
 test('gallery page screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await page.goto('/gallery');
 
   // Scroll to bottom so all client:visible islands enter the viewport and

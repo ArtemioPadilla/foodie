@@ -1,5 +1,4 @@
 import { test, expect, type Page } from '@playwright/test';
-import { pinSystemFonts } from '../helpers';
 import { GOALS, TRACKING, TRACKING_HISTORY, seedPlanning } from '../fixtures/planning';
 
 /**
@@ -29,7 +28,6 @@ async function freeze(page: Page) {
 }
 
 test('tracking diary screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await seedPlanning(page, { trackingEntries: TRACKING, nutritionGoals: GOALS });
   await page.goto('/tracking/');
   await page.waitForLoadState('networkidle');
@@ -41,7 +39,6 @@ test('tracking diary screenshot', async ({ page }) => {
 });
 
 test('nutrition goals screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await seedPlanning(page, { nutritionGoals: GOALS });
   await page.goto('/tracking/goals/');
   await page.waitForLoadState('networkidle');
@@ -53,7 +50,6 @@ test('nutrition goals screenshot', async ({ page }) => {
 });
 
 test('progress dashboard screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await seedPlanning(page, { trackingEntries: TRACKING_HISTORY, nutritionGoals: GOALS });
   await page.goto('/tracking/progress/');
   await page.waitForLoadState('networkidle');

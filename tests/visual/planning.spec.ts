@@ -1,5 +1,4 @@
 import { test, expect, type Page } from '@playwright/test';
-import { pinSystemFonts } from '../helpers';
 import { PANTRY, PLAN, SHOPPING, seedPlanning } from '../fixtures/planning';
 
 /**
@@ -10,8 +9,9 @@ import { PANTRY, PLAN, SHOPPING, seedPlanning } from '../fixtures/planning';
  * tests/__screenshots__/{chromium-light,chromium-dark}/{planner,shopping,pantry}.png.
  *
  * Determinism: the clock is frozen (timers still run, so hydration behaves as
- * usual), the timezone and locale are pinned, and web fonts are pinned to the
- * system fallback (`pinSystemFonts`). Viewport-only shots: the fold holds the
+ * usual) and the timezone and locale are pinned. Web fonts are self-hosted
+ * (public/fonts/), so every environment renders the same glyphs; Playwright
+ * waits for `document.fonts.ready` before each screenshot. Viewport-only shots: the fold holds the
  * controls and the first rows.
  */
 test.use({ timezoneId: 'UTC', locale: 'en-US' });
@@ -29,7 +29,6 @@ async function freeze(page: Page) {
 }
 
 test('planner screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await seedPlanning(page, { currentMealPlan: PLAN });
   await page.goto('/planner/');
   await page.waitForLoadState('networkidle');
@@ -42,7 +41,6 @@ test('planner screenshot', async ({ page }) => {
 });
 
 test('shopping list screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await seedPlanning(page, { shoppingList: SHOPPING });
   await page.goto('/shopping/');
   await page.waitForLoadState('networkidle');
@@ -54,7 +52,6 @@ test('shopping list screenshot', async ({ page }) => {
 });
 
 test('pantry screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   await seedPlanning(page, { pantryItems: PANTRY });
   await page.goto('/pantry/');
   await page.waitForLoadState('networkidle');

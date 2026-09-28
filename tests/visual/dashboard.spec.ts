@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { pinSystemFonts } from '../helpers';
 
 test('dashboard page screenshot', async ({ page }) => {
-  await pinSystemFonts(page);
   // Register the GitHub API mock BEFORE the first navigation so TanStack Query
   // sees deterministic data on the very first fetch. Without this the spec
   // depended on live network data, causing non-reproducible screenshots across

@@ -17,8 +17,10 @@
  *      uncovered.
  *   2. Origins: Firebase Auth (REST on *.googleapis.com, the popup handler
  *      iframe on PUBLIC_FIREBASE_AUTH_DOMAIN, the Google account chooser and
- *      the apis.google.com loader), Google Fonts, the GitHub REST API, and
- *      the flag-gated analytics / Sentry origins when they are configured.
+ *      the apis.google.com loader), the GitHub REST API, and the flag-gated
+ *      analytics / Sentry origins when they are configured. Fonts are
+ *      self-hosted (public/fonts/, @font-face in src/styles/global.css), so
+ *      no font host is allowed.
  *
  * WHY a plain .mjs module: astro.config.mjs runs in Node before Vite starts,
  * so it cannot import TypeScript that uses `import.meta.env`.
@@ -118,7 +120,7 @@ export function buildCsp(env = {}) {
       `connect-src 'self' https://*.googleapis.com https://api.github.com ${extra([analyticsOrigin, sentryOrigin])}`.trim(),
       // Firebase profile photos (Google / GitHub), README-style badges.
       "img-src 'self' data: blob: https://lh3.googleusercontent.com https://avatars.githubusercontent.com https://img.shields.io",
-      "font-src 'self' data: https://fonts.gstatic.com",
+      "font-src 'self' data:",
       // signInWithPopup: the auth handler iframe + Google account chooser.
       `frame-src 'self' https://${authDomain} https://accounts.google.com`,
       "worker-src 'self'",
@@ -141,7 +143,6 @@ export function buildCsp(env = {}) {
     styleDirective: {
       resources: [
         "'self'",
-        'https://fonts.googleapis.com',
         // `style="…"` attributes rendered by React SSR / Astro (widths,
         // CSS custom properties). Scoped to `style-src-attr` only: <style>
         // elements still need 'self' or a hash.
