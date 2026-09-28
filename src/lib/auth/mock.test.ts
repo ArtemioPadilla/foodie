@@ -100,3 +100,31 @@ describe('mock AuthProvider', () => {
     await expect(auth.signInEmail(MOCK_DEMO_ACCOUNT.email, MOCK_DEMO_ACCOUNT.password)).resolves.toBeTruthy();
   });
 });
+
+describe('mock AuthProvider — updateProfile (roadmap #036)', () => {
+  it('rejects without a session', async () => {
+    expect(await code(createMockAuthProvider().updateProfile({ displayName: 'X' }))).toBe('not-signed-in');
+  });
+
+  it('updates a password account and keeps it across instances', async () => {
+    const storage = new MemoryStorage();
+    const auth = createMockAuthProvider({ storage });
+    await auth.signInEmail(MOCK_DEMO_ACCOUNT.email, MOCK_DEMO_ACCOUNT.password);
+    const next = await auth.updateProfile({ displayName: 'Chef Demo', photoURL: 'https://avatars.githubusercontent.com/u/1' });
+    expect(AuthUserSchema.parse(next)).toMatchObject({ displayName: 'Chef Demo', photoURL: 'https://avatars.githubusercontent.com/u/1' });
+
+    const seen: (string | null)[] = [];
+    createMockAuthProvider({ storage }).onSession((u) => seen.push(u?.displayName ?? null));
+    await Promise.resolve();
+    expect(seen).toEqual(['Chef Demo']);
+  });
+
+  it('overrides the fixed social users and clears the avatar with null', async () => {
+    const storage = new MemoryStorage();
+    const auth = createMockAuthProvider({ storage });
+    await auth.signInGoogle();
+    await auth.updateProfile({ photoURL: 'https://lh3.googleusercontent.com/a' });
+    const cleared = await auth.updateProfile({ displayName: 'G', photoURL: null });
+    expect(cleared).toMatchObject({ uid: 'mock-google-user', displayName: 'G', photoURL: null });
+  });
+});

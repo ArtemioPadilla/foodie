@@ -175,12 +175,15 @@ const FormDescription = React.forwardRef<
 FormDescription.displayName = 'FormDescription';
 
 // FormMessage shows the validation error message from react-hook-form
+// `format` maps the raw message — e.g. an i18n key used as a zod message —
+// onto the text to show (`format={(key) => t(lang, key)}`).
 const FormMessage = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, children, ...props }, ref) => {
+  React.HTMLAttributes<HTMLParagraphElement> & { format?: (message: string) => string }
+>(({ className, children, format, ...props }, ref) => {
   const { error, formMessageId } = useFormField();
-  const body = error ? String(error?.message ?? '') : children;
+  const raw = error ? String(error?.message ?? '') : '';
+  const body = error ? (format && raw ? format(raw) : raw) : children;
 
   if (!body) {
     return null;

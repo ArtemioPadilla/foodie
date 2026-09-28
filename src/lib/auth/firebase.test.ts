@@ -21,6 +21,9 @@ const sdk = vi.hoisted(() => {
     signInWithPopup: vi.fn(async () => ({ user: fakeUser })),
     signOut: vi.fn(async () => undefined),
     sendPasswordResetEmail: vi.fn(async () => undefined),
+    updateProfile: vi.fn(async (user: Record<string, unknown>, patch: Record<string, unknown>) => {
+      Object.assign(user, patch);
+    }),
     onAuthStateChanged: vi.fn((_auth: unknown, cb: (u: unknown) => void) => {
       cb(fakeUser);
       return () => undefined;
@@ -33,7 +36,7 @@ vi.mock('firebase/auth', () => ({
   getAuth: sdk.getAuth,
   signInWithEmailAndPassword: sdk.signInWithEmailAndPassword,
   createUserWithEmailAndPassword: vi.fn(),
-  updateProfile: vi.fn(),
+  updateProfile: sdk.updateProfile,
   signInWithPopup: sdk.signInWithPopup,
   signOut: sdk.signOut,
   sendPasswordResetEmail: sdk.sendPasswordResetEmail,
@@ -97,5 +100,23 @@ describe('Firebase adapter — resetPassword', () => {
     await expect(auth.resetPassword('ghost@example.com')).resolves.toBeUndefined();
     sdk.sendPasswordResetEmail.mockRejectedValueOnce({ code: 'auth/invalid-email' });
     await expect(auth.resetPassword('nope')).rejects.toMatchObject({ code: 'invalid-email' });
+  });
+});
+
+describe('Firebase adapter — updateProfile (roadmap #036)', () => {
+  it('rejects with not-signed-in without a current user', async () => {
+    const auth = createFirebaseAuthProvider(CONFIG);
+    await expect(auth.updateProfile({ displayName: 'X' })).rejects.toMatchObject({ code: 'not-signed-in' });
+    expect(sdk.updateProfile).not.toHaveBeenCalled();
+  });
+
+  it('patches only the given fields, reloads and returns the mapped user', async () => {
+    const current = { ...sdk.fakeUser, reload: vi.fn(async () => undefined) };
+    sdk.getAuth.mockReturnValueOnce({ currentUser: current } as never);
+    const auth = createFirebaseAuthProvider(CONFIG);
+    const user = await auth.updateProfile({ displayName: 'Chef', photoURL: null });
+    expect(sdk.updateProfile).toHaveBeenCalledWith(current, { displayName: 'Chef', photoURL: null });
+    expect(current.reload).toHaveBeenCalled();
+    expect(user).toMatchObject({ uid: 'fb-123', displayName: 'Chef', photoURL: null });
   });
 });

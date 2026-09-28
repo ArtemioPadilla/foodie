@@ -51,6 +51,8 @@ export const AuthErrorCodeSchema = z.enum([
   'account-exists-with-different-credential',
   'network',
   'not-configured',
+  /** An action that needs a session (e.g. `updateProfile`) ran without one. */
+  'not-signed-in',
   'unknown',
 ]);
 export type AuthErrorCode = z.infer<typeof AuthErrorCodeSchema>;
@@ -81,3 +83,26 @@ export const ResetPasswordSchema = z.object({
   email: z.string().trim().email('auth.errors.invalidEmail'),
 });
 export type ResetPasswordValues = z.infer<typeof ResetPasswordSchema>;
+
+/** Fields `AuthProvider.updateProfile` may change (Issue 036). `null` clears. */
+export const ProfileUpdateSchema = z.object({
+  displayName: z.string().trim().min(1).max(80).optional(),
+  photoURL: z.url().nullable().optional(),
+});
+export type ProfileUpdate = z.infer<typeof ProfileUpdateSchema>;
+
+/** `https:` only — an avatar is rendered as `<img src>`, never `javascript:`/`data:`. */
+const HTTPS_URL = /^https:\/\/[^\s]+$/i;
+
+/**
+ * The `/profile` "Account" form (Issue 036). Messages are i18n keys. An empty
+ * avatar URL means "no avatar" (stored as `null`).
+ */
+export const ProfileFormSchema = z.object({
+  displayName: z.string().trim().min(1, 'auth.errors.nameRequired').max(80),
+  photoURL: z
+    .string()
+    .trim()
+    .refine((v) => v === '' || (HTTPS_URL.test(v) && z.url().safeParse(v).success), 'profile.errors.invalidUrl'),
+});
+export type ProfileFormValues = z.infer<typeof ProfileFormSchema>;

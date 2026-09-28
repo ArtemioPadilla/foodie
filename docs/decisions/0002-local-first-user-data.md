@@ -120,11 +120,20 @@ data, not user data), and the PWA's Workbox caches.
 
 4. **Retention is user-controlled, not time-based.** Data persists until the
    user removes it. There is no server-side copy to expire. Concretely:
-   - `Profile` (Issue 036, `/profile`, also reachable signed-out) exposes
+   - `Profile` (Issue 036, `/profile`) exposes
      **"Export my data"** — a single JSON with every store's current value,
      keyed by storage key, downloadable — and **"Clear my data"** — an
      `alert-dialog` that wipes all Foodie keys (legacy and `foodie:*`) after
      explicit confirmation, with the export offered first.
+     _Amended in Issue 036:_ the roadmap gates `/profile` with `RouteGuard`
+     (signed-in only; a signed-out visit is sent home with the sign-in dialog
+     open), so these two actions are not yet reachable for a visitor who never
+     signs in, nor on a build without an auth adapter. The implementation
+     (`src/lib/user-data.ts`) is UI-independent; exposing it to anonymous
+     visitors (e.g. from the footer) is a follow-up. The export never contains
+     `github-access-token` nor the auth plumbing keys (`foodie:auth-session`,
+     `foodie:mock-auth`); "clear" removes the token but keeps the session
+     (clearing data is not signing out).
    - Signing out never deletes anonymous data; signing in offers a one-time,
      reversible merge of anonymous favourites/preferences into the per-user
      keys (Issue 037, `toast` with undo).

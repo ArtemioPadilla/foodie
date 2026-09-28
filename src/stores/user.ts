@@ -18,9 +18,10 @@
  */
 import { atom, onMount } from 'nanostores';
 import { AuthError, authConfig, loadAuthProvider, resetAuthProviderForTests, type AuthProvider } from '@/lib/auth';
-import type { AuthUser } from '@/schemas/auth';
+import type { AuthUser, ProfileUpdate } from '@/schemas/auth';
 
 export { toGuardUser, SIGNED_IN_ROLE } from '@/lib/auth/guard-user';
+export { authErrorKey } from '@/lib/auth';
 
 export const SESSION_HINT_KEY = 'foodie:auth-session';
 
@@ -140,6 +141,9 @@ export const signOut = () =>
   });
 
 export const resetPassword = (email: string) => withProvider((p) => p.resetPassword(email));
+
+/** Edit the signed-in user's name / avatar URL (`/profile`, Issue 036). */
+export const updateProfile = (updates: ProfileUpdate) => withProvider((p) => signedIn(p.updateProfile(updates)));
 
 /** Test-only: drop the adapter, the subscription and both atoms' state. */
 export function resetUserStoreForTests(): void {

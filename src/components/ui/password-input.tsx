@@ -6,10 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
 // PasswordInput wraps Input with a reveal/hide toggle (ROADMAP Epic 21).
-export type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'>;
+export type PasswordInputProps = Omit<React.ComponentProps<typeof Input>, 'type'> & {
+  /** Accessible names of the reveal toggle — pass localised strings. */
+  showLabel?: string;
+  hideLabel?: string;
+};
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, showLabel = 'Show password', hideLabel = 'Hide password', ...props }, ref) => {
     const [visible, setVisible] = React.useState(false);
 
     return (
@@ -26,7 +30,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           size="icon"
           className="absolute right-0 top-0 h-10 w-10 text-muted-foreground hover:bg-transparent hover:text-foreground"
           onClick={() => setVisible((v) => !v)}
-          aria-label={visible ? 'Hide password' : 'Show password'}
+          aria-label={visible ? hideLabel : showLabel}
           aria-pressed={visible}
         >
           {visible ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}

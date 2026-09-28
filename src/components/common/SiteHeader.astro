@@ -4,7 +4,7 @@
  * wordmark (→ home) and the definitive Foodie sections are always reachable
  * (roadmap Issue 005): Home · Recipes · Ingredients · Planner · Shopping ·
  * Pantry · Tracking · Contribute, plus ThemeToggle, LangSwitcher, GlobalSearch
- * and a named `account` slot that Phase 5 fills with `AccountMenu`.
+ * and the account slot, filled with the `AccountMenu` island (Issue 036).
  *
  * Labels and hrefs follow the page locale (detected from the route, never from
  * the browser), so `/es/recipes/` links stay inside `/es/`. Below `md` the
@@ -15,6 +15,7 @@ import { withBase } from '@/lib/href';
 import { REPO_URL } from '@/lib/site-meta';
 import GlobalSearch from '@/components/islands/GlobalSearch';
 import MobileNav from '@/components/islands/MobileNav';
+import AccountMenu from '@/components/islands/AccountMenu';
 import LangSwitcher from './LangSwitcher.astro';
 import { detectLocale, localizedPath, localizedRoute, stripBase, t } from '@/i18n';
 
@@ -97,8 +98,11 @@ const menuLabels = {
           dialog in one island (compound-component constraint). */}
       <GlobalSearch client:idle />
       <span class="ml-1"><ThemeToggle /></span>
-      {/* Phase 5 (roadmap Issue 036) mounts <AccountMenu client:idle lang={lang} />
-          here through BaseLayout's `account` slot. Empty until then. */}
+      {/* Account slot (reserved in Issue 005, filled in Issue 036): "Sign in"
+          or the avatar menu. One island holds the menu AND the AuthDialog
+          (compound-component rule). Renders nothing when the build has no
+          auth adapter. Pages may still append to the `account` slot. */}
+      <AccountMenu client:idle lang={locale} />
       <slot name="account" />
       {/* Mobile menu — one island wraps the whole Sheet compound so the Base UI
           Dialog context never crosses an island boundary. */}

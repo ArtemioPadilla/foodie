@@ -26,9 +26,12 @@ export const MOCK_DEMO_ACCOUNT = {
 } as const;
 
 const MockAccountSchema = z.object({ password: z.string(), user: AuthUserSchema });
+const MockProfileSchema = z.object({ displayName: z.string().nullable(), photoURL: z.string().nullable() });
 const MockStateSchema = z.object({
   accounts: z.record(z.string(), MockAccountSchema),
   sessionEmail: z.string().nullable(),
+  /** `updateProfile` edits for the fixed social users, keyed by e-mail (Issue 036). */
+  profiles: z.record(z.string(), MockProfileSchema).default({}),
 });
 type MockState = z.infer<typeof MockStateSchema>;
 
@@ -74,7 +77,7 @@ const SOCIAL_USERS: Record<'google.com' | 'github.com', AuthUser> = {
 
 function seed(): MockState {
   const { email, password, displayName } = MOCK_DEMO_ACCOUNT;
-  return { accounts: { [email]: { password, user: passwordUser(email, displayName) } }, sessionEmail: null };
+  return { accounts: { [email]: { password, user: passwordUser(email, displayName) } }, sessionEmail: null, profiles: {} };
 }
 
 export interface MockAuthOptions {
@@ -111,7 +114,7 @@ export function createMockAuthProvider(options: MockAuthOptions = {}): AuthProvi
   const current = (): AuthUser | null => {
     const state = read();
     const socialUser = Object.values(SOCIAL_USERS).find((u) => u.email === state.sessionEmail);
-    if (socialUser) return socialUser;
+    if (socialUser) return { ...socialUser, ...state.profiles[socialUser.email as string] };
     return state.sessionEmail ? (state.accounts[state.sessionEmail]?.user ?? null) : null;
   };
 
@@ -169,6 +172,27 @@ export function createMockAuthProvider(options: MockAuthOptions = {}): AuthProvi
       await delay();
       // Like Firebase with enumeration protection: succeed for any valid e-mail.
       if (!EMAIL_RE.test(normalise(email))) throw new AuthError('invalid-email');
+    },
+
+    async updateProfile(updates) {
+      await delay();
+      const state = read();
+      const email = state.sessionEmail;
+      const user = current();
+      if (!email || !user) throw new AuthError('not-signed-in');
+      const next: AuthUser = AuthUserSchema.parse({
+        ...user,
+        ...(updates.displayName !== undefined ? { displayName: updates.displayName } : {}),
+        ...(updates.photoURL !== undefined ? { photoURL: updates.photoURL } : {}),
+      });
+      const account = state.accounts[email];
+      if (account) {
+        write({ ...state, accounts: { ...state.accounts, [email]: { ...account, user: next } } });
+      } else {
+        const profile = { displayName: next.displayName, photoURL: next.photoURL };
+        write({ ...state, profiles: { ...state.profiles, [email]: profile } });
+      }
+      return next;
     },
 
     onSession(cb) {

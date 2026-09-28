@@ -1261,3 +1261,80 @@ test.describe('v1 compatibility (roadmap #030)', () => {
     expect(stored).toEqual({ tracking: 3, goals: 1800 });
   });
 });
+
+test.describe('accounts (roadmap #036)', () => {
+  // Runs against the mock adapter (`playwright.e2e.config.ts` builds with
+  // PUBLIC_AUTH_MOCK=1). A build without any auth adapter (the visual build,
+  // production without PUBLIC_FIREBASE_*) shows no account UI — skip there.
+  const DEMO = { email: 'demo@foodie.test', password: 'foodie-demo', name: 'Demo Cook' };
+
+  test('sign in → profile → change units → shopping shows them → sign out → /profile/ redirects', async ({ page }) => {
+    // One item on the list so the quantities show the unit system.
+    await page.goto('./shopping/');
+    await page.evaluate(() =>
+      localStorage.setItem(
+        'shoppingList',
+        JSON.stringify([{ ingredientId: 'ing_001', quantity: 1.5, unit: 'lb', checked: false, usedIn: [], category: 'protein' }]),
+      ),
+    );
+    await page.reload();
+    const badge = page.getByTestId('unit-system');
+    await expect(badge).toHaveAttribute('data-system', /metric|imperial/);
+    const before = (await badge.getAttribute('data-system')) as 'metric' | 'imperial';
+    const target = before === 'imperial' ? 'metric' : 'imperial';
+
+    const signIn = page.getByTestId('account-signin');
+    // `isVisible()` does not wait; the header island hydrates on idle.
+    const hasAuth = await signIn
+      .waitFor({ state: 'visible', timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false);
+    test.skip(!hasAuth, 'this build has no auth adapter (no PUBLIC_FIREBASE_* / PUBLIC_AUTH_MOCK)');
+
+    // Sign in from the header.
+    await signIn.click();
+    const dialog = page.getByTestId('auth-dialog');
+    await expect(dialog).toBeVisible();
+    await dialog.getByPlaceholder('Email').fill(DEMO.email);
+    await dialog.getByPlaceholder('Password').fill(DEMO.password);
+    await dialog.getByTestId('signin-submit').click();
+    await expect(dialog).toBeHidden();
+    const trigger = page.getByTestId('account-menu-trigger');
+    await expect(trigger).toHaveAccessibleName(`Account menu for ${DEMO.name}`);
+
+    // Avatar menu → Profile.
+    await trigger.click();
+    await page.getByTestId('account-profile').click();
+    await page.waitForURL(/\/profile\/$/);
+    await expect(page.getByTestId('profile')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('profile-name')).toHaveText(DEMO.name);
+
+    // Change the unit system; it is saved as it changes.
+    await page.getByTestId(`profile-units-${target}`).click();
+    await expect(page.getByTestId('profile-preferences-status')).toHaveText('Preferences saved');
+
+    // The shopping list now shows the new units (same session, another page).
+    await page.goto('./shopping/');
+    await expect(badge).toHaveAttribute('data-system', target);
+    await expect(page.getByTestId('account-menu-trigger')).toBeVisible();
+
+    // Sign out from the header menu.
+    await page.getByTestId('account-menu-trigger').click();
+    await page.getByTestId('account-signout').click();
+    await expect(page.getByTestId('account-signin')).toBeVisible();
+
+    // /profile/ is guarded: home, with the sign-in dialog opened for them.
+    await page.goto('./profile/');
+    await page.waitForURL((url) => !url.pathname.endsWith('/profile/'));
+    await expect(page.getByTestId('auth-dialog')).toBeVisible();
+    expect(new URL(page.url()).search).toBe('');
+  });
+
+  test('the profile page exists in every locale and is guarded when signed out', async ({ page }) => {
+    for (const prefix of ['', 'es/', 'fr/']) {
+      await page.goto(`./${prefix}profile/`);
+      await page.waitForURL((url) => !url.pathname.endsWith('/profile/'));
+      await expect(page.locator('html')).toHaveAttribute('lang', prefix ? prefix.slice(0, 2) : 'en');
+    }
+  });
+});

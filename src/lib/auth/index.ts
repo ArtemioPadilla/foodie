@@ -10,7 +10,7 @@ import { authConfig, type AuthConfig } from './config';
 import type { AuthProvider } from './contracts';
 
 export { authConfig, authEnabled } from './config';
-export { AuthError, isAuthError, type AuthProvider, type AuthUser } from './contracts';
+export { AuthError, authErrorKey, isAuthError, type AuthProvider, type AuthUser } from './contracts';
 
 let pending: Promise<AuthProvider | null> | null = null;
 

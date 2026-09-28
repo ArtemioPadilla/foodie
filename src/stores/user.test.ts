@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { RouteGuard, hasRole } from '@/lib/route-guard';
-import { AuthError } from '@/lib/auth';
+import { AuthError, authErrorKey } from '@/lib/auth';
 import { MOCK_DEMO_ACCOUNT } from '@/lib/auth/mock';
 import {
   $authReady,
@@ -16,6 +16,7 @@ import {
   signOut,
   signUpEmail,
   toGuardUser,
+  updateProfile,
 } from './user';
 
 afterEach(() => resetUserStoreForTests());
@@ -57,6 +58,19 @@ describe('sign in / out', () => {
     expect($user.get()?.displayName).toBe('Fresh');
     await signInGitHub();
     expect($user.get()?.method).toBe('github.com');
+  });
+
+  it('updateProfile applies the returned user to $user (roadmap #036)', async () => {
+    await signInEmail(MOCK_DEMO_ACCOUNT.email, MOCK_DEMO_ACCOUNT.password);
+    await updateProfile({ displayName: 'Chef', photoURL: 'https://avatars.githubusercontent.com/u/2' });
+    expect($user.get()).toMatchObject({ displayName: 'Chef', photoURL: 'https://avatars.githubusercontent.com/u/2' });
+    await signOut();
+    await expect(updateProfile({ displayName: 'X' })).rejects.toMatchObject({ code: 'not-signed-in' });
+  });
+
+  it('authErrorKey maps any thrown value onto an auth.errors.* key', () => {
+    expect(authErrorKey(new AuthError('email-in-use'))).toBe('auth.errors.email-in-use');
+    expect(authErrorKey(new Error('boom'))).toBe('auth.errors.unknown');
   });
 
   it('resetPassword resolves for a valid e-mail', async () => {

@@ -10,6 +10,11 @@ import { cn } from '@/lib/utils';
 
 export const toastManager = BaseToast.createToastManager();
 
+/** A separate manager for a `<Toaster manager={…}>` that must not share the page's queue. */
+export function createToastManager() {
+  return BaseToast.createToastManager();
+}
+
 const toastVariants = cva(
   'group pointer-events-auto flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-4 pr-8 shadow-lg',
   {
@@ -64,6 +69,9 @@ function ToastList({ closeLabel }: { closeLabel: string }) {
                   {toast.description}
                 </BaseToast.Description>
               )}
+              {/* Rendered only when the toast was added with `actionProps`
+                  (e.g. an "Undo" button); Base UI hides it otherwise. */}
+              <BaseToast.Action className="mt-1 inline-flex h-8 w-fit items-center rounded-md border border-border px-3 text-sm font-medium transition-colors hover:bg-accent focus:outline-none focus:ring-2 focus:ring-ring" />
             </div>
             <BaseToast.Close
               aria-label={closeLabel}
@@ -80,14 +88,20 @@ function ToastList({ closeLabel }: { closeLabel: string }) {
 
 interface ToasterProps {
   className?: string;
+  /**
+   * The manager this Toaster renders. Defaults to the shared `toastManager`;
+   * an island that must not double-render with a page island's Toaster (e.g.
+   * the header's AccountMenu) passes its own `createToastManager()`.
+   */
+  manager?: ReturnType<typeof BaseToast.createToastManager>;
   /** Accessible name of each toast's close (×) button — pass the localised "Close". */
   closeLabel?: string;
 }
 
 // Toaster mounts the Provider+Viewport pair. Place once in your layout.
-export function Toaster({ className, closeLabel = 'Close' }: ToasterProps) {
+export function Toaster({ className, closeLabel = 'Close', manager = toastManager }: ToasterProps) {
   return (
-    <BaseToast.Provider toastManager={toastManager}>
+    <BaseToast.Provider toastManager={manager}>
       <BaseToast.Viewport
         className={cn(
           // Fixed bottom-right container; toasts stack absolutely inside it.

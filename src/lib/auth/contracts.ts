@@ -17,9 +17,9 @@
  *    is known (possibly `null`) and again on every change; it returns an
  *    unsubscribe function that is safe to call before the SDK has loaded.
  */
-import type { AuthErrorCode, AuthUser } from '@/schemas/auth';
+import type { AuthErrorCode, AuthUser, ProfileUpdate } from '@/schemas/auth';
 
-export type { AuthErrorCode, AuthUser } from '@/schemas/auth';
+export type { AuthErrorCode, AuthUser, ProfileUpdate } from '@/schemas/auth';
 
 export type AuthProviderId = 'firebase' | 'mock';
 
@@ -31,6 +31,12 @@ export interface AuthProvider {
   signInGitHub(): Promise<AuthUser>;
   signOut(): Promise<void>;
   resetPassword(email: string): Promise<void>;
+  /**
+   * Change the signed-in user's display name / avatar URL (Issue 036,
+   * `/profile`). Resolves with the updated `AuthUser`; rejects with
+   * `not-signed-in` when there is no session.
+   */
+  updateProfile(updates: ProfileUpdate): Promise<AuthUser>;
   onSession(cb: (user: AuthUser | null) => void): () => void;
 }
 
@@ -47,4 +53,9 @@ export class AuthError extends Error {
 
 export function isAuthError(error: unknown): error is AuthError {
   return error instanceof AuthError;
+}
+
+/** The i18n key (`auth.errors.<code>`) the UI shows for any thrown value. */
+export function authErrorKey(error: unknown): `auth.errors.${AuthErrorCode}` {
+  return `auth.errors.${isAuthError(error) ? error.code : 'unknown'}`;
 }

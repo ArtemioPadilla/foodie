@@ -133,6 +133,20 @@ export function createFirebaseAuthProvider(config: FirebaseWebConfig): AuthProvi
         }
       }),
 
+    // Firebase does not fire onAuthStateChanged for profile edits, so the
+    // caller (`$user` in src/stores/user.ts) applies the returned user.
+    updateProfile: (updates) =>
+      run(async ({ auth, mod }) => {
+        const user = auth.currentUser;
+        if (!user) throw new AuthError('not-signed-in');
+        const patch: { displayName?: string | null; photoURL?: string | null } = {};
+        if (updates.displayName !== undefined) patch.displayName = updates.displayName;
+        if (updates.photoURL !== undefined) patch.photoURL = updates.photoURL;
+        await mod.updateProfile(user, patch);
+        await user.reload();
+        return toAuthUser(auth.currentUser ?? user);
+      }),
+
     onSession(cb) {
       let unsubscribe: (() => void) | null = null;
       let cancelled = false;

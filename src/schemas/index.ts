@@ -43,3 +43,4 @@ export * from './tracking';
 export * from './auth';
 export * from './preferences';
 export * from './recipe-submission';
+export * from './user-data';
