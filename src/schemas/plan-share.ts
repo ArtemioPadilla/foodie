@@ -1,6 +1,6 @@
 /**
  * Shared meal plan — the payload carried in the `/plan/shared/#p=…` link
- * (roadmap Issue 040, D11; ADR 0014).
+ * (roadmap Issue 040, D11; ADR 0013).
  *
  * The link is the only transport (no Firestore, no server): the plan is
  * reduced to what is needed to rebuild it — its name, default servings and,

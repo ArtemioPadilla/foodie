@@ -16,6 +16,8 @@
  * English site root (where `/foodie/?/…` actually lands).
  */
 
+import { LOCALE_PREFERENCE_KEY } from './locale-preference';
+
 /** Site locales; `en` is the unprefixed default (kept in step with `src/i18n` by the unit test). */
 export const LEGACY_REDIRECT_LOCALES = ['en', 'es', 'fr'] as const;
 export type LegacyRedirectLocale = (typeof LEGACY_REDIRECT_LOCALES)[number];
@@ -51,7 +53,7 @@ export function preferredLegacyLocale(storage: Pick<Storage, 'getItem'> | null):
     return (LEGACY_REDIRECT_LOCALES as readonly string[]).includes(code) ? (code as LegacyRedirectLocale) : null;
   };
   try {
-    return known(storage?.getItem('foodie:locale') ?? null) ?? known(storage?.getItem('i18nextLng') ?? null) ?? 'en';
+    return known(storage?.getItem(LOCALE_PREFERENCE_KEY) ?? null) ?? known(storage?.getItem('i18nextLng') ?? null) ?? 'en';
   } catch {
     return 'en';
   }

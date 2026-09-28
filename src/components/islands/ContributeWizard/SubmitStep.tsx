@@ -4,7 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DownloadTrigger } from '@/components/ui/download-trigger';
 import { localizedRoute, t, type Locale } from '@/i18n';
-import type { RecipeSubmissionPayload } from '@/lib/domain/contribute';
+import type { RecipeSubmissionPayload } from '@/schemas';
 import { buildRecipeSubmissionIssue } from '@/lib/domain/recipe-submission-issue';
 import { downloadFile } from '@/lib/download';
 import { withBase } from '@/lib/href';

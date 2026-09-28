@@ -15,6 +15,7 @@ import {
   type Ingredient,
   type Recipe,
   type RecipeSubmission,
+  type RecipeSubmissionPayload,
   type SubmissionIngredient,
 } from '@/schemas';
 import { aggregateNutrition, estimateIngredientNutrition, scaleNutrition } from './nutrition';
@@ -248,17 +249,7 @@ export type SubmissionCatalog = {
   categories: Pick<CategoriesFile, 'cuisines' | 'mealTypes'>;
 };
 
-/**
- * What the Submit step hands to the sending flow (roadmap Issue 039): the
- * validated form, the catalog `Recipe` it becomes, its id and pretty JSON.
- */
-export type RecipeSubmissionPayload = {
-  submission: RecipeSubmission;
-  recipe: Recipe;
-  recipeId: string;
-  recipeJson: string;
-};
-
+/** Build the Submit step's payload (`RecipeSubmissionPayloadSchema`, src/schemas). */
 export function buildSubmissionPayload(
   submission: RecipeSubmission,
   catalog: Pick<SubmissionCatalog, 'ingredients'>,

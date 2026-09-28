@@ -74,16 +74,15 @@ function targetFor(locale: Locale): string {
 </span>
 
 <script>
+  import { rememberLocale } from '@/lib/locale-preference';
+
   // Persist the explicit choice before navigation so the first-visit locale
   // redirect in BaseLayout never bounces the visitor back. Delegated once per
   // page (Astro dedupes this hoisted script across LangSwitcher instances).
+  // Same helper as /profile's language preference.
   document.addEventListener('click', (event) => {
     const link = (event.target as Element | null)?.closest?.('a[data-lang-switch]');
     if (!link) return;
-    try {
-      localStorage.setItem('foodie:locale', link.getAttribute('data-lang-switch') ?? '');
-    } catch {
-      /* storage unavailable — nothing to persist */
-    }
+    rememberLocale(link.getAttribute('data-lang-switch') ?? '');
   });
 </script>

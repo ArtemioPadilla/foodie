@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useStore } from '@nanostores/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch, type Resolver } from 'react-hook-form';
 import { ArrowLeftIcon, ArrowRightIcon, RotateCcwIcon } from 'lucide-react';
@@ -27,7 +28,7 @@ import {
   type ContributeStep,
   type RecipeSubmission,
 } from '@/schemas';
-import { $contributeDraft, clearContributeDraft, saveContributeDraft } from '@/stores/contribute-draft';
+import { $contributeDraft, $hasContributeDraft, clearContributeDraft, saveContributeDraft } from '@/stores/contribute-draft';
 import { BasicInfoStep } from './ContributeWizard/BasicInfoStep';
 import { IngredientsStep } from './ContributeWizard/IngredientsStep';
 import { InstructionsStep } from './ContributeWizard/InstructionsStep';
@@ -56,7 +57,8 @@ import QueryProvider from './QueryProvider';
  *   `SubmitStep` receives the `RecipeSubmissionPayload`).
  * - Every change is saved to `localStorage['foodie:contribute-draft']`
  *   (`$contributeDraft`, ADR 0002); a returning contributor resumes where
- *   they were. "Start over" discards it.
+ *   they were. "Start over" discards it, and is offered whenever a draft
+ *   exists (restored or typed in this visit), on any step.
  * - Store-backed UI renders after hydration only (SSR has no localStorage);
  *   `lang` is a prop; every compound component lives in this one root.
  */
@@ -135,6 +137,8 @@ function WizardForm({ lang, catalog, SubmitStepComponent, now }: WizardFormProps
   const [step, setStep] = React.useState(initial.step);
   const [attempted, setAttempted] = React.useState<ReadonlySet<number>>(() => new Set());
   const [confirmOpen, setConfirmOpen] = React.useState(false);
+  // "Start over" is offered whenever there is a draft to discard.
+  const hasDraft = useStore($hasContributeDraft);
   const [clock] = React.useState(() => now ?? new Date());
   // The resolver reads the step when it runs; `goTo` keeps this in step with `step`.
   const stepRef = React.useRef(step);
@@ -298,7 +302,7 @@ function WizardForm({ lang, catalog, SubmitStepComponent, now }: WizardFormProps
         </form>
       </Form>
 
-      {!initial.restored && step > 0 && (
+      {!initial.restored && hasDraft && (
         <div className="text-center">
           <Button type="button" size="sm" variant="ghost" onClick={() => setConfirmOpen(true)} data-testid="contribute-start-over">
             <RotateCcwIcon aria-hidden="true" />

@@ -13,9 +13,8 @@
  * `recipe-json` field instead asks the contributor to attach the downloaded
  * file. Everything written into the issue is English (maintainer-facing).
  */
-import type { RecipeSubmission } from '@/schemas';
+import type { RecipeSubmission, RecipeSubmissionPayload } from '@/schemas';
 import { buildIssueUrl, issueUrlFits } from '@/lib/report-issue';
-import type { RecipeSubmissionPayload } from './contribute';
 
 /** The issue form the URL opens (`.github/ISSUE_TEMPLATE/<file>`). */
 export const RECIPE_SUBMISSION_TEMPLATE = 'recipe-submission.yml';

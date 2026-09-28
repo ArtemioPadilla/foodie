@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 export const ContactSchema = z.object({
   name: z.string().trim().min(1, 'Tell me what to call you.').max(80),
-  email: z.string().trim().email('Please enter a valid email address.'),
+  email: z.string().trim().pipe(z.email('Please enter a valid email address.')),
   message: z
     .string()
     .trim()
@@ -21,7 +21,7 @@ export const ContactSchema = z.object({
 export type ContactValues = z.infer<typeof ContactSchema>;
 
 export const NewsletterSchema = z.object({
-  email: z.string().trim().email('Please enter a valid email address.'),
+  email: z.string().trim().pipe(z.email('Please enter a valid email address.')),
   website: z.string().max(0, 'Bot detected.'),
 });
 export type NewsletterValues = z.infer<typeof NewsletterSchema>;

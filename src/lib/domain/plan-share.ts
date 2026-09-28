@@ -1,5 +1,5 @@
 /**
- * Share a meal plan by URL (roadmap Issue 040, D11; ADR 0014).
+ * Share a meal plan by URL (roadmap Issue 040, D11; ADR 0013).
  *
  * `encodeSharedPlan(plan)` keeps the plan's name, default servings and every
  * slot's recipe id + servings (`SharedPlanWireSchema`), writes it as compact

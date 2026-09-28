@@ -1,3 +1,4 @@
+import { computed } from 'nanostores';
 import {
   CONTRIBUTE_STEPS,
   ContributeDraftSchema,
@@ -35,6 +36,12 @@ export function saveContributeDraft(step: number, data: unknown, now: Date = new
   $contributeDraft.set({ version: 1, step: clamped, data: parsed.data, updatedAt: now.toISOString() });
   return true;
 }
+
+/**
+ * Whether a draft exists. A derived boolean, so the wizard re-renders only
+ * when a draft appears or is discarded — not on every autosave.
+ */
+export const $hasContributeDraft = computed($contributeDraft, (draft) => draft !== undefined);
 
 /** Forget the draft (removes the `localStorage` key). */
 export function clearContributeDraft(): void {

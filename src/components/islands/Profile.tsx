@@ -25,6 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Toaster, toast } from '@/components/ui/toast';
 import { LOCALES, LOCALE_NAMES, isLocale, localizedRoute, t, type Locale } from '@/i18n';
 import { withBase } from '@/lib/href';
+import { rememberLocale } from '@/lib/locale-preference';
 import { RouteGuard, hasRole } from '@/lib/route-guard';
 import { useHydrated } from '@/lib/use-hydrated';
 import { clearUserData, exportFileName, exportUserDataBlob } from '@/lib/user-data';
@@ -309,11 +310,8 @@ function PreferencesCard({ lang, navigate }: { lang: Locale; navigate: Navigate 
 
   const changeLanguage = (next: Locale) => {
     updatePreferences({ language: next });
-    try {
-      localStorage.setItem('foodie:locale', next);
-    } catch {
-      /* the preference itself is saved; the redirect hint is optional */
-    }
+    // The same explicit-choice record the header LangSwitcher writes.
+    rememberLocale(next);
     saved();
     if (next !== lang) navigate(withBase(localizedRoute('/profile/', next)), 'assign');
   };

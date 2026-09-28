@@ -6,6 +6,7 @@ import {
   RecipeSubmissionSchema,
   SUBMISSION_STEP_FIELDS,
   SUBMISSION_STEP_SCHEMAS,
+  RecipeSubmissionPayloadSchema,
 } from '@/schemas';
 import { makeIngredient, makeRecipeSubmission } from '@/tests/fixtures/foodie-domain';
 import {
@@ -193,6 +194,9 @@ describe('payload + preview', () => {
     expect(payload.recipe.dietaryLabels).toMatchObject({ vegetarian: false, vegan: false, glutenFree: true, dairyFree: true });
     expect(payload.recipe.equipment).toEqual(['Dutch oven', 'skillet', 'pan']);
     expect(JSON.parse(payload.recipeJson)).toEqual(JSON.parse(JSON.stringify(payload.recipe)));
+    // The payload crosses the wizard → issue boundary: it matches its schema.
+    expect(RecipeSubmissionPayloadSchema.safeParse(payload).success).toBe(true);
+    expect(RecipeSubmissionPayloadSchema.safeParse({ ...payload, recipeId: '' }).success).toBe(false);
   });
 
   it('resolves names for the page and swaps an off-site image for the placeholder', () => {

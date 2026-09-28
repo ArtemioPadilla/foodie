@@ -22,9 +22,9 @@ export type AuthMethod = z.infer<typeof AuthMethodSchema>;
 export const AuthUserSchema = z.object({
   /** Provider-issued stable id. Never a placeholder (route-guard rule). */
   uid: z.string().min(1),
-  email: z.string().email().nullable(),
+  email: z.email().nullable(),
   displayName: z.string().nullable(),
-  photoURL: z.string().url().nullable(),
+  photoURL: z.url().nullable(),
   emailVerified: z.boolean(),
   /** How this session was established. */
   method: AuthMethodSchema,
@@ -61,7 +61,7 @@ export type AuthErrorCode = z.infer<typeof AuthErrorCodeSchema>;
 export const PASSWORD_MIN_LENGTH = 6;
 
 export const SignInSchema = z.object({
-  email: z.string().trim().email('auth.errors.invalidEmail'),
+  email: z.string().trim().pipe(z.email('auth.errors.invalidEmail')),
   password: z.string().min(1, 'auth.errors.passwordRequired'),
 });
 export type SignInValues = z.infer<typeof SignInSchema>;
@@ -69,7 +69,7 @@ export type SignInValues = z.infer<typeof SignInSchema>;
 export const SignUpSchema = z
   .object({
     displayName: z.string().trim().min(1, 'auth.errors.nameRequired').max(80),
-    email: z.string().trim().email('auth.errors.invalidEmail'),
+    email: z.string().trim().pipe(z.email('auth.errors.invalidEmail')),
     password: z.string().min(PASSWORD_MIN_LENGTH, 'auth.errors.weakPassword').max(128),
     confirmPassword: z.string(),
   })
@@ -80,7 +80,7 @@ export const SignUpSchema = z
 export type SignUpValues = z.infer<typeof SignUpSchema>;
 
 export const ResetPasswordSchema = z.object({
-  email: z.string().trim().email('auth.errors.invalidEmail'),
+  email: z.string().trim().pipe(z.email('auth.errors.invalidEmail')),
 });
 export type ResetPasswordValues = z.infer<typeof ResetPasswordSchema>;
 

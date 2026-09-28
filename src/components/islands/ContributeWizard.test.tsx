@@ -29,7 +29,8 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('ContributeWizard', () => {
-  it('walks from an empty form to the preview of the public page', async () => {
+  // A long user-event walk through six steps (~2 s alone); headroom for a loaded CI box.
+  it('walks from an empty form to the preview of the public page', { timeout: 15_000 }, async () => {
     const { user } = renderWizard('en');
     await onStep('basic');
     expect(screen.getByTestId('contribute-stepper').querySelector('[aria-current="step"]')).toHaveTextContent('Basic Info');
@@ -115,6 +116,21 @@ describe('ContributeWizard', () => {
     expect(screen.getByTestId('contribute-name-en')).toHaveValue('');
     expect(localStorage.getItem('foodie:contribute-draft')).toBeNull();
     expect(screen.queryByTestId('contribute-draft-restored')).toBeNull();
+  });
+
+  it('offers "Start over" as soon as a fresh draft exists, even on the first step', async () => {
+    const { user } = renderWizard('en');
+    await onStep('basic');
+    expect(screen.queryByTestId('contribute-start-over')).toBeNull();
+    await user.type(screen.getByTestId('contribute-name-en'), 'Soup');
+    await waitFor(() => expect(localStorage.getItem('foodie:contribute-draft')).not.toBeNull());
+    await user.click(screen.getByTestId('contribute-start-over'));
+    const dialog = await screen.findByTestId('contribute-start-over-dialog');
+    await user.click(within(dialog).getByTestId('confirm-start-over'));
+    await onStep('basic');
+    expect(screen.getByTestId('contribute-name-en')).toHaveValue('');
+    expect(localStorage.getItem('foodie:contribute-draft')).toBeNull();
+    expect(screen.queryByTestId('contribute-start-over')).toBeNull();
   });
 
   it('renders a loading placeholder on the server (no localStorage there)', () => {

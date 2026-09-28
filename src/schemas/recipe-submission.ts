@@ -8,7 +8,7 @@
  * not schema failures and live in `lib/domain/validation.ts`.
  */
 import { z } from 'zod';
-import { DIFFICULTIES, DifficultySchema, MEAL_TYPES, MealTypeSchema } from './recipe';
+import { DIFFICULTIES, DifficultySchema, MEAL_TYPES, MealTypeSchema, RecipeSchema } from './recipe';
 
 export const SubmissionIngredientSchema = z.object({
   ingredientId: z.string().trim().min(1, 'Name is required'),
@@ -199,3 +199,18 @@ export const ContributeDraftSchema = z.object({
   updatedAt: z.string(),
 });
 export type ContributeDraft = z.infer<typeof ContributeDraftSchema>;
+
+/**
+ * What the Submit step hands to the sending flow (roadmap Issue 039): the
+ * validated form, the catalog `Recipe` it becomes, its id and pretty JSON.
+ * It crosses the wizard → issue-URL / clipboard boundary, so it is a schema
+ * (Inceptor rule: cross-boundary types are Zod schemas, not interfaces);
+ * `buildSubmissionPayload()` (src/lib/domain/contribute.ts) builds it.
+ */
+export const RecipeSubmissionPayloadSchema = z.object({
+  submission: RecipeSubmissionSchema,
+  recipe: RecipeSchema,
+  recipeId: z.string().min(1),
+  recipeJson: z.string().min(1),
+});
+export type RecipeSubmissionPayload = z.infer<typeof RecipeSubmissionPayloadSchema>;
