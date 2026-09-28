@@ -19,6 +19,14 @@ import {
   planDayIndex,
   sumCalories,
   withQuantity,
+  getDailySummaries,
+  getMonthlySummary,
+  getWeeklySummary,
+  progressDays,
+  progressStats,
+  progressSummary,
+  trailingAverage,
+  TREND_WINDOW,
 } from './tracking';
 import { makeIngredient, makeRecipe, mockBeverages } from '@/tests/fixtures/foodie-domain';
 
@@ -199,5 +207,79 @@ describe('day view helpers (roadmap #031)', () => {
   it('planDayIndex is Monday-based', () => {
     expect(planDayIndex('2026-09-28')).toBe(0); // Monday
     expect(planDayIndex('2026-10-04')).toBe(6); // Sunday
+  });
+});
+
+describe('progress selectors (roadmap #033)', () => {
+  // 2026-09-28 is a Monday.
+  const entries = [
+    makeEntry({ id: 'm1', date: '2026-09-28', recipeId: 'rec_001', nutrition: onTrack }),
+    makeEntry({ id: 'm2', date: '2026-09-29', recipeId: 'rec_001', nutrition: makeNutrition({ calories: 1000, protein: 30, carbs: 100, fat: 40, fiber: 10 }) }),
+    makeEntry({ id: 'm3', date: '2026-09-29', recipeId: 'rec_002', nutrition: makeNutrition({ calories: 500, protein: 20, carbs: 60, fat: 10, fiber: 4 }) }),
+    makeEntry({ id: 'm4', date: '2026-10-01', recipeId: 'rec_001', nutrition: onTrack }),
+    makeEntry({ id: 'aug', date: '2026-08-31', recipeId: 'rec_002', nutrition: onTrack }),
+  ];
+
+  it('getDailySummaries returns one summary per date, in order', () => {
+    const days = getDailySummaries(entries, DEFAULT_GOALS, ['2026-09-29', '2026-09-28', '2026-09-30']);
+    expect(days.map((d) => [d.date, d.entries.length, d.totals.calories])).toEqual([
+      ['2026-09-29', 2, 1500],
+      ['2026-09-28', 1, 2000],
+      ['2026-09-30', 0, 0],
+    ]);
+    expect(days[0]!.goalProgress.calories.percentage).toBe(75);
+  });
+
+  it('getWeeklySummary / getMonthlySummary keep the legacy signatures', () => {
+    expect(getWeeklySummary(entries, DEFAULT_GOALS, '2026-09-28').days).toHaveLength(7);
+    const september = getMonthlySummary(entries, DEFAULT_GOALS, 2026, 9);
+    expect(september.days).toHaveLength(30);
+    expect(september.totals.calories).toBe(3500);
+  });
+
+  it('progressSummary picks the Monday-based week or the month containing today', () => {
+    const week = progressSummary(entries, DEFAULT_GOALS, 'week', '2026-10-01');
+    expect([week.startDate, week.endDate]).toEqual(['2026-09-28', '2026-10-04']);
+    expect(week.totals.calories).toBe(5500);
+    const sunday = progressSummary(entries, DEFAULT_GOALS, 'week', '2026-10-04');
+    expect(sunday.startDate).toBe('2026-09-28');
+    const month = progressSummary(entries, DEFAULT_GOALS, 'month', '2026-10-01');
+    expect([month.startDate, month.endDate, month.days.length]).toEqual(['2026-10-01', '2026-10-31', 31]);
+    expect(month.totals.calories).toBe(2000);
+  });
+
+  it('trailingAverage skips gaps and is null until a value appears', () => {
+    expect(trailingAverage([null, 100, null, 200, 400], 3)).toEqual([null, 100, 100, 150, 300]);
+    expect(trailingAverage([10, 20], 0)).toEqual([10, 20]);
+    expect(TREND_WINDOW).toEqual({ week: 3, month: 7 });
+  });
+
+  it('progressDays flattens the summary into chart rows', () => {
+    const week = progressSummary(entries, DEFAULT_GOALS, 'week', '2026-09-28');
+    const rows = progressDays(week, TREND_WINDOW.week);
+    expect(rows).toHaveLength(7);
+    expect(rows[0]).toMatchObject({ date: '2026-09-28', logged: true, calories: 2000, goal: 2000, percentage: 100, metGoal: true, trend: 2000 });
+    expect(rows[1]).toMatchObject({ logged: true, calories: 1500, protein: 50, carbs: 160, fat: 50, fiber: 14, metGoal: false, trend: 1750 });
+    expect(rows[2]).toMatchObject({ logged: false, calories: 0, percentage: 0, trend: 1750 });
+    expect(rows[3]).toMatchObject({ logged: true, trend: 1750 });
+  });
+
+  it('progressStats averages over logged days only and finds the most logged recipe', () => {
+    const stats = progressStats(progressSummary(entries, DEFAULT_GOALS, 'week', '2026-09-28'));
+    expect(stats).toMatchObject({ totalDays: 7, loggedDays: 3, averageCalories: Math.round(5500 / 3), goalsMet: 2 });
+    expect(stats.macroAverages.protein).toBe(Math.round((50 + 50 + 50) / 3));
+    expect(stats.mostLogged).toEqual({ recipeId: 'rec_001', count: 3 });
+  });
+
+  it('progressStats is all zeros for an empty period', () => {
+    const stats = progressStats(progressSummary([], DEFAULT_GOALS, 'month', '2026-09-28'));
+    expect(stats).toEqual({
+      totalDays: 30,
+      loggedDays: 0,
+      averageCalories: 0,
+      goalsMet: 0,
+      macroAverages: { protein: 0, carbs: 0, fat: 0, fiber: 0 },
+      mostLogged: undefined,
+    });
   });
 });

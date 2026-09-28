@@ -19,6 +19,7 @@ import {
 } from '@/schemas';
 import { addDaysToKey, parseDateKey, toDateKey, todayKey } from '@/lib/format-date';
 import { aggregateNutrition, calculateEntryNutrition, calculateGoalProgress, scaleNutrition } from './nutrition';
+import { getStartOfWeek } from './date';
 
 /** Beverage id whose entries count towards the water goal. */
 export const WATER_BEVERAGE_ID = 'bev_water';
@@ -258,4 +259,124 @@ export function withQuantity(
 export function planDayIndex(dateKey: string): number {
   const weekday = parseDateKey(dateKey).getDay();
   return weekday === 0 ? 6 : weekday - 1;
+}
+
+// ── Progress dashboard (roadmap Issue 033 — `ProgressDashboard`) ─────────────
+
+/** One `DailyTracking` per date key, in the given order (legacy `getDailySummary` mapped). */
+export function getDailySummaries(
+  entries: ReadonlyArray<TrackingEntry>,
+  goals: NutritionGoals,
+  dates: ReadonlyArray<string>,
+): DailyTracking[] {
+  return dates.map((date) => dailySummary(entries, goals, date));
+}
+
+/** Legacy `getWeeklySummary(startDate)`: the 7 days from `startDate`. */
+export const getWeeklySummary = weeklySummary;
+
+/** Legacy `getMonthlySummary(year, month)` (1-based month). */
+export const getMonthlySummary = monthlySummary;
+
+export const PROGRESS_VIEWS = ['week', 'month'] as const;
+export type ProgressView = (typeof PROGRESS_VIEWS)[number];
+
+/** Summary of the Monday-based week or the calendar month containing `today`. */
+export function progressSummary(
+  entries: ReadonlyArray<TrackingEntry>,
+  goals: NutritionGoals,
+  view: ProgressView,
+  today: string = todayKey(),
+): PeriodSummary {
+  if (view === 'week') return getWeeklySummary(entries, goals, getStartOfWeek(today));
+  const [year, month] = today.split('-').map(Number);
+  return getMonthlySummary(entries, goals, year ?? 1970, month ?? 1);
+}
+
+/**
+ * Trailing mean over the last `window` positions (inclusive) ignoring `null`
+ * gaps; `null` where the window holds no value. Used as the calorie trend
+ * line (days with nothing logged are gaps, not zeros).
+ */
+export function trailingAverage(values: ReadonlyArray<number | null>, window: number): Array<number | null> {
+  const size = Math.max(1, Math.floor(window));
+  return values.map((_, i) => {
+    const slice = values.slice(Math.max(0, i - size + 1), i + 1).filter((v): v is number => v !== null);
+    return slice.length === 0 ? null : Math.round(slice.reduce((a, b) => a + b, 0) / slice.length);
+  });
+}
+
+/** Trend window: 3 days in the week view, 7 in the month view. */
+export const TREND_WINDOW: Record<ProgressView, number> = { week: 3, month: 7 };
+
+/** Row of the progress charts / tables: one per day of the period. */
+export interface ProgressDay {
+  date: string;
+  /** At least one entry that day. */
+  logged: boolean;
+  calories: number;
+  goal: number;
+  /** `calories / goal` in %, rounded. */
+  percentage: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  /** Trailing calorie average (`null` before anything was logged). */
+  trend: number | null;
+  /** Legacy "on track" rule (`meetsDailyGoal`). */
+  metGoal: boolean;
+}
+
+export function progressDays(summary: PeriodSummary, trendWindow: number): ProgressDay[] {
+  const calories = summary.days.map((d) => (d.entries.length > 0 ? Math.round(d.totals.calories) : null));
+  const trend = trailingAverage(calories, trendWindow);
+  return summary.days.map((day, i) => ({
+    date: day.date,
+    logged: day.entries.length > 0,
+    calories: Math.round(day.totals.calories),
+    goal: day.goalProgress.calories.goal,
+    percentage: day.goalProgress.calories.percentage,
+    protein: Math.round(day.totals.protein),
+    carbs: Math.round(day.totals.carbs),
+    fat: Math.round(day.totals.fat),
+    fiber: Math.round(day.totals.fiber),
+    trend: trend[i] ?? null,
+    metGoal: meetsDailyGoal(day),
+  }));
+}
+
+export const PROGRESS_MACROS = ['protein', 'carbs', 'fat', 'fiber'] as const;
+export type ProgressMacro = (typeof PROGRESS_MACROS)[number];
+
+export interface ProgressStats {
+  /** Days of the period. */
+  totalDays: number;
+  /** Days with at least one entry. */
+  loggedDays: number;
+  /** Mean kcal over the logged days (0 when none). */
+  averageCalories: number;
+  /** Days meeting the goal (legacy `streakDays` of the period summary). */
+  goalsMet: number;
+  /** Mean grams per logged day. */
+  macroAverages: Record<ProgressMacro, number>;
+  /** Most logged recipe of the period, if any. */
+  mostLogged: { recipeId: string; count: number } | undefined;
+}
+
+export function progressStats(summary: PeriodSummary): ProgressStats {
+  const logged = summary.days.filter((d) => d.entries.length > 0);
+  const n = logged.length;
+  const mean = (pick: (d: DailyTracking) => number) => (n === 0 ? 0 : Math.round(logged.reduce((sum, d) => sum + pick(d), 0) / n));
+  return {
+    totalDays: summary.days.length,
+    loggedDays: n,
+    averageCalories: mean((d) => d.totals.calories),
+    goalsMet: summary.streakDays,
+    macroAverages: Object.fromEntries(PROGRESS_MACROS.map((m) => [m, mean((d) => d.totals[m])])) as Record<ProgressMacro, number>,
+    mostLogged: mostLoggedMeals(
+      summary.days.flatMap((d) => d.entries),
+      1,
+    )[0],
+  };
 }

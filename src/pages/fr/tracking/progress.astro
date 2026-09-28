@@ -1,0 +1,23 @@
+---
+/**
+ * `/tracking/progress/` wrapper for `fr` (roadmap Issue 033). The page body
+ * lives in `components/pages/TrackingProgress.astro`; this file owns the
+ * layout metadata for this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TrackingProgress from '@/components/pages/TrackingProgress.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'fr' as const;
+const alternates = hreflangAlternates('/tracking/progress/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
+---
+
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'progress.title')}`}
+  description={t(lang, 'progress.pageDescription')}
+  lang={lang}
+  alternates={alternates}
+>
+  <TrackingProgress lang={lang} />
+</BaseLayout>
