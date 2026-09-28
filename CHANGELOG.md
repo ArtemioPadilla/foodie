@@ -20,6 +20,11 @@ Canonical plan for v2:
   schemas at build time, so it cannot drift from the code. The template's
   Inceptor docs pages are gone; `/docs/guides/github-pages-setup/` redirects
   to the deployment guide (#043).
+- **Project docs for the finished stack.** `CLAUDE.md` rewritten for v2
+  (Astro 7, Foodie ADR index, rules, data and state, roadmap status),
+  `README.md` with CI/deploy badges and new screenshots
+  (`npm run docs:screenshots` → `docs/assets/`), and `CONTRIBUTING.md` with the
+  issue-driven flow and the recipe contribution flow (#044).
 
 ### Removed
 

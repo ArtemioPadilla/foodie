@@ -115,11 +115,14 @@ describe('scripts/create-issues.sh — roadmap parser', () => {
   });
 });
 
-describe('CLAUDE.md (provisional, Issue 007)', () => {
-  it('links the roadmap as the canonical plan and defers the full rewrite to Issue 044', () => {
+// Adapted deliberately in roadmap Issue 044: the provisional CLAUDE.md of
+// Issue 007 deferred its rewrite to #044; the rewritten file must still link
+// the roadmap as the canonical plan, and must no longer call itself provisional.
+describe('CLAUDE.md (rewritten for the finished stack, Issue 044)', () => {
+  it('links the roadmap as the canonical plan and is no longer provisional', () => {
     const md = read('CLAUDE.md');
     expect(md).toContain(ROADMAP);
-    expect(md).toMatch(/Issue 044/);
+    expect(md).not.toMatch(/provisional|Until Issue 044/i);
     expect(md).not.toContain('INTEGRATION-PLAN');
   });
 });

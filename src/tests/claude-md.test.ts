@@ -34,4 +34,40 @@ describe('CLAUDE.md', () => {
     expect(md).toMatch(/forja/);
     expect(md).toMatch(/centinela/);
   });
+
+  // Roadmap Issue 044: the rewrite for the finished stack.
+  it('stays within 400 lines', () => {
+    expect(md.split('\n').length).toBeLessThanOrEqual(400);
+  });
+
+  it.each([
+    'Overview',
+    'Commands',
+    'Architecture',
+    'Conventions',
+    'Rules',
+    'Data and state',
+    'i18n',
+    'Testing',
+    'Deploy',
+    'Roadmap status',
+  ])('has a "%s" section', (heading) => {
+    expect(md).toMatch(new RegExp(`^## ${heading}\\b`, 'm'));
+  });
+
+  it('lists the six Inceptor warnings plus the Zod, withBase and lang rules', () => {
+    for (const rule of ['@astrojs/tailwind', 'Context', 'whole app in one island', '@radix-ui', '@tremor/react', 'framer-motion']) {
+      expect(md).toContain(rule);
+    }
+    expect(md).toMatch(/Zod at every boundary/);
+    expect(md).toContain('withBase()');
+    expect(md).toMatch(/`lang` is a prop/);
+  });
+
+  it('indexes the Foodie ADRs and documents the preview-under-agent note', () => {
+    for (const adr of ['0001', '0002', '0010', '0011', '0012', '0013', '0014']) {
+      expect(md).toContain(`**${adr}**`);
+    }
+    expect(md).toContain('--ignore-lock');
+  });
 });

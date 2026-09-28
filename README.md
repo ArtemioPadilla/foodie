@@ -1,102 +1,104 @@
 # Foodie
 
-> **Foodie v2 is built on Inceptor.** Foodie is an offline-first meal-planning
-> app with a trilingual (EN/ES/FR) catalog of recipes and ingredients, a weekly
-> planner, a shopping list and a pantry. It has been rebuilt from a React 18 +
-> Vite single-page app on the Inceptor template (Astro 7 islands + React 19).
->
-> - **Live:** <https://artemiopadilla.github.io/foodie/>
-> - **What's new:** [`CHANGELOG.md`](./CHANGELOG.md) (`2.0.0-beta.1`)
-> - **Plan:** [migration roadmap](./docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md)
->   and ADRs [0001](./docs/decisions/0001-foodie-inceptor-migration.md) and
->   [0002](./docs/decisions/0002-local-first-user-data.md)
-> - **v1 (React 18 + Vite):** frozen at the tag
->   [`legacy-vite-1.0.0`](https://github.com/ArtemioPadilla/foodie/tree/legacy-vite-1.0.0).
->   Data saved by v1 in your browser carries over, and old `?/recipes/…`
->   links redirect to the new pages.
-> - **Contributing:** PRs target `main`. See [`CONTRIBUTING.md`](./CONTRIBUTING.md).
->
-> The rest of this README still describes the Inceptor template. A full Foodie
-> README comes with roadmap Issue 044.
-
----
-
-# Built on Inceptor
-
-> An Astro 5 + React 19 starter where every feature ships through a GitHub issue: **issue → Claude Code → PR → merge → deploy.** Batteries-included UI, zero JS by default.
-
-**[Live demo → artemiop.com/inceptor](https://artemiop.com/inceptor/)**
-
-[![Build](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/ArtemioPadilla/inceptor/actions)
+[![CI](https://github.com/ArtemioPadilla/foodie/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/ci.yml)
+[![Deploy](https://github.com/ArtemioPadilla/foodie/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/deploy.yml)
+[![Visual & e2e](https://github.com/ArtemioPadilla/foodie/actions/workflows/visual.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/visual.yml)
+[![Security](https://github.com/ArtemioPadilla/foodie/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/ArtemioPadilla/foodie/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
-[![Components](https://img.shields.io/badge/components-~44-emerald)](./docs/component-catalog.md)
-[![Deps beyond stack](https://img.shields.io/badge/deps%20beyond%20stack-0-success)](./docs/component-catalog.md)
 
-Inceptor is a production-grade web template built around **Issue-Driven Development**. It ships an islands-architecture Astro site with a full UI kit, a custom docs site, a component gallery, live demos, a blog, and PWA/offline support — and a `FeedbackFAB` that lets real users file pre-filled GitHub issues straight from the running app.
+**Plan your meals, shop once, eat well — in English, Spanish or French, even offline.**
 
-## What you get
+Foodie is an offline-first meal-planning web app: a catalog of 50 recipes and
+105 ingredients in three languages, a weekly planner with drag and drop, a
+shopping list generated from the plan, a pantry with expiry dates, and a food
+diary with nutrition goals. Everything you enter stays in your browser;
+signing in is optional.
 
-### Stack
+- **Use it:** <https://artemiopadilla.github.io/foodie/> (also [`/es/`](https://artemiopadilla.github.io/foodie/es/) and [`/fr/`](https://artemiopadilla.github.io/foodie/fr/))
+- **Docs:** <https://artemiopadilla.github.io/foodie/docs/> — getting started, guides, the data model and how to contribute, with search
+- **v1:** the React 18 + Vite app is frozen at the tag
+  [`legacy-vite-1.0.0`](https://github.com/ArtemioPadilla/foodie/tree/legacy-vite-1.0.0).
+  Data saved by v1 in your browser carries over to v2, and old links redirect.
 
-| Package | Role |
+| Landing | Recipe detail |
 |---|---|
-| **Astro 5** | Islands architecture, ships zero JS by default |
-| **React 19** (`@astrojs/react`) | Only for interactive islands |
-| **Tailwind v4** (`@tailwindcss/vite`) | Styling — no `@astrojs/tailwind` |
-| **Base UI** (`@base-ui-components/react`) | shadcn-compatible primitives (not Radix) |
-| **TanStack Table + Query + Virtual** | DataTable, per-island data, virtualization |
-| **Tremor Raw** (copy-paste) | KPIs, trackers, charts — you own the source |
-| **Motion** (`motion/react`) | Lazy React animations |
-| **PWA** (`@vite-pwa/astro` + Workbox) | Service worker + offline cache |
+| ![Foodie landing page](docs/assets/screenshot-landing.png) | ![A recipe page with servings, units, favourites and plan actions](docs/assets/screenshot-recipe-detail.png) |
+| **Planner** | **Tracking progress** |
+| ![The weekly meal planner with cost and nutrition summary](docs/assets/screenshot-planner.png) | ![The progress dashboard with calories per day and the trend against the goal](docs/assets/screenshot-tracking-progress.png) |
 
-Everything else (Recharts, Nano Stores, react-hook-form + Zod, lucide, vitest) lives in [`CLAUDE.md`](./CLAUDE.md). No dependencies beyond this curated stack — dependency-free components add zero extra weight.
+## Features
 
-### ~44 components across 13 gallery categories
+- **Recipes** — search, filter (meal type, cuisine, diet, difficulty, time)
+  and sort, with the state in the URL; every recipe has a static page with a
+  servings scaler, metric/imperial units, step timers, nutrition and JSON-LD.
+- **Ingredients** — nutrition, composition, prices and the recipes that use
+  each one; add to the pantry or the shopping list.
+- **Planner** — seven days of breakfast, lunch, dinner and snacks; drag and
+  drop with pointer or keyboard; templates; cost and nutrition summary; share
+  a plan as a link, no server involved.
+- **Shopping list** — generated from the plan, merged and converted, grouped
+  by category and priced; your own items; CSV and text export.
+- **Pantry** — quantities, locations and expiry dates, and "what can I cook"
+  from what you have.
+- **Tracking** — a food diary, daily goals and progress charts.
+- **Accounts (optional)** — email, Google or GitHub sign-in keeps preferences
+  and favourites per account; export or clear your data at any time.
+- **Contribute** — a wizard turns your recipe into catalog JSON and a
+  prefilled GitHub issue; Foodie never asks for a token.
+- **PWA** — installable, works offline after the first visit.
 
-Primitives, form controls, advanced inputs, navigation, compound components (Dialog/Tabs/Toast/Form), overlays, disclosure, feedback, DataTable, KPIs, charts, and data-viz extras. Full inventory in [`docs/component-catalog.md`](./docs/component-catalog.md).
+## Stack
 
-### Optional self-hosted backend
-
-Two interchangeable archetypes — **`server-node/`** (Hono, reuses the frontend's Zod schemas) and **`server-flask/`** (Flask + Pydantic) — expose the same `/api/*` contract: contact/newsletter handlers, a token-backed GitHub proxy (lifts the 60 req/h cap), feedback→issue creation, and OpenAPI/Swagger. Entirely opt-in via `PUBLIC_API_BASE`; unset, the site stays fully static. See **[the backend guide](https://artemiop.com/inceptor/docs/building/backend/)** and [ADR 0006](./docs/decisions/0006-self-hosted-backend-archetypes.md).
-
-### Explore it live
-
-- **[Gallery](https://artemiop.com/inceptor/gallery/)** — every component rendered live
-- **[Demos](https://artemiop.com/inceptor/demos/)** — dashboard + data-table in context, plus the [backend API contract](https://artemiop.com/inceptor/demos/api/)
-- **[Docs](https://artemiop.com/inceptor/docs/)** — custom docs site with search
-- **[Blog](https://artemiop.com/inceptor/blog/)** — content-collection example
+Built on the [Inceptor](https://github.com/ArtemioPadilla/inceptor) template:
+**Astro 7** static pages with **React 19** islands, Tailwind v4, Base UI
+primitives, Nano Stores, TanStack Query, react-hook-form + Zod, Recharts,
+Motion, `@vite-pwa/astro` and Pagefind. Foodie adds `@dnd-kit` (planner),
+`firebase` (optional sign-in, loaded on demand) and `fflate` (plan sharing).
+The catalog is plain JSON in `public/data/`, validated with Zod at build time.
+Deployed to GitHub Pages.
 
 ## Quick start
 
 ```bash
-git clone https://github.com/ArtemioPadilla/inceptor.git
-cd inceptor
-npm install
-npm run dev          # http://localhost:4321
+git clone https://github.com/ArtemioPadilla/foodie.git
+cd foodie
+npm ci               # Node 22 (.nvmrc)
+npm run dev          # http://localhost:4321/
 ```
 
-Useful scripts: `npm run build`, `npm run preview`, `npm run check` (typecheck + tests + build), `npm run test`.
+| Command | What it does |
+|---|---|
+| `npm run check` | astro check, tsc, Vitest, ESLint, pragma check, build and built-site tests — the gate before every commit |
+| `npm run test` | Unit tests (Vitest) |
+| `npm run build && npx playwright test` | Screenshots, accessibility, smoke and the e2e journeys |
+| `npm run test:e2e` | E2E journeys and the Content Security Policy gate |
+| `npm run docs:screenshots` | Regenerate the images above from a running preview |
 
-## Deploy
+Configuration (base path, Firebase, feature flags) is documented in
+[Configuration](https://artemiopadilla.github.io/foodie/docs/getting-started/configuration/)
+and `.env.example`.
 
-Inceptor ships static HTML + a service worker, so any static host works. The default is **GitHub Pages** (repo Settings → Pages → Source: "GitHub Actions"); pushes to `main` deploy automatically. Cloudflare Pages, Netlify, and Vercel guides are in **[`docs/deploy/`](./docs/deploy/)**.
+## Contributing
 
-## How development works
+Recipes and code are both welcome — see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-Every feature starts as a GitHub issue. In a Claude Code session, Claude triages it and drives three project sub-agents — `prometeo` plans, `forja` implements, `centinela` validates — landing a PR against `main` that auto-deploys on merge. The in-app `FeedbackFAB` closes the loop: real users file issues with stack trace, URL, and diagnostics pre-filled.
+- **A recipe:** use the in-app [Contribute](https://artemiopadilla.github.io/foodie/contribute/)
+  wizard, or open a PR that edits `public/data/recipes.json`
+  ([format](https://artemiopadilla.github.io/foodie/docs/contributing/recipe-format/)).
+- **Code:** every change starts as an issue and lands as a PR against `main`
+  (issue → plan → implement → validate → PR). Read [`CLAUDE.md`](./CLAUDE.md)
+  for the rules the codebase follows.
 
-```
-User finds bug → FeedbackFAB → GitHub Issue → Claude Code → PR → Merge → Deploy
-```
+## Documentation map
 
-## Documentation
-
-- [Component catalog](./docs/component-catalog.md) — full inventory + coverage scorecard
-- [Roadmap](./ROADMAP.md) — post-integration follow-ups grouped into epics
-- [Claude Code context](./CLAUDE.md) — repo conventions, stack details, IDD workflow
-- [Contribution & component guide](./docs/COMPONENTS.md) — how to add a component
-- [docs/](./docs/) — principles, ethics, ADRs, component guide, deploy targets
+- [Docs site](https://artemiopadilla.github.io/foodie/docs/) — sources in `src/content/docs/`
+- [Migration roadmap](./docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md) — the plan behind v2 (48 issues, decisions D1–D14)
+- [Architecture decisions](./docs/decisions/) — Foodie ADRs 0001, 0002, 0010–0014
+- [`CLAUDE.md`](./CLAUDE.md) — conventions, stack and workflow for contributors and Claude Code
+- [Component guide](./docs/COMPONENTS.md) and [catalog](./docs/component-catalog.md) — the UI kit
+- [Runbooks](./docs/runbooks/) — cutover, offline PWA, repository cleanup
+- [`CHANGELOG.md`](./CHANGELOG.md)
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](./LICENSE) © Artemio Padilla

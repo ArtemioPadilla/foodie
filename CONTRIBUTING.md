@@ -1,59 +1,133 @@
 # Contributing to Foodie
 
-## Branches and pull requests
+Thanks for helping. There are two ways in: **add a recipe** (no code needed)
+or **change the code**. Both end in a pull request against `main`, checked by
+CI and reviewed by a maintainer; merging deploys to
+<https://artemiopadilla.github.io/foodie/>.
 
 Foodie v2 runs on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
-template (Astro 5 + React 19 + Tailwind v4 + Base UI). The roadmap cutover
-(Issue 030, runbook [`docs/runbooks/cutover.md`](docs/runbooks/cutover.md))
-merged the integration branch `inceptor` into `main` and deleted it. From then
-on there is **one line of development**:
+template (Astro 7 islands + React 19 + Tailwind v4 + Base UI). Before touching
+code, read [`CLAUDE.md`](CLAUDE.md): it lists the stack, the rules and the
+roadmap status. The docs site has the long versions:
+[development](https://artemiopadilla.github.io/foodie/docs/guides/development/),
+[testing](https://artemiopadilla.github.io/foodie/docs/guides/testing/) and the
+[data model](https://artemiopadilla.github.io/foodie/docs/reference/api/).
+
+## Contributing a recipe
+
+Every recipe is one record in `public/data/recipes.json`, in English, Spanish
+and French, validated with `RecipeSchema` (`src/schemas/recipe.ts`). The full
+format is in the docs:
+[Contributing recipes](https://artemiopadilla.github.io/foodie/docs/contributing/recipe-format/).
+
+### Without git — the Contribute wizard
+
+1. Open [`/contribute/`](https://artemiopadilla.github.io/foodie/contribute/)
+   (or `/es/contribute/`, `/fr/contribute/`) and fill the seven steps; your
+   draft is saved in your browser.
+2. **Submit** opens a prefilled *Recipe submission* issue on GitHub and
+   downloads `recipe-<id>.json`. Foodie never holds a GitHub token: you create
+   the issue with your own account. If the recipe is too long for the issue
+   URL, attach the downloaded file instead.
+3. Tick the checklist and create the issue. It is labelled
+   `recipe-submission`.
+4. A maintainer copies the JSON into `public/data/recipes.json`, assigns the
+   next id (`rec_051`, …), completes any missing translation and opens the PR
+   that closes your issue.
+
+### With git — a pull request
+
+1. Fork, then branch from `main` (e.g. `recipe/lentil-soup`).
+2. Append your record to `public/data/recipes.json` with the next free id.
+   Missing ingredients go into `public/data/ingredients.json` in the same PR.
+   Omit optional fields instead of writing `null`.
+3. Check it:
+
+   ```bash
+   npm run test -- src/tests/catalog-schema.test.ts   # schemas, unique ids, three languages, ingredient references
+   npm run build                                      # the content collections must load
+   ```
+
+4. Open the PR. `validate-recipe-pr.yml` runs the catalog test and comments the
+   result; a maintainer reviews the translations and the nutrition values.
+
+How submissions are processed end to end (and why there are no secrets):
+[`docs/recipes/contributing-recipes.md`](docs/recipes/contributing-recipes.md)
+and [`docs/recipes/catalog-data.md`](docs/recipes/catalog-data.md).
+
+## Contributing code — the issue-driven flow
+
+Every change starts as a GitHub issue and ships as one PR:
+
+```
+issue ──► prometeo (plan) ──► forja (implement) ──► centinela (validate) ──► PR ──► CI + review ──► merge ──► deploy
+```
+
+1. **Issue.** Find or open one. Roadmap work comes from the
+   [migration roadmap](docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md)
+   (`bash scripts/create-issues.sh` turns its issue blocks into GitHub issues;
+   dry run by default, `--apply` to create). Each issue has acceptance
+   criteria and a validation command.
+2. **Plan — prometeo** (`.claude/agents/prometeo.md`) reads the roadmap and the
+   issue, checks `Depends on`, and returns an ordered plan. It writes no code.
+3. **Implement — forja** (`.claude/agents/forja.md`) implements that one issue
+   on its branch with atomic commits, test first where behaviour changes.
+4. **Validate — centinela** (`.claude/agents/centinela.md`) runs
+   `npm run check` and the issue's validation block, checks forbidden imports
+   and the ethics tier, and answers `APPROVED` or `REJECTED` with reasons.
+5. **Pull request** against `main` with `Closes #N`. CI (`ci.yml`,
+   `visual.yml`, `lighthouse.yml`, `security.yml`) must be green; a maintainer
+   reviews and merges; `deploy.yml` publishes.
+
+In a Claude Code session the main session orchestrates the three sub-agents.
+Working by hand, you play the three roles yourself: plan from the issue,
+implement, then run every check before opening the PR.
+
+### Branches and pull requests
 
 | Branch / tag | What it holds | Deploys? |
 |---|---|---|
-| `main` | Foodie v2, the Inceptor app | Yes. Each push runs `deploy.yml` and publishes `https://artemiopadilla.github.io/foodie/` |
-| tag `legacy-vite-1.0.0` | The frozen v1 (React 18 + Vite SPA, `ac89bf1`) | No. Rollback only (see the runbook) |
+| `main` | Foodie v2 | Yes. Each push runs `deploy.yml` |
+| `phase-N/issue-NNN-slug`, `fix/…`, `feat/…` | One issue each, PR → `main` | No |
+| tag `legacy-vite-1.0.0` | The frozen v1 (React 18 + Vite SPA) | No. Rollback only ([`docs/runbooks/cutover.md`](docs/runbooks/cutover.md)) |
 
-### Where do PRs go?
-
-- **Every PR targets `main`**: roadmap work (issues `031` onwards), fixes and
-  docs. Branch from `main` as `phase-N/issue-NNN-short-slug`, for example
-  `phase-4/issue-031-tracking-today`, and open the PR with base `main`.
-- `inceptor` no longer exists. If an older branch was cut from it, rebase it
-  onto `main` (`git fetch origin && git rebase origin/main`) before opening the
-  PR.
-- There is no v1 branch to fix. To read v1 code, run
-  `git show legacy-vite-1.0.0:src/<path>`. The v1 phase reports and changelog
-  are archived under `docs/archive/legacy-vite/`.
+To read v1 code: `git show legacy-vite-1.0.0:src/<path>`. The v1 phase
+reports and changelog are archived under `docs/archive/legacy-vite/`.
 
 ### Conventions
 
-- Commit messages follow Conventional Commits with the roadmap id:
-  `type(scope): summary (roadmap #NNN)`.
-- Every PR must keep `npm run check` green (astro check, tsc, vitest, eslint,
-  pragmas, build). It must also follow the Inceptor rules in `CLAUDE.md`: no
-  `@astrojs/tailwind`, no React Context across islands, `withBase()` for every
-  href and asset, and Zod schemas in `src/schemas/` for cross-boundary types.
-- Labels `phase-0` to `phase-6`, `type:chore|feat|docs|test` and `risk:high`,
-  and milestones `v0.1` to `v1.0`, classify the work. They are created by
-  `scripts/create-issues.sh` (roadmap Issue 007).
+- **Commits:** Conventional Commits with the id —
+  `type(scope): summary (roadmap #NNN)` or `(#N)`. A commit that only adds a
+  failing test may carry a `Tdd-Red:` trailer.
+- **Labels:** `phase-0` … `phase-6`, `type:feat|fix|docs|test|chore`,
+  `risk:high`, `recipe-submission`; milestones `v0.1` … `v1.0`.
+- **Rules** (enforced by ESLint, tests and review): no `@astrojs/tailwind`, no
+  `@radix-ui/*`, no `@tremor/react`, no `framer-motion`; no React Context
+  across islands (Nano Stores); one island per page; Zod schemas in
+  `src/schemas/` for cross-boundary types; `withBase()` for every href and
+  asset; islands get `lang` as a prop.
+- **Never** `--no-verify`, never `@ts-ignore`, never delete a test to get
+  green — change it deliberately and explain why in the PR.
+- **Ethics tier** in the PR description (`.claude/checklists/ethics.json`,
+  [`docs/ETHICS.md`](docs/ETHICS.md)): tier-0 docs/tests, tier-1 features and
+  fixes, tier-2 (`risk:high`) needs a Stakeholder Analysis ADR.
 - Record user-visible changes under `## [Unreleased]` in
-  [`CHANGELOG.md`](CHANGELOG.md).
+  [`CHANGELOG.md`](CHANGELOG.md). New architectural decisions get an ADR in
+  `docs/decisions/` (copy `TEMPLATE.md`).
 
-## Development workflow
-
-1. Find or open a GitHub issue for the work you want to do.
-2. Branch from `main` as `phase-N/issue-NNN-short-slug` (e.g. `phase-4/issue-031-tracking-today`) and open the PR against `main`.
-3. Commit messages: Conventional Commits + issue ref (e.g. `feat(ui): add Button component (#6)`).
-4. Open a PR that includes `Closes #N` in the body so the issue auto-closes on merge.
-5. Every PR must pass `npm run build`, `npm run check`, and `npm run test` before merge.
-
-## Running the unit tests
+## The checks
 
 ```bash
-npm run test          # vitest only — excludes Playwright specs
-npm run type-check    # tsc --noEmit
-npm run check         # astro diagnostics
+npm run check         # astro check + tsc + Vitest + ESLint + pragmas, then build + built-site tests — must be green
+npm run test          # Vitest only (excludes Playwright specs)
+npm run test:e2e      # Playwright journeys + the CSP gate (own build with the mock sign-in)
+npm run build && npx playwright test   # visual + a11y + smoke + keyboard/mobile + journeys
 ```
+
+`npm run test:e2e` leaves its mock-auth build in `dist/`; run `npm run build`
+before the visual suite. Under an AI agent, Astro 7's `astro preview`
+backgrounds itself: the Playwright configs pass `--ignore-lock`, and a preview
+started by hand needs it too (or `npx astro preview stop`).
 
 ## Visual regression
 

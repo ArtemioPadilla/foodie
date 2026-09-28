@@ -70,3 +70,41 @@ describe('docs site (roadmap #043)', () => {
     expect(existsSync(join(root, path))).toBe(false);
   });
 });
+
+describe('README and CONTRIBUTING (roadmap #044)', () => {
+  const readme = read('README.md');
+  const contributing = read('CONTRIBUTING.md');
+
+  it('README shows real workflow badges for this repo (ci, deploy)', () => {
+    for (const wf of ['ci.yml', 'deploy.yml']) {
+      expect(readme).toContain(`https://github.com/ArtemioPadilla/foodie/actions/workflows/${wf}/badge.svg`);
+      expect(existsSync(join(root, '.github/workflows', wf)), wf).toBe(true);
+    }
+  });
+
+  it('README embeds the captures from docs/assets/, and they exist', () => {
+    const images = [...readme.matchAll(/\]\((docs\/assets\/[^)]+\.png)\)/g)].map((m) => m[1]!);
+    expect(images).toEqual(
+      expect.arrayContaining([
+        'docs/assets/screenshot-landing.png',
+        'docs/assets/screenshot-recipe-detail.png',
+        'docs/assets/screenshot-planner.png',
+        'docs/assets/screenshot-tracking-progress.png',
+      ]),
+    );
+    for (const img of images) expect(existsSync(join(root, img)), img).toBe(true);
+  });
+
+  it('README links the docs site and the legacy tag', () => {
+    expect(readme).toContain('https://artemiopadilla.github.io/foodie/docs/');
+    expect(readme).toContain('tree/legacy-vite-1.0.0');
+  });
+
+  it('CONTRIBUTING documents the IDD flow and the recipe flow', () => {
+    expect(contributing).toMatch(/issue[\s\S]*prometeo[\s\S]*forja[\s\S]*centinela[\s\S]*PR/);
+    expect(contributing).toContain('## Contributing a recipe');
+    expect(contributing).toContain('src/tests/catalog-schema.test.ts');
+    expect(contributing).toContain('/contribute/');
+    expect(contributing).not.toMatch(/Astro 5/);
+  });
+});
