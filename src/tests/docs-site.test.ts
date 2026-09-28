@@ -96,7 +96,7 @@ describe('README and CONTRIBUTING (roadmap #044)', () => {
   });
 
   it('README links the docs site and the legacy tag', () => {
-    expect(readme).toContain('https://artemiopadilla.github.io/foodie/docs/');
+    expect(readme).toContain('https://artemiop.com/foodie/docs/');
     expect(readme).toContain('tree/legacy-vite-1.0.0');
   });
 

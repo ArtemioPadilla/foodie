@@ -20,7 +20,7 @@ for local work; CI sets the same variables in the workflow.
 | `PUBLIC_BUILD_SHA`, `PUBLIC_VERSION` | unset | Shown in the feedback button's diagnostics. CI fills them. |
 | `PUBLIC_REPO_SLUG` | `ArtemioPadilla/foodie` | The repository where feedback issues and recipe submissions are opened. A name, not a credential. |
 
-The production origin (`https://artemiopadilla.github.io`) lives in
+The production origin (`https://artemiop.com`) lives in
 `site.config.mjs`; the site name, description and license shown to search
 engines and to agents (`/llms.txt`) live in `src/lib/site-meta.ts`.
 

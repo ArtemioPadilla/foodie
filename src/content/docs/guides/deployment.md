@@ -4,7 +4,7 @@ description: How Foodie is built and published to GitHub Pages under /foodie/, w
 ---
 
 Foodie is a static site. Production is **GitHub Pages** at
-`https://artemiopadilla.github.io/foodie/`, published by
+`https://artemiop.com/foodie/`, published by
 `.github/workflows/deploy.yml` on every push to `main`. There is no Python or
 MkDocs step any more: the docs you are reading are built with the app.
 
@@ -35,7 +35,7 @@ A failed deploy opens an issue automatically
   `PUBLIC_FIREBASE_AUTH_DOMAIN`, `PUBLIC_FIREBASE_PROJECT_ID`,
   `PUBLIC_FIREBASE_APP_ID` if sign-in should work; optionally `ASTRO_BASE`
   and the `PUBLIC_REPO_SLUG` variable for a fork.
-- In the Firebase console, add `artemiopadilla.github.io` to the authorised
+- In the Firebase console, add `artemiop.com` to the authorised
   domains.
 
 ## The other workflows
@@ -54,7 +54,7 @@ A failed deploy opens an issue automatically
 After the workflow finishes, open these URLs (each should render without
 console errors):
 
-- `https://artemiopadilla.github.io/foodie/` and `/foodie/es/`, `/foodie/fr/`
+- `https://artemiop.com/foodie/` and `/foodie/es/`, `/foodie/fr/`
 - `/foodie/recipes/` and a recipe such as `/foodie/recipes/rec_001/`
 - `/foodie/planner/` (after one visit, it must also load offline)
 - `/foodie/docs/` — try the search box

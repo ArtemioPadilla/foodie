@@ -25,7 +25,7 @@
  * Foodie is a GitHub *project* page: origin is the github.io user domain and
  * the `/foodie` subpath comes from ASTRO_BASE (see astro.config.mjs).
  */
-export const SITE_ORIGIN = 'https://artemiopadilla.github.io';
+export const SITE_ORIGIN = 'https://artemiop.com';
 export const SITE = {
   /** Product name as it should appear to agents and search engines. */
   name: 'Foodie',
@@ -47,7 +47,7 @@ export const SITE = {
 /** Absolute repo URL derived from the slug. */
 export const REPO_URL = `https://github.com/${SITE.repoSlug}`;
 
-/** Absolute site origin + base (e.g. https://artemiopadilla.github.io/foodie). */
+/** Absolute site origin + base (e.g. https://artemiop.com/foodie). */
 export function siteUrl(site: URL | undefined, base: string): string {
   const origin = (site ?? new URL('https://localhost')).origin;
   return `${origin}${base.replace(/\/$/, '')}`;

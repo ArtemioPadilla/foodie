@@ -8,14 +8,16 @@
  *   (static import) and src/lib/site-meta.ts (re-exported as SITE_ORIGIN)
  *   can consume the same value without duplication.
  *
- * Foodie is served as a GitHub project page at
- * https://artemiopadilla.github.io/foodie/ — the origin lives here, the
+ * Foodie is a GitHub project page. The account's Pages custom domain is
+ * artemiop.com, so artemiopadilla.github.io/foodie/ answers with a 301 to
+ * https://artemiop.com/foodie/ — canonical URLs, hreflang, the sitemap and OG
+ * tags must use the final origin, not the redirecting one. The origin lives here, the
  * `/foodie` base comes from ASTRO_BASE. public/robots.txt Sitemap URL must
  * match (the doctor script and src/tests/site-meta.test.ts catch drift).
  */
 
 /** Production origin — no trailing slash. Used for sitemap + OG tags. */
-export const SITE_ORIGIN = 'https://artemiopadilla.github.io';
+export const SITE_ORIGIN = 'https://artemiop.com';
 
 /**
  * Canonical URL for the site root (origin + base subpath).
@@ -25,7 +27,7 @@ export const SITE_ORIGIN = 'https://artemiopadilla.github.io';
  * This helper exists here so astro.config.mjs can call it before Vite starts.
  *
  * @param {string} [base='/'] - The base path (e.g. '/foodie').
- * @returns {string} Full canonical URL (e.g. 'https://artemiopadilla.github.io/foodie').
+ * @returns {string} Full canonical URL (e.g. 'https://artemiop.com/foodie').
  */
 export function canonicalUrl(base = '/') {
   return `${SITE_ORIGIN}${base === '/' ? '' : base.replace(/\/$/, '')}`;

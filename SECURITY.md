@@ -2,7 +2,7 @@
 
 Foodie is a static site (Astro + React islands on GitHub Pages) with
 local-first user data. There is no Foodie backend and no server-side secret.
-Only the `main` branch (what <https://artemiopadilla.github.io/foodie/> serves)
+Only the `main` branch (what <https://artemiop.com/foodie/> serves)
 is supported. The `legacy-vite-1.0.0` tag (the v1 SPA) gets no fixes.
 
 ## Reporting a vulnerability
