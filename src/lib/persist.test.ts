@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { atom } from 'nanostores';
 import { z } from 'zod';
 import { isQuotaExceededError, persistentAtom } from './persist';
 
@@ -11,7 +12,9 @@ import { isQuotaExceededError, persistentAtom } from './persist';
  *   1. hydrates from `localStorage[key]` through `schema.safeParse`, falls back
  *      (and reports, without throwing) on invalid data, writes JSON on `set`;
  *   2. mirrors other tabs through the `storage` event and survives quota errors;
- *   3. `migrate` upgrades legacy shapes; works without `window` (SSR).
+ *   3. `migrate` upgrades legacy shapes; works without `window` (SSR);
+ *   4. (Issue 037) the key may be a function re-evaluated whenever one of
+ *      `keyDeps` changes — `user-preferences-${uid}` follows `$user`.
  */
 
 const KEY = 'persist-test';
@@ -244,6 +247,125 @@ describe('persistentAtom — SSR (no window)', () => {
     const $store = persistentAtom(KEY, Schema, FALLBACK);
     expect($store.get()).toEqual(FALLBACK);
     expect(() => $store.set({ count: 1, label: 'x' })).not.toThrow();
+  });
+});
+
+describe('persistentAtom — reactive key (roadmap Issue 037)', () => {
+  const GUEST = 'guest-key';
+  const userKey = (uid: string) => `user-key-${uid}`;
+  /** Stand-in for `$user`: the uid, or null for a guest. */
+  const make$uid = () => atom<string | null>(null);
+  const reactive = ($uid: ReturnType<typeof make$uid>) =>
+    persistentAtom(() => ($uid.get() ? userKey($uid.get()!) : GUEST), Schema, FALLBACK, { keyDeps: [$uid] });
+
+  it('accepts `key: () => string` and exposes the current key', () => {
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    expect($store.key).toBe(GUEST);
+    $uid.set('u1');
+    expect($store.key).toBe(userKey('u1'));
+  });
+
+  it('hydrates from the key the function returns at creation', () => {
+    localStorage.setItem(userKey('u1'), JSON.stringify({ count: 7, label: 'account' }));
+    const $uid = make$uid();
+    $uid.set('u1');
+    expect(reactive($uid).get()).toEqual({ count: 7, label: 'account' });
+  });
+
+  it('re-hydrates from the new key when a dependency changes, without a subscriber', () => {
+    localStorage.setItem(GUEST, JSON.stringify({ count: 1, label: 'guest' }));
+    localStorage.setItem(userKey('u1'), JSON.stringify({ count: 2, label: 'account' }));
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    expect($store.get()).toEqual({ count: 1, label: 'guest' });
+    $uid.set('u1');
+    expect($store.get()).toEqual({ count: 2, label: 'account' });
+    $uid.set(null);
+    expect($store.get()).toEqual({ count: 1, label: 'guest' });
+  });
+
+  it('notifies subscribers when the key switch changes the value', () => {
+    localStorage.setItem(userKey('u1'), JSON.stringify({ count: 2, label: 'account' }));
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    const seen: Value[] = [];
+    const unbind = $store.listen((v) => seen.push(v));
+    $uid.set('u1');
+    expect(seen).toEqual([{ count: 2, label: 'account' }]);
+    unbind();
+  });
+
+  it('starts a key with nothing stored from the fallback and writes nothing', () => {
+    localStorage.setItem(GUEST, JSON.stringify({ count: 1, label: 'guest' }));
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    const setItem = vi.spyOn(Storage.prototype, 'setItem');
+    $uid.set('fresh');
+    expect($store.get()).toEqual(FALLBACK);
+    expect(setItem).not.toHaveBeenCalled();
+    expect(localStorage.getItem(userKey('fresh'))).toBeNull();
+  });
+
+  it('writes to the current key only and leaves the previous key untouched', () => {
+    localStorage.setItem(GUEST, JSON.stringify({ count: 1, label: 'guest' }));
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    $uid.set('u1');
+    $store.set({ count: 5, label: 'mine' });
+    expect(JSON.parse(localStorage.getItem(userKey('u1'))!)).toEqual({ count: 5, label: 'mine' });
+    expect(JSON.parse(localStorage.getItem(GUEST)!)).toEqual({ count: 1, label: 'guest' });
+  });
+
+  it('keeps the value when a dependency changes but the key does not', () => {
+    const $uid = make$uid();
+    const $other = atom(0);
+    const $store = persistentAtom(() => ($uid.get() ? userKey($uid.get()!) : GUEST), Schema, FALLBACK, {
+      keyDeps: [$uid, $other],
+    });
+    $store.set({ count: 3, label: 'kept' });
+    localStorage.setItem(GUEST, JSON.stringify({ count: 9, label: 'changed underneath' }));
+    $other.set(1);
+    expect($store.get()).toEqual({ count: 3, label: 'kept' });
+  });
+
+  it('validates (and migrates) the new key like the initial hydration', () => {
+    localStorage.setItem(userKey('bad'), '{broken');
+    localStorage.setItem(userKey('old'), JSON.stringify({ count: 4 }));
+    const $uid = make$uid();
+    const $store = persistentAtom(() => ($uid.get() ? userKey($uid.get()!) : GUEST), Schema, FALLBACK, {
+      keyDeps: [$uid],
+      migrate: (raw) => ({ ...(raw as object), label: 'migrated' }) as Value,
+    });
+    $uid.set('bad');
+    expect($store.get()).toEqual(FALLBACK);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining(userKey('bad')));
+    $uid.set('old');
+    expect($store.get()).toEqual({ count: 4, label: 'migrated' });
+    expect(JSON.parse(localStorage.getItem(userKey('old'))!)).toEqual({ count: 4, label: 'migrated' });
+  });
+
+  it('mirrors storage events for the current key only', () => {
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    const unbind = $store.listen(() => {});
+    $uid.set('u1');
+    window.dispatchEvent(new StorageEvent('storage', { key: GUEST, newValue: JSON.stringify({ count: 1, label: 'guest tab' }) }));
+    expect($store.get()).toEqual(FALLBACK);
+    window.dispatchEvent(new StorageEvent('storage', { key: userKey('u1'), newValue: JSON.stringify({ count: 6, label: 'account tab' }) }));
+    expect($store.get()).toEqual({ count: 6, label: 'account tab' });
+    unbind();
+  });
+
+  it('works on the server (no window): the function key is evaluated once, in memory', () => {
+    vi.stubGlobal('window', undefined);
+    const $uid = make$uid();
+    const $store = reactive($uid);
+    expect($store.key).toBe(GUEST);
+    $store.set({ count: 1, label: 'server' });
+    expect($store.get()).toEqual({ count: 1, label: 'server' });
+    vi.unstubAllGlobals();
+    expect(localStorage.getItem(GUEST)).toBeNull();
   });
 });
 
