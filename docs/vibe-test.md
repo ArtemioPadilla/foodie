@@ -1,5 +1,8 @@
 # The vibe-test harness
 
+> **Foodie:** this harness is Inceptor's and was never copied here; the
+> unused `@anthropic-ai/sdk` devDependency was removed in roadmap Issue 047.
+
 ROADMAP Epic 26's stretch item. Astryx runs exactly this against its own
 docs; Inceptor's entire workflow — `forja` building UI from
 `docs/component-guidelines/` and `mcp-server/`'s `get_component` tool rather

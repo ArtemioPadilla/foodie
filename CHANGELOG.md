@@ -48,6 +48,28 @@ Canonical plan for v2:
 - The legacy MkDocs sources (`docs/index.md`, `docs/getting-started/`,
   `docs/guides/`, `docs/reference/api.md`, `docs/contributing/recipe-format.md`)
   (#043).
+- **Template surfaces Foodie does not use** (#046): the blog, `/demos/*`,
+  `/showcase/*`, `/blocks/*`, `/login/` (replaced by the sign-in dialog),
+  `/contact/`, the AI chat kit (`src/components/ui/ai/`) and the islands only
+  those pages used. The component gallery stays for contributors but is built
+  only outside the production deploy (`PUBLIC_FLAG_EXPERIMENTAL_GALLERY`); the
+  deployed site now has 516 pages. The ⌘K search lists Foodie's sections in
+  the page's language.
+- **Unused dependencies** (#047): `@anthropic-ai/sdk`, `@vitest/expect` and
+  `@dnd-kit/utilities` (never imported; `@dnd-kit/core` still brings its own
+  copy). The dead `server:flask` / `server:node` scripts.
+
+### Security
+
+- `npm audit` reports 0 vulnerabilities, dev dependencies included (#047):
+  Vitest 5 (the `@vitest/mocker` advisory), a patched `fast-uri`, and
+  `overrides` for the Lighthouse CI tooling's `tmp`, `@puppeteer/browsers`
+  (drops `extract-zip`), `qs` and `uuid`, each justified in `SECURITY.md`. `security.yml` gains an
+  `npm audit --audit-level=high` job and CodeQL v4; it runs on push, pull
+  request and weekly. `SECURITY.md` rewritten for Foodie (reporting, scope,
+  `PUBLIC_*`-only secrets policy, Firebase API key restriction). Test tooling
+  majors taken: `vitest` 5, `jsdom` 30, `prettier-plugin-astro` 1, and
+  `@nanostores/react` 2 at runtime.
 
 ## [2.0.0-beta.1] - unreleased
 

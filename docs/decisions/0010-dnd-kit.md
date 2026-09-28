@@ -105,3 +105,9 @@ None. (Replaces the legacy app's `react-dnd` usage, which never had an ADR.)
 - [ADR 0001](./0001-foodie-inceptor-migration.md), [ADR 0002](./0002-local-first-user-data.md)
   (the planner writes `currentMealPlan` under that ADR).
 - https://docs.dndkit.com/ — sensors, accessibility, collision detection.
+
+## Update (roadmap Issue 047)
+
+The planner never needed `CSS.Translate`: the drag overlay is positioned by
+`@dnd-kit/core` alone, so `@dnd-kit/utilities` was removed from
+`package.json`. It is still installed as a dependency of `@dnd-kit/core`.

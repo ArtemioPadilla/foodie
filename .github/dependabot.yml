@@ -39,6 +39,17 @@ updates:
       # A deliberate, scoped v9 migration is future work, not a drive-by bump.
       - dependency-name: "@tanstack/react-table"
         update-types: ["version-update:semver-major"]
+      # motion@13 (roadmap Issue 047): `motion/react` drives the islands'
+      # enter/exit animations and the reduced-motion handling; a major needs
+      # a deliberate pass over the visual baselines and the ux-motion tokens,
+      # not a routine bump.
+      - dependency-name: "motion"
+        update-types: ["version-update:semver-major"]
+      # @types/node follows the Node runtime the project supports (engines
+      # ">=22", CI on Node 22); a new @types/node major tracks a newer Node
+      # release and is taken together with a runtime bump (roadmap Issue 047).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       astro:
         patterns:
@@ -52,10 +63,17 @@ updates:
           - "@playwright/*"
           - "@testing-library/*"
           - "vitest"
+          - "jsdom"
           - "typescript"
           - "prettier"
       # Firebase Auth adapter (roadmap D9, Issue 035): the SDK ships as one
       # umbrella package plus scoped internals — bump them together.
+      # Lighthouse CI (npm run lighthouse / perf). Its vulnerable transitive
+      # deps are pinned through package.json `overrides` (SECURITY.md).
+      lighthouse:
+        patterns:
+          - "@lhci/*"
+          - "@axe-core/*"
       firebase:
         patterns:
           - "firebase"

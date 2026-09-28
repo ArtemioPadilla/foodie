@@ -127,6 +127,39 @@ describe('security.yml + dependabot.yml', () => {
     expect(existsSync(resolve(root, '.github/workflows/security-scan.yml'))).toBe(false);
   });
 
+  it('security.yml stays active and audits the lockfile (roadmap Issue 047)', () => {
+    const sec = workflow('security.yml');
+    // Weekly cron + push: a push-less repo would get the schedule disabled.
+    expect(sec).toMatch(/schedule:(?:\s*\n\s*#[^\n]*)*\s*\n\s*- cron: '[^']+'/);
+    expect(sec).toMatch(/push:\s*\n\s*branches:\s*\[inceptor, main\]/);
+    expect(sec).toContain('npm audit --audit-level=high');
+    expect(sec).toContain('github/codeql-action/init@v4');
+  });
+
+  it('SECURITY.md states the Foodie secrets policy (roadmap Issue 047)', () => {
+    const md = read('SECURITY.md');
+    expect(md).toContain('ArtemioPadilla/foodie/security/advisories/new');
+    expect(md).toContain('Only `PUBLIC_*` variables reach the browser');
+    expect(md).toMatch(/restricts the API key to the\s+deployed origins/);
+    expect(md).not.toContain('ArtemioPadilla/inceptor');
+    // Every package.json override is justified in SECURITY.md.
+    const pkg = JSON.parse(read('package.json')) as { overrides: Record<string, unknown> };
+    for (const name of Object.keys(pkg.overrides).filter((n) => n !== '@vite-pwa/astro')) {
+      expect(md, `override ${name} is not justified in SECURITY.md`).toContain(`\`${name}\``);
+    }
+  });
+
+  it('unused template dev dependencies stay removed (roadmap Issue 047)', () => {
+    const pkg = JSON.parse(read('package.json')) as {
+      dependencies: Record<string, string>;
+      devDependencies: Record<string, string>;
+    };
+    const all = { ...pkg.dependencies, ...pkg.devDependencies };
+    for (const name of ['@anthropic-ai/sdk', 'ajv', 'ajv-cli', 'sharp', '@vitest/expect', '@dnd-kit/utilities']) {
+      expect(all, name).not.toHaveProperty(name);
+    }
+  });
+
   it('dependabot groups astro / tanstack / tooling / firebase', () => {
     const bot = read('.github/dependabot.yml');
     for (const group of ['astro:', 'tanstack:', 'tooling:', 'firebase:']) {
