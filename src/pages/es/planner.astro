@@ -1,7 +1,23 @@
 ---
-// Placeholder until the section is migrated (roadmap Issue 005). Replace this
-// wrapper with the real page; keep the ES/FR twins in step (route-parity).
-import ComingSoon from '@/components/pages/ComingSoon.astro';
+/**
+ * `/planner/` wrapper for `es` (roadmap Issue 024). The page body lives in
+ * `components/pages/Planner.astro`; this file owns the layout metadata for
+ * this locale (title, description, hreflang alternates).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Planner from '@/components/pages/Planner.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { hreflangAlternates, t } from '@/i18n';
+
+const lang = 'es' as const;
+const alternates = hreflangAlternates('/planner/', (Astro.site ?? new URL(SITE_ORIGIN)).origin, import.meta.env.BASE_URL);
 ---
 
-<ComingSoon lang="es" route="/planner/" section="planner" />
+<BaseLayout
+  title={`${SITE.name} — ${t(lang, 'planner.title')}`}
+  description={t(lang, 'planner.description')}
+  lang={lang}
+  alternates={alternates}
+>
+  <Planner lang={lang} />
+</BaseLayout>

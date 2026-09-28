@@ -4,6 +4,7 @@ import {
   SavedMealPlansSchema,
   type MainMealSlot,
   type MealPlan,
+  type MealSlot,
   type PlanDay,
 } from '@/schemas';
 import { persistentAtom } from '@/lib/persist';
@@ -113,6 +114,93 @@ export function duplicateDay(fromIndex: number, toIndex: number): void {
   const source = plan?.days[fromIndex];
   if (!plan || !source || fromIndex === toIndex) return;
   updateDay(toIndex, (day) => ({ ...day, meals: structuredClone(source.meals) }));
+}
+
+/** A filled position in the plan: a main meal, or one snack by index. */
+export interface MealLocation {
+  dayIndex: number;
+  slot: PlanSlot;
+  /** Required to address one snack; ignored for main meals. */
+  snackIndex?: number;
+}
+
+function readMeal(day: PlanDay, location: MealLocation): MealSlot | undefined {
+  if (location.slot === 'snacks') return day.meals.snacks?.[location.snackIndex ?? 0];
+  return day.meals[location.slot];
+}
+
+/** Remove the meal at `location` from `day` (immutable). */
+function withoutMeal(day: PlanDay, location: MealLocation): PlanDay {
+  const meals = { ...day.meals };
+  if (location.slot === 'snacks') {
+    const index = location.snackIndex ?? 0;
+    meals.snacks = (meals.snacks ?? []).filter((_, i) => i !== index);
+  } else {
+    delete meals[location.slot];
+  }
+  return { ...day, meals };
+}
+
+/** Put `meal` at `location` (main slot: replace; snacks: insert at `snackIndex` or append). */
+function withMeal(day: PlanDay, location: MealLocation, meal: MealSlot): PlanDay {
+  if (location.slot === 'snacks') {
+    const snacks = [...(day.meals.snacks ?? [])];
+    const index = location.snackIndex ?? snacks.length;
+    snacks.splice(Math.min(index, snacks.length), 0, meal);
+    return { ...day, meals: { ...day.meals, snacks } };
+  }
+  return { ...day, meals: { ...day.meals, [location.slot]: meal } };
+}
+
+/**
+ * Move a meal to another slot (planner drag and drop, roadmap Issue 024).
+ *
+ * - Target is `snacks` → the meal is appended to that day's snacks.
+ * - Target is an empty main slot → the meal moves there.
+ * - Target is an occupied main slot → the two meals **swap** (the displaced
+ *   meal takes the source position), so a drop never destroys data.
+ *
+ * Returns `false` (and changes nothing) when there is no plan, no meal at
+ * `from`, an out-of-range day, or `from` and `to` are the same slot.
+ */
+export function moveMeal(from: MealLocation, to: Pick<MealLocation, 'dayIndex' | 'slot'>): boolean {
+  const plan = $currentPlan.get();
+  const sourceDay = plan?.days[from.dayIndex];
+  if (!plan || !sourceDay || !plan.days[to.dayIndex]) return false;
+  const meal = readMeal(sourceDay, from);
+  if (!meal) return false;
+  if (from.dayIndex === to.dayIndex && from.slot === to.slot) return false;
+
+  const days = [...plan.days];
+  days[from.dayIndex] = withoutMeal(sourceDay, from);
+  const targetDay = days[to.dayIndex] as PlanDay;
+  const displaced = to.slot === 'snacks' ? undefined : targetDay.meals[to.slot];
+  days[to.dayIndex] = withMeal(targetDay, { dayIndex: to.dayIndex, slot: to.slot }, meal);
+  if (displaced) {
+    days[from.dayIndex] = withMeal(days[from.dayIndex] as PlanDay, from, displaced);
+  }
+  $currentPlan.set({ ...plan, days });
+  return true;
+}
+
+/** Per-meal servings (the −/＋ of a filled slot). Non-positive values are ignored. */
+export function setMealServings(location: MealLocation, servings: number): void {
+  if (!(servings > 0)) return;
+  updateDay(location.dayIndex, (day) => {
+    const meal = readMeal(day, location);
+    if (!meal || meal.servings === servings) return day;
+    if (location.slot === 'snacks') {
+      const index = location.snackIndex ?? 0;
+      const snacks = (day.meals.snacks ?? []).map((s, i) => (i === index ? { ...s, servings } : s));
+      return { ...day, meals: { ...day.meals, snacks } };
+    }
+    return { ...day, meals: { ...day.meals, [location.slot]: { ...meal, servings } } };
+  });
+}
+
+/** Empty every slot of one day (keeps its name and notes). */
+export function clearDay(dayIndex: number): void {
+  updateDay(dayIndex, (day) => ({ ...day, meals: {} }));
 }
 
 export function adjustGlobalServings(servings: number): void {

@@ -255,7 +255,8 @@ test('on a phone the menu opens in a sheet and navigates', async ({ page }) => {
   await sheet.getByRole('link', { name: 'Planner' }).click();
 
   await page.waitForURL(/\/planner\/$/);
-  await expect(page.locator('main[data-page="coming-soon"]')).toHaveAttribute('data-section', 'planner');
+  // Roadmap Issue 024: /planner/ is the real MealPlanner page now.
+  await expect(page.locator('main[data-page="planner"] h1')).toHaveText('Meal Planner');
 });
 
 test('unknown paths render the Foodie 404 with a way home per language', async ({ page }) => {
@@ -359,13 +360,14 @@ test.describe('catalog journeys (roadmap #023)', () => {
   );
 
   for (const prefix of ['', 'es/', 'fr/']) {
-    for (const route of ['', 'recipes/', 'ingredients/']) {
+    for (const route of ['', 'recipes/', 'ingredients/', 'planner/']) {
       test(`no raw translation keys on /${prefix}${route}`, async ({ page }) => {
         await page.goto(`./${prefix}${route}`);
         await page.waitForLoadState('networkidle');
         // Let the page's island render its catalog before reading the text.
         if (route === 'recipes/') await expect(page.getByTestId('recipe-card').first()).toBeVisible();
         if (route === 'ingredients/') await expect(page.getByTestId('ingredient-card').first()).toBeVisible();
+        if (route === 'planner/') await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
 
         const text = await page.locator('body').innerText();
         expect(text.match(RAW_KEY)?.[0], `raw key in the text of /${prefix}${route}`).toBeUndefined();
@@ -381,4 +383,99 @@ test.describe('catalog journeys (roadmap #023)', () => {
       });
     }
   }
+});
+
+// ── Planner journeys (roadmap Issue 024) ─────────────────────────────────────
+// Port of legacy `tests/e2e/meal-planning.spec.ts` ("loads", "switches between
+// week and month view" — `week-view` / `month-view` test ids kept — and the
+// skipped "adds meal" / "removes meal" cases, now real), plus the new
+// @dnd-kit pointer and keyboard paths.
+test.describe('planner journeys (roadmap #024)', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('./planner/');
+    await expect(page.locator('main[data-page="planner"] h1')).toBeVisible();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    // The catalog feeds the side panel.
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+  });
+
+  test('creates a plan and switches between week and month view', async ({ page }) => {
+    await expect(page.getByTestId('week-view')).toBeVisible();
+    await expect(page.getByTestId('week-view').getByRole('article')).toHaveCount(7);
+    expect(await page.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null')?.days?.length)).toBe(7);
+
+    await page.getByRole('tab', { name: 'Month View' }).click();
+    await expect(page.getByTestId('month-view')).toBeVisible();
+    await expect(page.getByTestId('week-view')).toHaveCount(0);
+
+    await page.getByRole('tab', { name: 'Week View' }).click();
+    await expect(page.getByTestId('week-view')).toBeVisible();
+
+    const range = await page.getByTestId('week-range').textContent();
+    await page.getByTestId('next-week').click();
+    await expect(page.getByTestId('week-range')).not.toHaveText(range ?? '');
+    await page.getByTestId('current-week').click();
+    await expect(page.getByTestId('week-range')).toHaveText(range ?? '');
+  });
+
+  test('"+" adds a recipe through the picker, it persists, and it can be removed', async ({ page }) => {
+    const slot = page.getByTestId('meal-slot-monday-breakfast');
+    await slot.getByTestId('add-meal-button').click();
+    const picker = page.getByTestId('recipe-picker');
+    await expect(picker).toBeVisible();
+    await picker.getByTestId('recipe-picker-add').first().click();
+    await expect(picker).toHaveCount(0);
+    await expect(slot.getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.reload();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('meal-slot-monday-breakfast').getByTestId('planned-meal')).toHaveCount(1);
+
+    await page.getByTestId('meal-slot-monday-breakfast').getByTestId('remove-meal').click();
+    await expect(page.getByTestId('meal-slot-monday-breakfast').getByTestId('planned-meal')).toHaveCount(0);
+  });
+
+  test('drags a recipe from the panel onto a slot with the pointer', async ({ page }) => {
+    const source = page.getByTestId('draggable-recipe').first();
+    const target = page.getByTestId('meal-slot-tuesday-dinner');
+    // Centre the target: near the viewport edge dnd-kit auto-scrolls the page
+    // under the pointer (by design), which would move the drop target.
+    await target.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const from = await source.boundingBox();
+    const to = await target.boundingBox();
+    if (!from || !to) throw new Error('no layout');
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + from.width / 2 + 20, from.y + from.height / 2, { steps: 5 });
+    await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 15 });
+    await expect(target).toHaveAttribute('data-over', 'true');
+    await page.mouse.up();
+
+    await expect(target.getByTestId('planned-meal')).toHaveCount(1);
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null'));
+    expect(stored.days[1].meals.dinner.recipeId).toMatch(/^rec_\d+$/);
+  });
+
+  test('drags a recipe with the keyboard (Space, arrows, Enter) and announces it', async ({ page }) => {
+    const source = page.getByTestId('draggable-recipe').first();
+    await source.focus();
+    await page.keyboard.press('Space');
+    await expect(page.getByText(/^Picked up .+\.$/)).toBeAttached();
+    await page.keyboard.press('ArrowRight');
+    await expect(page.locator('[data-slot][data-over="true"]')).toHaveCount(1);
+    await page.keyboard.press('Enter');
+
+    await expect(page.getByTestId('planned-meal')).toHaveCount(1);
+    await expect(page.getByText(/ was dropped on /)).toBeAttached();
+  });
+
+  test('clears the plan after confirming', async ({ page }) => {
+    await page.getByTestId('clear-plan').click();
+    await expect(page.getByTestId('clear-plan-dialog')).toBeVisible();
+    await page.getByTestId('confirm-clear-plan').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    expect(await page.evaluate(() => localStorage.getItem('currentMealPlan'))).toBe('null');
+  });
 });

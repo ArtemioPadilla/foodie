@@ -31,6 +31,9 @@ const FOODIE_ISLANDS = [
   'IngredientActions',
   'FavoriteRecipes',
   'ShowcaseFoodie',
+  'MealPlanner',
+  'RecipePicker',
+  ...list('src/components/islands/MealPlanner', /\.tsx$/).map((f) => f.replace('src/components/islands/', '').replace('.tsx', '')),
 ].map((name) => `src/components/islands/${name}.tsx`);
 const pageBodies = list('src/components/pages', /\.astro$/);
 
