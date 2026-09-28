@@ -1,0 +1,42 @@
+---
+/**
+ * `/fr/recipes/[id]/` wrapper for `fr` (roadmap Issue 018): one static page per
+ * catalog recipe (`getStaticPaths` from `getCollection('recipes')`, 50 × 3
+ * locales = 150 pages). The page body lives in
+ * `components/pages/RecipeDetail.astro`; this file owns the layout metadata
+ * for this locale — title, description, OG, hreflang alternates and the
+ * schema.org `Recipe` JSON-LD.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import RecipeDetail from '@/components/pages/RecipeDetail.astro';
+import { SITE, SITE_ORIGIN } from '@/lib/site-meta';
+import { getRecipeDetailPaths } from '@/lib/catalog/recipe-detail-paths';
+import { recipeDetailMeta, type RecipeDetailProps } from '@/lib/domain/recipe-detail';
+import { withBase } from '@/lib/href';
+
+export async function getStaticPaths() {
+  return getRecipeDetailPaths('fr');
+}
+
+const lang = 'fr' as const;
+const detail = Astro.props as RecipeDetailProps;
+const meta = recipeDetailMeta(detail, {
+  lang,
+  origin: (Astro.site ?? new URL(SITE_ORIGIN)).origin,
+  base: import.meta.env.BASE_URL,
+  siteName: SITE.name,
+  fallbackImage: new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString(),
+});
+---
+
+<BaseLayout
+  title={meta.title}
+  description={meta.description}
+  lang={lang}
+  alternates={meta.alternates}
+  jsonLd={meta.jsonLd}
+  ogType="article"
+  ogImage={meta.ogImage}
+>
+  <RecipeDetail lang={lang} {...detail} />
+</BaseLayout>

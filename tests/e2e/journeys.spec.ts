@@ -56,6 +56,64 @@ test('the recipe browser keeps its filters in the URL and applies them from it',
   await expect(page).not.toHaveURL(/type=|q=/);
 });
 
+test('a recipe card opens the static detail page, which scales, favourites and plans (roadmap #018)', async ({ page }) => {
+  await page.goto('./recipes/');
+  const firstCard = page.getByTestId('recipe-card').first();
+  await expect(firstCard).toBeVisible();
+  await firstCard.getByRole('link').click();
+  await page.waitForURL(/\/recipes\/rec_\d+\/$/);
+
+  const main = page.locator('main[data-page="recipe-detail"]');
+  await expect(main.locator('h1')).toBeVisible();
+  // Static SEO surface: one Recipe JSON-LD block and hreflang alternates.
+  const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').first().textContent()) ?? '{}');
+  expect(ld['@type']).toBe('Recipe');
+  expect(Array.isArray(ld.recipeIngredient) && ld.recipeIngredient.length).toBeTruthy();
+  await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute('href', /\/es\/recipes\/rec_\d+\/$/);
+
+  // The island hydrates on visibility; scaling doubles the servings value.
+  const actions = page.getByTestId('recipe-detail-actions');
+  await actions.scrollIntoViewIfNeeded();
+  await expect(actions).toHaveAttribute('data-hydrated', 'true');
+  const value = page.getByTestId('servings-value');
+  const before = Number(await value.textContent());
+  await page.getByRole('button', { name: /increase servings/i }).click();
+  await expect(value).toHaveText(String(before + 1));
+  await expect(page.getByTestId('scaled-note')).toBeVisible();
+
+  // Favourite persists under the legacy key.
+  const favorite = page.getByTestId('favorite-button');
+  await favorite.click();
+  await expect(favorite).toHaveAttribute('aria-pressed', 'true');
+  expect(await page.evaluate(() => localStorage.getItem('favoriteRecipes'))).toMatch(/rec_\d+/);
+
+  // Add to plan through the day/meal dialog.
+  await page.getByTestId('add-to-plan-button').click();
+  await expect(page.getByTestId('add-to-plan-dialog')).toBeVisible();
+  await page.getByTestId('confirm-add-to-plan').click();
+  await expect(page.getByTestId('add-to-plan-dialog')).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('currentMealPlan'))).toMatch(/rec_\d+/);
+
+  // Add ingredients to the shopping list.
+  await page.getByTestId('add-to-shopping-button').click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]').length)).toBeGreaterThan(0);
+
+  // Related recipes are static links to other detail pages.
+  const related = page.getByTestId('related-recipes').getByRole('link').first();
+  await expect(related).toHaveAttribute('href', /\/recipes\/rec_\d+\/$/);
+});
+
+test('recipe detail pages exist in every locale with localised copy', async ({ page }) => {
+  await page.goto('./es/recipes/rec_001/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await expect(page.getByTestId('back-to-recipes')).toHaveAttribute('href', /\/es\/recipes\/$/);
+  await expect(page.getByRole('heading', { name: 'Ingredientes' })).toBeVisible();
+
+  await page.goto('./fr/recipes/rec_001/');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
+  await expect(page.getByRole('heading', { name: 'Instructions' })).toBeVisible();
+});
+
 test('the language switcher keeps the current route (EN → ES → FR)', async ({ page }) => {
   await page.goto('./recipes/');
 

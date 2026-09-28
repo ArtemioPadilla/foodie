@@ -27,6 +27,12 @@ interface Props {
    *  <script type="application/ld+json"> — the structured identity agents
    *  and search engines read. See src/lib/site-meta.ts for the source values. */
   jsonLd?: Record<string, unknown>[];
+  /** Open Graph type — `website` (default) or `article` for content pages
+   *  such as a recipe detail (roadmap Issue 018). */
+  ogType?: 'website' | 'article';
+  /** Absolute URL of a page-specific OG/Twitter image; defaults to the
+   *  site's `/og-image.png`. */
+  ogImage?: string;
 }
 
 const {
@@ -38,7 +44,12 @@ const {
   lang = 'en',
   alternates,
   jsonLd = [],
+  ogType = 'website',
+  ogImage,
 } = Astro.props;
+
+const OG_LOCALES: Record<Locale, string> = { en: 'en_US', es: 'es_ES', fr: 'fr_FR' };
+const ogImageUrl = ogImage ?? new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString();
 
 // Canonical URL — derived from Astro.site + Astro.url.pathname so it always
 // reflects the live origin and the current subpath (e.g. /foodie/recipes/).
@@ -150,16 +161,19 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
     <link rel="apple-touch-icon" sizes="180x180" href={withBase('/apple-touch-icon.png')} />
     <meta name="theme-color" content="#10b981" />
     {/* Open Graph + Twitter Card — base-aware absolute URL to the OG image */}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content={OG_LOCALES[lang]} />
+    <meta property="og:site_name" content={SITE.name} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString()} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content={ogImageUrl} />
+    {!ogImage && <meta property="og:image:width" content="1200" />}
+    {!ogImage && <meta property="og:image:height" content="630" />}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString()} />
+    <meta name="twitter:image" content={ogImageUrl} />
     {/* Agent-first index of the site (llmstxt.org convention). Generated at
         build from the content collections — see src/pages/llms.txt.ts. */}
     <link rel="alternate" type="text/plain" title="llms.txt" href={withBase('/llms.txt')} />

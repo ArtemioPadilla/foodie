@@ -17,7 +17,9 @@ import AxeBuilder from '@axe-core/playwright';
 // in the shared <Form> a11y wiring (label htmlFor ↔ control id) is caught.
 // Without form coverage a broken FormItemContext would ship green — exactly
 // the blind spot that let a downstream instantiation ship unlabelled inputs.
-const routes = ['/', '/gallery/', '/demos/dashboard/', '/docs/', '/login/', '/contact/'];
+// `/recipes/rec_001/` (roadmap Issue 018): a static recipe detail — the
+// island's servings stepper, unit toggle, checkboxes and nutrition table.
+const routes = ['/', '/gallery/', '/demos/dashboard/', '/docs/', '/login/', '/contact/', '/recipes/rec_001/', '/fr/recipes/rec_001/'];
 
 for (const route of routes) {
   test(`a11y — ${route}`, async ({ page }) => {

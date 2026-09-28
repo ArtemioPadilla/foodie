@@ -171,8 +171,11 @@ export function persistentAtom<T>(
         if (outcome.ok) setInMemory(outcome.value);
         // Invalid remote writes are ignored: our own writer always validates.
       };
-      window.addEventListener('storage', onStorage);
-      return () => window.removeEventListener('storage', onStorage);
+      // Keep the window we subscribed on: nanostores unmounts after a delay,
+      // by which time a test environment (jsdom) may have removed the global.
+      const target = window;
+      target.addEventListener('storage', onStorage);
+      return () => target.removeEventListener('storage', onStorage);
     });
   }
 
