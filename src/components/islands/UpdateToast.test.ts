@@ -16,8 +16,9 @@ describe('UpdateToast', () => {
     expect(source).toMatch(/aria-live=["']polite["']/);
   });
 
-  it('returns null when no refresh is needed', () => {
-    expect(source).toMatch(/if\s*\(\s*!needs\s*\)\s*return\s*null/);
+  it('returns null when no refresh is needed (and until hydrated — roadmap #045)', () => {
+    expect(source).toMatch(/if\s*\(\s*!hydrated\s*\|\|\s*!needs\s*\)\s*return\s*null/);
+    expect(source).toContain('useHydrated()');
   });
 
   it('does not import from framer-motion', () => {

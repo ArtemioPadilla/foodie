@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { t, type Locale } from '@/i18n';
 import { $online } from '@/stores/online';
+import { useHydrated } from '@/lib/use-hydrated';
 
 /**
  * Renders a fixed bottom banner when the browser goes offline.
@@ -15,7 +16,10 @@ import { $online } from '@/stores/online';
  */
 export default function OfflineBanner({ lang = 'en' }: { lang?: Locale }) {
   const online = useStore($online);
-  if (online) return null;
+  // Offline is known before hydration; the server rendered nothing, so wait
+  // for hydration before showing the banner (roadmap Issue 045).
+  const hydrated = useHydrated();
+  if (!hydrated || online) return null;
 
   return (
     <div

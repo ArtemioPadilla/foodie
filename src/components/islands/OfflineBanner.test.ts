@@ -7,8 +7,9 @@ describe('OfflineBanner', () => {
     expect(source).toMatch(/useStore/);
   });
 
-  it('returns null when online', () => {
-    expect(source).toMatch(/if\s*\(\s*online\s*\)\s*return\s*null/);
+  it('returns null when online (and until hydrated — roadmap #045)', () => {
+    expect(source).toMatch(/if\s*\(\s*!hydrated\s*\|\|\s*online\s*\)\s*return\s*null/);
+    expect(source).toContain('useHydrated()');
   });
 
   it('sets aria-live="polite" + role="status"', () => {

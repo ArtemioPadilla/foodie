@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { t, type Locale } from '@/i18n';
 import { $needsRefresh, activateUpdate } from '@/stores/install';
+import { useHydrated } from '@/lib/use-hydrated';
 
 /**
  * Toast that appears when a new service worker is waiting to activate.
@@ -16,7 +17,10 @@ import { $needsRefresh, activateUpdate } from '@/stores/install';
  */
 export default function UpdateToast({ lang = 'en' }: { lang?: Locale }) {
   const needs = useStore($needsRefresh);
-  if (!needs) return null;
+  // The SW can flag an update before this idle island hydrates: match the
+  // server's empty render first (roadmap Issue 045).
+  const hydrated = useHydrated();
+  if (!hydrated || !needs) return null;
 
   return (
     <div

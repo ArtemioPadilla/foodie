@@ -7,8 +7,9 @@ describe('InstallButton', () => {
     expect(source).toMatch(/useStore/);
   });
 
-  it('returns null when no prompt is captured', () => {
-    expect(source).toMatch(/if\s*\(\s*!prompt\s*\)\s*return\s*null/);
+  it('returns null when no prompt is captured (and until hydrated — roadmap #045)', () => {
+    expect(source).toMatch(/if\s*\(\s*!hydrated\s*\|\|\s*!prompt\s*\)\s*return\s*null/);
+    expect(source).toContain('useHydrated()');
   });
 
   it('calls prompt() and userChoice', () => {

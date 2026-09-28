@@ -1,6 +1,7 @@
 import { useStore } from '@nanostores/react';
 import { t, type Locale } from '@/i18n';
 import { $installPrompt } from '@/stores/install';
+import { useHydrated } from '@/lib/use-hydrated';
 
 /**
  * Floating install button that appears only when the browser fires
@@ -16,7 +17,11 @@ import { $installPrompt } from '@/stores/install';
  */
 export default function InstallButton({ lang = 'en' }: { lang?: Locale }) {
   const prompt = useStore($installPrompt);
-  if (!prompt) return null;
+  // `beforeinstallprompt` can fire before this idle island hydrates; render
+  // the server's nothing first so hydration matches (roadmap Issue 045 —
+  // React #418 in Lighthouse's errors-in-console).
+  const hydrated = useHydrated();
+  if (!hydrated || !prompt) return null;
 
   return (
     <button
