@@ -68,7 +68,7 @@ jobs:
         # never turns a green validation red.
         continue-on-error: true
         # First-party action: a version tag is accepted by ci.yml's unpinned-ref scan.
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           CATALOG_STATUS: ${{ steps.catalog.outputs.status || 'failed' }}
         with:
