@@ -172,10 +172,15 @@ export function persistentAtom<T>(
         // Invalid remote writes are ignored: our own writer always validates.
       };
       // Keep the window we subscribed on: nanostores unmounts after a delay,
-      // by which time a test environment (jsdom) may have removed the global.
+      // by which time a test environment (jsdom) may have removed the global
+      // or torn the window down (its EventTarget methods are gone then).
       const target = window;
       target.addEventListener('storage', onStorage);
-      return () => target.removeEventListener('storage', onStorage);
+      return () => {
+        if (typeof target.removeEventListener === 'function') {
+          target.removeEventListener('storage', onStorage);
+        }
+      };
     });
   }
 

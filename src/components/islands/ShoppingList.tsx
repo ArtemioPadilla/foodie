@@ -189,7 +189,9 @@ function ShoppingBoard({ lang, items }: { lang: Locale; items: ShoppingListItem[
   );
 
   return (
-    <div className="space-y-6">
+    // `data-catalog` exposes the catalog load state so tests can wait for the
+    // final group order/labels (groups reorder once the categories arrive).
+    <div className="space-y-6" data-testid="shopping-board" data-catalog={catalog.status}>
       <div className="flex flex-wrap items-center gap-2 print:hidden" data-testid="shopping-actions">
         <Button type="button" onClick={requestGenerate} disabled={!canGenerate} aria-describedby={canGenerate ? undefined : hintId} data-testid="generate-from-plan">
           <ListChecksIcon className="size-4" aria-hidden="true" />

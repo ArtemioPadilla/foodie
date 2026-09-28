@@ -565,6 +565,9 @@ test.describe('shopping list journeys (roadmap #026)', () => {
     await page.evaluate((list) => localStorage.setItem('shoppingList', JSON.stringify(list)), items);
     await page.reload();
     await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    // Group order and labels come from the catalog; wait for it so rows stop
+    // reordering under the locators below.
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
   }
 
   test('loads shopping list page', async ({ page }) => {
@@ -581,7 +584,11 @@ test.describe('shopping list journeys (roadmap #026)', () => {
 
   test('checks off items', async ({ page }) => {
     await seed(page);
-    const firstItem = page.getByTestId('shopping-item').first();
+    // Anchor the row by ingredient id (legacy used `.first()`), so a re-sort
+    // can never retarget the locator between the click and the assertions.
+    const firstId = await page.getByTestId('shopping-item').first().getAttribute('data-ingredient-id');
+    expect(firstId).toBeTruthy();
+    const firstItem = page.locator(`[data-testid="shopping-item"][data-ingredient-id="${firstId}"]`);
     await expect(firstItem).toBeVisible();
     const checkbox = firstItem.getByRole('checkbox');
     await checkbox.click();
@@ -591,7 +598,8 @@ test.describe('shopping list journeys (roadmap #026)', () => {
     await expect(firstItem).toHaveAttribute('data-checked', 'true');
 
     await page.reload();
-    await expect(page.getByTestId('shopping-item').first().getByRole('checkbox')).toBeChecked();
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+    await expect(firstItem.getByRole('checkbox')).toBeChecked();
   });
 
   test('groups items by category', async ({ page }) => {
