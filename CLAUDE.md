@@ -19,7 +19,7 @@ SPA) is frozen at the tag `legacy-vite-1.0.0`; read it with
 - **Docs site:** `/docs/` (content in `src/content/docs/`, sidebar in
   `src/content/docs-sidebar.ts`; `/docs/reference/api/` is generated from
   `src/schemas` at build time).
-- **Live:** <https://artemiopadilla.github.io/foodie/> (GitHub Pages, base `/foodie`).
+- **Live:** <https://artemiop.com/foodie/> (GitHub Pages, base `/foodie`).
 
 **Stack (installed).** Astro 7 + `@astrojs/react` (React 19) + `@astrojs/mdx`
 · Tailwind v4 via `@tailwindcss/vite` · shadcn-style primitives on

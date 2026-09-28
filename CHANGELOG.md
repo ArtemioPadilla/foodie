@@ -13,6 +13,10 @@ Canonical plan for v2:
 
 The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
 
+### Fixed
+
+- Canonical URLs, hreflang, the sitemap, `robots.txt` and OG tags now use `https://artemiop.com`, the origin the site is actually served from. `artemiopadilla.github.io/foodie/` answers with a 301 to it (the account's Pages custom domain), so the old values pointed search engines at a redirect.
+
 ### Security
 
 - CodeQL findings on the v2 code (#047): custom shopping-item ids use the

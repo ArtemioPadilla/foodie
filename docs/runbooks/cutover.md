@@ -1,7 +1,7 @@
 # Cutover v1 → v2 (`inceptor` → `main`)
 
 This is the maintainer runbook for roadmap **Issue 030**. It publishes Foodie
-v2, the Inceptor app, at `https://artemiopadilla.github.io/foodie/` in place of
+v2, the Inceptor app, at `https://artemiop.com/foodie/` in place of
 the v1 React 18 + Vite SPA. The issue is `risk:high` and needs **explicit
 human review**. Everything in the repo is already prepared: the v1 URL
 redirect, the legacy-data test, `CHANGELOG.md`, the README notice and the
@@ -18,7 +18,7 @@ Conventions used below:
 ```bash
 REPO=ArtemioPadilla/foodie
 INTEGRATION=inceptor      # the branch that holds v2 (see step 0)
-SITE=https://artemiopadilla.github.io/foodie
+SITE=https://artemiop.com/foodie
 ```
 
 ## 0. Preconditions (state of the remote)

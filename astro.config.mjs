@@ -58,7 +58,7 @@ const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 export default defineConfig({
   // Production origin — single-sourced from site.config.mjs.
   // Foodie is a GitHub project page served at
-  // https://artemiopadilla.github.io/foodie/ (origin + ASTRO_BASE).
+  // https://artemiop.com/foodie/ (origin + ASTRO_BASE).
   site: SITE_ORIGIN,
   base: BASE,
   // i18n routing — English at root (no prefix), Spanish under /es/, French

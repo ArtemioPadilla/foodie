@@ -14,8 +14,8 @@ shopping list generated from the plan, a pantry with expiry dates, and a food
 diary with nutrition goals. Everything you enter stays in your browser;
 signing in is optional.
 
-- **Use it:** <https://artemiopadilla.github.io/foodie/> (also [`/es/`](https://artemiopadilla.github.io/foodie/es/) and [`/fr/`](https://artemiopadilla.github.io/foodie/fr/))
-- **Docs:** <https://artemiopadilla.github.io/foodie/docs/> — getting started, guides, the data model and how to contribute, with search
+- **Use it:** <https://artemiop.com/foodie/> (also [`/es/`](https://artemiop.com/foodie/es/) and [`/fr/`](https://artemiop.com/foodie/fr/))
+- **Docs:** <https://artemiop.com/foodie/docs/> — getting started, guides, the data model and how to contribute, with search
 - **v1:** the React 18 + Vite app is frozen at the tag
   [`legacy-vite-1.0.0`](https://github.com/ArtemioPadilla/foodie/tree/legacy-vite-1.0.0).
   Data saved by v1 in your browser carries over to v2, and old links redirect.
@@ -75,23 +75,23 @@ npm run dev          # http://localhost:4321/
 | `npm run docs:screenshots` | Regenerate the images above from a running preview |
 
 Configuration (base path, Firebase, feature flags) is documented in
-[Configuration](https://artemiopadilla.github.io/foodie/docs/getting-started/configuration/)
+[Configuration](https://artemiop.com/foodie/docs/getting-started/configuration/)
 and `.env.example`.
 
 ## Contributing
 
 Recipes and code are both welcome — see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-- **A recipe:** use the in-app [Contribute](https://artemiopadilla.github.io/foodie/contribute/)
+- **A recipe:** use the in-app [Contribute](https://artemiop.com/foodie/contribute/)
   wizard, or open a PR that edits `public/data/recipes.json`
-  ([format](https://artemiopadilla.github.io/foodie/docs/contributing/recipe-format/)).
+  ([format](https://artemiop.com/foodie/docs/contributing/recipe-format/)).
 - **Code:** every change starts as an issue and lands as a PR against `main`
   (issue → plan → implement → validate → PR). Read [`CLAUDE.md`](./CLAUDE.md)
   for the rules the codebase follows.
 
 ## Documentation map
 
-- [Docs site](https://artemiopadilla.github.io/foodie/docs/) — sources in `src/content/docs/`
+- [Docs site](https://artemiop.com/foodie/docs/) — sources in `src/content/docs/`
 - [Migration roadmap](./docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md) — the plan behind v2 (48 issues, decisions D1–D14)
 - [Architecture decisions](./docs/decisions/) — Foodie ADRs 0001, 0002, 0010–0014
 - [`CLAUDE.md`](./CLAUDE.md) — conventions, stack and workflow for contributors and Claude Code

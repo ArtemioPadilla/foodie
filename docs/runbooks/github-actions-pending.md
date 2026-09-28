@@ -19,7 +19,7 @@ some steps, and this list points into them instead of repeating them:
 REPO=ArtemioPadilla/foodie
 WORK=claude/foodie-status-next-steps-qvkt0l   # the branch that holds v2 today
 INTEGRATION=inceptor
-SITE=https://artemiopadilla.github.io/foodie
+SITE=https://artemiop.com/foodie
 FIREBASE_PROJECT=foodie-cc553                 # confirm in the Firebase console
 gh auth status                                # every gh command needs an owner token
 ```
@@ -132,7 +132,7 @@ the key without breaking v1 while v1 is still live or is the rollback target:
 
    ```bash
    gcloud services api-keys create --project="$FIREBASE_PROJECT" --display-name="foodie-web-v2" \
-     --allowed-referrers="https://artemiopadilla.github.io/*,http://localhost:4321/*" \
+     --allowed-referrers="https://artemiop.com/*,http://localhost:4321/*" \
      --api-target=service=identitytoolkit.googleapis.com \
      --api-target=service=securetoken.googleapis.com
    gcloud services api-keys list --project="$FIREBASE_PROJECT"          # note NEW_KEY_ID and OLD_KEY_ID
@@ -144,11 +144,11 @@ the key without breaking v1 while v1 is still live or is the rollback target:
 
    ```bash
    gcloud services api-keys update OLD_KEY_ID --project="$FIREBASE_PROJECT" \
-     --allowed-referrers="https://artemiopadilla.github.io/*,http://localhost:4321/*"
+     --allowed-referrers="https://artemiop.com/*,http://localhost:4321/*"
    ```
 
 3. Firebase console → Authentication → Settings → **Authorised domains**:
-   `artemiopadilla.github.io` and `localhost`.
+   `artemiop.com` and `localhost`.
 4. Firebase console → Authentication → Sign-in method: Email/Password, Google
    and GitHub enabled. The GitHub OAuth app's callback URL is
    `https://foodie-cc553.firebaseapp.com/__/auth/handler`, and its client

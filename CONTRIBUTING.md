@@ -3,26 +3,26 @@
 Thanks for helping. There are two ways in: **add a recipe** (no code needed)
 or **change the code**. Both end in a pull request against `main`, checked by
 CI and reviewed by a maintainer; merging deploys to
-<https://artemiopadilla.github.io/foodie/>.
+<https://artemiop.com/foodie/>.
 
 Foodie v2 runs on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
 template (Astro 7 islands + React 19 + Tailwind v4 + Base UI). Before touching
 code, read [`CLAUDE.md`](CLAUDE.md): it lists the stack, the rules and the
 roadmap status. The docs site has the long versions:
-[development](https://artemiopadilla.github.io/foodie/docs/guides/development/),
-[testing](https://artemiopadilla.github.io/foodie/docs/guides/testing/) and the
-[data model](https://artemiopadilla.github.io/foodie/docs/reference/api/).
+[development](https://artemiop.com/foodie/docs/guides/development/),
+[testing](https://artemiop.com/foodie/docs/guides/testing/) and the
+[data model](https://artemiop.com/foodie/docs/reference/api/).
 
 ## Contributing a recipe
 
 Every recipe is one record in `public/data/recipes.json`, in English, Spanish
 and French, validated with `RecipeSchema` (`src/schemas/recipe.ts`). The full
 format is in the docs:
-[Contributing recipes](https://artemiopadilla.github.io/foodie/docs/contributing/recipe-format/).
+[Contributing recipes](https://artemiop.com/foodie/docs/contributing/recipe-format/).
 
 ### Without git — the Contribute wizard
 
-1. Open [`/contribute/`](https://artemiopadilla.github.io/foodie/contribute/)
+1. Open [`/contribute/`](https://artemiop.com/foodie/contribute/)
    (or `/es/contribute/`, `/fr/contribute/`) and fill the seven steps; your
    draft is saved in your browser.
 2. **Submit** opens a prefilled *Recipe submission* issue on GitHub and

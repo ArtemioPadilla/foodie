@@ -11,7 +11,7 @@ describe('audit wave 1 — production fixes', () => {
   it('robots.txt points at the real sitemap, not the placeholder domain', () => {
     const robots = read('public/robots.txt');
     expect(robots).not.toContain('.example');
-    expect(robots).toContain('https://artemiopadilla.github.io/foodie/sitemap-index.xml');
+    expect(robots).toContain('https://artemiop.com/foodie/sitemap-index.xml');
   });
 
   it('PWA navigateFallback stays inside the configured base scope', () => {
