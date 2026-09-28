@@ -36,6 +36,8 @@ export interface PriceManagementModalProps {
   prices: ReadonlyArray<IngredientPrice>;
   /** Extra classes for the trigger button. */
   triggerClassName?: string;
+  /** Open on mount (the lazy launcher, `LazyPriceManagementModal`, passes it). */
+  defaultOpen?: boolean;
 }
 
 interface PriceRow {
@@ -81,7 +83,7 @@ function currencyName(code: string, lang: Locale): string {
  *   shows the cost (MealPlanner's `PlanSummary`, ShoppingList), never across
  *   islands.
  */
-export function PriceManagementModal({ lang, ingredients, categories, prices, triggerClassName }: PriceManagementModalProps) {
+export function PriceManagementModal({ lang, ingredients, categories, prices, triggerClassName, defaultOpen = false }: PriceManagementModalProps) {
   const custom = useStore($customPrices);
   const currency = useStore($currency);
   const [customOnly, setCustomOnly] = React.useState(false);
@@ -242,7 +244,7 @@ export function PriceManagementModal({ lang, ingredients, categories, prices, tr
   }, [lang, currency, revision]);
 
   return (
-    <Dialog onOpenChange={(open) => !open && setConfirmReset(false)}>
+    <Dialog defaultOpen={defaultOpen} onOpenChange={(open) => !open && setConfirmReset(false)}>
       <DialogTrigger render={<Button type="button" variant="outline" size="sm" className={triggerClassName} data-testid="manage-prices-button" />}>
         <CoinsIcon className="size-4" aria-hidden="true" />
         {t(lang, 'prices.manage')}

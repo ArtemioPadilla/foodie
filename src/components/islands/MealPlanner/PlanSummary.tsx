@@ -12,7 +12,7 @@ import type { Category, Ingredient, IngredientPrice, MealPlan, Recipe } from '@/
 import { $goals } from '@/stores/goals';
 import { $currency } from '@/stores/preferences';
 import { $customPrices } from '@/stores/prices';
-import { PriceManagementModal } from '../PriceManagement/PriceManagementModal';
+import { LazyPriceManagementModal } from '../PriceManagement/LazyPriceManagementModal';
 
 export interface PlanSummaryProps {
   lang: Locale;
@@ -101,7 +101,7 @@ export function PlanSummary({ lang, plan, recipes, ingredients, prices = NO_PRIC
               {t(lang, 'planner.summaryCostCoverage', { percent: cost.coverage })}
             </p>
           ) : null}
-          <PriceManagementModal
+          <LazyPriceManagementModal
             lang={lang}
             ingredients={ingredients}
             categories={categories}

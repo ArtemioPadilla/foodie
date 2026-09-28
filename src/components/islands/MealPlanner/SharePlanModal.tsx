@@ -24,6 +24,8 @@ import { getMealCount } from '@/stores/planner';
 export interface SharePlanModalProps {
   lang: Locale;
   plan: MealPlan;
+  /** Open on mount (the lazy launcher, `LazySharePlanModal`, passes it). */
+  defaultOpen?: boolean;
 }
 
 /**
@@ -39,11 +41,15 @@ export interface SharePlanModalProps {
  * Trigger and content live in this one component inside the `MealPlanner`
  * island (compound components never span islands).
  */
-export function SharePlanModal({ lang, plan }: SharePlanModalProps) {
-  const [open, setOpen] = React.useState(false);
+export function SharePlanModal({ lang, plan, defaultOpen = false }: SharePlanModalProps) {
+  const [open, setOpen] = React.useState(defaultOpen);
   const [url, setUrl] = React.useState<string | null>(null);
   const [failed, setFailed] = React.useState(false);
   const [canShare, setCanShare] = React.useState(false);
+  // Opened on mount by the lazy launcher: run the on-open check once.
+  React.useEffect(() => {
+    if (defaultOpen) setCanShare(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+  }, [defaultOpen]);
   const qrRef = React.useRef<HTMLCanvasElement>(null);
   const planName = getTranslated(plan.name, lang);
   const empty = getMealCount(plan) === 0;

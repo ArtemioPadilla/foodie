@@ -1,15 +1,7 @@
 import * as React from 'react';
 import { useStore } from '@nanostores/react';
-import { LogInIcon, LogOutIcon, UserIcon } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LogInIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Toaster, createToastManager } from '@/components/ui/toast';
 import { localizedRoute, t, type Locale } from '@/i18n';
 import { withBase } from '@/lib/href';
@@ -17,8 +9,17 @@ import { useHydrated } from '@/lib/use-hydrated';
 import type { AuthUser } from '@/schemas/auth';
 import { $mergeNotice, consumeMergeNotice, undoMerge, type MergeNotice } from '@/stores/account-merge';
 import { $authReady, $user, authAvailable, authErrorKey, signOut } from '@/stores/user';
-import AuthDialog from './AuthDialog';
 import ErrorBoundary from './ErrorBoundary';
+
+/**
+ * The sign-in dialog (react-hook-form + Zod forms + Tabs) is fetched the first
+ * time it opens, not with the header on every page (roadmap Issue 045 —
+ * landing script budget). It stays in this island, so the Dialog compound is
+ * still owned by one React root.
+ */
+const AuthDialog = React.lazy(() => import('./AuthDialog'));
+/** The signed-in avatar menu, likewise fetched only once someone is signed in. */
+const AccountDropdown = React.lazy(() => import('./AccountDropdown'));
 
 /**
  * AccountMenu — the header's account slot (roadmap Issue 036), mounted by
@@ -56,12 +57,7 @@ export default function AccountMenu({ lang }: AccountMenuProps) {
   );
 }
 
-export function initials(user: Pick<AuthUser, 'displayName' | 'email'>): string {
-  const source = user.displayName?.trim() || user.email?.split('@')[0] || '';
-  const parts = source.split(/[\s._-]+/).filter(Boolean);
-  const letters = parts.length > 1 ? `${parts[0]![0]}${parts[1]![0]}` : source.slice(0, 2);
-  return letters.toUpperCase() || '?';
-}
+export { initials } from '@/lib/account-initials';
 
 /** The merge toast: what moved into the account, and an Undo button. */
 export function showMergeToast(merged: MergeNotice, lang: Locale): string {
@@ -104,6 +100,10 @@ function AccountMenuView({ lang }: AccountMenuProps) {
   const user = useStore($user);
   const ready = useStore($authReady);
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  // Mount (and so fetch) the lazy dialog on first open; keep it mounted after
+  // that so its close animation and form state behave as before.
+  const [dialogWanted, setDialogWanted] = React.useState(false);
+  if (dialogOpen && !dialogWanted) setDialogWanted(true);
 
   React.useEffect(() => {
     if (consumeSignInParam()) setDialogOpen(true);
@@ -136,9 +136,10 @@ function AccountMenuView({ lang }: AccountMenuProps) {
   const profileHref = withBase(localizedRoute('/profile/', lang));
   const name = user ? user.displayName || user.email || t(lang, 'auth.anonymousName') : '';
 
+  const placeholder = <span className="inline-block size-8 rounded-full bg-muted" aria-hidden="true" data-testid="account-loading" />;
   let body: React.ReactNode;
   if (!hydrated || !ready) {
-    body = <span className="inline-block size-8 rounded-full bg-muted" aria-hidden="true" data-testid="account-loading" />;
+    body = placeholder;
   } else if (!user) {
     body = (
       <Button variant="ghost" size="sm" className="h-9 gap-1.5 px-2 font-mono text-xs lg:text-sm" onClick={() => setDialogOpen(true)} data-testid="account-signin">
@@ -148,54 +149,20 @@ function AccountMenuView({ lang }: AccountMenuProps) {
     );
   } else {
     body = (
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-9 rounded-full p-0"
-              aria-label={t(lang, 'auth.accountMenu', { name })}
-              data-testid="account-menu-trigger"
-            />
-          }
-        >
-          <Avatar className="size-8">
-            {user.photoURL ? <AvatarImage src={user.photoURL} alt="" referrerPolicy="no-referrer" /> : null}
-            <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">{initials(user)}</AvatarFallback>
-          </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-60" lang={lang} data-testid="account-menu">
-          <div className="px-2 py-1.5 text-sm">
-            <p className="text-xs text-muted-foreground">{t(lang, 'auth.signedInAs')}</p>
-            <p className="truncate font-medium text-foreground" data-testid="account-name">{name}</p>
-            {user.email && user.email !== name ? <p className="truncate text-xs text-muted-foreground">{user.email}</p> : null}
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            render={(props) => (
-              <a {...props} href={profileHref}>
-                {props.children}
-              </a>
-            )}
-            data-testid="account-profile"
-          >
-            <UserIcon className="size-4" aria-hidden="true" />
-            {t(lang, 'auth.profile')}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={onSignOut} data-testid="account-signout">
-            <LogOutIcon className="size-4" aria-hidden="true" />
-            {t(lang, 'auth.signOut')}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <React.Suspense fallback={placeholder}>
+        <AccountDropdown lang={lang} user={user} name={name} profileHref={profileHref} onSignOut={onSignOut} />
+      </React.Suspense>
     );
   }
 
   return (
     <span className="inline-flex items-center" data-testid="account-slot" data-state={!hydrated || !ready ? 'loading' : user ? 'signed-in' : 'signed-out'}>
       {body}
-      <AuthDialog lang={lang} open={dialogOpen} onOpenChange={setDialogOpen} onSignedIn={onSignedIn} />
+      {dialogWanted ? (
+        <React.Suspense fallback={null}>
+          <AuthDialog lang={lang} open={dialogOpen} onOpenChange={setDialogOpen} onSignedIn={onSignedIn} />
+        </React.Suspense>
+      ) : null}
       <Toaster manager={accountToasts} closeLabel={t(lang, 'common.close')} />
     </span>
   );

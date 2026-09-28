@@ -1,21 +1,22 @@
+import * as React from 'react';
 import { Menu } from 'lucide-react';
 import type { Locale } from '@/i18n';
 import { Button } from '@/components/ui/button';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
+
+/**
+ * The Sheet (Base UI Dialog: scroll lock, focus trap, portal) is fetched the
+ * first time the menu opens, not on every page load (roadmap Issue 045 —
+ * script budgets). It renders inside this island's React root, so the Dialog
+ * compound still lives in one island.
+ */
+const MobileNavSheet = React.lazy(() => import('./MobileNavSheet'));
 
 /**
  * MobileNav — the small-screen menu of SiteHeader (roadmap Issue 005).
  *
- * A single island wraps the whole compound component (Sheet + Trigger +
- * Content) because Base UI context cannot span islands. The Astro parent
+ * A single island wraps the whole compound component because Base UI
+ * context cannot span islands: the trigger here and the lazily loaded
+ * `MobileNavSheet` (controlled Sheet + content) share one React root. The Astro parent
  * resolves every href (base + locale) and every label at build time, so the
  * island never reads `navigator.language` and only receives serialisable
  * props. `lang` is forwarded to the popup so screen readers announce the
@@ -41,44 +42,41 @@ export interface MobileNavProps {
 }
 
 export default function MobileNav({ lang, items, repoUrl, labels }: MobileNavProps) {
+  const [open, setOpen] = React.useState(false);
+  // Mount (and so fetch) the sheet on first open; keep it mounted afterwards
+  // so the close animation plays and reopening is instant.
+  const [wanted, setWanted] = React.useState(false);
+  if (open && !wanted) setWanted(true);
+  const triggerRef = React.useRef<HTMLButtonElement>(null);
+
   return (
-    <Sheet>
-      <SheetTrigger
-        render={<Button variant="ghost" size="icon" className="h-9 w-9" aria-label={labels.open} data-testid="mobile-nav-trigger" />}
+    <>
+      <Button
+        ref={triggerRef}
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9"
+        aria-label={labels.open}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        data-testid="mobile-nav-trigger"
+        onClick={() => setOpen(true)}
       >
         <Menu aria-hidden="true" />
-      </SheetTrigger>
-      <SheetContent side="right" lang={lang} className="w-72 gap-2 p-5" data-testid="mobile-nav">
-        <SheetHeader>
-          <SheetTitle className="font-display">{labels.title}</SheetTitle>
-          <SheetDescription>{labels.description}</SheetDescription>
-        </SheetHeader>
-        <nav className="mt-4 flex flex-col gap-0.5" aria-label={labels.title}>
-          {items.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              aria-current={item.active ? 'page' : undefined}
-              className={
-                item.active
-                  ? 'rounded-md bg-primary/10 px-3 py-2 text-sm font-semibold text-primary'
-                  : 'rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-accent'
-              }
-            >
-              {item.label}
-            </a>
-          ))}
-          <a
-            href={repoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 rounded-md border-t border-border px-3 pt-3 pb-2 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
-          >
-            {labels.github} ↗
-          </a>
-        </nav>
-        <SheetClose render={<Button variant="outline" className="mt-auto" />}>{labels.close}</SheetClose>
-      </SheetContent>
-    </Sheet>
+      </Button>
+      {wanted ? (
+        <React.Suspense fallback={null}>
+          <MobileNavSheet
+            lang={lang}
+            items={items}
+            repoUrl={repoUrl}
+            labels={labels}
+            open={open}
+            onOpenChange={setOpen}
+            finalFocus={triggerRef}
+          />
+        </React.Suspense>
+      ) : null}
+    </>
   );
 }

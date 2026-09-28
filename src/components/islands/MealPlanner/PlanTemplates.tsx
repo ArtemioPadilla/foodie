@@ -41,6 +41,8 @@ export interface PlanTemplatesProps {
   lang: Locale;
   /** The current plan (the one saved as a template, and replaced on load). */
   plan: MealPlan;
+  /** Open on mount (the lazy launcher, `LazyPlanTemplates`, passes it). */
+  defaultOpen?: boolean;
 }
 
 type Pending = { kind: 'load' | 'delete'; template: MealPlan } | null;
@@ -60,9 +62,9 @@ type Pending = { kind: 'load' | 'delete'; template: MealPlan } | null;
  * Trigger, dialog and alert dialog form one composition rendered inside the
  * MealPlanner island (compound components never span islands).
  */
-export function PlanTemplates({ lang, plan }: PlanTemplatesProps) {
+export function PlanTemplates({ lang, plan, defaultOpen = false }: PlanTemplatesProps) {
   const templates = useStore($savedPlans);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(defaultOpen);
   // `pending` outlives `confirmOpen` so the alert dialog keeps its text while it animates out.
   const [pending, setPending] = React.useState<Pending>(null);
   const [confirmOpen, setConfirmOpen] = React.useState(false);

@@ -33,7 +33,7 @@ import { ProfileFormSchema, UNIT_SYSTEMS, type AuthUser, type ProfileFormValues,
 import { $favoriteCount } from '@/stores/favorites';
 import { $preferences, setDietaryRestrictions, setUnitSystem, updatePreferences } from '@/stores/preferences';
 import { $authReady, $user, SIGNED_IN_ROLE, authErrorKey, signOut, toGuardUser, updateProfile } from '@/stores/user';
-import { initials } from './AccountMenu';
+import { initials } from '@/lib/account-initials';
 import ErrorBoundary from './ErrorBoundary';
 
 /**

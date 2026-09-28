@@ -16,8 +16,8 @@ import { addDaysToKey, formatDate, parseDateKey } from '@/lib/format-date';
 import type { MealPlan } from '@/schemas';
 import { adjustGlobalServings, clearPlan, savePlan } from '@/stores/planner';
 import { MAX_SERVINGS } from './MealSlot';
-import { PlanTemplates } from './PlanTemplates';
-import { SharePlanModal } from './SharePlanModal';
+import { LazyPlanTemplates } from './LazyPlanTemplates';
+import { LazySharePlanModal } from './LazySharePlanModal';
 
 export interface PlannerControlsProps {
   lang: Locale;
@@ -113,8 +113,8 @@ export function PlannerControls({ lang, plan, weekStart, currentWeekStart, onWee
       </div>
 
       <div className="ml-auto flex flex-wrap items-center gap-2">
-        <PlanTemplates lang={lang} plan={plan} />
-        <SharePlanModal lang={lang} plan={plan} />
+        <LazyPlanTemplates lang={lang} plan={plan} />
+        <LazySharePlanModal lang={lang} plan={plan} />
         <Button
           type="button"
           size="sm"

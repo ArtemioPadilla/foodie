@@ -16,7 +16,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster, toast } from '@/components/ui/toast';
-import { getTranslated, LOCALES, t, type Locale } from '@/i18n';
+import { ensureLocales, getTranslated, LOCALES, t, type Locale } from '@/i18n';
 import { useCatalog, usePriceCatalog } from '@/lib/catalog/use-catalog';
 import { getStartOfWeek } from '@/lib/domain/date';
 import { parseDateKey, todayKey } from '@/lib/format-date';
@@ -25,7 +25,6 @@ import type { MealPlan, Recipe } from '@/schemas';
 import { $currentPlan, addRecipeToPlan, createPlan, moveMeal, type PlanSlot } from '@/stores/planner';
 import ErrorBoundary from './ErrorBoundary';
 import QueryProvider from './QueryProvider';
-import { RecipePicker } from './RecipePicker';
 import {
   dayLabel,
   plannerAnnouncements,
@@ -41,6 +40,12 @@ import { PlanSummary } from './MealPlanner/PlanSummary';
 import { PlannerControls } from './MealPlanner/PlannerControls';
 import { RecipePanel } from './MealPlanner/RecipePanel';
 import { WeekView } from './MealPlanner/WeekView';
+
+/**
+ * The recipe picker dialog is fetched on the first "+" (roadmap Issue 045 —
+ * planner script budget) and stays mounted afterwards, inside this island.
+ */
+const RecipePicker = React.lazy(() => import('./RecipePicker').then((m) => ({ default: m.RecipePicker })));
 
 /**
  * MealPlanner — the `/planner/` island (roadmap Issue 024, D8; port of legacy
@@ -125,7 +130,10 @@ function PlannerSkeleton({ lang }: { lang: Locale }) {
 }
 
 function NoPlan({ lang }: { lang: Locale }) {
-  const onCreate = () => {
+  const onCreate = async () => {
+    // The default name is trilingual; the browser only has this page's
+    // dictionary until the others are fetched (roadmap Issue 045).
+    await ensureLocales(LOCALES);
     const name = Object.fromEntries(LOCALES.map((l) => [l, t(l, 'planner.planName')])) as MealPlan['name'];
     createPlan({ name });
     toast({ title: t(lang, 'planner.planCreated') });
@@ -136,7 +144,7 @@ function NoPlan({ lang }: { lang: Locale }) {
       title={t(lang, 'planner.noPlan')}
       description={t(lang, 'planner.noPlanDescription')}
       action={
-        <Button type="button" onClick={onCreate} data-testid="create-plan-button">
+        <Button type="button" onClick={() => void onCreate()} data-testid="create-plan-button">
           <CalendarPlusIcon className="size-4" aria-hidden="true" />
           {t(lang, 'planner.createPlan')}
         </Button>
@@ -164,6 +172,9 @@ function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?:
     dayIndex: 0,
     slot: 'breakfast',
   });
+  // Mount (and so fetch) the lazy picker on first open; keep it afterwards.
+  const [pickerWanted, setPickerWanted] = React.useState(false);
+  if (picker.open && !pickerWanted) setPickerWanted(true);
   const [dragging, setDragging] = React.useState<{ data: DragData; pointer: boolean } | null>(null);
 
   const recipesById = React.useMemo(
@@ -290,21 +301,25 @@ function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?:
         </TabsContent>
       </Tabs>
 
-      <RecipePicker
-        open={picker.open}
-        onOpenChange={(open) => setPicker((previous) => ({ ...previous, open }))}
-        lang={lang}
-        recipes={catalog.recipes}
-        ingredients={catalog.ingredients}
-        currency={plan.currency}
-        slot={picker.slot}
-        defaultServings={plan.servings}
-        targetLabel={t(lang, 'planner.pickerDescription', {
-          day: dayLabel(lang, picker.dayIndex),
-          meal: slotLabel(lang, picker.slot),
-        })}
-        onSelect={onPick}
-      />
+      {pickerWanted ? (
+        <React.Suspense fallback={null}>
+          <RecipePicker
+            open={picker.open}
+            onOpenChange={(open) => setPicker((previous) => ({ ...previous, open }))}
+            lang={lang}
+            recipes={catalog.recipes}
+            ingredients={catalog.ingredients}
+            currency={plan.currency}
+            slot={picker.slot}
+            defaultServings={plan.servings}
+            targetLabel={t(lang, 'planner.pickerDescription', {
+              day: dayLabel(lang, picker.dayIndex),
+              meal: slotLabel(lang, picker.slot),
+            })}
+            onSelect={onPick}
+          />
+        </React.Suspense>
+      ) : null}
     </div>
   );
 }

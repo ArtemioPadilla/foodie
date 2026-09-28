@@ -1,7 +1,5 @@
 import type { MultiLangText } from '@/schemas/multi-lang-text';
-import { en } from './en';
-import { es } from './es';
-import { fr } from './fr';
+import type { en } from './en';
 
 /**
  * The English dictionary is the structural source of truth — adding a key
@@ -38,11 +36,77 @@ import { fr } from './fr';
 export type Dictionary = typeof en;
 
 export type Locale = 'en' | 'es' | 'fr';
-export const dictionaries: Record<Locale, Dictionary> = { en, es, fr };
 
 export const DEFAULT_LOCALE: Locale = 'en';
 /** Every routed locale, default first. Mirrors `i18n.locales` in astro.config.mjs. */
 export const LOCALES: readonly Locale[] = ['en', 'es', 'fr'] as const;
+
+/**
+ * ## Per-locale dictionary chunks (roadmap Issue 045)
+ *
+ * The three dictionaries are ~60 KB gzipped together, and every island that
+ * calls `t()` pulls this module — so each one is its own chunk, reached only
+ * through `import()`:
+ *
+ * - **Server (SSR/SSG) and tests** load all three: pages in every locale are
+ *   rendered from one process, and tests compare dictionaries.
+ * - **Browser** loads only the page's locale, read once from
+ *   `<html lang>` (BaseLayout always sets it to a `Locale`), before any island
+ *   module that imports `t()` evaluates (top-level `await`). Islands still get
+ *   `lang` as a prop and call `t(lang, …)`; an island's `lang` is the page
+ *   locale, so hydration renders exactly what the server rendered.
+ *
+ * `es`/`fr` are typed `typeof en`, so each dictionary is complete on its own:
+ * the English fallback in `t()` only matters on the server.
+ */
+const loaders: Record<Locale, () => Promise<Dictionary>> = {
+  en: () => import('./en').then((m) => m.en),
+  es: () => import('./es').then((m) => m.es),
+  fr: () => import('./fr').then((m) => m.fr),
+};
+
+const loadedDictionaries: Partial<Record<Locale, Dictionary>> = {};
+
+function initialLocales(): readonly Locale[] {
+  if (import.meta.env.SSR || import.meta.env.MODE === 'test' || typeof document === 'undefined') return LOCALES;
+  const pageLang = document.documentElement.lang;
+  return [isLocale(pageLang) ? pageLang : DEFAULT_LOCALE];
+}
+
+await Promise.all(
+  initialLocales().map(async (locale) => {
+    loadedDictionaries[locale] = await loaders[locale]();
+  }),
+);
+
+/**
+ * The loaded dictionaries: all three on the server and in tests, only the page
+ * locale in the browser (see "Per-locale dictionary chunks" above).
+ */
+export const dictionaries = loadedDictionaries as Record<Locale, Dictionary>;
+
+/**
+ * Load the dictionaries of `locales` that this page has not loaded yet. Code
+ * that translates into a locale other than the page's — e.g. a new plan's
+ * trilingual default name — awaits this before calling `t()` for it.
+ */
+export async function ensureLocales(locales: readonly Locale[] = LOCALES): Promise<void> {
+  await Promise.all(
+    locales
+      .filter((locale) => !loadedDictionaries[locale])
+      .map(async (locale) => {
+        loadedDictionaries[locale] = await loaders[locale]();
+      }),
+  );
+}
+
+/** The dictionary for `locale`, or the one loaded for this page when absent. */
+function dictionaryFor(locale: Locale): Dictionary | undefined {
+  const dict = loadedDictionaries[locale];
+  if (dict) return dict;
+  if (import.meta.env.DEV) console.warn(`[i18n] t('${locale}', …) before its dictionary loaded — await ensureLocales() first`);
+  return loadedDictionaries[DEFAULT_LOCALE] ?? Object.values(loadedDictionaries)[0];
+}
 
 /** Native-language names, for language switchers and `<html lang>` labels. */
 export const LOCALE_NAMES: Record<Locale, string> = { en: 'English', es: 'Español', fr: 'Français' };
@@ -102,7 +166,9 @@ export function t(locale: Locale, key: string, params?: TranslateParams): string
   const candidates = typeof count === 'number' && count !== 1 ? [`${key}_plural`, key] : [key];
   let value: string | undefined;
   for (const candidate of candidates) {
-    value = lookup(dictionaries[locale], candidate) ?? lookup(dictionaries[DEFAULT_LOCALE], candidate);
+    const primary = dictionaryFor(locale);
+    const fallback = loadedDictionaries[DEFAULT_LOCALE];
+    value = (primary && lookup(primary, candidate)) ?? (fallback && lookup(fallback, candidate)) ?? undefined;
     if (value !== undefined) break;
   }
   if (value === undefined) return key;

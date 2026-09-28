@@ -57,7 +57,7 @@ import { ExportDialog } from './ShoppingList/ExportDialog';
 import { makeShoppingLabels, type ShoppingLabels } from './ShoppingList/labels';
 import { ListControls } from './ShoppingList/ListControls';
 import { ShoppingListItemRow } from './ShoppingList/ShoppingListItem';
-import { PriceManagementModal } from './PriceManagement/PriceManagementModal';
+import { LazyPriceManagementModal } from './PriceManagement/LazyPriceManagementModal';
 
 /**
  * ShoppingList — the `/shopping/` island (roadmap Issue 026; port of legacy
@@ -217,7 +217,7 @@ function ShoppingBoard({ lang, items }: { lang: Locale; items: ShoppingListItem[
         </Button>
         <AddItemModal lang={lang} categories={categoryChoices} unitLabel={labels.unitLabel} />
         <ExportDialog lang={lang} items={items} system={preferredSystem} labels={labels.exportLabels} disabled={total === 0} />
-        <PriceManagementModal lang={lang} ingredients={catalog.ingredients} categories={categories} prices={prices} />
+        <LazyPriceManagementModal lang={lang} ingredients={catalog.ingredients} categories={categories} prices={prices} />
         <Badge variant="outline" className="ml-auto" data-testid="unit-system" data-system={preferredSystem}>
           {t(lang, preferredSystem === 'imperial' ? 'shopping.unitSystemImperial' : 'shopping.unitSystemMetric')}
         </Badge>

@@ -1,7 +1,15 @@
 import * as React from 'react';
-import { CommandPalette } from '@/components/ui/command-palette';
 import type { CommandItem } from '@/components/ui/command-palette';
 import ErrorBoundary from './ErrorBoundary';
+
+/**
+ * The palette (Base UI Dialog + list) is fetched on the first open — click or
+ * ⌘K — instead of with every page (roadmap Issue 045, script budgets). It is
+ * rendered inside this island, so the Dialog compound keeps one React root.
+ */
+const CommandPalette = React.lazy(() =>
+  import('@/components/ui/command-palette').then((m) => ({ default: m.CommandPalette })),
+);
 
 // ─── Pagefind type shim ──────────────────────────────────────────────────────
 // Pagefind is a postbuild artifact loaded at runtime via a dynamic import that
@@ -54,6 +62,9 @@ const NAV_COMMANDS: CommandItem[] = [
 
 function GlobalSearchInner() {
   const [open, setOpen] = React.useState(false);
+  // Mount (and so fetch) the lazy palette on first open; keep it afterwards.
+  const [paletteWanted, setPaletteWanted] = React.useState(false);
+  if (open && !paletteWanted) setPaletteWanted(true);
   const [query, setQuery] = React.useState('');
   const [pagefindItems, setPagefindItems] = React.useState<CommandItem[]>([]);
   const [pagefindNote, setPagefindNote] = React.useState<string | null>(null);
@@ -215,16 +226,20 @@ function GlobalSearchInner() {
       {/* The whole dialog composition lives in this one island — compound-
           component rule: all Base UI Dialog parts must share a single React
           root. CommandPalette handles the dialog internally. */}
-      <CommandPalette
-        items={allItems}
-        placeholder="Search pages or type a command…"
-        // We manage open state here so we can control the ⌘K binding and also
-        // reset pagefind results on close. Disable the built-in ⌘K inside
-        // CommandPalette to avoid double-registration.
-        shortcut={false}
-        open={open}
-        onOpenChange={handleOpenChange}
-      />
+      {paletteWanted ? (
+        <React.Suspense fallback={null}>
+          <CommandPalette
+            items={allItems}
+            placeholder="Search pages or type a command…"
+            // We manage open state here so we can control the ⌘K binding and also
+            // reset pagefind results on close. Disable the built-in ⌘K inside
+            // CommandPalette to avoid double-registration.
+            shortcut={false}
+            open={open}
+            onOpenChange={handleOpenChange}
+          />
+        </React.Suspense>
+      ) : null}
     </>
   );
 }

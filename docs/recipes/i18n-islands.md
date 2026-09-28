@@ -14,11 +14,33 @@ and only needs selecting. Roadmap D7 / Issues 004, 015.
 | `detectLocale(pathname)`             | Astro pages: locale from the route                       | `detectLocale(Astro.url.pathname)`                              |
 | `localizedRoute(pathname, lang)`     | Locale-aware hrefs (always trailing slash)               | `withBase(localizedRoute('/recipes/', lang))`                   |
 | `LOCALES`, `DEFAULT_LOCALE`, `Locale` | Iteration and typing                                    | `LOCALES.map(...)`                                              |
+| `ensureLocales(locales?)`            | Load other locales' dictionaries before `t()` in them    | `await ensureLocales(LOCALES)`                                  |
 
 There is **no runtime language switch** inside a page: each locale is a static
 route (`/`, `/es/`, `/fr/`) and the switcher is a link (`localizedRoute`).
 i18next is gone — its `translation.json` files were merged into the typed
 dictionaries (Issue 015) and `public/locales/` no longer exists.
+
+## One dictionary per page in the browser (Issue 045)
+
+The three dictionaries weigh ~60 KB gzipped together, so each is its own
+chunk. On the server (every locale is rendered from one build) and in Vitest
+all three are loaded; in the **browser** `src/i18n/index.ts` loads only the
+page's locale — read once from `<html lang>` with a top-level `await import()`
+— before any island that imports `t()` runs. Because an island's `lang` prop
+*is* the page locale, `t(lang, …)` renders exactly what the server rendered.
+
+Translating into **another** locale in the browser (for example a new plan's
+trilingual default name in `MealPlanner`) must first load the others:
+
+```ts
+import { ensureLocales, LOCALES, t } from '@/i18n';
+
+await ensureLocales(LOCALES); // fetches the missing dictionary chunks
+const name = Object.fromEntries(LOCALES.map((l) => [l, t(l, 'planner.planName')]));
+```
+
+Without it, `t()` falls back to the page's dictionary (and warns in dev).
 
 ## The rule: `lang` is a prop
 
