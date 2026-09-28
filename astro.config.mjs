@@ -27,6 +27,23 @@ const BASE_PATH = asset('/');
 // origins (Firebase auth domain, flag-gated analytics/Sentry).
 // CSP is emitted by `astro build` only, so read the production env files.
 const PUBLIC_ENV = loadEnv('production', process.cwd(), 'PUBLIC_');
+// The mock auth adapter (src/lib/auth/mock.ts) keeps demo accounts —
+// passwords included — in localStorage. It is for dev, tests and the e2e
+// build only, so refuse a build that would ship it where real users sign in:
+// the production deploy (FOODIE_DEPLOY=1, set by .github/workflows/deploy.yml)
+// or any build that also carries a complete Firebase config.
+{
+  const truthy = (v) => ['1', 'true', 'on', 'yes'].includes(String(v ?? '').trim().toLowerCase());
+  const firebaseConfigured = ['API_KEY', 'AUTH_DOMAIN', 'PROJECT_ID', 'APP_ID'].every(
+    (k) => String(PUBLIC_ENV[`PUBLIC_FIREBASE_${k}`] ?? '').trim() !== '',
+  );
+  if (truthy(PUBLIC_ENV.PUBLIC_AUTH_MOCK) && (truthy(process.env.FOODIE_DEPLOY) || firebaseConfigured)) {
+    throw new Error(
+      'PUBLIC_AUTH_MOCK is set in a deploy build or alongside a Firebase config. ' +
+        'The mock auth adapter stores plaintext demo passwords in localStorage; unset PUBLIC_AUTH_MOCK.',
+    );
+  }
+}
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({

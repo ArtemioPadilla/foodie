@@ -41,6 +41,9 @@ jobs:
           # Issue 007). Inlined at build; forks override with a repo variable.
           PUBLIC_REPO_SLUG: ${{ vars.PUBLIC_REPO_SLUG || 'ArtemioPadilla/foodie' }}
           PUBLIC_BUILD_SHA: ${{ github.sha }}
+          # Marks the production build: astro.config.mjs refuses to build
+          # if PUBLIC_AUTH_MOCK (the dev/test mock auth adapter) is also set.
+          FOODIE_DEPLOY: '1'
           # Firebase Auth (roadmap D9, Issue 035, ADR 0012). Repository
           # secrets; any one missing → auth is disabled in the build (the
           # site still deploys). No GitHub client secret: the OAuth app's
