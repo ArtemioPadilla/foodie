@@ -13,9 +13,15 @@ interface Props {
   description?: string;
   /** Slug of the current page (without leading slash). Empty for /docs/. */
   slug: string;
+  /**
+   * Repo path the page is generated from, for pages that are not a content
+   * entry (e.g. `/docs/reference/api/`, built from `src/schemas/`). The footer
+   * then links to that source instead of a non-existent `.md` file.
+   */
+  source?: string;
 }
 
-const { title, description, slug } = Astro.props;
+const { title, description, slug, source } = Astro.props;
 
 // Compute prev / next for the bottom navigation
 const idx = docsOrder.findIndex((p) => p.slug === slug);
@@ -28,7 +34,10 @@ const next = idx >= 0 && idx < docsOrder.length - 1 ? docsOrder[idx + 1] : null;
 // The index doc uses an empty slug and lives at src/content/docs/index.mdx.
 const editFileExt = slug === '' ? 'mdx' : 'md';
 const editFilePath = slug === '' ? 'index' : slug;
-const editUrl = `${REPO_URL}/edit/main/src/content/docs/${editFilePath}.${editFileExt}`;
+const editUrl = source
+  ? `${REPO_URL}/tree/main/${source}`
+  : `${REPO_URL}/edit/main/src/content/docs/${editFilePath}.${editFileExt}`;
+const editLabel = source ? `View the source of this page (${source}) on GitHub` : 'Edit this page on GitHub';
 // Breadcrumb structured data: Home → Docs → page (agents/search engines).
 const docsBase = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/docs/`, Astro.site ?? SITE_ORIGIN).toString();
 const jsonLd = [
@@ -61,7 +70,9 @@ const jsonLd = [
 
     {/* id="main-content" targets the skip-to-content link in BaseLayout */}
     <main id="main-content" class="docs-main min-w-0">
-      <article class="prose prose-neutral dark:prose-invert max-w-none">
+      {/* data-pagefind-body: once any page opts in, Pagefind indexes only the
+          opted-in pages — the docs and the recipe detail bodies (roadmap #043). */}
+      <article class="prose prose-neutral dark:prose-invert max-w-none" data-pagefind-body>
         <header class="mb-8 border-b border-border pb-6">
           <h1 class="!mb-2 text-3xl font-bold tracking-tight" style="view-transition-name: page-title">
             {title}
@@ -96,9 +107,9 @@ const jsonLd = [
             target="_blank"
             rel="noopener noreferrer"
             class="hover:text-primary hover:underline transition-colors"
-            aria-label={`Edit "${title}" on GitHub`}
+            aria-label={source ? `View the source of "${title}" on GitHub` : `Edit "${title}" on GitHub`}
           >
-            Edit this page on GitHub
+            {editLabel}
           </a>
         </div>
 
@@ -201,6 +212,10 @@ const jsonLd = [
     font-style: italic;
   }
   .docs-content :global(table) {
+    /* Wide tables scroll inside the column instead of widening the page on
+       phones (roadmap #043: the Foodie docs are table-heavy). */
+    display: block;
+    overflow-x: auto;
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 1rem;

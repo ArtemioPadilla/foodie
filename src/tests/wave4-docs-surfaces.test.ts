@@ -79,27 +79,22 @@ describe('docs content — no "being migrated" stubs (#145)', () => {
     expect(stubs, `Found stub pages: ${stubs.join(', ')}`).toHaveLength(0);
   });
 
-  it('all 19 previously-stubbed pages now have real content (>200 chars each)', () => {
+  // Adapted deliberately in roadmap Issue 043: the template's 19 Inceptor
+  // pages were replaced by Foodie's docs (migrated from MkDocs). The guard is
+  // the same — every page in the sidebar has real content — over the new set.
+  it('every Foodie docs page has real content (>200 chars each)', () => {
     const expectedFiles = [
-      'src/content/docs/ethics-ux/framework.md',
-      'src/content/docs/ethics-ux/checklist.md',
-      'src/content/docs/ethics-ux/quality-bar.md',
-      'src/content/docs/ethics-ux/stakeholder-analysis.md',
-      'src/content/docs/how-we-work/shape-up.md',
-      'src/content/docs/how-we-work/tdd.md',
-      'src/content/docs/how-we-work/spec-dd.md',
-      'src/content/docs/how-we-work/sub-agents.md',
-      'src/content/docs/stack/overview.md',
-      'src/content/docs/reference/env-vars.md',
-      'src/content/docs/reference/file-structure.md',
-      'src/content/docs/building/adding-a-component.md',
-      'src/content/docs/building/compound-components.md',
-      'src/content/docs/building/hydration.md',
-      'src/content/docs/building/theming.md',
-      'src/content/docs/building/testing.md',
-      'src/content/docs/building/visual-regression.md',
-      'src/content/docs/history/integration-plan.md',
-      'src/content/docs/history/roadmap.md',
+      'src/content/docs/index.mdx',
+      'src/content/docs/getting-started/quick-start.md',
+      'src/content/docs/getting-started/installation.md',
+      'src/content/docs/getting-started/configuration.md',
+      'src/content/docs/guides/development.md',
+      'src/content/docs/guides/testing.md',
+      'src/content/docs/guides/deployment.md',
+      'src/content/docs/reference/state.md',
+      'src/content/docs/reference/i18n.md',
+      'src/content/docs/contributing/recipe-format.md',
+      'src/content/docs/contributing/code.md',
     ];
 
     for (const file of expectedFiles) {

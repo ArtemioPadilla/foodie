@@ -3,7 +3,8 @@
  *
  * Each section is an object with a label and an array of pages or sub-groups.
  * Pages reference content-collection slugs (paths under src/content/docs/
- * without the .md / .mdx extension).
+ * without the .md / .mdx extension), except `reference/api`, which is the
+ * Astro page generated from src/schemas (roadmap Issue 043).
  *
  * Single source of truth — used by:
  *   - src/components/docs/DocsSidebar.astro
@@ -23,89 +24,36 @@ export interface DocsGroup {
 
 export const docsSidebar: DocsGroup[] = [
   {
-    label: 'Start here',
+    label: 'Getting started',
     items: [
-      { label: 'Documentation home', slug: '' },
-      { label: 'Quick start', slug: 'start-here/quick-start' },
-      { label: 'What you get', slug: 'start-here/what-you-get' },
-      { label: 'The 60-second workflow tour', slug: 'start-here/template-tour' },
+      { label: 'Overview', slug: '' },
+      { label: 'Quick start', slug: 'getting-started/quick-start' },
+      { label: 'Installation', slug: 'getting-started/installation' },
+      { label: 'Configuration', slug: 'getting-started/configuration' },
     ],
   },
   {
-    label: 'Stack',
+    label: 'Guides',
     items: [
-      { label: 'Overview', slug: 'stack/overview' },
-      { label: 'Forbidden imports', slug: 'stack/forbidden-imports' },
-    ],
-  },
-  {
-    label: 'How we work',
-    items: [
-      { label: 'The workflow', slug: 'how-we-work/workflow' },
-      { label: 'Shape Up cadence', slug: 'how-we-work/shape-up' },
-      { label: 'TDD with trailers', slug: 'how-we-work/tdd' },
-      { label: 'Spec-DD with Zod', slug: 'how-we-work/spec-dd' },
-      { label: 'Orchestration', slug: 'how-we-work/orchestration' },
-      { label: 'Sub-agents', slug: 'how-we-work/sub-agents' },
-    ],
-  },
-  {
-    label: 'Ethics & UX',
-    items: [
-      { label: 'Persuasive-tech framework', slug: 'ethics-ux/framework' },
-      { label: 'The 8-item checklist', slug: 'ethics-ux/checklist' },
-      { label: 'UX quality bar', slug: 'ethics-ux/quality-bar' },
-      { label: 'Stakeholder Analysis', slug: 'ethics-ux/stakeholder-analysis' },
-    ],
-  },
-  {
-    label: 'Building',
-    items: [
-      { label: 'Adding a component', slug: 'building/adding-a-component' },
-      { label: 'Hydration directives', slug: 'building/hydration' },
-      { label: 'Compound-component gotcha', slug: 'building/compound-components' },
-      { label: 'Theming & dark mode', slug: 'building/theming' },
-      { label: 'Testing — Vitest + Playwright', slug: 'building/testing' },
-      { label: 'Visual regression', slug: 'building/visual-regression' },
-      { label: 'Self-hosted backend', slug: 'building/backend' },
-    ],
-  },
-  {
-    label: 'Patterns',
-    items: [
-      { label: 'Overview', slug: 'patterns' },
-      { label: 'Listing', slug: 'patterns/listing' },
-      { label: 'Create flow', slug: 'patterns/create-flow' },
-      { label: 'Details page', slug: 'patterns/details-page' },
-      { label: 'Delete with confirmation', slug: 'patterns/delete-confirm' },
-      { label: 'Empty, error & loading states', slug: 'patterns/states' },
+      { label: 'Development', slug: 'guides/development' },
+      { label: 'Testing', slug: 'guides/testing' },
+      { label: 'Deployment', slug: 'guides/deployment' },
     ],
   },
   {
     label: 'Reference',
     items: [
-      { label: 'Commands cheatsheet', slug: 'reference/commands' },
-      { label: 'File structure', slug: 'reference/file-structure' },
-      { label: 'Environment variables', slug: 'reference/env-vars' },
+      // Generated from src/schemas at build time (src/pages/docs/reference/api.astro).
+      { label: 'Data model (schemas)', slug: 'reference/api' },
+      { label: 'State and storage', slug: 'reference/state' },
+      { label: 'Internationalisation', slug: 'reference/i18n' },
     ],
   },
   {
-    label: 'Decisions',
+    label: 'Contributing',
     items: [
-      { label: 'Template', slug: 'decisions/template' },
-      { label: '0001 — Shape Up over Scrum', slug: 'decisions/0001-shape-up-over-scrum' },
-      { label: '0002 — Base UI over Radix', slug: 'decisions/0002-base-ui-over-radix' },
-      { label: '0003 — Centinela verdict tokens', slug: 'decisions/0003-centinela-verdict-tokens' },
-      { label: '0004 — Custom /docs route', slug: 'decisions/0004-custom-docs-route' },
-      { label: '0005 — Base UI component library', slug: 'decisions/0005-base-ui-component-library' },
-      { label: '0003 — Starlight for the docs site (superseded)', slug: 'decisions/0003-starlight-for-docs' },
-    ],
-  },
-  {
-    label: 'History',
-    items: [
-      { label: 'Integration plan (v1.0)', slug: 'history/integration-plan' },
-      { label: 'Roadmap', slug: 'history/roadmap' },
+      { label: 'Recipes', slug: 'contributing/recipe-format' },
+      { label: 'Code', slug: 'contributing/code' },
     ],
   },
 ];

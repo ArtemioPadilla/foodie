@@ -11,7 +11,8 @@ const PHONE = devices['iPhone 12'].viewport; // 390×844
 
 // `/recipes/` (roadmap Issue 023): the catalog browser — filter sidebar collapses on phones.
 // `/planner/`, `/shopping/`, `/pantry/` (roadmap Issue 029): the planning islands.
-const routes = ['/', '/gallery/', '/docs/', '/recipes/', '/planner/', '/shopping/', '/pantry/'];
+// `/docs/reference/api/` (roadmap Issue 043): the widest docs tables, generated from src/schemas.
+const routes = ['/', '/gallery/', '/docs/', '/docs/reference/api/', '/recipes/', '/planner/', '/shopping/', '/pantry/'];
 
 for (const route of routes) {
   test(`mobile ${route} — no horizontal overflow, nav reachable`, async ({ page }) => {

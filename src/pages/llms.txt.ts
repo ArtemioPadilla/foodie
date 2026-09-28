@@ -44,6 +44,7 @@ single file: [llms-full.txt](${url('/llms-full.txt')}).
 ## Docs
 
 ${docs.map(docLine).join('\n')}
+- [Data model (schemas)](${url('/docs/reference/api/')}): every Zod schema in src/schemas, generated at build time
 
 ## Blog
 

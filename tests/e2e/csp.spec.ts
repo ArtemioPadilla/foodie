@@ -200,9 +200,16 @@ test.describe('CSP — interactions', () => {
 
   test('docs sub-page (Shiki code blocks)', async ({ page }) => {
     const refusals = await watchCsp(page);
-    await page.goto('./docs/stack/overview/');
+    await page.goto('./docs/guides/development/');
     await page.waitForLoadState('networkidle');
-    await expectNoViolations(page, refusals, '/docs/stack/overview/');
+    await expectNoViolations(page, refusals, '/docs/guides/development/');
+  });
+
+  test('docs data-model page generated from src/schemas (roadmap #043)', async ({ page }) => {
+    const refusals = await watchCsp(page);
+    await page.goto('./docs/reference/api/');
+    await page.waitForLoadState('networkidle');
+    await expectNoViolations(page, refusals, '/docs/reference/api/');
   });
 
   // Negative control: the collector must see a refusal, or a green run means

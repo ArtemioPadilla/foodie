@@ -11,6 +11,22 @@ Canonical plan for v2:
 
 ## [Unreleased]
 
+### Changed
+
+- **Docs on the site.** The MkDocs pages moved into the site at `/docs/`
+  (Getting started, Guides, Reference, Contributing), rewritten for the v2
+  stack, with Pagefind search that covers the docs and every recipe page. The
+  data-model reference (`/docs/reference/api/`) is generated from the Zod
+  schemas at build time, so it cannot drift from the code. The template's
+  Inceptor docs pages are gone; `/docs/guides/github-pages-setup/` redirects
+  to the deployment guide (#043).
+
+### Removed
+
+- The legacy MkDocs sources (`docs/index.md`, `docs/getting-started/`,
+  `docs/guides/`, `docs/reference/api.md`, `docs/contributing/recipe-format.md`)
+  (#043).
+
 ## [2.0.0-beta.1] - unreleased
 
 The date is set when the maintainer tags the cutover

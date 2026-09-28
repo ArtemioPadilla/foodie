@@ -67,11 +67,20 @@ export default defineConfig({
   // locations. Targets are base-prefixed via asset() — Astro does NOT add the
   // base to redirect targets automatically, so without this they'd 404 on a
   // subpath deploy. Old URLs survive; visual baselines re-anchor automatically.
+  // Code blocks in the docs: GitHub's high-contrast dark theme — the default
+  // `github-dark` greys comments to 3.0:1 on its background, which axe flags
+  // (roadmap #043 added docs pages with commented shell snippets).
+  markdown: {
+    shikiConfig: { theme: 'github-dark-high-contrast' },
+  },
   redirects: {
     '/dashboard': asset('demos/dashboard'),
     '/data': asset('demos/data'),
     '/data/large': asset('demos/data/large'),
     '/showcase': asset('gallery'),
+    // MkDocs-era page folded into the deployment guide (roadmap Issue 043);
+    // the other legacy docs URLs kept their slugs.
+    '/docs/guides/github-pages-setup': asset('docs/guides/deployment'),
   },
   // Per-page <meta http-equiv="content-security-policy"> rendered into
   // BaseLayout's <head>, with SHA-256 hashes for Astro's inline scripts and

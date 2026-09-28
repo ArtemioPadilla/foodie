@@ -8,6 +8,7 @@ import { Callout } from '@/components/ui/callout';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BarChart, DonutChart } from '@/components/ui/charts';
 import { Sparkline } from '@/components/ui/charts/sparkline';
+import { REPO_URL } from '@/lib/site-meta';
 import { Gauge } from '@/components/ui/charts/gauge';
 import { BarList } from '@/components/ui/bar-list';
 import { DataTable } from '@/components/ui/data-table';
@@ -150,10 +151,10 @@ function RateLimitErrorCard({
             To remove the cap, configure a{' '}
             <code className="font-mono">PUBLIC_API_BASE</code> backend proxy — see{' '}
             <a
-              href="/docs/building/backend/"
+              href={`${REPO_URL}/blob/main/docs/decisions/0006-self-hosted-backend-archetypes.md`}
               className="underline underline-offset-4 hover:text-foreground"
             >
-              the backend guide
+              the backend ADR
             </a>
             .
           </p>

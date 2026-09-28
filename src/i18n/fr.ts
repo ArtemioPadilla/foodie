@@ -97,12 +97,12 @@ export const fr: typeof en = {
   },
   docsLanding: {
     title: 'Documentation',
-    tagline: 'Guides, conventions et décisions d’architecture pour construire Foodie.',
+    tagline: 'Utiliser, lancer et contribuer à Foodie : guides, modèle de données et conventions.',
     cta: 'Lire la documentation',
     // Bridge landing page (fr/docs.astro)
     bridgeHeading: 'Documentation partagée',
     bridgeBody:
-      'Les guides et références complets vivent sous /docs/ et sont partagés entre les langues. Cette page d’accueil en français sert de point d’entrée ; suivez le lien ci-dessus pour lire les conventions, l’architecture et les décisions du scaffold.',
+      'Les guides et références de /docs/ sont rédigés en anglais et communs aux trois langues : comment lancer Foodie, son modèle de données et comment contribuer des recettes ou du code. La recherche couvre la documentation et toutes les recettes.',
   },
   common: {
     showMore: 'Afficher {{count}} de plus',

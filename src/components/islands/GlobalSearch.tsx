@@ -232,7 +232,8 @@ function GlobalSearchInner() {
 /**
  * GlobalSearch island — site-wide ⌘K search palette.
  *
- * Searches the entire Pagefind index (all pages: docs, gallery, demos, blog)
+ * Searches the Pagefind index (the pages that opt in with data-pagefind-body:
+ * the docs and the recipe detail pages — roadmap Issue 043)
  * plus 5 static nav commands. Mounted in BaseLayout with `client:idle` so
  * every page gets it without blocking first paint.
  *

@@ -42,6 +42,9 @@ const routes = [
   '/gallery/',
   '/demos/dashboard/',
   '/docs/',
+  // Roadmap Issue 043: a prose docs page and the schema tables generated from src/schemas.
+  '/docs/guides/development/',
+  '/docs/reference/api/',
   '/login/',
   '/contact/',
   '/recipes/rec_001/',

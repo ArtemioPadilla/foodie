@@ -70,8 +70,13 @@ const EN_ONLY_ALLOWLIST = new Set([
   // Gallery — shared across locales; individual component pages are EN-only
   '/gallery',
   '/gallery/[component]',
-  // Docs — content-heavy, shared across locales; only the landing is translated
+  // Docs (roadmap Issue 043) — the Foodie docs are written in English only.
+  // /es/docs/ and /fr/docs/ are translated bridge landings that point to
+  // /docs/; every page under /docs/ — the content collection and the data
+  // model generated from src/schemas — is EN-only.
+  '/docs',
   '/docs/[...slug]',
+  '/docs/reference/api',
 ]);
 
 // ── Helpers ────────────────────────────────────────────────────────────────

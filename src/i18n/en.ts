@@ -96,12 +96,12 @@ export const en = {
   docsLanding: {
     title: 'Documentation',
     tagline:
-      'Guides, conventions, and architecture decisions for building Foodie.',
+      'How to use, run and contribute to Foodie: guides, data model and conventions.',
     cta: 'Read the docs',
     // Bridge landing page (es/docs.astro)
     bridgeHeading: 'Shared documentation',
     bridgeBody:
-      'Complete guides and references live under /docs/ and are shared across locales. This Spanish landing is the entry point; follow the link above to read the conventions, architecture, and scaffold decisions.',
+      'The guides and references under /docs/ are written in English and shared by the three languages: how to run Foodie, its data model, and how to contribute recipes or code. Search covers the docs and every recipe.',
   },
   /**
    * Shared strings that exercise `t()` interpolation (`{{name}}`) and plural

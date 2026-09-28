@@ -14,7 +14,8 @@ test('docs search returns results for a known term', async ({ page }) => {
   await expect(input).toBeVisible();
 
   await input.click();
-  await input.fill('ethics');
+  // Foodie docs (roadmap #043) — the template searched for "ethics".
+  await input.fill('pantry');
 
   const results = page.locator('#docs-search-results a');
   await expect(results.first()).toBeVisible({ timeout: 10_000 });
@@ -23,6 +24,16 @@ test('docs search returns results for a known term', async ({ page }) => {
   // Result links must stay inside the deployed base (no root-absolute leaks).
   const href = await results.first().getAttribute('href');
   expect(href, 'result href present').toBeTruthy();
+});
+
+test('docs search also finds public recipes (data-pagefind-body, roadmap #043)', async ({ page }) => {
+  await page.goto('/docs/');
+  const input = page.locator('#docs-search-input');
+  await input.click();
+  await input.fill('fruit salad');
+
+  const recipeResult = page.locator('#docs-search-results a[href*="/recipes/rec_"]');
+  await expect(recipeResult.first()).toBeVisible({ timeout: 10_000 });
 });
 
 test('global ⌘K palette opens and lists nav commands', async ({ page }) => {

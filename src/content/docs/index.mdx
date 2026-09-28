@@ -1,48 +1,53 @@
 ---
-title: Documentation
-description: A personal scaffold for shipping zero-cost, static-first web apps — with methodology, ethics, and orchestration baked in.
+title: Foodie documentation
+description: How Foodie works, how to run it, and how to contribute code or recipes — for the Astro 7 + React 19 islands app.
 ---
 
-## What's inside
+Foodie is an offline-first meal-planning web app: a trilingual (English,
+Spanish, French) catalog of 50 recipes and 105 ingredients, a weekly planner
+with drag and drop, a consolidated shopping list with prices, a pantry, and a
+food diary with nutrition goals. Everything you enter stays in your browser;
+signing in is optional.
 
-This scaffold is opinionated. It ships with the stack, the workflow, the
-ethics framework, and the visual-regression harness already in place — so
-your first commit is feature work, not config.
+These docs are in English and shared by the three language versions of the
+site. The search box on the left covers the docs and every recipe.
 
-### Stack
+## What Foodie does
 
-Astro 5, React 19, Tailwind v4, shadcn/Base UI (not Radix), TanStack
-Table + Query + Virtual, Tremor Raw KPIs, Recharts, Motion (post-Framer),
-`@vite-pwa/astro`, Nano Stores. → [Stack overview](/docs/stack/overview/)
+| Area | Pages | What you get |
+|---|---|---|
+| Catalog | `/recipes/`, `/recipes/<id>/`, `/ingredients/`, `/ingredients/<id>/` | Filter and sort recipes by meal type, cuisine, diet and time; scale servings; step timers; favourites; ingredient nutrition and prices |
+| Planning | `/planner/`, `/shopping/`, `/pantry/`, `/plan/shared/` | A 7-day plan (drag recipes between slots), saved templates, a shopping list generated from the plan and grouped by aisle, pantry stock with expiry dates, sharing a plan by link |
+| Tracking | `/tracking/`, `/tracking/goals/`, `/tracking/progress/` | A food diary, daily nutrition goals and progress charts |
+| Account | `/profile/` | Optional sign-in (email, Google, GitHub) that keeps preferences and favourites per account; export or clear your data |
+| Contributing | `/contribute/` | A wizard that turns your recipe into catalog JSON and a prefilled GitHub issue, with no token or secret |
 
-### How we work
+Each page exists at `/`, `/es/` and `/fr/`.
 
-Shape Up cadence (not Scrum), red→green TDD with `Tdd-Red:` commit
-trailers, Zod-driven Spec-DD, Claude Code orchestration with three
-sub-agents. → [Inceptor](/docs/how-we-work/workflow/)
+## Where to start
 
-### Ethics & UX
+- **Run it locally:** [Quick start](getting-started/quick-start/), then
+  [Installation](getting-started/installation/) and
+  [Configuration](getting-started/configuration/).
+- **Change the code:** [Development](guides/development/),
+  [Testing](guides/testing/) and [Deployment](guides/deployment/).
+- **Look something up:** the [data model](reference/api/) (generated from the
+  Zod schemas), [state and storage](reference/state/) and
+  [i18n](reference/i18n/).
+- **Contribute:** [add a recipe](contributing/recipe-format/) or
+  [contribute code](contributing/code/).
 
-8-item ethics checklist grounded in BJ Fogg's *Persuasive Technology*.
-Tiered enforcement: tier-0 skips docs PRs, tier-1 covers UI tweaks,
-tier-2 covers new persuasive surfaces. Mechanical `risk:high` triggers.
-→ [Persuasive-tech framework](/docs/ethics-ux/framework/)
+## The stack in one paragraph
 
-### Building
+Foodie v2 is built on the Inceptor template: **Astro 7** renders every page to
+static HTML (one page per route, three languages, one page per recipe and
+ingredient), and **React 19** runs only in islands, the interactive parts such
+as the planner or the recipe browser. Styling is Tailwind v4 with Base UI
+primitives. Shared state lives in Nano Stores persisted to `localStorage` and
+validated with Zod. The catalog is plain JSON in `public/data/`, validated at
+build time. The site is deployed to GitHub Pages under `/foodie/` and works
+offline as a PWA.
 
-How to add a component, how hydration works, what the compound-component
-gotcha is, how to theme, how to test. → [Adding a component](/docs/building/adding-a-component/)
-
----
-
-## Quick links
-
-- [Quick start](/docs/start-here/quick-start/) — get running in 5 minutes
-- [What you get](/docs/start-here/what-you-get/) — feature inventory
-- [The 60-second Inceptor tour](/docs/start-here/template-tour/) — workflow walkthrough
-- [Forbidden imports](/docs/stack/forbidden-imports/) — what this scaffold refuses to ship
-- [Commands cheatsheet](/docs/reference/commands/) — every `npm run` script
-- [Decisions](/docs/decisions/template/) — ADRs
-
-The repo lives at
-[github.com/ArtemioPadilla/inceptor](https://github.com/ArtemioPadilla/inceptor).
+v1 was a React 18 + Vite single-page app; it is frozen at the git tag
+`legacy-vite-1.0.0`. The migration plan and every decision behind v2 are in the
+repository under `docs/superpowers/specs/` and `docs/decisions/`.

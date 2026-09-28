@@ -33,8 +33,16 @@ const { lang, recipe, related, ingredientMeta, cuisineNames, mealTypeName } = As
 const recipesHref = withBase(localizedRoute('/recipes/', lang));
 ---
 
-<main id="main-content" class="mx-auto max-w-7xl px-4 py-10 sm:py-14" data-page="recipe-detail" data-recipe-id={recipe.id}>
-  <nav aria-label={t(lang, 'nav.recipes')} class="mb-6">
+<main
+  id="main-content"
+  class="mx-auto max-w-7xl px-4 py-10 sm:py-14"
+  data-page="recipe-detail"
+  data-recipe-id={recipe.id}
+  data-pagefind-body
+>
+  {/* Pagefind indexes the recipe (header, ingredients, steps, extras) but not
+      the back link or the related-recipe cards (roadmap #043). */}
+  <nav aria-label={t(lang, 'nav.recipes')} class="mb-6" data-pagefind-ignore>
     <a
       href={recipesHref}
       class="inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
@@ -54,7 +62,7 @@ const recipesHref = withBase(localizedRoute('/recipes/', lang));
   <RecipeDetailExtras recipe={recipe} lang={lang} />
 
   {related.length > 0 && (
-    <section aria-labelledby="related-recipes-heading" class="mt-14" data-testid="related-recipes">
+    <section aria-labelledby="related-recipes-heading" class="mt-14" data-testid="related-recipes" data-pagefind-ignore>
       <h2 id="related-recipes-heading" class="font-display text-2xl font-semibold text-foreground">
         {t(lang, 'recipe.relatedRecipes')}
       </h2>
