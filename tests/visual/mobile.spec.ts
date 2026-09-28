@@ -10,7 +10,8 @@ import { test, expect, devices } from '@playwright/test';
 const PHONE = devices['iPhone 12'].viewport; // 390×844
 
 // `/recipes/` (roadmap Issue 023): the catalog browser — filter sidebar collapses on phones.
-const routes = ['/', '/gallery/', '/docs/', '/recipes/'];
+// `/planner/`, `/shopping/`, `/pantry/` (roadmap Issue 029): the planning islands.
+const routes = ['/', '/gallery/', '/docs/', '/recipes/', '/planner/', '/shopping/', '/pantry/'];
 
 for (const route of routes) {
   test(`mobile ${route} — no horizontal overflow, nav reachable`, async ({ page }) => {

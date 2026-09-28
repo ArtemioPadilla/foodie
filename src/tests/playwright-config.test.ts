@@ -54,11 +54,19 @@ describe('Playwright setup', () => {
   });
 
   it('baseline screenshot directories exist for both light and dark', () => {
-    // Baselines themselves may be absent during a refresh cycle (the visual
-    // workflow runs with `continue-on-error: true` until Linux baselines are
-    // re-snapshotted in Docker — see CONTRIBUTING.md). What we DO require is
-    // that the directory structure is in place.
+    // visual.yml gates without `continue-on-error` since roadmap Issue 029, so
+    // the directory structure must be in place (baselines are refreshed with
+    // `npm run refresh-baselines` — see CONTRIBUTING.md).
     expect(existsSync(rel('tests/__screenshots__/chromium-light'))).toBe(true);
     expect(existsSync(rel('tests/__screenshots__/chromium-dark'))).toBe(true);
+  });
+
+  it('pins light + dark baselines for the planning pages (roadmap Issue 029)', () => {
+    expect(existsSync(rel('tests/visual/planning.spec.ts'))).toBe(true);
+    for (const theme of ['chromium-light', 'chromium-dark']) {
+      for (const page of ['planner', 'shopping', 'pantry']) {
+        expect(existsSync(rel(`tests/__screenshots__/${theme}/${page}.png`)), `${theme}/${page}.png`).toBe(true);
+      }
+    }
   });
 });

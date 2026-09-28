@@ -50,6 +50,11 @@ describe('visual.yml + deploy-failure-issue.yml', () => {
     expect(visual).toContain('npx playwright test');
   });
 
+  it('visual regression is a hard gate: no continue-on-error anywhere (roadmap #029)', () => {
+    const visual = workflow('visual.yml');
+    expect(visual).not.toMatch(/continue-on-error/);
+  });
+
   it('deploy-failure-issue.yml is present and chained to the deploy workflow', () => {
     const dfi = workflow('deploy-failure-issue.yml');
     expect(dfi).toContain("workflows: ['Deploy to GitHub Pages']");

@@ -9,11 +9,12 @@
 # Usage:
 #   bash scripts/refresh-baselines.sh
 #
-# After it finishes, commit the updated tests/__screenshots__/ files, push,
-# and remove `continue-on-error: true` from .github/workflows/visual.yml.
+# After it finishes, commit the updated tests/__screenshots__/ files and push;
+# visual.yml is a hard gate (roadmap Issue 029). Keep IMAGE in step with the
+# @playwright/test version in package.json.
 set -euo pipefail
 
-IMAGE="mcr.microsoft.com/playwright:v1.60.0-noble"
+IMAGE="mcr.microsoft.com/playwright:v1.62.1-noble"
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "✗ docker is not installed."

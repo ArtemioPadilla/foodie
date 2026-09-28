@@ -8,12 +8,13 @@
  *
  * Route coverage: representative cross-section of the app — the landing in
  * all three locales (roadmap Issue 005), one coming-soon section, gallery
- * index, dashboard demo and docs.
+ * index, dashboard demo and docs, plus the planning islands (roadmap Issue
+ * 029: /planner/, /es/shopping/, /fr/pantry/).
  */
 
 import { test, expect } from '../fixtures/console-guard';
 
-const ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/ingredients/', '/ingredients/ing_101/', '/gallery/', '/demos/dashboard/', '/docs/'] as const;
+const ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/ingredients/', '/ingredients/ing_101/', '/planner/', '/es/shopping/', '/fr/pantry/', '/gallery/', '/demos/dashboard/', '/docs/'] as const;
 
 for (const route of ROUTES) {
   test(`smoke — ${route} — no console errors`, async ({ page }) => {

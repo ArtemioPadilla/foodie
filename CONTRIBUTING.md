@@ -67,18 +67,28 @@ npm run check         # astro diagnostics
 
 ## Visual regression
 
-`/showcase` and `/dashboard` are snapshotted by Playwright in both light and dark.
+Playwright snapshots the catalog (`/recipes/`, a recipe detail, an ingredient
+detail), the planning pages (`/planner/`, `/shopping/`, `/pantry/`, seeded from
+`tests/fixtures/planning.ts` with a frozen clock — roadmap Issue 029) and the
+template's `/gallery` and `/demos/dashboard`, in both light and dark.
 Baselines live under `tests/__screenshots__/{chromium-light,chromium-dark}/`.
 
-The CI workflow at `.github/workflows/visual.yml` re-runs Playwright on every PR.
+The CI workflow at `.github/workflows/visual.yml` runs `npx playwright test`
+(visual + a11y + smoke + keyboard/mobile + the e2e journeys) on every PR and
+push to `main`. It is a **hard gate** — no `continue-on-error` (roadmap Issue
+029; `src/tests/workflow-foodie-ci.test.ts` keeps it that way).
 
-> ⚠️ **Initial baselines were captured on macOS** and may produce false-positive
-> diffs against Ubuntu CI runners due to system font metric differences (~20–50px
-> in total page height). The CI job is currently configured with
-> `continue-on-error: true` (advisory mode). The fix is to refresh baselines from
-> a Linux environment — see "Refresh baselines in CI's environment" below. Once
-> baselines are platform-stable, remove the `continue-on-error` flag in
-> `.github/workflows/visual.yml` to turn the gate back on.
+Screenshot specs call `pinSystemFonts(page)` (`tests/helpers.ts`) before the
+first navigation: Google Fonts is answered with an empty stylesheet, so a
+baseline never depends on whether `fonts.googleapis.com` was reachable when it
+was captured. New screenshot specs must do the same.
+
+> The console-error smoke (`tests/visual/smoke.spec.ts`) needs the third-party
+> hosts the pages load (Google Fonts, and `api.github.com` for
+> `/demos/dashboard/`) to answer normally. On a network that intercepts TLS
+> (corporate proxies, some sandboxes) it fails with
+> `net::ERR_CERT_AUTHORITY_INVALID`; that is the environment, not the app — on
+> GitHub runners those hosts answer and the smoke passes.
 
 ### Update baselines after an intentional visual change
 
@@ -124,14 +134,15 @@ Manual equivalent (in case Docker isn't available on PATH):
 docker run --rm \
   -v "$(pwd):/work" -w /work \
   -e CI=true \
-  mcr.microsoft.com/playwright:v1.60.0-noble \
+  mcr.microsoft.com/playwright:v1.62.1-noble \
   sh -c "npm ci && npm run build && npx playwright test --update-snapshots"
 git add tests/__screenshots__/
 git commit -m "test(visual): refresh baselines (linux)"
 ```
 
-After this, the macOS/Linux differential disappears and the CI gate becomes
-trustworthy enough to flip back to a hard fail.
+After this, the macOS/Linux differential disappears. Keep the image tag in
+step with `@playwright/test` in `package.json` (a newer package cannot find
+the browsers of an older image).
 
 ### First-time local setup
 

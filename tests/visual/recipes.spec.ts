@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { pinSystemFonts } from '../helpers';
 
 /**
  * Visual snapshot of the recipe browser (roadmap Issues 017 + 023): the
@@ -8,6 +9,7 @@ import { test, expect } from '@playwright/test';
  * live in tests/__screenshots__/{chromium-light,chromium-dark}/recipes.png.
  */
 test('recipe browser screenshot', async ({ page }) => {
+  await pinSystemFonts(page);
   await page.addInitScript(() => localStorage.setItem('foodie:privacy-ack', 'true'));
   await page.goto('/recipes/');
   await page.waitForLoadState('networkidle');

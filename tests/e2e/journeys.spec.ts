@@ -836,3 +836,147 @@ test.describe('offline PWA (roadmap #028)', () => {
     }
   });
 });
+
+// ── Planning end to end (roadmap Issue 029) ──────────────────────────────────
+// US-3.1–3.4 in one run: plan → picker → pointer drag → servings → generate
+// the shopping list → check an item → add a custom item → CSV download →
+// stock the pantry → "What can I cook" suggests the planned recipe, and a
+// reload of each page keeps plan, list and pantry (localStorage).
+// Banana Pancakes (rec_007) needs exactly flour (ing_026) + banana (ing_025),
+// so stocking those two makes it a 100 % match.
+test.describe('planning end to end (roadmap #029)', () => {
+  test.setTimeout(90_000);
+
+  test('plan → shopping → CSV → pantry → "what can I cook", and everything survives a reload', async ({ page }) => {
+    // 1. Create a plan and add Banana Pancakes to Monday breakfast with the picker.
+    await page.goto('./planner/');
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'empty');
+    await page.getByTestId('create-plan-button').click();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('draggable-recipe').first()).toBeVisible();
+
+    await page.getByTestId('meal-slot-monday-breakfast').getByTestId('add-meal-button').click();
+    const picker = page.getByTestId('recipe-picker');
+    await expect(picker).toBeVisible();
+    await picker.getByTestId('recipe-picker-search').fill('Banana Pancakes');
+    await expect(picker.getByTestId('recipe-picker-option').first()).toHaveAttribute('data-recipe-id', 'rec_007');
+    await picker.getByTestId('recipe-picker-add').click();
+    await expect(picker).toHaveCount(0);
+    const monday = page.getByTestId('meal-slot-monday-breakfast');
+    await expect(monday.getByTestId('planned-meal')).toHaveAttribute('data-recipe-id', 'rec_007');
+
+    // 2. Drag it with the pointer (grip handle) to Wednesday breakfast.
+    const wednesday = page.getByTestId('meal-slot-wednesday-breakfast');
+    await wednesday.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    const handle = monday.getByTestId('meal-drag-handle');
+    const from = await handle.boundingBox();
+    const to = await wednesday.boundingBox();
+    if (!from || !to) throw new Error('no layout');
+    await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(from.x + from.width / 2 + 20, from.y + from.height / 2, { steps: 5 });
+    await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 15 });
+    await expect(wednesday).toHaveAttribute('data-over', 'true');
+    await page.mouse.up();
+    await expect(monday.getByTestId('planned-meal')).toHaveCount(0);
+    const meal = wednesday.getByTestId('planned-meal');
+    await expect(meal).toHaveAttribute('data-recipe-id', 'rec_007');
+
+    // 3. Change its servings: 2 (plan default) → 3.
+    await expect(meal.getByTestId('meal-servings-value')).toContainText('2');
+    await meal.getByRole('button', { name: 'More servings of Banana Pancakes' }).click();
+    await expect(meal.getByTestId('meal-servings-value')).toContainText('3');
+    const plan = await page.evaluate(() => JSON.parse(localStorage.getItem('currentMealPlan') ?? 'null'));
+    expect(plan.days[2].meals.breakfast).toEqual({ recipeId: 'rec_007', servings: 3 });
+    expect(plan.days[0].meals.breakfast).toBeUndefined();
+
+    // 4. Generate the shopping list from the plan: 2 bananas for 4 servings → 1.5 for 3.
+    await page.goto('./shopping/');
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'empty');
+    const generate = page.getByTestId('generate-from-plan');
+    await expect(generate).toBeEnabled();
+    await generate.click();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+    await expect(page.getByTestId('shopping-item')).toHaveCount(2);
+    const generated = await page.evaluate(() => JSON.parse(localStorage.getItem('shoppingList') ?? '[]'));
+    expect(generated.find((i: { ingredientId: string }) => i.ingredientId === 'ing_025')).toMatchObject({
+      quantity: 1.5,
+      unit: 'piece',
+      usedIn: ['rec_007'],
+    });
+
+    // 5. Check the banana off.
+    const banana = page.locator('[data-testid="shopping-item"][data-ingredient-id="ing_025"]');
+    await banana.getByRole('checkbox').click();
+    await expect(banana).toHaveAttribute('data-checked', 'true');
+
+    // 6. Add a custom item.
+    await page.getByTestId('add-item-button').click();
+    const addDialog = page.getByTestId('add-item-dialog');
+    await addDialog.getByTestId('item-name-input').fill('Maple syrup');
+    await addDialog.getByTestId('item-quantity-input').fill('1');
+    await addDialog.getByTestId('submit-add-item').click();
+    await expect(addDialog).toHaveCount(0);
+    await expect(page.getByTestId('shopping-item').filter({ hasText: 'Maple syrup' })).toBeVisible();
+    await expect(page.getByTestId('shopping-item')).toHaveCount(3);
+
+    // 7. Export CSV — a real download whose rows carry the list.
+    await page.getByTestId('export-menu').click();
+    const exportDialog = page.getByTestId('export-dialog');
+    const download = page.waitForEvent('download');
+    await exportDialog.getByTestId('export-csv').click();
+    const csvFile = await download;
+    expect(csvFile.suggestedFilename()).toBe('shopping-list.csv');
+    const csvPath = await csvFile.path();
+    const csv = (await import('node:fs')).readFileSync(csvPath, 'utf-8');
+    const rows = csv.trim().split('\n');
+    expect(rows).toHaveLength(4); // header + 3 lines
+    expect(rows.find((r) => r.includes('"Banana"'))).toContain('"Yes"');
+    expect(rows.find((r) => r.includes('"Maple syrup"'))).toContain('"No"');
+    await page.keyboard.press('Escape');
+    await expect(exportDialog).toHaveCount(0);
+
+    // 8. Stock the pantry with what the recipe needs.
+    await page.goto('./pantry/');
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'empty');
+    for (const [name, quantity] of [['All-Purpose Flour', '3'], ['Banana', '4']] as const) {
+      await page.getByTestId('add-pantry-item').first().click();
+      const dialog = page.getByTestId('pantry-item-dialog');
+      await dialog.getByTestId('pantry-name-input').fill(name);
+      // A catalog match hides the custom-category select.
+      await expect(dialog.getByTestId('pantry-category-select')).toHaveCount(0);
+      await dialog.getByTestId('pantry-quantity-input').fill(quantity);
+      await dialog.getByTestId('submit-pantry-item').click();
+      await expect(dialog).toHaveCount(0);
+    }
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+
+    // 9. "What can I cook" suggests the planned recipe at 100 %.
+    const suggestion = page.locator('[data-testid="pantry-suggestion"][data-recipe-id="rec_007"]');
+    await expect(suggestion).toHaveAttribute('data-percent', '100');
+    await expect(suggestion.getByRole('link')).toHaveText('Banana Pancakes');
+
+    // 10. Persistence: every page comes back from localStorage after a reload.
+    await page.reload();
+    await expect(page.getByTestId('pantry')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('pantry-item')).toHaveCount(2);
+    await expect(page.locator('[data-testid="pantry-item"][data-ingredient-id="ing_026"]')).toBeVisible();
+    await expect(suggestion).toHaveAttribute('data-percent', '100');
+
+    await page.goto('./shopping/');
+    await page.reload();
+    await expect(page.getByTestId('shopping-list')).toHaveAttribute('data-status', 'ready');
+    await expect(page.getByTestId('shopping-item')).toHaveCount(3);
+    await expect(banana).toHaveAttribute('data-checked', 'true');
+    await expect(page.getByTestId('shopping-item').filter({ hasText: 'Maple syrup' })).toBeVisible();
+
+    await page.goto('./planner/');
+    await page.reload();
+    await expect(page.getByTestId('meal-planner')).toHaveAttribute('data-status', 'ready');
+    const persisted = page.getByTestId('meal-slot-wednesday-breakfast').getByTestId('planned-meal');
+    await expect(persisted).toHaveAttribute('data-recipe-id', 'rec_007');
+    await expect(persisted.getByTestId('meal-servings-value')).toContainText('3');
+    await expect(page.getByTestId('planned-meal')).toHaveCount(1);
+  });
+});
