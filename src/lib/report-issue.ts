@@ -7,7 +7,26 @@ export interface ReportIssueInput {
   title: string;
   body?: string;
   labels?: string[];
+  /**
+   * Issue-form file under `.github/ISSUE_TEMPLATE/` (e.g.
+   * `recipe-submission.yml`). Emitted first so the URL reads
+   * `issues/new?template=…&…`.
+   */
+  template?: string;
+  /**
+   * Issue-form fields prefilled by their `id` (GitHub reads any query
+   * parameter named after a field id of the chosen template).
+   */
+  fields?: Readonly<Record<string, string>>;
 }
+
+/**
+ * Practical ceiling for a prefilled "new issue" URL. GitHub (and some
+ * browsers/proxies) reject or truncate longer request lines, so callers that
+ * embed large payloads (the recipe JSON of roadmap Issue 039) must check
+ * `issueUrlFits()` and fall back to asking for an attachment.
+ */
+export const ISSUE_URL_MAX_LENGTH = 8 * 1024;
 
 /**
  * Build a GitHub "new issue" URL pre-filled with the given fields. The
@@ -15,17 +34,31 @@ export interface ReportIssueInput {
  * return the URL string and let the caller decide window.open vs
  * location.assign.
  */
-export function buildIssueUrl({ title, body = '', labels = [] }: ReportIssueInput): string {
+export function buildIssueUrl({ title, body = '', labels = [], template, fields = {} }: ReportIssueInput): string {
   const params = new URLSearchParams();
+  if (template) params.set('template', template);
   params.set('title', title);
   if (body) params.set('body', body);
   if (labels.length > 0) params.set('labels', labels.join(','));
+  for (const [id, value] of Object.entries(fields)) {
+    if (value) params.set(id, value);
+  }
   return `https://github.com/${REPO}/issues/new?${params.toString()}`;
 }
 
+/** Whether `url` stays under `ISSUE_URL_MAX_LENGTH` (8 KB). */
+export function issueUrlFits(url: string): boolean {
+  return url.length <= ISSUE_URL_MAX_LENGTH;
+}
+
 export function openIssue(input: ReportIssueInput): void {
+  openIssueUrl(buildIssueUrl(input));
+}
+
+/** Open an already-built issue URL in a new tab (no opener, no referrer). */
+export function openIssueUrl(url: string): void {
   if (typeof window === 'undefined') return;
-  window.open(buildIssueUrl(input), '_blank', 'noopener,noreferrer');
+  window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 /**

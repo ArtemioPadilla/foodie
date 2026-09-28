@@ -14,7 +14,7 @@ import {
 } from '@/tests/fixtures/contribute-wizard';
 import type { SubmitStepProps } from './SubmitStep';
 
-/** Steps 6–7 — preview (public card + detail components) and the submit hook point (roadmap Issue 038). */
+/** Steps 6–7 — preview (public card + detail components) and the submit hook point (roadmap Issues 038–039). */
 beforeEach(() => {
   clearContributeDraft();
   localStorage.clear();
@@ -77,7 +77,7 @@ describe('ContributeWizard · preview step', () => {
     const json = JSON.parse(screen.getByTestId('contribute-recipe-json').textContent ?? '{}');
     expect(json).toMatchObject({ id: RECIPE_ID, cuisine: ['mexican'], servings: 2, author: 'Community Contributor' });
     expect(json.ingredients[1]).toEqual({ ingredientId: 'ing_002', quantity: 1, unit: 'cup', preparation: 'washed', optional: true });
-    expect(screen.getByTestId('contribute-submit')).toBeDisabled();
+    expect(screen.getByTestId('contribute-submit')).toBeEnabled();
     expect(screen.queryByTestId('contribute-next')).toBeNull();
   });
 

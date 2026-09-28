@@ -1,6 +1,6 @@
 # Installation Guide
 
-This comprehensive guide will walk you through setting up Foodie PWA for local development, including optional Firebase and GitHub integrations.
+This comprehensive guide will walk you through setting up Foodie PWA for local development, including the optional Firebase integration.
 
 ---
 
@@ -109,16 +109,11 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 
-# GitHub OAuth (Optional - for recipe contributions)
-VITE_GITHUB_CLIENT_ID=your_github_oauth_client_id
-VITE_GITHUB_REDIRECT_URI=http://localhost:5173/auth/callback
-
 # Google Analytics (Optional - for analytics)
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
 # Feature Flags
 VITE_ENABLE_FIREBASE=false
-VITE_ENABLE_GITHUB_INTEGRATION=false
 VITE_ENABLE_ANALYTICS=false
 ```
 
@@ -172,29 +167,9 @@ VITE_FIREBASE_APP_ID=1:123456789012:web:abcdefghijklmnop
 
 ---
 
-## Step 5: GitHub OAuth Setup (Optional)
+## Step 5: Recipe contributions
 
-For recipe contribution features via GitHub:
-
-### Create GitHub OAuth App
-
-1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
-2. Click **"New OAuth App"**
-3. Fill in details:
-   - **Application name**: Foodie Recipe Contributions
-   - **Homepage URL**: http://localhost:5173
-   - **Authorization callback URL**: http://localhost:5173/auth/callback
-4. Click **"Register application"**
-5. Copy the **Client ID**
-6. Generate a **Client Secret**
-
-### Update .env with GitHub Config
-
-```env
-VITE_ENABLE_GITHUB_INTEGRATION=true
-VITE_GITHUB_CLIENT_ID=your_client_id_here
-VITE_GITHUB_REDIRECT_URI=http://localhost:5173/auth/callback
-```
+Recipe contributions need no GitHub configuration any more (roadmap D10, Issue 039): the wizard opens a prefilled GitHub issue — see [Contributing recipes](../recipes/contributing-recipes.md).
 
 ---
 

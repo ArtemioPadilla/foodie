@@ -9,7 +9,7 @@
  * code wrote them (derived from `git show main:src/contexts/*.tsx`,
  * `components/planner/PlanTemplates.tsx`, `components/tracking/quickAdd/*`,
  * `services/authService.ts` and `utils/nutritionCalculator.ts`): raw strings
- * for `theme`, `i18nextLng` and `github-access-token`, `JSON.stringify` for
+ * for `theme`, `i18nextLng` and the v1 GitHub token, `JSON.stringify` for
  * everything else. It includes the odd shapes v1 really produced — a plan
  * without `createdAt`, a day with `snacks: []` after a removal, templates with
  * the same name in every language, pantry items whose `ingredientId` is the
@@ -23,6 +23,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { LEGACY_GITHUB_TOKEN_KEY, purgeRetiredKeys } from '@/lib/retired-keys';
 
 type Fixture = Record<string, unknown>;
 
@@ -52,7 +53,7 @@ const V1_KEYS = [
   'nutritionGoals',
   `user-preferences-${UID}`,
   `user-favorites-${UID}`,
-  'github-access-token',
+  LEGACY_GITHUB_TOKEN_KEY,
 ];
 
 type Stores = {
@@ -91,7 +92,7 @@ describe('the v1 fixture', () => {
   it('covers exactly the 12 keys of ADR 0002', () => {
     expect(Object.keys(legacy).sort()).toEqual([...V1_KEYS].sort());
     const adr = readFileSync(repoFile('docs/decisions/0002-local-first-user-data.md'), 'utf-8');
-    for (const key of ['theme', 'i18nextLng', 'favoriteRecipes', 'currentMealPlan', 'savedMealPlans', 'shoppingList', 'pantryItems', 'trackingEntries', 'nutritionGoals', 'github-access-token']) {
+    for (const key of ['theme', 'i18nextLng', 'favoriteRecipes', 'currentMealPlan', 'savedMealPlans', 'shoppingList', 'pantryItems', 'trackingEntries', 'nutritionGoals', LEGACY_GITHUB_TOKEN_KEY]) {
       expect(adr).toContain(`\`${key}\``);
     }
     expect(adr).toContain('`user-preferences-${uid}`');
@@ -188,8 +189,8 @@ describe('keys v2 does not read yet, or never will', () => {
     expect(stores.favorites.$favorites.key).toBe('favoriteRecipes');
   });
 
-  it('github-access-token (12) is never read by a store (D10; removal on first run is Issue 039)', () => {
-    expect(localStorage.getItem('github-access-token')).toBe(legacy['github-access-token']);
+  it('the v1 GitHub token (12) is never read by a store and is purged on first load (D10, roadmap #039)', () => {
+    expect(localStorage.getItem(LEGACY_GITHUB_TOKEN_KEY)).toBe(legacy[LEGACY_GITHUB_TOKEN_KEY]);
     for (const store of [
       stores.favorites.$favorites,
       stores.planner.$currentPlan,
@@ -199,7 +200,16 @@ describe('keys v2 does not read yet, or never will', () => {
       stores.goals.$goals,
       stores.preferences.$preferences,
     ]) {
-      expect(store.key).not.toBe('github-access-token');
+      expect(store.key).not.toBe(LEGACY_GITHUB_TOKEN_KEY);
+    }
+    // BaseLayout runs purgeRetiredKeys() on every page: the credential goes, the data stays.
+    const snapshot = { ...localStorage };
+    try {
+      expect(purgeRetiredKeys()).toEqual([LEGACY_GITHUB_TOKEN_KEY]);
+      expect(localStorage.getItem(LEGACY_GITHUB_TOKEN_KEY)).toBeNull();
+      expect(localStorage.getItem('currentMealPlan')).not.toBeNull();
+    } finally {
+      for (const [key, value] of Object.entries(snapshot)) localStorage.setItem(key, value);
     }
   });
 

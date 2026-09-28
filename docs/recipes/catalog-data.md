@@ -70,9 +70,10 @@ Fix the data before tightening the schema.
 5. **Review & merge.** Maintainers check the translations read naturally and
    the nutrition numbers are plausible; merging to `main` deploys.
 
-Community members without a fork can use the **Recipe submission** issue form
-(`.github/ISSUE_TEMPLATE/recipe-submission.yml`) and paste the JSON; a
-maintainer turns it into the PR.
+Community members without a fork use the **Recipe submission** issue form
+(`.github/ISSUE_TEMPLATE/recipe-submission.yml`), which the _Contribute_
+wizard opens prefilled; a maintainer turns it into the PR. The whole flow is in
+[contributing-recipes.md](./contributing-recipes.md).
 
 ## Runtime: `useCatalog()` in islands (Issue 016)
 

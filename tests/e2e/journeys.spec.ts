@@ -1375,7 +1375,7 @@ test.describe('accounts (roadmap #036)', () => {
 // Stepper + Form over RecipeSubmissionSchema, catalog Combobox, nutrition
 // estimate, preview built from the public detail components, draft in
 // localStorage['foodie:contribute-draft'].
-test.describe('contribute wizard (roadmap #038)', () => {
+test.describe('contribute wizard (roadmap #038, #039)', () => {
   test('loads in every locale with the first step ready', async ({ page }) => {
     for (const [prefix, title, step] of [['', 'Contribute a Recipe', 'Basic Info'], ['es/', 'Contribuir una Receta', 'Info Básica'], ['fr/', 'Contribuer une Recette', 'Info de Base']] as const) {
       await page.goto(`./${prefix}contribute/`);
@@ -1385,7 +1385,7 @@ test.describe('contribute wizard (roadmap #038)', () => {
     }
   });
 
-  test('blocks Next with translated errors, then walks every step to the preview, and the draft survives a reload', async ({ page }) => {
+  test('blocks Next with translated errors, walks every step, survives a reload and submits as a prefilled issue', async ({ page }) => {
     await page.goto('./es/contribute/');
     const wizard = page.getByTestId('contribute-wizard');
     await expect(wizard).toHaveAttribute('data-status', 'ready');
@@ -1451,10 +1451,42 @@ test.describe('contribute wizard (roadmap #038)', () => {
     await expect(wizard).toHaveAttribute('data-step', 'preview');
     await expect(page.getByTestId('contribute-draft-restored')).toBeVisible();
 
-    // 7 · submit (Issue 039 fills in the sending flow)
+    // 7 · submit without secrets (roadmap #039): "Enviar" opens the prefilled
+    // recipe-submission issue (window.open intercepted) and downloads the JSON.
+    await page.evaluate(() => {
+      const w = window as unknown as { __opened: unknown[][] };
+      w.__opened = [];
+      window.open = (...args: unknown[]) => {
+        w.__opened.push(args);
+        return null;
+      };
+    });
     await page.getByTestId('contribute-next').click();
     await expect(wizard).toHaveAttribute('data-step', 'submit');
-    await expect(page.getByTestId('contribute-step-submit')).toHaveAttribute('data-recipe-id', /^weeknight-green-skillet-/);
+    const submitStep = page.getByTestId('contribute-step-submit');
+    await expect(submitStep).toHaveAttribute('data-recipe-id', /^weeknight-green-skillet-/);
+    await expect(submitStep).toHaveAttribute('data-json-in-url', 'true');
+    const recipeId = await submitStep.getAttribute('data-recipe-id');
+
+    const download = page.waitForEvent('download');
+    await page.getByTestId('contribute-submit').click();
+    expect((await download).suggestedFilename()).toBe(`recipe-${recipeId}.json`);
+    const opened = await page.evaluate(() => (window as unknown as { __opened: unknown[][] }).__opened);
+    expect(opened).toHaveLength(1);
+    const [url, target] = opened[0] as [string, string];
+    expect(target).toBe('_blank');
+    expect(url).toMatch(/^https:\/\/github\.com\/ArtemioPadilla\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
+    const params = new URL(url).searchParams;
+    expect(params.get('title')).toBe('[recipe] Weeknight Green Skillet');
+    expect(params.get('meal-type')).toBe('dinner');
+    expect(params.get('cuisine')).toBe('mexican');
+    expect(JSON.parse(params.get('recipe-json') ?? '{}')).toMatchObject({ id: recipeId, name: { en: 'Weeknight Green Skillet', es: 'Sartén verde entre semana' } });
+    await expect(submitStep).toHaveAttribute('data-sent', 'true');
+    await expect(page.getByTestId('contribute-issue-link')).toHaveAttribute('href', url);
+    // The draft is gone and no GitHub token was ever written.
+    const storage = await page.evaluate(() => ({ draft: localStorage.getItem('foodie:contribute-draft'), keys: Object.keys(localStorage) }));
+    expect(storage.draft).toBeNull();
+    expect(storage.keys.filter((key) => /github|token/i.test(key))).toEqual([]);
   });
 });
 

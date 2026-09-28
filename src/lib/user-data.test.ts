@@ -8,6 +8,7 @@ import { $currentPlan, createPlan } from '@/stores/planner';
 import { $preferences, setUnitSystem } from '@/stores/preferences';
 import { $shopping, addShoppingItem } from '@/stores/shopping';
 import { SESSION_HINT_KEY } from '@/stores/user';
+import { LEGACY_GITHUB_TOKEN_KEY } from '@/lib/retired-keys';
 import {
   MOCK_AUTH_KEY,
   clearUserData,
@@ -39,7 +40,7 @@ const USER = {
 
 describe('isFoodieKey', () => {
   it('recognises legacy, per-account and foodie:* keys but not auth plumbing or strangers', () => {
-    for (const key of ['theme', 'favoriteRecipes', 'nutritionGoals', 'user-preferences-abc', 'user-favorites-abc', 'foodie:locale', 'github-access-token']) {
+    for (const key of ['theme', 'favoriteRecipes', 'nutritionGoals', 'user-preferences-abc', 'user-favorites-abc', 'foodie:locale', LEGACY_GITHUB_TOKEN_KEY]) {
       expect(isFoodieKey(key), key).toBe(true);
     }
     for (const key of [SESSION_HINT_KEY, MOCK_AUTH_KEY, 'user-preferences-', 'tanstack-query-cache', 'other-app']) {
@@ -59,7 +60,7 @@ describe('collectUserData', () => {
     addShoppingItem({ ingredientId: 'ing_001', quantity: 2, unit: 'pcs', usedIn: [] });
     localStorage.setItem('user-favorites-other', JSON.stringify(['rec_009']));
     localStorage.setItem('foodie:locale', 'es');
-    localStorage.setItem('github-access-token', 'gho_secret');
+    localStorage.setItem(LEGACY_GITHUB_TOKEN_KEY, 'gho_secret');
     localStorage.setItem(SESSION_HINT_KEY, '1');
     localStorage.setItem('unrelated', '1');
 
@@ -75,7 +76,7 @@ describe('collectUserData', () => {
     expect(out.data['user-favorites-other']).toEqual(['rec_009']);
     expect(out.data['foodie:locale']).toBe('es');
     // Never: credentials, auth plumbing, other apps' keys.
-    expect(out.data).not.toHaveProperty('github-access-token');
+    expect(out.data).not.toHaveProperty(LEGACY_GITHUB_TOKEN_KEY);
     expect(out.data).not.toHaveProperty(SESSION_HINT_KEY);
     expect(out.data).not.toHaveProperty('unrelated');
   });
@@ -97,12 +98,12 @@ describe('clearUserData', () => {
     setUnitSystem('metric');
     localStorage.setItem('theme', 'dark');
     localStorage.setItem('user-preferences-u-1', JSON.stringify(DEFAULT_PREFERENCES));
-    localStorage.setItem('github-access-token', 'gho_secret');
+    localStorage.setItem(LEGACY_GITHUB_TOKEN_KEY, 'gho_secret');
     localStorage.setItem(SESSION_HINT_KEY, '1');
     localStorage.setItem('unrelated', 'keep');
 
     const removed = clearUserData();
-    expect(removed).toEqual(expect.arrayContaining(['favoriteRecipes', 'nutritionGoals', 'theme', 'user-preferences-u-1', 'github-access-token']));
+    expect(removed).toEqual(expect.arrayContaining(['favoriteRecipes', 'nutritionGoals', 'theme', 'user-preferences-u-1', LEGACY_GITHUB_TOKEN_KEY]));
     expect(listFoodieKeys()).toEqual([]);
     expect($favorites.get()).toEqual([]);
     expect($goals.get()).toEqual(DEFAULT_GOALS);

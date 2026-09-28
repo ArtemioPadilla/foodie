@@ -113,7 +113,10 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
       import { initPwaRegister } from '@/lib/pwa-register';
       import { initSentry } from '@/lib/sentry';
       import { initAnalytics } from '@/lib/analytics';
+      import { purgeRetiredKeys } from '@/lib/retired-keys';
       initPwaRegister();
+      // v1's GitHub token is deleted on first load (ADR 0002 §3, roadmap #039).
+      purgeRetiredKeys();
       // Skeleton init — no-op unless the corresponding PUBLIC_FLAG_* env vars
       // are set. See src/lib/sentry.ts and src/lib/analytics.ts.
       void initSentry();

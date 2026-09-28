@@ -12,7 +12,8 @@
  *
  * Never exported nor cleared: the auth infrastructure keys (the session hint
  * and the mock adapter's demo accounts — signing out is a separate action)
- * and `github-access-token` (legacy key 12, a credential — it is removed by
+ * and the v1 GitHub token (legacy key 12, a credential — `lib/retired-keys.ts`
+ * deletes it on every page load; it is also removed by
  * "clear" but never written into an export file).
  */
 import type { WritableAtom } from 'nanostores';
@@ -28,6 +29,7 @@ import { $shopping } from '@/stores/shopping';
 import { followSystemTheme } from '@/stores/theme';
 import { $tracking } from '@/stores/tracking';
 import { SESSION_HINT_KEY } from '@/stores/user';
+import { LEGACY_GITHUB_TOKEN_KEY } from '@/lib/retired-keys';
 
 type PersistedStore = WritableAtom<unknown> & { readonly key: string };
 
@@ -57,7 +59,7 @@ export const LEGACY_KEYS = [
   'pantryItems',
   'trackingEntries',
   'nutritionGoals',
-  'github-access-token',
+  LEGACY_GITHUB_TOKEN_KEY,
 ] as const;
 
 /** Keys 10–11: one pair per account that signed in on this browser. */
@@ -73,7 +75,7 @@ export const MOCK_AUTH_KEY = 'foodie:mock-auth';
 export const AUTH_INFRA_KEYS: ReadonlySet<string> = new Set([SESSION_HINT_KEY, MOCK_AUTH_KEY]);
 
 /** Credentials are never written into an export file. */
-const NEVER_EXPORTED: ReadonlySet<string> = new Set(['github-access-token']);
+const NEVER_EXPORTED: ReadonlySet<string> = new Set([LEGACY_GITHUB_TOKEN_KEY]);
 
 export function isFoodieKey(key: string): boolean {
   if (AUTH_INFRA_KEYS.has(key)) return false;

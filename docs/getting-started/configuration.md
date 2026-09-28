@@ -33,15 +33,6 @@ VITE_FIREBASE_APP_ID=
 VITE_FIREBASE_MEASUREMENT_ID=
 
 # =======================
-# GITHUB INTEGRATION
-# =======================
-VITE_ENABLE_GITHUB_INTEGRATION=false
-VITE_GITHUB_CLIENT_ID=
-VITE_GITHUB_REDIRECT_URI=http://localhost:5173/auth/callback
-VITE_GITHUB_REPO_OWNER=artemiopadilla
-VITE_GITHUB_REPO_NAME=foodie
-
-# =======================
 # ANALYTICS
 # =======================
 VITE_ENABLE_ANALYTICS=false
@@ -105,25 +96,9 @@ Enable cloud features like authentication and data sync.
 3. Go to Project Settings > Your apps
 4. Copy the config object values
 
-### GitHub Integration
+### Recipe contributions
 
-Enable recipe contributions via GitHub PRs.
-
-| Variable | Type | Required | Description |
-|----------|------|----------|-------------|
-| `VITE_ENABLE_GITHUB_INTEGRATION` | boolean | No | Enable GitHub features |
-| `VITE_GITHUB_CLIENT_ID` | string | Yes* | GitHub OAuth client ID |
-| `VITE_GITHUB_REDIRECT_URI` | string | Yes* | OAuth callback URL |
-| `VITE_GITHUB_REPO_OWNER` | string | No | GitHub username/org |
-| `VITE_GITHUB_REPO_NAME` | string | No | Repository name |
-
-*Required only if `VITE_ENABLE_GITHUB_INTEGRATION=true`
-
-**Setting up GitHub OAuth:**
-1. Go to GitHub Settings > Developer settings > OAuth Apps
-2. Create a new OAuth app
-3. Set callback URL to match `VITE_GITHUB_REDIRECT_URI`
-4. Copy the Client ID
+Recipe contributions need no GitHub configuration any more (roadmap D10, Issue 039): the wizard opens a prefilled GitHub issue — see [Contributing recipes](../recipes/contributing-recipes.md).
 
 ### Analytics Configuration
 

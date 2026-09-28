@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildIssueUrl, buildErrorReportBody } from './report-issue';
+import { buildIssueUrl, buildErrorReportBody, ISSUE_URL_MAX_LENGTH, issueUrlFits } from './report-issue';
 
 describe('buildIssueUrl', () => {
   it('encodes title, body, labels into a GH new-issue URL', () => {
@@ -61,5 +61,26 @@ describe('buildErrorReportBody', () => {
     const body = buildErrorReportBody({ error: new Error('x') });
     expect(body).toMatch(/## Stack/);
     expect(body).toMatch(/```/);
+  });
+});
+
+describe('buildIssueUrl with an issue form (roadmap #039)', () => {
+  it('puts the template first and prefills fields by id', () => {
+    const url = buildIssueUrl({
+      title: '[recipe] Soup',
+      template: 'recipe-submission.yml',
+      fields: { 'recipe-name': 'Soup', 'recipe-json': '{"id":"soup"}', notes: '' },
+    });
+    expect(url).toMatch(/\/issues\/new\?template=recipe-submission\.yml&title=/);
+    const params = new URL(url).searchParams;
+    expect(params.get('recipe-name')).toBe('Soup');
+    expect(params.get('recipe-json')).toBe('{"id":"soup"}');
+    expect(params.has('notes')).toBe(false);
+  });
+
+  it('issueUrlFits caps the URL at 8 KB', () => {
+    expect(ISSUE_URL_MAX_LENGTH).toBe(8192);
+    expect(issueUrlFits('x'.repeat(8192))).toBe(true);
+    expect(issueUrlFits('x'.repeat(8193))).toBe(false);
   });
 });

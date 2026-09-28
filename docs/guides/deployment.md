@@ -104,17 +104,12 @@ VITE_FIREBASE_APP_ID=your-app-id
 # Google Analytics
 VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 
-# GitHub Integration (for recipe contributions)
-VITE_GITHUB_CLIENT_ID=your-github-oauth-client-id
-VITE_GITHUB_REDIRECT_URI=https://yourdomain.com/auth/callback
-
 # Error Monitoring (Sentry)
 VITE_SENTRY_DSN=your-sentry-dsn
 
 # Feature Flags
 VITE_ENABLE_FIREBASE=true
 VITE_ENABLE_ANALYTICS=true
-VITE_ENABLE_GITHUB_INTEGRATION=true
 ```
 
 ---
