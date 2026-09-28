@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { atom } from 'nanostores';
 import { z } from 'zod';
 import { isQuotaExceededError, persistentAtom } from './persist';
+import { fireStorage } from '@/tests/fixtures/storage-event';
 
 /**
  * `persistentAtom` (roadmap Issue 012) — the base of every Phase 1 store.
@@ -142,7 +143,7 @@ describe('persistentAtom — migrate', () => {
 
 describe('persistentAtom — cross-tab sync', () => {
   const fire = (key: string | null, newValue: string | null) =>
-    window.dispatchEvent(new StorageEvent('storage', { key, newValue }));
+    fireStorage({ key, newValue });
 
   it('mirrors a storage event for its key while mounted', () => {
     const $store = persistentAtom(KEY, Schema, FALLBACK);
@@ -350,9 +351,9 @@ describe('persistentAtom — reactive key (roadmap Issue 037)', () => {
     const $store = reactive($uid);
     const unbind = $store.listen(() => {});
     $uid.set('u1');
-    window.dispatchEvent(new StorageEvent('storage', { key: GUEST, newValue: JSON.stringify({ count: 1, label: 'guest tab' }) }));
+    fireStorage({ key: GUEST, newValue: JSON.stringify({ count: 1, label: 'guest tab' }) });
     expect($store.get()).toEqual(FALLBACK);
-    window.dispatchEvent(new StorageEvent('storage', { key: userKey('u1'), newValue: JSON.stringify({ count: 6, label: 'account tab' }) }));
+    fireStorage({ key: userKey('u1'), newValue: JSON.stringify({ count: 6, label: 'account tab' }) });
     expect($store.get()).toEqual({ count: 6, label: 'account tab' });
     unbind();
   });

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import type { CommandItem } from '@/components/ui/command-palette';
+import { excerptToText } from '@/lib/search-excerpt';
 import ErrorBoundary from './ErrorBoundary';
 
 /**
@@ -114,7 +115,7 @@ function GlobalSearchInner({ commands }: GlobalSearchProps) {
       if (!pf || cancelled) return;
 
       if (!query || query.length < 2) {
-        if (!cancelled) setPagefindItems([]);
+        setPagefindItems([]);
         return;
       }
 
@@ -132,7 +133,7 @@ function GlobalSearchInner({ commands }: GlobalSearchProps) {
           const data = await r.data();
           const item: CommandItem = {
             label: data.meta?.title ?? data.url,
-            hint: data.excerpt.replace(/<[^>]*>/g, '').slice(0, 60),
+            hint: excerptToText(data.excerpt).slice(0, 60),
             onSelect: () => { window.location.href = data.url; },
           };
           return item;

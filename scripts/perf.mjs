@@ -126,7 +126,8 @@ console.log(
     ? 'perf: building with the PUBLIC_FIREBASE_* values from the environment.'
     : 'perf: building with dummy PUBLIC_FIREBASE_* values (auth UI on, SDK lazy, nothing contacted).',
 );
-if (env.CHROME_PATH) console.log(`perf: CHROME_PATH=${env.CHROME_PATH}`);
+// Say which variable is in play, never its value (env-derived values stay out of logs).
+if (env.CHROME_PATH) console.log('perf: CHROME_PATH is set; Lighthouse uses that Chrome.');
 
 run('build', 'npm', ['run', 'build']);
 run('bundle checks', 'npx', ['vitest', 'run', '--mode', 'dist', 'src/tests/bundle-split.test.ts', 'src/tests/auth-chunk.test.ts']);

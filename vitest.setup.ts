@@ -31,6 +31,11 @@ if (typeof Element !== 'undefined' && !Element.prototype.scrollIntoView) {
 // dimensions in tests should stub `getBoundingClientRect` explicitly.
 if (typeof window !== 'undefined' && typeof window.ResizeObserver === 'undefined') {
   class ResizeObserverPolyfill {
+    // Same signature as the real constructor: `new ResizeObserver(callback)`.
+    readonly callback: ResizeObserverCallback;
+    constructor(callback: ResizeObserverCallback) {
+      this.callback = callback;
+    }
     observe(): void {}
     unobserve(): void {}
     disconnect(): void {}

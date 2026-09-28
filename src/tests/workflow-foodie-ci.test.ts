@@ -17,12 +17,39 @@ const workflow = (name: string) => read(`.github/workflows/${name}`);
 /** Workflow text without `#` comment lines — comments may legitimately name
  *  the tools that were removed; the steps must not. */
 const steps = (yaml: string) => yaml.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
+const indentOf = (line: string) => line.length - line.trimStart().length;
+/**
+ * The lines nested under the first `key:` line of `lines` (deeper indentation),
+ * blank and `#` comment lines dropped. A line-based walk instead of one big
+ * multi-line regex: nested `(?:\s*…\n)*` groups backtrack exponentially.
+ */
+function childLines(lines: readonly string[], key: string): string[] {
+  const start = lines.findIndex((l) => l.trim() === `${key}:`);
+  if (start === -1) return [];
+  const base = indentOf(lines[start]!);
+  const out: string[] = [];
+  for (const line of lines.slice(start + 1)) {
+    const text = line.trim();
+    if (text === '' || text.startsWith('#')) continue;
+    if (indentOf(line) <= base) break;
+    out.push(line);
+  }
+  return out;
+}
+/** `- item` entries directly under `key:` (a YAML block sequence). */
+const listItems = (lines: readonly string[], key: string) =>
+  childLines(lines, key)
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith('- '))
+    .map((l) => l.slice(2).trim());
 
 describe('ci.yml — branch model + static pipeline', () => {
   const ci = workflow('ci.yml');
 
   it('runs on pushes to inceptor and phase-*/** and on PRs to inceptor and main', () => {
-    expect(ci).toMatch(/push:\s*\n\s*branches:\s*\n(?:\s*-\s*.+\n)*\s*-\s*inceptor\b/);
+    const push = childLines(ci.split('\n'), 'push');
+    expect(push[0]?.trim()).toBe('branches:');
+    expect(listItems(push, 'branches')).toContain('inceptor');
     expect(ci).toContain("- 'phase-*/**'");
     expect(ci).toMatch(/pull_request:\s*\n\s*branches:\s*\[inceptor, main\]/);
   });
@@ -130,7 +157,7 @@ describe('security.yml + dependabot.yml', () => {
   it('security.yml stays active and audits the lockfile (roadmap Issue 047)', () => {
     const sec = workflow('security.yml');
     // Weekly cron + push: a push-less repo would get the schedule disabled.
-    expect(sec).toMatch(/schedule:(?:\s*\n\s*#[^\n]*)*\s*\n\s*- cron: '[^']+'/);
+    expect(childLines(sec.split('\n'), 'schedule')[0]?.trim()).toMatch(/^- cron: '[^']+'/);
     expect(sec).toMatch(/push:\s*\n\s*branches:\s*\[inceptor, main\]/);
     expect(sec).toContain('npm audit --audit-level=high');
     expect(sec).toContain('github/codeql-action/init@v4');

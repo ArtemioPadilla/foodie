@@ -52,9 +52,11 @@ export function toAuthError(error: unknown): AuthError {
 }
 
 function methodOf(user: FirebaseUser): AuthMethod {
-  const ids = user.providerData.map((p) => p.providerId);
-  if (ids.includes('google.com')) return 'google.com';
-  if (ids.includes('github.com')) return 'github.com';
+  // Provider ids are exact tokens ('google.com', 'github.com', 'password'),
+  // not URLs: compare each one for equality, never by substring.
+  const has = (id: string) => user.providerData.some((p) => p.providerId === id);
+  if (has('google.com')) return 'google.com';
+  if (has('github.com')) return 'github.com';
   return 'password';
 }
 

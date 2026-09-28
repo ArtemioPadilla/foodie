@@ -108,7 +108,7 @@ export default [
 
   // ─── Node config + scripts (.mjs) — process/console are real globals ───────
   {
-    files: ['*.mjs', 'scripts/**/*.mjs', 'examples/**/*.mjs'],
+    files: ['*.mjs', 'scripts/**/*.mjs'],
     languageOptions: {
       globals: { ...globals.node },
     },

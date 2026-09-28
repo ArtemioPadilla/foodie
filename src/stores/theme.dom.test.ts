@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireStorage } from '@/tests/fixtures/storage-event';
 
 /**
  * Browser-side behaviour of `stores/theme.ts` (roadmap Issue 013: "$theme del
@@ -126,10 +127,10 @@ describe('while mounted', () => {
     mockMatchMedia(false);
     const { $theme } = await loadTheme();
     const unbind = $theme.subscribe(() => {});
-    window.dispatchEvent(new StorageEvent('storage', { key: 'theme', newValue: 'dark' }));
+    fireStorage({ key: 'theme', newValue: 'dark' });
     expect($theme.get()).toBe('dark');
     expect(localStorage.getItem('theme')).toBeNull(); // not echoed back
-    window.dispatchEvent(new StorageEvent('storage', { key: 'theme', newValue: null }));
+    fireStorage({ key: 'theme', newValue: null });
     expect($theme.get()).toBe('light');
     unbind();
   });

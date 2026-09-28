@@ -38,8 +38,25 @@ const AUTH_DOMAIN =
   );
 
 const META_RE = /<meta\s+http-equiv="content-security-policy"\s+content="([^"]*)"\s*\/?>/gi;
-const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
-const STYLE_RE = /<style\b[^>]*>([\s\S]*?)<\/style>/gi;
+// End tags as the HTML tokenizer ends raw text: `</script`, then `>`,
+// whitespace or `/` (so `</script >` and `</SCRIPT\n>` close it too).
+const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script(?:[\s/][^>]*)?>/gi;
+const STYLE_RE = /<style\b[^>]*>([\s\S]*?)<\/style(?:[\s/][^>]*)?>/gi;
+const GOOGLE_FONTS_HOSTS = new Set(['fonts.googleapis.com', 'fonts.gstatic.com']);
+
+/** Hostnames of every absolute or protocol-relative http(s) URL in `text`. */
+function hostsIn(text: string): Set<string> {
+  const hosts = new Set<string>();
+  for (const [url] of text.matchAll(/(?:https?:)?\/\/[^\s"'<>()\\;,]+/gi)) {
+    try {
+      hosts.add(new URL(url, 'https://base.invalid').hostname.toLowerCase());
+    } catch {
+      // not a URL (e.g. a `//` comment) — nothing to check
+    }
+  }
+  return hosts;
+}
+const allowsGoogleFonts = (text: string) => [...hostsIn(text)].some((h) => GOOGLE_FONTS_HOSTS.has(h));
 const EXECUTABLE = new Set(['', 'text/javascript', 'application/javascript', 'module']);
 
 function walk(dir: string): string[] {
@@ -105,8 +122,8 @@ describe.runIf(runDist)('built site — Content-Security-Policy (roadmap #035)',
       need('object-src', "'none'");
       need('base-uri', "'self'");
       // Fonts are self-hosted (public/fonts/): no third-party font host.
-      if (/fonts\.(googleapis|gstatic)\.com/.test(meta[1]!)) problems.push(`${rel}: CSP allows a Google Fonts origin`);
-      if (/fonts\.(googleapis|gstatic)\.com/.test(html)) problems.push(`${rel}: references Google Fonts`);
+      if (allowsGoogleFonts(meta[1]!)) problems.push(`${rel}: CSP allows a Google Fonts origin`);
+      if (allowsGoogleFonts(html)) problems.push(`${rel}: references Google Fonts`);
       if (scriptSrc.includes("'unsafe-inline'")) problems.push(`${rel}: script-src allows 'unsafe-inline'`);
       // Zod's JIT probe (`new Function('')`) is a CSP violation: the theme
       // bootstrap turns it off before any module script can create a schema.

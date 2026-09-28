@@ -153,7 +153,10 @@ export function buildCsp(env = {}) {
   };
 }
 
-const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+// The end tag as the HTML tokenizer ends script data: `</script`, then `>`,
+// whitespace or `/` — so `</script >` or `</SCRIPT\n>` cannot hide a script
+// from the hash pass. Astro emits `</script>`, so hashes are unchanged.
+const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script(?:[\s/][^>]*)?>/gi;
 const CSP_META_RE = /(<meta\s+http-equiv="content-security-policy"\s+content=")([^"]*)(")\s*\/?>/i;
 const EXECUTABLE_TYPES = new Set(['', 'text/javascript', 'application/javascript', 'module']);
 

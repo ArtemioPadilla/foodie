@@ -20,8 +20,11 @@ const ROOT = resolve(__dirname, '../../');
 describe('canonical site URL single-source (#185)', () => {
   it('SITE_ORIGIN in site-meta.ts is a valid https URL', () => {
     expect(SITE_ORIGIN).toMatch(/^https:\/\/[a-z0-9.-]+\.[a-z]{2,}$/i);
-    expect(SITE_ORIGIN).not.toMatch(/localhost/);
-    expect(SITE_ORIGIN).not.toMatch(/example\.com/);
+    // Compare the parsed hostname exactly — a substring test would match
+    // `localhost` or `example.com` anywhere in the URL.
+    const { hostname } = new URL(SITE_ORIGIN);
+    expect(hostname).not.toBe('localhost');
+    expect(hostname === 'example.com' || hostname.endsWith('.example.com')).toBe(false);
   });
 
   it('site.config.mjs SITE_ORIGIN matches site-meta.ts SITE_ORIGIN', async () => {

@@ -11,7 +11,17 @@ Canonical plan for v2:
 
 ## [Unreleased]
 
-Nothing yet. The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
+The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
+
+### Security
+
+- CodeQL findings on the v2 code (#047): custom shopping-item ids use the
+  CSPRNG (`crypto.getRandomValues`) where `crypto.randomUUID` is unavailable,
+  never `Math.random`; the ⌘K search hint turns Pagefind's HTML excerpt into
+  text with the browser's parser (entities now display decoded) instead of a
+  tag-stripping regex; the CSP hash pass recognises `</script >`-style end
+  tags; `npm run perf` no longer prints `CHROME_PATH`. The unused template
+  `examples/` scripts and workflows were removed.
 
 ## [2.0.0] - 2026-09-28
 
