@@ -46,6 +46,7 @@ npm run test:visual:update # refresh screenshot baselines (or npm run refresh-ba
 npm run a11y              # axe-core scan (needs a build)
 npm run ux:check          # contrast + motion token checks
 npm run lighthouse        # Lighthouse CI (set CHROME_PATH if Chrome is not found)
+npm run perf              # perf gate: prod-shaped build, bundle-split checks, chunk report, Lighthouse scores + byte budgets
 npm run docs:screenshots  # README captures into docs/assets/ (needs a running preview)
 ```
 

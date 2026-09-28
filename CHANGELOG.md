@@ -25,6 +25,23 @@ Canonical plan for v2:
   `README.md` with CI/deploy badges and new screenshots
   (`npm run docs:screenshots` → `docs/assets/`), and `CONTRIBUTING.md` with the
   issue-driven flow and the recipe contribution flow (#044).
+- **Performance budgets.** `npm run perf` builds the site as deployed, checks
+  that Recharts and the Firebase SDK load only where they are used, writes a
+  chunk report, and runs Lighthouse on `/`, `/es/`, `/fr/`, `/recipes/`, a
+  recipe, `/planner/` and `/tracking/progress/` with byte budgets
+  (`lighthouse-budgets.json`: script ≤ 200 KB on the landing, ≤ 350 KB on the
+  planner and tracking) and score gates (a11y ≥ 0.95, best practices = 1).
+  Pages now download only their own language's strings, and dialogs (sign in,
+  account menu, mobile menu, search, recipe picker, prices, templates,
+  sharing) load the first time they open: the landing's script went from
+  324 KB to 186 KB and the planner's from 438 KB to 333 KB. Recipe photos, when
+  they arrive, are pre-optimised WebP with a `srcset` (#045).
+
+### Fixed
+
+- A React hydration error (#418) on pages where the browser offered "Install
+  app" (or knew it was offline, or had an update waiting) before the header
+  hydrated (#045).
 
 ### Removed
 

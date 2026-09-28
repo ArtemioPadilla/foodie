@@ -1,25 +1,275 @@
 [
   {
-    "path": "/*",
+    "path": "/index.html",
     "resourceSizes": [
-      { "resourceType": "script",     "budget": 150 },
-      { "resourceType": "stylesheet", "budget": 50  },
-      { "resourceType": "image",      "budget": 200 },
-      { "resourceType": "font",       "budget": 100 },
-      { "resourceType": "document",   "budget": 30  },
-      { "resourceType": "total",      "budget": 500 }
+      {
+        "resourceType": "script",
+        "budget": 200
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 450
+      }
     ],
     "resourceCounts": [
-      { "resourceType": "script",     "budget": 12 },
-      { "resourceType": "stylesheet", "budget": 6  },
-      { "resourceType": "image",      "budget": 20 },
-      { "resourceType": "font",       "budget": 4  },
-      { "resourceType": "third-party","budget": 5  },
-      { "resourceType": "total",      "budget": 60 }
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
+    ]
+  },
+  {
+    "path": "/es/index.html",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 200
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 450
+      }
     ],
-    "timings": [
-      { "metric": "interactive",         "budget": 3500 },
-      { "metric": "first-contentful-paint","budget": 2000 }
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
+    ]
+  },
+  {
+    "path": "/fr/index.html",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 200
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 450
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
+    ]
+  },
+  {
+    "path": "/recipes/index.html",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 320
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 600
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
+    ]
+  },
+  {
+    "path": "/recipes/rec_*",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 320
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 600
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
+    ]
+  },
+  {
+    "path": "/planner/*",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 350
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 600
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
+    ]
+  },
+  {
+    "path": "/tracking/*",
+    "resourceSizes": [
+      {
+        "resourceType": "script",
+        "budget": 350
+      },
+      {
+        "resourceType": "stylesheet",
+        "budget": 40
+      },
+      {
+        "resourceType": "font",
+        "budget": 150
+      },
+      {
+        "resourceType": "image",
+        "budget": 100
+      },
+      {
+        "resourceType": "document",
+        "budget": 40
+      },
+      {
+        "resourceType": "total",
+        "budget": 600
+      }
+    ],
+    "resourceCounts": [
+      {
+        "resourceType": "font",
+        "budget": 3
+      },
+      {
+        "resourceType": "third-party",
+        "budget": 0
+      }
     ]
   }
 ]

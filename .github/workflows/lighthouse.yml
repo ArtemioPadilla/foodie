@@ -1,13 +1,18 @@
 name: Lighthouse
 
 # ---------------------------------------------------------------------------
-# Lighthouse CI over the static build (roadmap Issue 006).
+# Lighthouse CI over the static build (roadmap Issues 006, 045).
 #
+# The build is production-shaped: dummy PUBLIC_FIREBASE_* values turn the
+# auth UI on (the deployed site has it) without contacting anything — the SDK
+# chunk is lazy. On that build: the bundle-split checks (Recharts/Firebase
+# only where used, no chunk > 250 KB gz) and the chunk report; then
 # `lhci autorun` reads .lighthouserc.json: it serves ./dist itself
-# (staticDistDir), audits the landing in the three locales, one section page
-# and the docs landing, and asserts the category scores — accessibility ≥ 0.9
-# and best-practices are ERROR level, performance/SEO error too, Core Web
-# Vitals warn only. Budgets come from lighthouse-budgets.json.
+# (staticDistDir), audits /, /es/, /fr/, /recipes/, a recipe detail,
+# /planner/ and /tracking/progress/, and asserts the category scores
+# (performance ≥ 0.9, accessibility ≥ 0.95, best-practices = 1, SEO ≥ 0.95,
+# all ERROR; Core Web Vitals warn). A second `lhci assert` enforces the byte
+# budgets in lighthouse-budgets.json. Same steps locally: `npm run perf`.
 #
 # Kept out of ci.yml on purpose: it needs a full build + a served preview and
 # its numbers wobble on shared runners, so it must never slow down or flake
@@ -49,9 +54,24 @@ jobs:
       # the same assertions locally via `npm run lighthouse`.
       - name: Build
         run: npm run build
+        env:
+          PUBLIC_FIREBASE_API_KEY: perf-build-not-a-real-key
+          PUBLIC_FIREBASE_AUTH_DOMAIN: foodie-perf.firebaseapp.com
+          PUBLIC_FIREBASE_PROJECT_ID: foodie-perf
+          PUBLIC_FIREBASE_APP_ID: '1:000000000000:web:0000000000000000'
+
+      - name: Bundle checks + chunk report
+        run: |
+          npx vitest run --mode dist src/tests/bundle-split.test.ts src/tests/auth-chunk.test.ts
+          node scripts/chunk-report.mjs --out .lighthouseci/chunk-report.md
+        env:
+          PUBLIC_FIREBASE_API_KEY: perf-build-not-a-real-key
 
       - name: Lighthouse CI
         run: npx lhci autorun --config=.lighthouserc.json
+
+      - name: Lighthouse budgets
+        run: npx lhci assert --no-lighthouserc --budgetsFile=./lighthouse-budgets.json
 
       - name: Upload Lighthouse reports
         if: always()

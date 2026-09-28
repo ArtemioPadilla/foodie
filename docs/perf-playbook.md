@@ -1,23 +1,65 @@
 # Performance playbook
 
-## Measured baseline (2026-05-28, desktop preset, `npm run lighthouse`)
+## `npm run perf` — the gate (roadmap Issue 045)
 
-| Page | Performance | Accessibility | Best practices | SEO |
-|---|---|---|---|---|
-| `/` | 100 | 100 | 100 | 100 |
-| `/gallery` | 100 | 95 | 100 | 100 |
-| `/docs` | 100 | 100 | 100 | 100 |
-| `/demos/dashboard` | 92 | 93 | 96 | 100 |
+`npm run perf` (`scripts/perf.mjs`) builds the site the way it is deployed
+(auth on: dummy `PUBLIC_FIREBASE_*` unless real ones are set — nothing is
+contacted, the SDK only loads when the sign-in dialog opens), then:
 
-**Lighthouse criterion (Perf ≥ 90) — met on all pages** (min 92). The CI gate in
-`.lighthouserc.json` asserts Perf/A11y ≥ 0.90 and BP/SEO ≥ 0.95 at `error`, plus
-Core Web Vitals (CLS hard-fails > 0.1; FCP/LCP/TBT warn). The noisy
-`unused-javascript` and `network-dependency-tree` preset audits are set to `warn`
-— they're not part of our documented quality bar.
+1. **Bundle checks** on that build — `src/tests/bundle-split.test.ts`
+   (Recharts only on `/tracking/progress|goals/` and the template galleries;
+   Firebase never initial JS and reachable only through the lazy auth adapter;
+   no chunk over 250 KB gz without a recorded reason) and
+   `src/tests/auth-chunk.test.ts`.
+2. **Chunk report** → `.lighthouseci/chunk-report.md` (paste it in the PR;
+   also `npm run perf:chunks` on any build).
+3. **Lighthouse CI** (`.lighthouserc.json`, desktop preset, lhci's static
+   server over `dist/`) on `/`, `/es/`, `/fr/`, `/recipes/`,
+   `/recipes/rec_001/`, `/planner/`, `/tracking/progress/`:
+   - scores (error level): performance ≥ 0.9, accessibility ≥ 0.95,
+     best practices = 1, SEO ≥ 0.95; Core Web Vitals warn only;
+   - byte budgets from `lighthouse-budgets.json`, asserted by a second
+     `lhci assert --budgetsFile` pass (Lighthouse 12 no longer reports
+     budgets itself): script ≤ **200 KB** on the landings, ≤ **320 KB** on
+     `/recipes/` and recipe details, ≤ **350 KB** on `/planner/*` and
+     `/tracking/*`; no third-party requests; ≤ 3 fonts.
+4. Scores and transfer sizes → `.lighthouseci/perf-summary.md`.
 
-**Open follow-up:** `/demos/dashboard` accessibility is 93, below our 0.95
-aspiration (Recharts SVG labelling is the likely cause). Tracked in ROADMAP
-Epic 12. Until fixed, the A11y gate sits at 0.90.
+Chrome: `CHROME_PATH`, else a system Chrome, else Playwright's Chromium (the
+script finds it). Budgets are **transfer** sizes as Lighthouse measures them,
+response headers included (~0.5 KB per request on lhci's server), so the
+number of chunks matters as much as their bytes.
+
+### Measured (2026-09-28, Issue 045)
+
+| Route | Perf | A11y | Best practices | SEO | Script (transfer / requests) | Budget |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 1.00 | 1.00 | 1.00 | 1.00 | 186 KB / 64 | 200 KB |
+| `/es/` | 0.99 | 1.00 | 1.00 | 1.00 | 186 KB / 63 | 200 KB |
+| `/fr/` | 1.00 | 1.00 | 1.00 | 1.00 | 187 KB / 63 | 200 KB |
+| `/recipes/` | 1.00 | 0.96 | 1.00 | 1.00 | 299 KB / 120 | 320 KB |
+| `/recipes/rec_001/` | 1.00 | 1.00 | 1.00 | 1.00 | 284 KB / 118 | 320 KB |
+| `/planner/` | 1.00 | 1.00 | 1.00 | 1.00 | 333 KB / 136 | 350 KB |
+| `/tracking/progress/` | 1.00 | 1.00 | 1.00 | 1.00 | 337 KB / 92 | 350 KB |
+
+Before Issue 045 the landing shipped 324 KB of script (97 requests) and the
+planner 438 KB (171). What moved it:
+
+- **Per-locale dictionaries.** `src/i18n` loads only the page's dictionary in
+  the browser (~20 KB gz instead of ~60 KB) — see
+  `docs/recipes/i18n-islands.md`.
+- **Dialogs load on first open.** The header's `AuthDialog`, signed-in
+  `AccountDropdown`, `MobileNav` sheet and search palette, and the planner's
+  `RecipePicker`, price manager, templates and share dialogs are
+  `React.lazy` inside their island (`LazyDialog` renders a look-alike trigger
+  until the first press). Compounds still live in one island.
+- **Hydration fix.** `InstallButton`, `UpdateToast` and `OfflineBanner` render
+  nothing until hydrated; `beforeinstallprompt` firing early had caused a
+  React #418 in `errors-in-console` (best practices 0.96).
+
+`/recipes/` accessibility 0.96: Lighthouse's `target-size` flags the 16 px
+filter checkboxes next to the accordion headers — above the 0.95 gate; a
+follow-up can enlarge their hit area.
 
 The mechanical perf gates (Lighthouse CI, `.lighthouserc.json`) cover
 synthetic Web Vitals. They don't cover three things you have to measure
