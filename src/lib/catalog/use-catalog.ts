@@ -22,11 +22,14 @@ import { withBase } from '@/lib/href';
 import {
   BeveragesFileSchema,
   CategoriesFileSchema,
+  IngredientPricesFileSchema,
   IngredientsFileSchema,
+  pricesFromFile,
   RecipesFileSchema,
   type Beverage,
   type CategoriesFile,
   type Ingredient,
+  type IngredientPrice,
   type Recipe,
 } from '@/schemas';
 import type { CatalogCollectionName } from './collections';
@@ -37,6 +40,7 @@ export const CATALOG_FILES: Record<CatalogCollectionName, string> = {
   ingredients: '/data/ingredients.json',
   beverages: '/data/beverages.json',
   categories: '/data/categories.json',
+  prices: '/data/ingredient-prices.json',
 };
 
 /** Parsed shape of each file as the hook exposes it. */
@@ -47,11 +51,20 @@ export interface CatalogData {
   categories: CategoriesFile;
 }
 
-const PARSERS: { [N in CatalogCollectionName]: (json: unknown) => CatalogData[N] } = {
+/**
+ * Every fetchable file: the four `useCatalog()` files plus the store price
+ * sheet, which only the cost views need (`usePriceCatalog()`, Issue 041).
+ */
+export interface CatalogFileData extends CatalogData {
+  prices: IngredientPrice[];
+}
+
+const PARSERS: { [N in CatalogCollectionName]: (json: unknown) => CatalogFileData[N] } = {
   recipes: (json) => RecipesFileSchema.parse(json).recipes,
   ingredients: (json) => IngredientsFileSchema.parse(json).ingredients,
   beverages: (json) => BeveragesFileSchema.parse(json),
   categories: (json) => CategoriesFileSchema.parse(json),
+  prices: (json) => pricesFromFile(IngredientPricesFileSchema.parse(json)),
 };
 
 /** Root of every catalog query key: `['catalog', <file>]`. */
@@ -68,7 +81,7 @@ export function catalogQueryKey(name: CatalogCollectionName) {
 export async function fetchCatalogFile<N extends CatalogCollectionName>(
   name: N,
   fetchImpl: typeof fetch = fetch,
-): Promise<CatalogData[N]> {
+): Promise<CatalogFileData[N]> {
   const url = withBase(CATALOG_FILES[name]);
   const response = await fetchImpl(url);
   if (!response.ok) {
@@ -162,4 +175,17 @@ export function useCatalog(): CatalogResult {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [recipes.data, ingredients.data, beverages.data, categories.data, status, error, isFetching],
   );
+}
+
+const EMPTY_PRICES: IngredientPrice[] = [];
+
+/**
+ * The store price sheet (`ingredient-prices.json`, roadmap Issue 041) — its
+ * own query, outside `useCatalog()`'s combined status: prices are optional
+ * (every ingredient still has `avgPrice`), so while loading, offline without
+ * cache or on error this is simply `[]`.
+ */
+export function usePriceCatalog(): IngredientPrice[] {
+  const prices = useQuery(catalogQueryOptions('prices'));
+  return prices.data ?? EMPTY_PRICES;
 }

@@ -105,6 +105,24 @@ export type DataTableRequestFn<TData> = (
   params: DataTableRequestParams,
 ) => Promise<DataTableRequestResult<TData>>;
 
+/**
+ * User-visible strings of the client-array toolbar and empty row. Every key is
+ * optional and falls back to the English default, so existing consumers are
+ * unchanged; localised apps (Foodie's EN/ES/FR islands) pass their own.
+ */
+export interface DataTableLabels {
+  /** @default 'Filter all columns…' */
+  globalFilterPlaceholder?: string;
+  /** @default 'Global filter' */
+  globalFilter?: string;
+  /** @default 'Columns' */
+  columns?: string;
+  /** @default 'Toggle columns' */
+  toggleColumns?: string;
+  /** @default 'No results.' */
+  noResults?: string;
+}
+
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   /**
@@ -232,6 +250,8 @@ export interface DataTableProps<TData, TValue> {
    * partial-preservation heuristic.
    */
   getRowId?: (row: TData, index: number) => string;
+  /** Localised toolbar / empty-row strings (see `DataTableLabels`). */
+  labels?: DataTableLabels;
 }
 
 // SortIcon renders a plain SVG caret — no framer-motion, no JS animation library.
@@ -332,6 +352,7 @@ export function DataTable<TData, TValue>({
   onExport,
   exportFilename = 'export',
   getRowId,
+  labels,
 }: DataTableProps<TData, TValue>) {
   // Server-driven mode (Epic 23): request replaces the `data` prop as the
   // source of truth, and TanStack Table switches to manual sorting/filtering.
@@ -737,11 +758,11 @@ export function DataTable<TData, TValue>({
       {/* Toolbar: global filter + column visibility toggle */}
       <div className="flex items-center gap-3 flex-wrap">
         <Input
-          placeholder="Filter all columns…"
+          placeholder={labels?.globalFilterPlaceholder ?? 'Filter all columns…'}
           value={globalFilter}
           onChange={(e) => onGlobalFilter(e.target.value)}
           className="max-w-sm"
-          aria-label="Global filter"
+          aria-label={labels?.globalFilter ?? 'Global filter'}
         />
         <DropdownMenu>
           <DropdownMenuTrigger
@@ -751,11 +772,11 @@ export function DataTable<TData, TValue>({
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             )}
           >
-            Columns
+            {labels?.columns ?? 'Columns'}
             <ChevronDown className="h-4 w-4 opacity-60" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-[10rem]">
-            <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+            <DropdownMenuLabel>{labels?.toggleColumns ?? 'Toggle columns'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {table
               .getAllColumns()
@@ -966,7 +987,7 @@ export function DataTable<TData, TValue>({
                   colSpan={tableColumns.length}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No results.
+                  {labels?.noResults ?? 'No results.'}
                 </td>
               </tr>
             ) : (

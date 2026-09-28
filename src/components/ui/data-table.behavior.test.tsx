@@ -102,4 +102,18 @@ describe('DataTable (behavior)', () => {
     await user.click(sortButton);
     expect(sortableHeader.getAttribute('aria-sort')).toBe('ascending');
   });
+
+  it('localises the toolbar and the empty row through `labels`', () => {
+    render(
+      <DataTable
+        columns={columns}
+        data={[]}
+        labels={{ globalFilterPlaceholder: 'Filtrar…', globalFilter: 'Buscar', columns: 'Columnas', noResults: 'Sin resultados' }}
+      />,
+    );
+    expect(screen.getByRole('textbox', { name: 'Buscar' })).toHaveAttribute('placeholder', 'Filtrar…');
+    expect(screen.getByRole('button', { name: /Columnas/ })).toBeInTheDocument();
+    expect(screen.getByText('Sin resultados')).toBeInTheDocument();
+    expect(screen.queryByText('No results.')).not.toBeInTheDocument();
+  });
 });

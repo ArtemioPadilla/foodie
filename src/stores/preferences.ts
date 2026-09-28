@@ -47,6 +47,8 @@ export const $preferences = persistentAtom<UserPreferences>(
 
 export const $unitSystem = computed($preferences, (p) => p.unitSystem);
 export const $dietaryRestrictions = computed($preferences, (p) => p.dietaryRestrictions);
+/** Currency costs are shown in and custom prices are entered in (Issue 041). */
+export const $currency = computed($preferences, (p) => p.currency);
 export const $themePreference = computed($preferences, (p) => normalizeThemePreference(p.theme));
 
 /** Re-exported so islands can read the OS preference without importing two stores. */
@@ -62,6 +64,10 @@ export function setUnitSystem(unitSystem: UnitSystem): void {
 
 export function setDietaryRestrictions(dietaryRestrictions: string[]): void {
   updatePreferences({ dietaryRestrictions });
+}
+
+export function setCurrency(currency: string): void {
+  updatePreferences({ currency });
 }
 
 export function setDefaultServings(defaultServings: number): void {

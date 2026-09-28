@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { DayMeals, MealPlan } from '@/schemas';
 import { makeIngredient, makeNutrition, makePlan, makeRecipe } from '@/tests/fixtures/foodie-domain';
 import { calculateMealPlanCost } from './calculations';
+import { buildPriceBook } from './cost';
 import { summarizeMealPlan } from './plan-summary';
 
 // rec_001: 2 servings, 500 kcal / 25 g protein "per recipe yield" (domain convention) → 250 kcal a portion.
@@ -19,7 +20,8 @@ const tacos = makeRecipe({
 const recipes = [eggs, tacos];
 const ingredients = [
   makeIngredient({ id: 'ing_001', avgPrice: 3 }),
-  makeIngredient({ id: 'ing_002', avgPrice: 0.1 }),
+  // Recipe lines use `ml` for ing_002: costs are unit-aware since Issue 041.
+  makeIngredient({ id: 'ing_002', unit: 'ml', avgPrice: 0.1 }),
   makeIngredient({ id: 'ing_003', avgPrice: 5 }),
 ];
 
@@ -54,12 +56,19 @@ describe('summarizeMealPlan (roadmap #025)', () => {
     expect(summary.plannedDays).toBe(2);
   });
 
-  it('uses calculateMealPlanCost for the estimated cost', () => {
+  it('prices the plan with catalog prices by default (same total as calculateMealPlanCost)', () => {
     const plan = planWith([{ breakfast: { recipeId: 'rec_001', servings: 4 } }, { dinner: { recipeId: 'rec_002', servings: 2 } }]);
     const summary = summarizeMealPlan(plan, recipes, ingredients);
     expect(summary.estimatedCost).toBe(calculateMealPlanCost(plan, recipes, ingredients));
     // eggs ×2 → 8 × 3 + 60 × 0.1 = 30; tacos ×0.5 → 1 × 3 + 0.5 × 5 = 5.5
     expect(summary.estimatedCost).toBe(35.5);
+  });
+
+  it('uses the given price lookup — custom prices beat the catalog (roadmap #041)', () => {
+    const plan = planWith([{ breakfast: { recipeId: 'rec_001', servings: 4 } }, { dinner: { recipeId: 'rec_002', servings: 2 } }]);
+    const book = buildPriceBook({ ingredients, custom: { ing_003: { price: 1, currency: 'USD' } }, currency: 'USD' });
+    // tacos ×0.5 → 1 × 3 + 0.5 × 1 = 3.5
+    expect(summarizeMealPlan(plan, recipes, ingredients, book.priceOf).estimatedCost).toBe(33.5);
   });
 
   it('averages one portion per meal over the planned days only, whatever the cooked servings', () => {

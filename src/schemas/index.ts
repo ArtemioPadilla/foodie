@@ -32,6 +32,7 @@ export * from './nutrition';
 export * from './category';
 export * from './recipe';
 export * from './ingredient';
+export * from './ingredient-price';
 export * from './beverage';
 export * from './meal-plan';
 export * from './shopping';

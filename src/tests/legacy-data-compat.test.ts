@@ -180,7 +180,8 @@ describe('keys v2 does not read yet, or never will', () => {
     const { $user } = await import('@/stores/user');
     $user.set({ uid: UID, email: 'v1@foodie.test', displayName: 'V1', photoURL: null, emailVerified: true, method: 'password', createdAt: null });
     expect(stores.preferences.$preferences.key).toBe(`user-preferences-${UID}`);
-    expect(stores.preferences.$preferences.get()).toEqual(legacy[`user-preferences-${UID}`]);
+    // v1 had no currency (roadmap #041): the schema default fills it in memory only.
+    expect(stores.preferences.$preferences.get()).toEqual({ ...(legacy[`user-preferences-${UID}`] as object), currency: 'USD' });
     expect(stores.favorites.$favorites.key).toBe(`user-favorites-${UID}`);
     expect(stores.favorites.$favorites.get()).toEqual(legacy[`user-favorites-${UID}`]);
     // Reading does not rewrite them.

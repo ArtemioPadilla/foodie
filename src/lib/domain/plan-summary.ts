@@ -5,8 +5,10 @@
  *
  * - `mealCount` counts filled slots (snacks individually); `uniqueRecipes`
  *   and `uniqueIngredients` only count recipes found in the catalog.
- * - `estimatedCost` is `calculateMealPlanCost` (each slot scaled to its
- *   servings) — legacy showed the never-computed `plan.estimatedCost`.
+ * - `estimatedCost` is `cost.ts`'s `calculatePlanCost` (each slot scaled to
+ *   its servings) with the given price lookup — custom > catalog since Issue
+ *   041; without one, catalog prices in the plan's currency. Legacy showed the
+ *   never-computed `plan.estimatedCost`.
  * - `dailyAverage` is what **one person** eats on an average planned day:
  *   one portion of every planned meal (`calculateDailyNutrition` with each
  *   slot at one serving — the same convention the food diary uses through
@@ -15,7 +17,8 @@
  *   That makes it comparable with the per-person `$goals`.
  */
 import type { DayMeals, Ingredient, MealPlan, MealSlot, Recipe } from '@/schemas';
-import { calculateDailyNutrition, calculateMealPlanCost, type DailyMacros } from './calculations';
+import { calculateDailyNutrition, type DailyMacros } from './calculations';
+import { buildPriceBook, calculatePlanCost, type PriceLookup } from './cost';
 
 export interface MealPlanSummary {
   mealCount: number;
@@ -57,6 +60,7 @@ export function summarizeMealPlan(
   plan: MealPlan,
   recipes: ReadonlyArray<Recipe>,
   ingredients: ReadonlyArray<Ingredient>,
+  priceOf: PriceLookup = buildPriceBook({ ingredients, currency: plan.currency }).priceOf,
 ): MealPlanSummary {
   const recipeById = new Map(recipes.map((r) => [r.id, r] as const));
   const recipeIds = new Set<string>();
@@ -93,7 +97,7 @@ export function summarizeMealPlan(
     uniqueIngredients: ingredientIds.size,
     plannedDays,
     totalDays: plan.days.length,
-    estimatedCost: calculateMealPlanCost(plan, recipes, ingredients),
+    estimatedCost: calculatePlanCost(plan, (id) => recipeById.get(id), priceOf),
     dailyAverage,
   };
 }

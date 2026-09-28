@@ -6,6 +6,7 @@ import { $favorites, addFavorite } from '@/stores/favorites';
 import { $goals, setGoals } from '@/stores/goals';
 import { $currentPlan, createPlan } from '@/stores/planner';
 import { $preferences, setUnitSystem } from '@/stores/preferences';
+import { $customPrices, setCustomPrice } from '@/stores/prices';
 import { $shopping, addShoppingItem } from '@/stores/shopping';
 import { SESSION_HINT_KEY } from '@/stores/user';
 import { LEGACY_GITHUB_TOKEN_KEY } from '@/lib/retired-keys';
@@ -58,6 +59,7 @@ describe('collectUserData', () => {
     addFavorite('rec_001');
     setUnitSystem('imperial');
     addShoppingItem({ ingredientId: 'ing_001', quantity: 2, unit: 'pcs', usedIn: [] });
+    setCustomPrice('ing_001', 0.4, 'USD');
     localStorage.setItem('user-favorites-other', JSON.stringify(['rec_009']));
     localStorage.setItem('foodie:locale', 'es');
     localStorage.setItem(LEGACY_GITHUB_TOKEN_KEY, 'gho_secret');
@@ -73,6 +75,7 @@ describe('collectUserData', () => {
     expect(out.data[$shopping.key]).toHaveLength(1);
     expect(out.data[$currentPlan.key]).toBeNull();
     expect(out.data[$goals.key]).toEqual(DEFAULT_GOALS);
+    expect(out.data['foodie:custom-prices']).toEqual({ ing_001: { price: 0.4, currency: 'USD' } });
     expect(out.data['user-favorites-other']).toEqual(['rec_009']);
     expect(out.data['foodie:locale']).toBe('es');
     // Never: credentials, auth plumbing, other apps' keys.
@@ -96,6 +99,7 @@ describe('clearUserData', () => {
     setGoals({ calories: 1500 });
     $currentPlan.set(createPlan());
     setUnitSystem('metric');
+    setCustomPrice('ing_002', 1.5, 'EUR');
     localStorage.setItem('theme', 'dark');
     localStorage.setItem('user-preferences-u-1', JSON.stringify(DEFAULT_PREFERENCES));
     localStorage.setItem(LEGACY_GITHUB_TOKEN_KEY, 'gho_secret');
@@ -109,6 +113,7 @@ describe('clearUserData', () => {
     expect($goals.get()).toEqual(DEFAULT_GOALS);
     expect($currentPlan.get()).toBeNull();
     expect($preferences.get()).toEqual(DEFAULT_PREFERENCES);
+    expect($customPrices.get()).toEqual({});
     expect(localStorage.getItem(SESSION_HINT_KEY)).toBe('1');
     expect(localStorage.getItem('unrelated')).toBe('keep');
   });

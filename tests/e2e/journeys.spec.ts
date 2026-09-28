@@ -1549,3 +1549,53 @@ test.describe('share a plan by URL (roadmap #040)', () => {
     await expect(page.getByTestId('shared-plan')).toHaveAttribute('data-error', 'empty');
   });
 });
+
+test.describe('ingredient prices (roadmap #041)', () => {
+  test('shopping cost → manage prices → custom price persists → reset all', async ({ page }) => {
+    const list = [
+      // Egg is priced per piece: 1.5 lb cannot be converted, so it stays unpriced.
+      { ingredientId: 'ing_001', quantity: 1.5, unit: 'lb', checked: false, usedIn: [], category: 'protein' },
+      { ingredientId: 'ing_005', quantity: 3, unit: 'piece', checked: false, usedIn: [], category: 'vegetables' },
+      { ingredientId: 'ing_016', quantity: 1, unit: 'cup', checked: false, usedIn: [], category: 'dairy' },
+    ];
+    await page.goto('./shopping/');
+    await page.evaluate((items) => localStorage.setItem('shoppingList', JSON.stringify(items)), list);
+    await page.reload();
+    await expect(page.getByTestId('shopping-board')).toHaveAttribute('data-catalog', 'success');
+
+    // Tomato 3 × $1.00 + Greek yogurt 1 × $1.50 (catalogue prices).
+    const cost = page.getByTestId('shopping-cost');
+    await expect(cost).toHaveAttribute('data-cost', '4.5');
+    await expect(cost).toContainText('$4.50');
+    await expect(page.getByTestId('shopping-cost-coverage')).toHaveText('2 of 3 items priced');
+
+    await page.getByTestId('manage-prices-button').click();
+    const dialog = page.getByTestId('price-dialog');
+    await expect(dialog.getByRole('heading', { name: 'Ingredient prices' })).toBeVisible();
+    await dialog.getByRole('textbox', { name: 'Search ingredients' }).fill('tomato');
+    await expect(dialog.getByTestId('catalog-price-ing_005')).toContainText('Store: $2.49 / lb');
+    await dialog.getByRole('button', { name: 'Edit the price of Tomato' }).click();
+    const input = dialog.getByRole('textbox', { name: /Your price for Tomato/ });
+    await input.fill('2');
+    await input.press('Enter');
+    await expect(dialog.getByTestId('custom-price-ing_005')).toHaveAttribute('data-custom', 'true');
+    await expect(dialog.getByTestId('price-custom-count')).toHaveText('1 custom price');
+    await page.keyboard.press('Escape');
+    await expect(dialog).toHaveCount(0);
+
+    await expect(cost).toHaveAttribute('data-cost', '7.5');
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('foodie:custom-prices') ?? '{}'));
+    expect(stored).toEqual({ ing_005: { price: 2, currency: 'USD' } });
+
+    // The choice survives a reload.
+    await page.reload();
+    await expect(page.getByTestId('shopping-cost')).toHaveAttribute('data-cost', '7.5');
+
+    await page.getByTestId('manage-prices-button').click();
+    await dialog.getByTestId('price-reset-all').click();
+    await dialog.getByTestId('price-reset-all-confirm').click();
+    await expect(dialog.getByTestId('price-custom-count')).toHaveText('0 custom prices');
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('shopping-cost')).toHaveAttribute('data-cost', '4.5');
+  });
+});

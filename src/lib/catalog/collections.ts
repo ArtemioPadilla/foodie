@@ -14,12 +14,17 @@
  * - categories.json   `{ mealTypes, cuisines, dietaryTags, ingredientCategories }`
  *                                                     → one entry per taxonomy
  *                                                       `{ id, items }`
+ * - ingredient-prices.json `{ [ingredientId]: { price, unit, currency, legacyKey } }`
+ *                                                     → one entry per quote,
+ *                                                       the key becomes `id`
+ *                                                       (roadmap Issue 041)
  */
 import type { z } from 'zod';
 import {
   BeverageSchema,
   CATEGORY_GROUPS,
   CategoryGroupSchema,
+  IngredientPriceSchema,
   IngredientSchema,
   RecipeSchema,
 } from '../../schemas';
@@ -60,6 +65,15 @@ export const categoryGroups: CatalogParser = (text) =>
     items,
   }));
 
+/**
+ * ingredient-prices.json → `{ id, ...quote }` rows. Non-object values are kept
+ * as they are so `IngredientPriceSchema` rejects them (and names the key).
+ */
+export const keyedRecords: CatalogParser = (text) =>
+  Object.entries(asRecord(JSON.parse(text), 'ingredient-prices.json')).map(([id, value]) =>
+    value !== null && typeof value === 'object' && !Array.isArray(value) ? { ...value, id } : { id, value },
+  );
+
 export const CATALOG_COLLECTIONS = {
   recipes: {
     file: './public/data/recipes.json',
@@ -80,6 +94,11 @@ export const CATALOG_COLLECTIONS = {
     file: './public/data/categories.json',
     parser: categoryGroups,
     schema: CategoryGroupSchema,
+  },
+  prices: {
+    file: './public/data/ingredient-prices.json',
+    parser: keyedRecords,
+    schema: IngredientPriceSchema,
   },
 } as const satisfies Record<string, { file: string; parser: CatalogParser; schema: z.ZodType }>;
 

@@ -22,6 +22,16 @@ export interface EditableProps {
   className?: string;
   /** @default 'click' — clicking the preview text (or the edit button) enters edit mode. */
   activationMode?: 'focus' | 'dblclick' | 'click' | 'none';
+  /**
+   * Accessible names of the input and the three controls (defaults: none for
+   * the input, 'Edit' / 'Save' / 'Cancel'). Pass them when the field has no
+   * visible label or the page is not in English.
+   */
+  labels?: { input?: string; edit?: string; submit?: string; cancel?: string };
+  /** Mobile keyboard hint for the input, e.g. `decimal` for prices. */
+  inputMode?: React.HTMLAttributes<HTMLInputElement>['inputMode'];
+  /** Forwarded to the root element. */
+  'data-testid'?: string;
 }
 
 function Editable({
@@ -33,6 +43,9 @@ function Editable({
   disabled,
   className,
   activationMode = 'click',
+  labels,
+  inputMode,
+  'data-testid': testId,
 }: EditableProps) {
   const id = React.useId();
   const service = useMachine(editable.machine, {
@@ -42,16 +55,24 @@ function Editable({
     disabled,
     placeholder,
     activationMode,
+    translations: {
+      // zag's own default for the input name.
+      input: labels?.input ?? 'editable input',
+      edit: labels?.edit ?? 'Edit',
+      submit: labels?.submit ?? 'Save',
+      cancel: labels?.cancel ?? 'Cancel',
+    },
     onValueChange: (details) => onValueChange?.(details.value),
     onValueCommit: (details) => onValueCommit?.(details.value),
   });
   const api = editable.connect(service, normalizeProps);
 
   return (
-    <div {...api.getRootProps()} className={cn('inline-flex items-center gap-1', className)}>
+    <div {...api.getRootProps()} className={cn('inline-flex items-center gap-1', className)} data-testid={testId}>
       <div {...api.getAreaProps()} className="relative inline-flex">
         <input
           {...api.getInputProps()}
+          inputMode={inputMode}
           className={cn(
             'h-8 rounded-md border border-input bg-background px-2 py-1 text-sm text-foreground',
             'ring-offset-background placeholder:text-muted-foreground',
@@ -78,7 +99,7 @@ function Editable({
             variant="ghost"
             size="icon"
             className="size-7"
-            aria-label="Edit"
+            aria-label={labels?.edit ?? 'Edit'}
           >
             <PencilIcon className="size-3.5" />
           </Button>
@@ -90,7 +111,7 @@ function Editable({
               variant="ghost"
               size="icon"
               className="size-7"
-              aria-label="Save"
+              aria-label={labels?.submit ?? 'Save'}
             >
               <CheckIcon className="size-3.5" />
             </Button>
@@ -100,7 +121,7 @@ function Editable({
               variant="ghost"
               size="icon"
               className="size-7"
-              aria-label="Cancel"
+              aria-label={labels?.cancel ?? 'Cancel'}
             >
               <XIcon className="size-3.5" />
             </Button>

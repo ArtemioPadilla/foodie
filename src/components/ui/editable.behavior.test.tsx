@@ -72,4 +72,22 @@ describe('Editable (behavior)', () => {
     },
     TEST_TIMEOUT,
   );
+
+  it('names the input and the controls from `labels` (localised apps)', async () => {
+    const user = userEvent.setup();
+    render(
+      <Editable
+        defaultValue="1.5"
+        inputMode="decimal"
+        data-testid="price"
+        labels={{ input: 'Precio', edit: 'Editar precio', submit: 'Guardar precio', cancel: 'Cancelar' }}
+      />,
+    );
+    expect(screen.getByTestId('price')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Editar precio' }));
+    const input = await screen.findByRole('textbox', { name: 'Precio' }, WAIT_OPTS);
+    expect(input).toHaveAttribute('inputmode', 'decimal');
+    expect(screen.getByRole('button', { name: 'Guardar precio' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancelar' })).toBeInTheDocument();
+  }, TEST_TIMEOUT);
 });

@@ -15,6 +15,7 @@ import type { z } from 'zod';
 import {
   BeveragesFileSchema,
   CategoriesFileSchema,
+  IngredientPricesFileSchema,
   IngredientsFileSchema,
   LOCALES,
   RecipesFileSchema,
@@ -97,6 +98,44 @@ describe('public/data/*.json parses with the Zod schemas', () => {
   });
 });
 
+describe('public/data/ingredient-prices.json (roadmap Issue 041, ADR 0014)', () => {
+  // PR #28's store price sheet, re-keyed onto catalog ids: 51 quotes (the 45
+  // that match an ingredient's English name, 6 aliases, honey twice).
+  const prices = parseOrReport(
+    IngredientPricesFileSchema,
+    loadJson('ingredient-prices.json'),
+    'ingredient-prices.json',
+  );
+  const ingredients = IngredientsFileSchema.parse(loadJson('ingredients.json')).ingredients;
+
+  it('is { [ingredientId]: { price, unit, currency, legacyKey } } with 51 quotes', () => {
+    expect(Object.keys(prices)).toHaveLength(51);
+    expect(prices.ing_001).toEqual({ price: 4.29, unit: 'dozen', currency: 'USD', legacyKey: 'eggs' });
+  });
+
+  it('every quote is keyed by an existing catalog ingredient', () => {
+    const ids = new Set(ingredients.map((i) => i.id));
+    expect(Object.keys(prices).filter((id) => !ids.has(id))).toEqual([]);
+  });
+
+  it('keys are sorted so diffs stay readable', () => {
+    const keys = Object.keys(prices);
+    expect(keys).toEqual([...keys].sort());
+  });
+
+  it('rejects a non-positive price or a unit that is not a pack unit', () => {
+    expect(
+      IngredientPricesFileSchema.safeParse({ ing_001: { price: 0, unit: 'lb', currency: 'USD', legacyKey: 'x' } }).success,
+    ).toBe(false);
+    expect(
+      IngredientPricesFileSchema.safeParse({ ing_001: { price: 1, unit: '1 lb', currency: 'USD', legacyKey: 'x' } }).success,
+    ).toBe(false);
+    expect(
+      IngredientPricesFileSchema.safeParse({ ing_001: { price: 1, unit: 'lb', currency: 'usd', legacyKey: 'x' } }).success,
+    ).toBe(false);
+  });
+});
+
 describe('cross-file referential integrity', () => {
   const recipes = RecipesFileSchema.parse(loadJson('recipes.json')).recipes;
   const ingredients = IngredientsFileSchema.parse(loadJson('ingredients.json')).ingredients;
@@ -148,6 +187,7 @@ const EXPECTED_ENTRIES: Record<CatalogCollectionName, number> = {
   ingredients: 105,
   beverages: 39,
   categories: 4,
+  prices: 51,
 };
 
 type StoredEntry = { id: string; data: Record<string, unknown>; filePath?: string };
@@ -205,7 +245,7 @@ function createLoaderContext(name: CatalogCollectionName, schema: z.ZodType) {
 }
 
 describe('content collections mirror public/data (src/content.config.ts)', () => {
-  it('defines recipes, ingredients, beverages and categories with the file() loader + Zod schemas', () => {
+  it('defines recipes, ingredients, beverages, categories and prices with the file() loader + Zod schemas', () => {
     const cfg = read('src/content.config.ts');
     expect(cfg).toMatch(/import \{ file, glob \} from 'astro\/loaders'/);
     expect(cfg).toContain("from './lib/catalog/collections'");
@@ -215,14 +255,14 @@ describe('content collections mirror public/data (src/content.config.ts)', () =>
       expect(cfg).toContain(`schema: toAstroSchema(CATALOG_COLLECTIONS.${name}.schema)`);
     }
     expect(cfg).toMatch(
-      /export const collections = \{[^}]*\brecipes\b[^}]*\bingredients\b[^}]*\bbeverages\b[^}]*\bcategories\b[^}]*\}/,
+      /export const collections = \{[^}]*\brecipes\b[^}]*\bingredients\b[^}]*\bbeverages\b[^}]*\bcategories\b[^}]*\bprices\b[^}]*\}/,
     );
   });
 
   it('every collection file path points at public/data', () => {
     for (const name of CATALOG_COLLECTION_NAMES) {
       const { file } = CATALOG_COLLECTIONS[name];
-      expect(file).toMatch(/^\.\/public\/data\/[a-z]+\.json$/);
+      expect(file).toMatch(/^\.\/public\/data\/[a-z-]+\.json$/);
       expect(existsSync(resolve(root, file))).toBe(true);
     }
   });
@@ -392,6 +432,7 @@ describe('legacy data-layer cleanup', () => {
     expect(readdirSync(DATA_DIR).sort()).toEqual([
       'beverages.json',
       'categories.json',
+      'ingredient-prices.json',
       'ingredients.json',
       'recipes.json',
     ]);

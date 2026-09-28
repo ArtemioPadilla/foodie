@@ -6,6 +6,7 @@ import { $mergeNotice, $mergedAccounts, resetAccountMergeForTests, undoMerge } f
 import { $theme } from './theme';
 import { $user } from './user';
 import {
+  $currency,
   $dietaryRestrictions,
   $preferences,
   PREFERENCES_KEY,
@@ -15,6 +16,7 @@ import {
   normalizeThemePreference,
   resetPreferences,
   resolveTheme,
+  setCurrency,
   setDefaultServings,
   setDietaryRestrictions,
   setThemePreference,
@@ -59,6 +61,13 @@ describe('$preferences', () => {
     expect($preferences.get().defaultServings).toBe(4);
     expect($preferences.get().allergies).toEqual(['peanut']);
     expect($themePreference.get()).toBe('system');
+  });
+
+  it('currency defaults to USD and persists (roadmap #041)', () => {
+    expect($currency.get()).toBe('USD');
+    setCurrency('MXN');
+    expect($currency.get()).toBe('MXN');
+    expect(JSON.parse(localStorage.getItem('foodie:preferences')!).currency).toBe('MXN');
   });
 });
 
@@ -125,7 +134,8 @@ describe('$preferences per user (roadmap #037)', () => {
     const v1 = { language: 'es', theme: 'light', defaultServings: 4, dietaryRestrictions: ['vegan'], allergies: [], excludedIngredients: [] };
     localStorage.setItem('user-preferences-u1', JSON.stringify(v1));
     $user.set(fakeUser('u1'));
-    expect($preferences.get()).toEqual({ ...v1, unitSystem: 'auto' });
+    // Fields added after v1 (unitSystem, Issue 041's currency) come from the defaults.
+    expect($preferences.get()).toEqual({ ...v1, unitSystem: 'auto', currency: 'USD' });
     setUnitSystem('metric');
     expect(stored('user-preferences-u1')?.unitSystem).toBe('metric');
     expect(stored(PREFERENCES_KEY)).toBeNull();

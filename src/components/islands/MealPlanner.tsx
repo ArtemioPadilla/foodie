@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toaster, toast } from '@/components/ui/toast';
 import { getTranslated, LOCALES, t, type Locale } from '@/i18n';
-import { useCatalog } from '@/lib/catalog/use-catalog';
+import { useCatalog, usePriceCatalog } from '@/lib/catalog/use-catalog';
 import { getStartOfWeek } from '@/lib/domain/date';
 import { parseDateKey, todayKey } from '@/lib/format-date';
 import { useHydrated } from '@/lib/use-hydrated';
@@ -150,6 +150,7 @@ type View = 'week' | 'month';
 
 function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?: Date }) {
   const catalog = useCatalog();
+  const prices = usePriceCatalog();
   const today = React.useMemo(() => todayKey(now), [now]);
   const currentWeekStart = React.useMemo(() => getStartOfWeek(today), [today]);
   const [view, setView] = React.useState<View>('week');
@@ -223,7 +224,14 @@ function PlannerBoard({ lang, plan, now }: { lang: Locale; plan: MealPlan; now?:
         onWeekChange={setWeekStart}
       />
 
-      <PlanSummary lang={lang} plan={plan} recipes={catalog.recipes} ingredients={catalog.ingredients} />
+      <PlanSummary
+        lang={lang}
+        plan={plan}
+        recipes={catalog.recipes}
+        ingredients={catalog.ingredients}
+        prices={prices}
+        categories={catalog.categories.ingredientCategories}
+      />
 
       <Tabs value={view} onValueChange={(value) => setView(value as View)}>
         <div className="flex flex-wrap items-center justify-between gap-3">

@@ -1,0 +1,308 @@
+{
+  "ing_001": {
+    "price": 4.29,
+    "unit": "dozen",
+    "currency": "USD",
+    "legacyKey": "eggs"
+  },
+  "ing_002": {
+    "price": 3.99,
+    "unit": "bunch",
+    "currency": "USD",
+    "legacyKey": "spinach"
+  },
+  "ing_003": {
+    "price": 9.99,
+    "unit": "25oz",
+    "currency": "USD",
+    "legacyKey": "olive_oil"
+  },
+  "ing_004": {
+    "price": 5.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "chicken_breast"
+  },
+  "ing_005": {
+    "price": 2.49,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "tomato"
+  },
+  "ing_006": {
+    "price": 0.79,
+    "unit": "head",
+    "currency": "USD",
+    "legacyKey": "garlic"
+  },
+  "ing_007": {
+    "price": 2.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "rice"
+  },
+  "ing_008": {
+    "price": 1.29,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "onion"
+  },
+  "ing_009": {
+    "price": 1.99,
+    "unit": "piece",
+    "currency": "USD",
+    "legacyKey": "bell_pepper"
+  },
+  "ing_010": {
+    "price": 0.79,
+    "unit": "piece",
+    "currency": "USD",
+    "legacyKey": "lemon"
+  },
+  "ing_012": {
+    "price": 1.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "pasta"
+  },
+  "ing_013": {
+    "price": 1.29,
+    "unit": "15oz",
+    "currency": "USD",
+    "legacyKey": "black_beans"
+  },
+  "ing_014": {
+    "price": 1.49,
+    "unit": "piece",
+    "currency": "USD",
+    "legacyKey": "avocado"
+  },
+  "ing_015": {
+    "price": 3.99,
+    "unit": "2oz",
+    "currency": "USD",
+    "legacyKey": "cumin"
+  },
+  "ing_016": {
+    "price": 5.99,
+    "unit": "32oz",
+    "currency": "USD",
+    "legacyKey": "greek_yogurt"
+  },
+  "ing_019": {
+    "price": 6.99,
+    "unit": "12oz",
+    "currency": "USD",
+    "legacyKey": "honey"
+  },
+  "ing_025": {
+    "price": 0.69,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "banana"
+  },
+  "ing_026": {
+    "price": 3.49,
+    "unit": "5lb",
+    "currency": "USD",
+    "legacyKey": "flour"
+  },
+  "ing_027": {
+    "price": 2.99,
+    "unit": "4lb",
+    "currency": "USD",
+    "legacyKey": "sugar"
+  },
+  "ing_029": {
+    "price": 6.49,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "cheddar_cheese"
+  },
+  "ing_031": {
+    "price": 6.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "ground_beef"
+  },
+  "ing_032": {
+    "price": 1.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "spaghetti"
+  },
+  "ing_034": {
+    "price": 12.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "parmesan_cheese"
+  },
+  "ing_035": {
+    "price": 2.99,
+    "unit": "head",
+    "currency": "USD",
+    "legacyKey": "lettuce"
+  },
+  "ing_036": {
+    "price": 14.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "salmon"
+  },
+  "ing_037": {
+    "price": 11.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "shrimp"
+  },
+  "ing_038": {
+    "price": 7.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "bacon"
+  },
+  "ing_041": {
+    "price": 2.49,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "broccoli"
+  },
+  "ing_042": {
+    "price": 1.49,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "carrot"
+  },
+  "ing_043": {
+    "price": 1.29,
+    "unit": "piece",
+    "currency": "USD",
+    "legacyKey": "cucumber"
+  },
+  "ing_046": {
+    "price": 4.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "butter"
+  },
+  "ing_047": {
+    "price": 3.99,
+    "unit": "gallon",
+    "currency": "USD",
+    "legacyKey": "milk"
+  },
+  "ing_049": {
+    "price": 2.99,
+    "unit": "16oz",
+    "currency": "USD",
+    "legacyKey": "sour_cream"
+  },
+  "ing_050": {
+    "price": 5.49,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "mozzarella_cheese"
+  },
+  "ing_051": {
+    "price": 3.49,
+    "unit": "10oz",
+    "currency": "USD",
+    "legacyKey": "soy_sauce"
+  },
+  "ing_055": {
+    "price": 3.49,
+    "unit": "2oz",
+    "currency": "USD",
+    "legacyKey": "paprika"
+  },
+  "ing_056": {
+    "price": 2.99,
+    "unit": "1oz",
+    "currency": "USD",
+    "legacyKey": "oregano"
+  },
+  "ing_057": {
+    "price": 2.99,
+    "unit": "1oz",
+    "currency": "USD",
+    "legacyKey": "basil"
+  },
+  "ing_059": {
+    "price": 3.99,
+    "unit": "2oz",
+    "currency": "USD",
+    "legacyKey": "chili_powder"
+  },
+  "ing_060": {
+    "price": 4.49,
+    "unit": "2oz",
+    "currency": "USD",
+    "legacyKey": "cinnamon"
+  },
+  "ing_061": {
+    "price": 5.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "quinoa"
+  },
+  "ing_065": {
+    "price": 1.49,
+    "unit": "15oz",
+    "currency": "USD",
+    "legacyKey": "chickpeas"
+  },
+  "ing_083": {
+    "price": 1.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "apple"
+  },
+  "ing_088": {
+    "price": 2.29,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "penne"
+  },
+  "ing_090": {
+    "price": 3.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "oats"
+  },
+  "ing_091": {
+    "price": 9.99,
+    "unit": "lb",
+    "currency": "USD",
+    "legacyKey": "almonds"
+  },
+  "ing_096": {
+    "price": 4.99,
+    "unit": "30oz",
+    "currency": "USD",
+    "legacyKey": "mayonnaise"
+  },
+  "ing_097": {
+    "price": 2.99,
+    "unit": "12oz",
+    "currency": "USD",
+    "legacyKey": "mustard"
+  },
+  "ing_098": {
+    "price": 2.99,
+    "unit": "20oz",
+    "currency": "USD",
+    "legacyKey": "ketchup"
+  },
+  "ing_099": {
+    "price": 5.99,
+    "unit": "16oz",
+    "currency": "USD",
+    "legacyKey": "balsamic_vinegar"
+  },
+  "ing_100": {
+    "price": 6.99,
+    "unit": "12oz",
+    "currency": "USD",
+    "legacyKey": "honey"
+  }
+}

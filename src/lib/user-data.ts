@@ -25,6 +25,7 @@ import { $goals } from '@/stores/goals';
 import { $pantry } from '@/stores/pantry';
 import { $currentPlan, $savedPlans } from '@/stores/planner';
 import { $preferences } from '@/stores/preferences';
+import { $customPrices } from '@/stores/prices';
 import { $shopping } from '@/stores/shopping';
 import { followSystemTheme } from '@/stores/theme';
 import { $tracking } from '@/stores/tracking';
@@ -45,6 +46,7 @@ function stores(): ReadonlyArray<readonly [PersistedStore, unknown]> {
     [$goals, DEFAULT_GOALS],
     [$preferences, DEFAULT_PREFERENCES],
     [$mergedAccounts, []],
+    [$customPrices, {}],
   ] as unknown as ReadonlyArray<readonly [PersistedStore, unknown]>;
 }
 

@@ -16,7 +16,9 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Toaster, toast } from '@/components/ui/toast';
 import { localizedRoute, t, type Locale } from '@/i18n';
-import { useCatalog } from '@/lib/catalog/use-catalog';
+import { useCatalog, usePriceCatalog } from '@/lib/catalog/use-catalog';
+import { buildPriceBook, estimateShoppingCost } from '@/lib/domain/cost';
+import { formatPrice } from '@/lib/domain/ingredient-detail';
 import { withBase } from '@/lib/href';
 import { isCustomIngredient } from '@/lib/domain/ingredient-id';
 import {
@@ -35,6 +37,8 @@ import { useUnitConversion } from '@/lib/domain/use-unit-conversion';
 import { useHydrated } from '@/lib/use-hydrated';
 import type { ShoppingListItem } from '@/schemas';
 import { $currentPlan, getMealCount } from '@/stores/planner';
+import { $currency } from '@/stores/preferences';
+import { $customPrices } from '@/stores/prices';
 import {
   $shopping,
   clearCheckedItems,
@@ -53,6 +57,7 @@ import { ExportDialog } from './ShoppingList/ExportDialog';
 import { makeShoppingLabels, type ShoppingLabels } from './ShoppingList/labels';
 import { ListControls } from './ShoppingList/ListControls';
 import { ShoppingListItemRow } from './ShoppingList/ShoppingListItem';
+import { PriceManagementModal } from './PriceManagement/PriceManagementModal';
 
 /**
  * ShoppingList — the `/shopping/` island (roadmap Issue 026; port of legacy
@@ -71,6 +76,10 @@ import { ShoppingListItemRow } from './ShoppingList/ShoppingListItem';
  * - Quantities are shown — and exported — in `$preferences.unitSystem`
  *   (`useUnitConversion`, `auto` resolved after hydration).
  * - Exports (text, CSV, WhatsApp, print, clipboard) in `ExportDialog`.
+ * - Estimated cost (roadmap Issue 041): each item's quantity × its price in
+ *   the item's unit (`lib/domain/cost.ts`, custom > catalog, in
+ *   `$preferences.currency`), what is left to buy, and how many items were
+ *   priced; the "Manage prices" dialog sits in the toolbar.
  * - Store-backed UI renders after hydration only (the server has no
  *   `localStorage`): SSR and the first client render show a skeleton. Every
  *   Dialog / AlertDialog / Select and the `Toaster` live in this single root.
@@ -119,6 +128,9 @@ function ShoppingSkeleton({ lang }: { lang: Locale }) {
 
 function ShoppingBoard({ lang, items }: { lang: Locale; items: ShoppingListItem[] }) {
   const catalog = useCatalog();
+  const prices = usePriceCatalog();
+  const custom = useStore($customPrices);
+  const currency = useStore($currency);
   const plan = useStore($currentPlan);
   const { preferredSystem } = useUnitConversion();
   const [search, setSearch] = React.useState('');
@@ -138,6 +150,12 @@ function ShoppingBoard({ lang, items }: { lang: Locale; items: ShoppingListItem[
     () => categories.map((c) => ({ id: c.id, label: labels.categoryLabel(c.id) })),
     [categories, labels],
   );
+
+  const book = React.useMemo(
+    () => buildPriceBook({ ingredients: catalog.ingredients, prices, custom, currency }),
+    [catalog.ingredients, prices, custom, currency],
+  );
+  const cost = React.useMemo(() => estimateShoppingCost(items, book.priceOf), [items, book]);
 
   const total = items.length;
   const checkedCount = items.filter((i) => i.checked).length;
@@ -199,6 +217,7 @@ function ShoppingBoard({ lang, items }: { lang: Locale; items: ShoppingListItem[
         </Button>
         <AddItemModal lang={lang} categories={categoryChoices} unitLabel={labels.unitLabel} />
         <ExportDialog lang={lang} items={items} system={preferredSystem} labels={labels.exportLabels} disabled={total === 0} />
+        <PriceManagementModal lang={lang} ingredients={catalog.ingredients} categories={categories} prices={prices} />
         <Badge variant="outline" className="ml-auto" data-testid="unit-system" data-system={preferredSystem}>
           {t(lang, preferredSystem === 'imperial' ? 'shopping.unitSystemImperial' : 'shopping.unitSystemMetric')}
         </Badge>
@@ -242,6 +261,31 @@ function ShoppingBoard({ lang, items }: { lang: Locale; items: ShoppingListItem[
             onClearChecked={() => ask('clearChecked')}
             onClearAll={() => ask('clearAll')}
           />
+
+          <p
+            className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-lg border border-border bg-card px-4 py-3 text-sm"
+            data-testid="shopping-cost"
+            data-cost={cost.priced > 0 ? cost.total : undefined}
+            data-coverage={cost.coverage}
+            data-currency={currency}
+          >
+            <span className="font-medium text-foreground">
+              {t(lang, 'shopping.estimatedCost')}:{' '}
+              <span className="tabular-nums">
+                {cost.priced > 0 ? formatPrice(cost.total, currency, lang) : t(lang, 'shopping.costUnavailable', { currency })}
+              </span>
+            </span>
+            {cost.priced > 0 && cost.remaining !== cost.total ? (
+              <span className="text-muted-foreground" data-testid="shopping-cost-remaining">
+                {t(lang, 'shopping.costRemaining', { cost: formatPrice(cost.remaining, currency, lang) })}
+              </span>
+            ) : null}
+            {cost.priced > 0 && cost.priced < cost.count ? (
+              <span className="text-muted-foreground" data-testid="shopping-cost-coverage">
+                {t(lang, 'shopping.costCoverage', { priced: cost.priced, count: cost.count })}
+              </span>
+            ) : null}
+          </p>
 
           <h2 className="sr-only">{t(lang, 'shopping.itemsList')}</h2>
           {visible.length === 0 ? (

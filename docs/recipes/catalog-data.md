@@ -1,4 +1,4 @@
-# Catalog data: recipes, ingredients, beverages, categories
+# Catalog data: recipes, ingredients, beverages, categories, prices
 
 **Source of truth:** `public/data/*.json`. The same files are (a) loaded as
 Astro **content collections** at build time (static pages, JSON-LD) and
@@ -10,6 +10,13 @@ Astro **content collections** at build time (static pages, JSON-LD) and
 | `public/data/ingredients.json` | `{ "ingredients": Ingredient[] }`                            | `ingredients` | 105                        |
 | `public/data/beverages.json`   | `Beverage[]` (bare array)                                    | `beverages`   | 39                         |
 | `public/data/categories.json`  | `{ mealTypes, cuisines, dietaryTags, ingredientCategories }` | `categories`  | 4 (one entry per taxonomy) |
+| `public/data/ingredient-prices.json` | `{ [ingredientId]: { price, unit, currency, legacyKey } }` | `prices` | 51 (one per priced ingredient) |
+
+`ingredient-prices.json` (roadmap Issue 041, [ADR 0014](../decisions/0014-ingredient-prices.md))
+is PR #28's store price sheet re-keyed onto catalog ids: `price` is the price
+of one pack `unit` (`lb`, `25oz`, `dozen`, `gallon`…). It is optional data —
+every ingredient keeps its own `avgPrice` — fetched at runtime by
+`usePriceCatalog()`, not `useCatalog()`. Keys must be existing ingredient ids.
 
 The mapping (path → `file()` loader `parser` → Zod schema) lives in
 `src/lib/catalog/collections.ts`; `src/content.config.ts` only wires it into
@@ -26,7 +33,7 @@ const mealTypes = (await getEntry('categories', 'mealTypes'))!.data.items;
 ## Validation — what breaks the build
 
 Every record is parsed with the schemas in `src/schemas/` (`RecipeSchema`,
-`IngredientSchema`, `BeverageSchema`, `CategoryGroupSchema`). Failing records
+`IngredientSchema`, `BeverageSchema`, `CategoryGroupSchema`, `IngredientPriceSchema`). Failing records
 break `astro build` and turn `npm run test -- src/tests/catalog-schema.test.ts` red:
 
 - **All three languages.** Every `MultiLangText` (`name`, `description`, `tips`,

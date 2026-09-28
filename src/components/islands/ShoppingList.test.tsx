@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import * as React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -9,7 +9,8 @@ import { CATALOG_FILES } from '@/lib/catalog/use-catalog';
 import { withBase } from '@/lib/href';
 import { CategoriesFileSchema, type MealPlan } from '@/schemas';
 import { $currentPlan } from '@/stores/planner';
-import { resetPreferences, setUnitSystem } from '@/stores/preferences';
+import { resetPreferences, setCurrency, setUnitSystem } from '@/stores/preferences';
+import { resetAllCustomPrices, setCustomPrice } from '@/stores/prices';
 import { $shopping, SHOPPING_KEY } from '@/stores/shopping';
 import { makeIngredient, makePlan, makeRecipe, mockBeverages, mockIngredientCategories } from '@/tests/fixtures/foodie-domain';
 import { ShoppingListView } from './ShoppingList';
@@ -42,6 +43,8 @@ const payloads: Record<string, unknown> = {
     dietaryTags: [{ id: 'vegetarian', name: { en: 'Vegetarian', es: 'Vegetariano', fr: 'Végétarien' } }],
     ingredientCategories: mockIngredientCategories,
   }),
+  // Store price sheet (Issue 041): olive oil at $5 a litre → $0.005 per ml.
+  [CATALOG_FILES.prices]: { ing_002: { price: 5, unit: 'l', currency: 'USD', legacyKey: 'olive_oil' } },
 };
 
 function installFetch() {
@@ -86,6 +89,7 @@ beforeEach(() => {
   $shopping.set([]);
   $currentPlan.set(null);
   resetPreferences();
+  resetAllCustomPrices();
   setUnitSystem('metric');
   installFetch();
 });
@@ -365,3 +369,43 @@ describe('ShoppingList — exports', () => {
     await waitFor(() => expect(print).toHaveBeenCalledTimes(1));
   });
 });
+
+describe('ShoppingList — estimated cost (roadmap #041)', () => {
+  const items = () => [
+    { ingredientId: 'ing_001', quantity: 2, unit: 'piece', checked: false, usedIn: [] },
+    { ingredientId: 'ing_002', quantity: 500, unit: 'ml', checked: true, usedIn: [] },
+    { ingredientId: 'custom-11111111-1111-4111-8111-111111111111-milk', quantity: 1, unit: 'piece', checked: false, usedIn: [], name: 'Milk' },
+  ];
+
+  it('prices each item in its own unit (store quote / avgPrice), with what is left to buy and the coverage', async () => {
+    $shopping.set(items());
+    renderList();
+    const cost = await screen.findByTestId('shopping-cost');
+    // 2 × $3 (avgPrice) + 500 ml × $0.005 (store quote per litre) = $8.50; the oil is already checked.
+    await waitFor(() => expect(cost).toHaveTextContent('Estimated Cost: $8.50'));
+    expect(screen.getByTestId('shopping-cost-remaining')).toHaveTextContent('$6.00 left to buy');
+    expect(screen.getByTestId('shopping-cost-coverage')).toHaveTextContent('2 of 3 items priced');
+    expect(screen.getByTestId('manage-prices-button')).toBeInTheDocument();
+  });
+
+  it('a custom price beats the catalog and updates the total live', async () => {
+    $shopping.set(items());
+    renderList();
+    const cost = await screen.findByTestId('shopping-cost');
+    await waitFor(() => expect(cost).toHaveAttribute('data-cost', '8.5'));
+    act(() => {
+      setCustomPrice('ing_001', 1, 'USD');
+    });
+    await waitFor(() => expect(cost).toHaveTextContent('$4.50'));
+  });
+
+  it('says so when nothing is priced in the chosen currency', async () => {
+    setCurrency('MXN');
+    $shopping.set(items());
+    renderList('es');
+    const cost = await screen.findByTestId('shopping-cost');
+    expect(cost).toHaveTextContent('Aún no hay precios en MXN');
+    expect(cost).not.toHaveAttribute('data-cost');
+  });
+});
+

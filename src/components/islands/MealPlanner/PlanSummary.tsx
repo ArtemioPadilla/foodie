@@ -4,18 +4,29 @@ import { KpiCard } from '@/components/ui/kpi-card';
 import { Meter } from '@/components/ui/meter';
 import { Metric } from '@/components/ui/metric';
 import { t, type Locale } from '@/i18n';
+import { buildPriceBook, estimatePlanCost } from '@/lib/domain/cost';
 import { formatPrice } from '@/lib/domain/ingredient-detail';
 import { calculateGoalProgress, createEmptyNutrition } from '@/lib/domain/nutrition';
 import { MACRO_KEYS, summarizeMealPlan } from '@/lib/domain/plan-summary';
-import type { Ingredient, MealPlan, Recipe } from '@/schemas';
+import type { Category, Ingredient, IngredientPrice, MealPlan, Recipe } from '@/schemas';
 import { $goals } from '@/stores/goals';
+import { $currency } from '@/stores/preferences';
+import { $customPrices } from '@/stores/prices';
+import { PriceManagementModal } from '../PriceManagement/PriceManagementModal';
 
 export interface PlanSummaryProps {
   lang: Locale;
   plan: MealPlan;
   recipes: ReadonlyArray<Recipe>;
   ingredients: ReadonlyArray<Ingredient>;
+  /** Store price sheet (`usePriceCatalog()`, Issue 041); `[]` = `avgPrice` only. */
+  prices?: ReadonlyArray<IngredientPrice>;
+  /** `ingredientCategories` for the price manager's category column. */
+  categories?: ReadonlyArray<Category>;
 }
+
+const NO_PRICES: ReadonlyArray<IngredientPrice> = [];
+const NO_CATEGORIES: ReadonlyArray<Category> = [];
 
 const MACRO_META = {
   calories: { unit: 'kcal', labelKey: 'nutrition.calories' },
@@ -30,15 +41,30 @@ const MACRO_META = {
  * port of legacy `PlanSummary`).
  *
  * - `kpi-card` + `metric`: recipes planned (and how many different ones),
- *   estimated cost (`calculateMealPlanCost` through `summarizeMealPlan`),
- *   different ingredients, planned days.
+ *   estimated cost, different ingredients, planned days.
+ * - Cost (roadmap Issue 041, PR #28): `lib/domain/cost.ts` with custom prices
+ *   (`$customPrices`) over catalog prices, in `$preferences.currency`; the
+ *   per-planned-day average and the share of priced ingredient lines; "cost
+ *   data unavailable" when nothing could be priced. The "Manage prices"
+ *   dialog lives in the card (same island).
  * - `meter` per macro: the per-person average planned day against `$goals`
  *   (the meter caps at the goal; the text and `aria-valuetext` carry the real
  *   percentage, so "over the goal" is never hidden).
  */
-export function PlanSummary({ lang, plan, recipes, ingredients }: PlanSummaryProps) {
+export function PlanSummary({ lang, plan, recipes, ingredients, prices = NO_PRICES, categories = NO_CATEGORIES }: PlanSummaryProps) {
   const goals = useStore($goals);
-  const summary = React.useMemo(() => summarizeMealPlan(plan, recipes, ingredients), [plan, recipes, ingredients]);
+  const custom = useStore($customPrices);
+  const currency = useStore($currency);
+  const book = React.useMemo(
+    () => buildPriceBook({ ingredients, prices, custom, currency }),
+    [ingredients, prices, custom, currency],
+  );
+  const summary = React.useMemo(
+    () => summarizeMealPlan(plan, recipes, ingredients, book.priceOf),
+    [plan, recipes, ingredients, book],
+  );
+  const cost = React.useMemo(() => estimatePlanCost(plan, recipes, book.priceOf), [plan, recipes, book]);
+  const costUnavailable = cost.count > 0 && cost.priced === 0;
   const progress = calculateGoalProgress({ ...createEmptyNutrition(), ...summary.dailyAverage }, goals);
   const number = (value: number) => new Intl.NumberFormat(lang).format(value);
 
@@ -54,10 +80,33 @@ export function PlanSummary({ lang, plan, recipes, ingredients }: PlanSummaryPro
             label={`${t(lang, 'planner.summaryRecipes')} · ${t(lang, 'planner.summaryUniqueRecipes', { count: summary.uniqueRecipes })}`}
           />
         </KpiCard>
-        <KpiCard className="p-4" data-testid="summary-cost">
+        <KpiCard
+          className="p-4"
+          data-testid="summary-cost"
+          data-cost={costUnavailable ? undefined : summary.estimatedCost}
+          data-coverage={cost.coverage}
+          data-currency={currency}
+        >
           <Metric
-            value={formatPrice(summary.estimatedCost, plan.currency, lang)}
+            value={costUnavailable ? t(lang, 'planner.summaryCostUnavailable') : formatPrice(summary.estimatedCost, currency, lang)}
             label={`${t(lang, 'planner.summaryCost')} · ${t(lang, 'planner.summaryCostHint')}`}
+          />
+          {!costUnavailable && cost.plannedDays > 0 ? (
+            <p className="mt-1 text-xs text-muted-foreground" data-testid="summary-cost-per-day">
+              {t(lang, 'planner.summaryCostPerDay', { cost: formatPrice(cost.perDay, currency, lang) })}
+            </p>
+          ) : null}
+          {cost.count > 0 && cost.coverage < 100 ? (
+            <p className="mt-1 text-xs text-muted-foreground" data-testid="summary-cost-coverage">
+              {t(lang, 'planner.summaryCostCoverage', { percent: cost.coverage })}
+            </p>
+          ) : null}
+          <PriceManagementModal
+            lang={lang}
+            ingredients={ingredients}
+            categories={categories}
+            prices={prices}
+            triggerClassName="mt-2 print:hidden"
           />
         </KpiCard>
         <KpiCard className="p-4" data-testid="summary-ingredients">

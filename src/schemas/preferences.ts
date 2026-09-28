@@ -4,6 +4,7 @@
  * for guests under the anonymous `favoriteRecipes` key.
  */
 import { z } from 'zod';
+import { CurrencyCodeSchema } from './ingredient-price';
 
 export const UNIT_SYSTEMS = ['metric', 'imperial', 'auto'] as const;
 export const UnitSystemSchema = z.enum(UNIT_SYSTEMS);
@@ -26,6 +27,12 @@ export const UserPreferencesSchema = z.object({
   allergies: z.array(z.string()),
   excludedIngredients: z.array(z.string()),
   unitSystem: UnitSystemSchema,
+  /**
+   * Currency costs are shown in and custom prices are entered in (roadmap
+   * Issue 041). No exchange rates: prices in another currency are left out.
+   * Defaulted so v1 per-account objects (which predate it) still parse.
+   */
+  currency: CurrencyCodeSchema.default('USD'),
 });
 export type UserPreferences = z.infer<typeof UserPreferencesSchema>;
 
@@ -37,6 +44,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = UserPreferencesSchema.parse(
   allergies: [],
   excludedIngredients: [],
   unitSystem: 'auto',
+  currency: 'USD',
 });
 
 /** Favorite recipe ids (`localStorage['favoriteRecipes']`). */

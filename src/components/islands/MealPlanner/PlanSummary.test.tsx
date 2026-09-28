@@ -4,20 +4,24 @@ import { render, screen, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { DEFAULT_GOALS, type MealPlan } from '@/schemas';
 import { $goals } from '@/stores/goals';
+import { resetPreferences, setCurrency } from '@/stores/preferences';
+import { resetAllCustomPrices, setCustomPrice } from '@/stores/prices';
 import { makeIngredient, makeNutrition, makePlan, makeRecipe } from '@/tests/fixtures/foodie-domain';
 import { PlanSummary } from './PlanSummary';
 
 /**
  * jsdom tests of the planner KPI strip (roadmap Issue 025): recipes, cost
- * (`calculateMealPlanCost`), ingredients, planned days, and one `meter` per
- * macro comparing the per-person average day with `$goals`.
+ * (Issue 041: custom > catalog prices, `$preferences.currency`), ingredients,
+ * planned days, and one `meter` per macro comparing the per-person average day
+ * with `$goals`.
  */
 
 // 2-serving recipe, 1000 kcal / 50 g protein for the yield → 500 kcal a portion.
 const eggs = makeRecipe({ nutrition: makeNutrition({ calories: 1000, protein: 50, carbs: 100, fat: 40, fiber: 10 }) });
 const tacos = makeRecipe({ id: 'rec_002', name: { en: 'Beef Tacos', es: 'Tacos de Res', fr: 'Tacos au Bœuf' } });
 const recipes = [eggs, tacos];
-const ingredients = [makeIngredient({ id: 'ing_001', avgPrice: 3 }), makeIngredient({ id: 'ing_002', avgPrice: 0.1 })];
+// ing_002 is priced per ml, the unit the recipe lines use (costs are unit-aware since Issue 041).
+const ingredients = [makeIngredient({ id: 'ing_001', avgPrice: 3 }), makeIngredient({ id: 'ing_002', unit: 'ml', avgPrice: 0.1 })];
 
 function planWithMeals(): MealPlan {
   const plan = makePlan();
@@ -29,6 +33,8 @@ function planWithMeals(): MealPlan {
 beforeEach(() => {
   localStorage.clear();
   $goals.set(DEFAULT_GOALS);
+  resetPreferences();
+  resetAllCustomPrices();
 });
 
 describe('PlanSummary', () => {
@@ -73,5 +79,33 @@ describe('PlanSummary', () => {
     expect(screen.getByTestId('summary-days')).toHaveTextContent('0 / 7');
     expect(screen.getByTestId('summary-cost')).toHaveTextContent('0,00');
     expect(screen.getByRole('heading', { name: 'Resumen del plan' })).toBeInTheDocument();
+  });
+
+  it('prices the plan with custom prices over catalog ones, with a per-day average (roadmap #041)', () => {
+    setCustomPrice('ing_001', 1, 'USD');
+    render(<PlanSummary lang="en" plan={planWithMeals()} recipes={recipes} ingredients={ingredients} />);
+    // Each batch: 4 × $1 + 30 × $0.10 = $7 → 4 batches = $28, over 2 planned days.
+    const card = screen.getByTestId('summary-cost');
+    expect(card).toHaveTextContent('$28.00');
+    expect(card).toHaveAttribute('data-coverage', '100');
+    expect(screen.getByTestId('summary-cost-per-day')).toHaveTextContent('~$14.00 per planned day');
+    expect(screen.queryByTestId('summary-cost-coverage')).not.toBeInTheDocument();
+    expect(screen.getByTestId('manage-prices-button')).toHaveTextContent('Manage prices');
+  });
+
+  it('shows partial coverage and "cost data unavailable" instead of NaN or a mixed currency', () => {
+    setCurrency('EUR');
+    setCustomPrice('ing_002', 0.2, 'EUR');
+    const { unmount } = render(<PlanSummary lang="en" plan={planWithMeals()} recipes={recipes} ingredients={ingredients} />);
+    // Only ing_002 has a EUR price: 30 × €0.20 = €6 per batch → €24; half the lines priced.
+    expect(screen.getByTestId('summary-cost')).toHaveTextContent('€24.00');
+    expect(screen.getByTestId('summary-cost-coverage')).toHaveTextContent('50% of ingredients priced');
+    unmount();
+
+    resetAllCustomPrices();
+    render(<PlanSummary lang="en" plan={planWithMeals()} recipes={recipes} ingredients={ingredients} />);
+    expect(screen.getByTestId('summary-cost')).toHaveTextContent('Cost data unavailable');
+    expect(screen.getByTestId('summary-cost')).not.toHaveAttribute('data-cost');
+    expect(screen.queryByTestId('summary-cost-per-day')).not.toBeInTheDocument();
   });
 });

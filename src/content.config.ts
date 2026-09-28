@@ -77,4 +77,12 @@ const categories = defineCollection({
   schema: toAstroSchema(CATALOG_COLLECTIONS.categories.schema),
 });
 
-export const collections = { docs, blog, recipes, ingredients, beverages, categories };
+// Store price sheet (roadmap Issue 041, ADR 0014): one entry per ingredient id.
+const prices = defineCollection({
+  loader: file(CATALOG_COLLECTIONS.prices.file, {
+    parser: CATALOG_COLLECTIONS.prices.parser,
+  }),
+  schema: toAstroSchema(CATALOG_COLLECTIONS.prices.schema),
+});
+
+export const collections = { docs, blog, recipes, ingredients, beverages, categories, prices };
