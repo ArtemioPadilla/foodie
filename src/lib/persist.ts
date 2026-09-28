@@ -23,8 +23,15 @@
  *    validated again and persisted.
  *  - **SSR**: without `window` (or with a throwing `localStorage` getter) the
  *    atom is an ordinary in-memory atom.
+ *  - **Reactive key** (Issue 037): `key` may be `() => string`. It is
+ *    re-evaluated whenever one of `options.keyDeps` changes (e.g. `[$user]`
+ *    for `user-preferences-${uid}`); when the result differs, the atom
+ *    re-hydrates from the new key exactly like the first hydration (validate,
+ *    migrate, fallback when absent — never writing), later writes and
+ *    `storage` events use the new key, and the previous key is left as it
+ *    was. `$store.key` always reports the current key.
  */
-import { atom, onMount, type WritableAtom } from 'nanostores';
+import { atom, onMount, type ReadableAtom, type WritableAtom } from 'nanostores';
 import type { ZodType } from 'zod';
 import { buildIssueUrl } from '@/lib/report-issue';
 
@@ -35,7 +42,15 @@ export interface PersistentAtomOptions<T> {
   onInvalid?: (info: { key: string; raw: unknown; issues: string }) => void;
   /** Called when a write fails with a quota error; the in-memory value is kept. */
   onQuotaExceeded?: (info: { key: string; error: unknown }) => void;
+  /**
+   * Stores a function `key` depends on: each change re-evaluates the key
+   * (Issue 037). Ignored for a string key.
+   */
+  keyDeps?: ReadonlyArray<ReadableAtom<unknown>>;
 }
+
+/** A fixed storage key, or one computed from other stores (see `keyDeps`). */
+export type PersistentKey = string | (() => string);
 
 export type PersistentAtom<T> = WritableAtom<T> & { readonly key: string };
 
@@ -72,13 +87,15 @@ type ParseOutcome<T> =
   | { ok: false; raw: unknown; issues: string };
 
 export function persistentAtom<T>(
-  key: string,
+  keySource: PersistentKey,
   schema: ZodType<T>,
   fallback: T,
   options: PersistentAtomOptions<T> = {},
 ): PersistentAtom<T> {
+  const resolveKey = typeof keySource === 'function' ? keySource : () => keySource;
+  let key = resolveKey();
   const $store = atom<T>(fallback) as PersistentAtom<T>;
-  Object.defineProperty($store, 'key', { value: key, enumerable: true });
+  Object.defineProperty($store, 'key', { get: () => key, enumerable: true });
   const setInMemory = $store.set.bind($store);
 
   /** Parse a raw `localStorage` string through JSON → schema → (migrate → schema). */
@@ -134,23 +151,45 @@ export function persistentAtom<T>(
     }
   };
 
-  // Eager hydration — `get()` must be right before the first subscriber.
-  const storage = getStorage();
-  const stored = (() => {
-    try {
-      return storage?.getItem(key) ?? null;
-    } catch {
-      return null;
+  /**
+   * Load the current key into memory: the stored value (validated/migrated),
+   * else `whenAbsent`. Never writes, except to persist a migration.
+   */
+  const hydrate = (whenAbsent: 'keep' | 'fallback'): void => {
+    const stored = (() => {
+      try {
+        return getStorage()?.getItem(key) ?? null;
+      } catch {
+        return null;
+      }
+    })();
+    if (stored === null) {
+      if (whenAbsent === 'fallback') setInMemory(fallback);
+      return;
     }
-  })();
-  if (stored !== null) {
     const outcome = parse(stored);
     if (outcome.ok) {
       setInMemory(outcome.value);
       if (outcome.migrated) write(outcome.value);
     } else {
       report(outcome.raw, outcome.issues);
+      if (whenAbsent === 'fallback') setInMemory(fallback);
     }
+  };
+
+  // Eager hydration — `get()` must be right before the first subscriber.
+  hydrate('keep');
+
+  // Reactive key: follow `keyDeps` for the atom's whole life (browser only),
+  // so actions that run outside React (`$store.get()`) see the right key.
+  if (typeof keySource === 'function' && typeof window !== 'undefined') {
+    const rekey = () => {
+      const next = resolveKey();
+      if (next === key) return;
+      key = next;
+      hydrate('fallback');
+    };
+    for (const dep of options.keyDeps ?? []) dep.listen(rekey);
   }
 
   $store.set = (value: T) => {
