@@ -13,6 +13,9 @@ import { resetPreferences, setUnitSystem } from '@/stores/preferences';
 import { $shopping } from '@/stores/shopping';
 import { makeIngredient, makeRecipe, mockBeverages, mockIngredientCategories } from '@/tests/fixtures/foodie-domain';
 import { PantryView } from './Pantry';
+import { closeToastsAfterEach } from '@/tests/fixtures/toast-timers';
+
+closeToastsAfterEach();
 
 /**
  * jsdom tests of the `/pantry/` island (roadmap Issue 027): hydration parity,

@@ -12,6 +12,9 @@ import { $currentPlan, $savedPlans, addRecipeToPlan, CURRENT_PLAN_KEY } from '@/
 import { makeIngredient, makePlan, makeRecipe, mockBeverages, mockIngredientCategories } from '@/tests/fixtures/foodie-domain';
 import { MealPlannerView } from './MealPlanner';
 import { PLAN_SLOTS } from './MealPlanner/dnd';
+import { closeToastsAfterEach } from '@/tests/fixtures/toast-timers';
+
+closeToastsAfterEach();
 
 /**
  * jsdom tests of the `/planner/` island (roadmap Issue 024): hydration

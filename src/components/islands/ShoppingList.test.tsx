@@ -13,6 +13,9 @@ import { resetPreferences, setUnitSystem } from '@/stores/preferences';
 import { $shopping, SHOPPING_KEY } from '@/stores/shopping';
 import { makeIngredient, makePlan, makeRecipe, mockBeverages, mockIngredientCategories } from '@/tests/fixtures/foodie-domain';
 import { ShoppingListView } from './ShoppingList';
+import { closeToastsAfterEach } from '@/tests/fixtures/toast-timers';
+
+closeToastsAfterEach();
 
 /**
  * jsdom tests of the `/shopping/` island (roadmap Issue 026): hydration
