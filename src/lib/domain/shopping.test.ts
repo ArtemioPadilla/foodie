@@ -15,10 +15,21 @@ import {
   exportAsText,
   exportForWhatsApp,
   exportShoppingList,
+  filterShoppingItems,
+  fromShoppingDisplay,
   getCategoryLabel,
   getIngredientCategory,
   groupByCategory,
+  groupShoppingItems,
+  isManualShoppingItem,
+  localizeShoppingList,
   makeCategoryResolver,
+  matchesShoppingItem,
+  mergeGeneratedList,
+  shoppingItemKey,
+  sortShoppingItems,
+  toShoppingDisplay,
+  whatsappShareUrl,
 } from './shopping';
 
 const eggs = makeRecipe(); // rec_001, 2 servings: 4 piece ing_001 + 30 ml ing_002
@@ -297,12 +308,14 @@ describe('consolidateIngredients', () => {
     expect(result).toHaveLength(2);
   });
 
-  it('rounds quantities to 2 decimal places', () => {
+  // Issue 026: 4 decimals (was 2) so 30 ml → 0.125 cup survives the trip back to ml.
+  it('rounds quantities to 4 decimal places', () => {
     const result = consolidateIngredients([
       { ingredientId: 'ing-1', quantity: 1.333333, unit: 'cup', usedIn: ['Recipe A'] },
       { ingredientId: 'ing-1', quantity: 2.666666, unit: 'cup', usedIn: ['Recipe B'] },
     ]);
     expect(result[0]!.quantity).toBe(4);
+    expect(consolidateIngredients([{ ingredientId: 'ing-2', quantity: 30, unit: 'ml', usedIn: [] }])[0]!.quantity).toBe(0.125);
   });
 
   it('merges usedIn arrays without duplicates', () => {
@@ -426,5 +439,160 @@ describe('exportForWhatsApp', () => {
   it('counts total items correctly', () => {
     const result = exportForWhatsApp([makeShoppingItem(), makeShoppingItem({ ingredientId: 'ing-2' }), makeShoppingItem({ ingredientId: 'ing-3' })]);
     expect(result).toContain('_Total items: 3_');
+  });
+});
+
+// ── Roadmap Issue 026: list view, display units, localised exports ──────────
+
+describe('localised exports (Issue 026)', () => {
+  const labels = {
+    categoryLabel: (id: string) => getCategoryLabel(id, mockIngredientCategories, 'es'),
+    ingredientLabel: () => 'Pechuga de Pollo',
+    recipeLabel: (id: string) => (id === 'rec_001' ? 'Huevos Revueltos' : id),
+    unitLabel: (unit: string) => (unit === 'lb' ? 'lb' : unit),
+    quantityLabel: (q: number) => `~${q}`,
+    strings: {
+      title: 'Lista de Compras',
+      note: 'Nota',
+      usedIn: 'Usado en',
+      totalItems: 'Artículos',
+      yes: 'Sí',
+      no: 'No',
+      headers: { category: 'Categoría', ingredient: 'Ingrediente', quantity: 'Cantidad', unit: 'Unidad', checked: 'Comprado', usedIn: 'Usado en', notes: 'Notas' },
+    },
+  };
+  const items = [makeShoppingItem({ notes: 'fresca', checked: true })];
+
+  it('text uses the locale words, recipe names and quantity labels', () => {
+    const text = exportAsText(items, labels);
+    expect(text).toContain('Lista de Compras');
+    expect(text).toContain('PROTEÍNAS');
+    expect(text).toContain('✓ ~1.5 lb Pechuga de Pollo');
+    expect(text).toContain('Nota: fresca');
+    expect(text).toContain('Usado en: Huevos Revueltos');
+  });
+
+  it('csv localises the header and yes/no but keeps numeric quantities', () => {
+    const csv = exportAsCSV(items, labels);
+    expect(csv.split('\n')[0]).toBe('Categoría,Ingrediente,Cantidad,Unidad,Comprado,Usado en,Notas');
+    expect(csv).toContain('"Proteínas","Pechuga de Pollo",1.5,"lb","Sí","Huevos Revueltos","fresca"');
+  });
+
+  it('whatsapp localises the title and the total', () => {
+    const text = exportForWhatsApp(items, labels);
+    expect(text).toContain('🛒 *Lista de Compras*');
+    expect(text).toContain('_Artículos: 1_');
+  });
+
+  it('whatsappShareUrl targets wa.me with the text URL-encoded', () => {
+    expect(whatsappShareUrl('🛒 *List*\n2 lb chicken & rice')).toBe(
+      `https://wa.me/?text=${encodeURIComponent('🛒 *List*\n2 lb chicken & rice')}`,
+    );
+    expect(whatsappShareUrl('a b')).toBe('https://wa.me/?text=a%20b');
+  });
+});
+
+describe('toShoppingDisplay / fromShoppingDisplay', () => {
+  it('converts base units to the metric system at a readable magnitude', () => {
+    expect(toShoppingDisplay(1, 'cup', 'metric')).toMatchObject({ quantity: 240, unit: 'ml' });
+    expect(toShoppingDisplay(5, 'cup', 'metric')).toMatchObject({ quantity: 1.2, unit: 'l' });
+    expect(toShoppingDisplay(0.5, 'lb', 'metric')).toMatchObject({ quantity: 226.8, unit: 'g' });
+    expect(toShoppingDisplay(3, 'piece', 'metric')).toEqual({ quantity: 3, unit: 'piece', formatted: '3' });
+  });
+
+  it('converts to imperial and steps small cups down to tbsp / tsp', () => {
+    expect(toShoppingDisplay(0.0625, 'cup', 'imperial')).toMatchObject({ quantity: 1, unit: 'tbsp' });
+    expect(toShoppingDisplay(1 / 48, 'cup', 'imperial')).toMatchObject({ quantity: 1, unit: 'tsp' });
+    expect(toShoppingDisplay(2, 'kg', 'imperial')).toMatchObject({ quantity: 4.41, unit: 'lb' });
+    expect(toShoppingDisplay(1.5, 'cup', 'imperial')).toEqual({ quantity: 1.5, unit: 'cup', formatted: '1 ½' });
+  });
+
+  it('maps an edit made in the display unit back to the stored unit', () => {
+    expect(fromShoppingDisplay(480, 'ml', 'cup')).toEqual({ quantity: 2, unit: 'cup' });
+    expect(fromShoppingDisplay(2.4, 'l', 'cup').quantity).toBeCloseTo(10, 2);
+    expect(fromShoppingDisplay(500, 'g', 'lb')).toEqual({ quantity: 1.1023, unit: 'lb' });
+    expect(fromShoppingDisplay(4, 'piece', 'piece')).toEqual({ quantity: 4, unit: 'piece' });
+    expect(fromShoppingDisplay(3, 'clove', 'piece')).toEqual({ quantity: 3, unit: 'clove' });
+  });
+
+  it('localizeShoppingList converts every line for the exports', () => {
+    const [line] = localizeShoppingList([makeShoppingItem({ quantity: 1, unit: 'cup' })], 'metric');
+    expect(line).toMatchObject({ quantity: 240, unit: 'ml', ingredientId: 'ing_001' });
+  });
+});
+
+describe('line identity', () => {
+  it('keys lines by ingredient and unit', () => {
+    expect(shoppingItemKey({ ingredientId: 'ing_001', unit: 'cup' })).not.toBe(shoppingItemKey({ ingredientId: 'ing_001', unit: 'piece' }));
+    expect(matchesShoppingItem({ ingredientId: 'ing_001', unit: 'cup' }, 'ing_001')).toBe(true);
+    expect(matchesShoppingItem({ ingredientId: 'ing_001', unit: 'cup' }, 'ing_001', 'piece')).toBe(false);
+  });
+
+  it('manual lines have no usedIn or a custom id', () => {
+    expect(isManualShoppingItem(makeShoppingItem({ usedIn: [] }))).toBe(true);
+    expect(isManualShoppingItem(makeShoppingItem({ usedIn: ['rec_001'] }))).toBe(false);
+    expect(isManualShoppingItem(makeShoppingItem({ ingredientId: 'custom-x', usedIn: ['rec_001'] }))).toBe(true);
+  });
+});
+
+describe('filter / sort / group for the list view', () => {
+  const names: Record<string, string> = { a: 'Zucchini', b: 'Apple', c: 'Milk' };
+  const nameOf = (i: ShoppingListItem) => names[i.ingredientId] ?? i.ingredientId;
+  const list = [
+    makeShoppingItem({ ingredientId: 'a', category: 'vegetables', checked: true }),
+    makeShoppingItem({ ingredientId: 'b', category: 'fruits', notes: 'green' }),
+    makeShoppingItem({ ingredientId: 'c', category: undefined }),
+  ];
+
+  it('searches display names, category labels and notes; hides checked on demand', () => {
+    expect(filterShoppingItems(list, { search: 'zucc', showChecked: true }, nameOf).map((i) => i.ingredientId)).toEqual(['a']);
+    expect(filterShoppingItems(list, { search: 'GREEN', showChecked: true }, nameOf).map((i) => i.ingredientId)).toEqual(['b']);
+    expect(filterShoppingItems(list, { search: 'fruit', showChecked: true }, nameOf, (id) => id).map((i) => i.ingredientId)).toEqual(['b']);
+    expect(filterShoppingItems(list, { search: '', showChecked: false }, nameOf).map((i) => i.ingredientId)).toEqual(['b', 'c']);
+  });
+
+  it('sorts by name or by status (unchecked first)', () => {
+    expect(sortShoppingItems(list, 'name', nameOf).map(nameOf)).toEqual(['Apple', 'Milk', 'Zucchini']);
+    expect(sortShoppingItems(list, 'checked', nameOf).map(nameOf)).toEqual(['Apple', 'Milk', 'Zucchini']);
+    expect(sortShoppingItems([list[0]!, list[1]!], 'checked', nameOf).at(-1)?.checked).toBe(true);
+  });
+
+  it('groups in catalog order with unknown categories next and other last', () => {
+    const groups = groupShoppingItems(
+      [...list, makeShoppingItem({ ingredientId: 'd', category: 'bakery' })],
+      ['protein', 'vegetables', 'fruits'],
+    );
+    expect(groups.map((g) => g.category)).toEqual(['vegetables', 'fruits', 'bakery', 'other']);
+    expect(groups[3]!.items.map((i) => i.ingredientId)).toEqual(['c']);
+  });
+});
+
+describe('mergeGeneratedList', () => {
+  it('replaces recipe lines, keeps manual lines and carries checked/notes over', () => {
+    const current = [
+      makeShoppingItem({ ingredientId: 'ing_001', unit: 'piece', quantity: 2, usedIn: ['rec_001'], checked: true, notes: 'free range' }),
+      makeShoppingItem({ ingredientId: 'ing_009', unit: 'cup', quantity: 1, usedIn: ['rec_009'] }),
+      makeShoppingItem({ ingredientId: 'custom-1-milk', name: 'Milk', unit: 'l', quantity: 1, usedIn: [] }),
+    ];
+    const generated = [
+      makeShoppingItem({ ingredientId: 'ing_001', unit: 'piece', quantity: 6, usedIn: ['rec_001', 'rec_002'], notes: '' }),
+      makeShoppingItem({ ingredientId: 'ing_002', unit: 'cup', quantity: 0.5, usedIn: ['rec_002'] }),
+    ];
+    const merged = mergeGeneratedList(current, generated);
+    expect(merged.map((i) => [i.ingredientId, i.quantity, i.checked])).toEqual([
+      ['ing_001', 6, true],
+      ['ing_002', 0.5, false],
+      ['custom-1-milk', 1, false],
+    ]);
+    expect(merged[0]!.notes).toBe('free range');
+  });
+
+  it('a manual line with the same ingredient + unit absorbs the generated quantity', () => {
+    const merged = mergeGeneratedList(
+      [makeShoppingItem({ ingredientId: 'ing_001', unit: 'lb', quantity: 1, usedIn: [] })],
+      [makeShoppingItem({ ingredientId: 'ing_001', unit: 'lb', quantity: 1.25, usedIn: ['rec_001'] })],
+    );
+    expect(merged).toHaveLength(1);
+    expect(merged[0]).toMatchObject({ quantity: 2.25, usedIn: ['rec_001'] });
   });
 });

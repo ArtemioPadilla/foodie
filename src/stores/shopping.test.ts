@@ -6,6 +6,7 @@ import {
   $shoppingCheckedCount,
   $shoppingCount,
   $shoppingRemaining,
+  addCustomShoppingItem,
   addShoppingItem,
   clearCheckedItems,
   clearShoppingList,
@@ -13,6 +14,7 @@ import {
   generateFromPlan,
   removeShoppingItem,
   toggleShoppingItem,
+  updateShoppingLine,
   updateShoppingNotes,
   updateShoppingQuantity,
 } from './shopping';
@@ -104,3 +106,66 @@ describe('actions', () => {
     expect(exportList('csv')).toContain('a,2,g,,""');
   });
 });
+
+describe('Issue 026 — line-targeted actions, custom items, merge on generate', () => {
+  const twoLines = () => {
+    $shopping.set([
+      { ingredientId: 'ing_001', quantity: 2, unit: 'piece', checked: false, usedIn: ['rec_001'] },
+      { ingredientId: 'ing_001', quantity: 0.5, unit: 'cup', checked: false, usedIn: ['rec_002'] },
+    ]);
+  };
+
+  it('toggle / quantity / notes / remove target one unit when given', () => {
+    twoLines();
+    toggleShoppingItem('ing_001', 'cup');
+    updateShoppingQuantity('ing_001', 3, 'piece');
+    updateShoppingNotes('ing_001', 'big ones', 'piece');
+    expect($shopping.get().map((i) => [i.unit, i.quantity, i.checked, i.notes])).toEqual([
+      ['piece', 3, false, 'big ones'],
+      ['cup', 0.5, true, undefined],
+    ]);
+    removeShoppingItem('ing_001', 'cup');
+    expect($shopping.get().map((i) => i.unit)).toEqual(['piece']);
+  });
+
+  it('updateShoppingLine patches quantity and unit of one line', () => {
+    twoLines();
+    updateShoppingLine('ing_001', 'cup', { quantity: 300, unit: 'ml' });
+    expect($shopping.get()[1]).toMatchObject({ quantity: 300, unit: 'ml' });
+    expect($shopping.get()[0]).toMatchObject({ quantity: 2, unit: 'piece' });
+  });
+
+  it('addCustomShoppingItem mints a custom-* id, keeps the name and never merges', () => {
+    const first = addCustomShoppingItem({ name: ' Oat milk ', quantity: 2, unit: 'l', category: 'dairy', notes: '  barista ' });
+    addCustomShoppingItem({ name: 'Oat milk', quantity: 1, unit: 'l', category: 'dairy' });
+    expect(first.ingredientId).toMatch(/^custom-[0-9a-f-]{36}-oat-milk$/);
+    expect($shopping.get()).toHaveLength(2);
+    expect($shopping.get()[0]).toEqual({
+      ingredientId: first.ingredientId,
+      name: 'Oat milk',
+      quantity: 2,
+      unit: 'l',
+      category: 'dairy',
+      checked: false,
+      usedIn: [],
+      notes: 'barista',
+    });
+    expect($shopping.get()[1]).not.toHaveProperty('notes');
+    expect(JSON.parse(localStorage.getItem('shoppingList')!)).toHaveLength(2);
+  });
+
+  it('generateFromPlan with keepManual + normalizeUnits keeps custom items and consolidates units', () => {
+    addCustomShoppingItem({ name: 'Bread', quantity: 1, unit: 'piece', category: 'grains' });
+    const plan = makePlan();
+    plan.days[0]!.meals.breakfast = { recipeId: 'rec_001', servings: 2 };
+    const count = generateFromPlan(plan, [makeRecipe()], () => 'protein', { keepManual: true, normalizeUnits: true });
+    expect(count).toBe(3);
+    const lines = $shopping.get().map((i) => [i.name ?? i.ingredientId, i.quantity, i.unit]);
+    expect(lines).toEqual([
+      ['ing_001', 4, 'piece'],
+      ['ing_002', 0.125, 'cup'], // 30 ml → cup base
+      ['Bread', 1, 'piece'],
+    ]);
+  });
+});
+
