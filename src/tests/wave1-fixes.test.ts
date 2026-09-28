@@ -35,15 +35,6 @@ describe('audit wave 1 — production fixes', () => {
     expect(search).not.toContain("['/', '_pagefind', '/pagefind.js']");
   });
 
-  it('blog disabled-flag redirects are base-aware', () => {
-    expect(read('src/pages/blog/index.astro')).toContain("Astro.redirect(withBase('/')");
-    expect(read('src/pages/blog/[...slug].astro')).toContain("Astro.redirect(withBase('/')");
-  });
-
-  it('data demo links the live large-table route, not the pre-redirect path', () => {
-    expect(read('src/pages/demos/data.astro')).toContain("withBase('/demos/data/large/')");
-  });
-
   it('every Recharts wrapper disables the entry animation that left shapes invisible inside Astro islands', () => {
     for (const f of [
       'src/components/ui/charts/bar-chart.tsx',

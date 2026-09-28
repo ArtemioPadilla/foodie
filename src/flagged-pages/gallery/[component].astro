@@ -22,7 +22,6 @@ import ShowcaseAdvanced from '../../components/islands/ShowcaseAdvanced';
 import ShowcaseInputPrimitives from '../../components/islands/ShowcaseInputPrimitives';
 import ShowcaseNav from '../../components/islands/ShowcaseNav';
 import ShowcaseExtras from '../../components/islands/ShowcaseExtras';
-import ShowcaseAI from '../../components/islands/ShowcaseAI';
 import ShowcaseDialog from '../../components/islands/ShowcaseDialog';
 import ShowcaseDropdown from '../../components/islands/ShowcaseDropdown';
 import ShowcaseTabs from '../../components/islands/ShowcaseTabs';
@@ -62,7 +61,7 @@ const playground = galleryPlaygrounds[entry.slug];
 if (playground) Astro.csp?.insertScriptResource("'unsafe-eval'");
 
 // Build-time props extraction via the TypeScript compiler API.
-// `repoRoot` is resolved from this file's location (src/pages/gallery/ → three
+// `repoRoot` is resolved from this file's location (src/flagged-pages/gallery/ → three
 // levels up). extractPropsForSource never throws — returns [] on any error.
 const repoRoot = fileURLToPath(new URL('../../..', import.meta.url));
 const propsTables = extractPropsForSource(entry.source, repoRoot);
@@ -160,7 +159,6 @@ const propsTables = extractPropsForSource(entry.source, repoRoot);
           {entry.island === 'ShowcaseCharts' && <ShowcaseCharts client:visible />}
           {entry.island === 'MotionDemo' && <MotionDemo client:visible />}
           {entry.island === 'ShowcasePWA' && <ShowcasePWA client:visible />}
-          {entry.island === 'ShowcaseAI' && <ShowcaseAI client:visible />}
           {entry.island === 'ShowcaseErrorBoundary' && <ShowcaseErrorBoundary client:visible />}
           {entry.island === 'ShowcaseSplitter' && <ShowcaseSplitter client:visible />}
           {entry.island === 'ShowcaseActionBar' && <ShowcaseActionBar client:visible />}

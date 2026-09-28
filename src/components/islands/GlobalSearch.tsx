@@ -30,37 +30,26 @@ interface PagefindModule {
 }
 
 // ─── Static nav commands (always visible, filtered by query) ─────────────────
-const NAV_COMMANDS: CommandItem[] = [
-  {
-    label: 'Home',
-    hint: 'Go to home',
-    onSelect: () => { window.location.href = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/'; },
-  },
-  {
-    label: 'Gallery',
-    hint: 'Browse UI components',
-    onSelect: () => { window.location.href = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/gallery/'; },
-  },
-  {
-    label: 'Demos',
-    hint: 'Interactive demos',
-    onSelect: () => { window.location.href = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/demos/'; },
-  },
-  {
-    label: 'Docs',
-    hint: 'Documentation',
-    onSelect: () => { window.location.href = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/docs/'; },
-  },
-  {
-    label: 'Blog',
-    hint: 'News & updates',
-    onSelect: () => { window.location.href = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/blog/'; },
-  },
-];
+/**
+ * One page the palette can jump to. SiteHeader builds the list (Foodie's
+ * sections in the page locale, already base-prefixed — roadmap Issue 046), so
+ * the labels follow the page language and no route is hard-coded here.
+ */
+export interface NavCommand {
+  label: string;
+  href: string;
+}
+
+function toCommandItems(commands: readonly NavCommand[]): CommandItem[] {
+  return commands.map((c) => ({
+    label: c.label,
+    onSelect: () => { window.location.href = c.href; },
+  }));
+}
 
 // ─── Inner implementation ─────────────────────────────────────────────────────
 
-function GlobalSearchInner() {
+function GlobalSearchInner({ commands }: GlobalSearchProps) {
   const [open, setOpen] = React.useState(false);
   // Mount (and so fetch) the lazy palette on first open; keep it afterwards.
   const [paletteWanted, setPaletteWanted] = React.useState(false);
@@ -167,7 +156,7 @@ function GlobalSearchInner() {
   // Pagefind results are prefixed with a section separator label so they're
   // visually distinct.
   const allItems = React.useMemo<CommandItem[]>(() => {
-    const base: CommandItem[] = [...NAV_COMMANDS];
+    const base: CommandItem[] = toCommandItems(commands);
 
     if (pagefindNote) {
       base.push({ label: pagefindNote });
@@ -178,7 +167,7 @@ function GlobalSearchInner() {
     }
 
     return base;
-  }, [pagefindItems, pagefindNote]);
+  }, [commands, pagefindItems, pagefindNote]);
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
@@ -249,17 +238,23 @@ function GlobalSearchInner() {
  *
  * Searches the Pagefind index (the pages that opt in with data-pagefind-body:
  * the docs and the recipe detail pages — roadmap Issue 043)
- * plus 5 static nav commands. Mounted in BaseLayout with `client:idle` so
+ * plus the site's sections as nav commands (passed in by SiteHeader, in the
+ * page locale). Mounted in SiteHeader with `client:idle` so
  * every page gets it without blocking first paint.
  *
  * Conflict avoidance: on /docs/ pages, DocsSearch.astro registers its own ⌘K
  * listener to focus the sidebar input. GlobalSearch yields to it by checking
  * for the `docs-search-input` element before intercepting the keystroke.
  */
-export default function GlobalSearch() {
+export interface GlobalSearchProps {
+  /** Pages offered before any query is typed (SiteHeader: Foodie's sections + docs). */
+  commands: readonly NavCommand[];
+}
+
+export default function GlobalSearch({ commands }: GlobalSearchProps) {
   return (
     <ErrorBoundary name="GlobalSearch">
-      <GlobalSearchInner />
+      <GlobalSearchInner commands={commands} />
     </ErrorBoundary>
   );
 }

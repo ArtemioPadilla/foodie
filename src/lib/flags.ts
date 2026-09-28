@@ -42,14 +42,17 @@ export const flags = {
   /** The current release channel. */
   channel: detectChannel(),
 
-  /** Show experimental gallery features (props playground, etc.). */
+  /**
+   * The template's component gallery (/gallery/, roadmap Issue 046). The
+   * build decides: astro.config.mjs injects the gallery routes (from
+   * src/flagged-pages/) and sets this env var to match — on in dev and in
+   * local/CI builds, off in the production deploy (FOODIE_DEPLOY=1). The
+   * `false` default only applies where astro.config.mjs never ran (Vitest).
+   */
   experimentalGallery: asBool(env.PUBLIC_FLAG_EXPERIMENTAL_GALLERY, false),
 
   /** Surface the floating feedback button on every page. */
   feedbackFab: asBool(env.PUBLIC_FLAG_FEEDBACK_FAB, true),
-
-  /** Render the blog index + posts. Useful to hide until you have content. */
-  blog: asBool(env.PUBLIC_FLAG_BLOG, true),
 
   /** Enable the docs search bar (requires Pagefind index to exist). */
   docsSearch: asBool(env.PUBLIC_FLAG_DOCS_SEARCH, true),

@@ -31,10 +31,9 @@ describe('agent-readable surface', () => {
     expect(layout).toContain("href={withBase('/llms.txt')}");
   });
 
-  it('home ships WebSite + SoftwareSourceCode; blog Article; docs BreadcrumbList', () => {
+  it('home ships WebSite + SoftwareSourceCode; docs BreadcrumbList', () => {
     expect(read('src/pages/index.astro')).toContain("'@type': 'SoftwareSourceCode'");
     expect(read('src/pages/index.astro')).toContain("'@type': 'WebSite'");
-    expect(read('src/pages/blog/[...slug].astro')).toContain("'@type': 'Article'");
     expect(read('src/layouts/DocsLayout.astro')).toContain("'@type': 'BreadcrumbList'");
   });
 

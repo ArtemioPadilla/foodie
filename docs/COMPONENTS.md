@@ -54,7 +54,7 @@ Then add a test alongside the component:
 # src/components/ui/<name>.test.ts
 ```
 
-Finally, add the component to `/showcase` (see `src/pages/showcase.astro`).
+Finally, add the component to the gallery manifest (`src/content/gallery.ts`, rendered at `/gallery/`).
 
 ### Path B — Hand-written with Base UI (for interactive primitives)
 
@@ -99,7 +99,7 @@ grep -r '@radix-ui' src/components/ui/
 # Must return nothing — no Radix imports allowed
 ```
 
-Add tests and add the component to `/showcase`.
+Add tests and add the component to the gallery (`src/content/gallery.ts`).
 
 ---
 
@@ -113,7 +113,7 @@ needs to be interactive.
 |---|---|---|
 | `client:load` | Above-the-fold interactivity required on first paint. Reserved for rare critical islands. We have **none** today. | — |
 | `client:idle` | Secondary interactivity that should be ready shortly after load, but is not blocking. | `FeedbackFAB` (loaded at idle so it doesn't compete with page content) |
-| `client:visible` | Below-the-fold components — hydrate when they scroll into view. Best default for most showcase and on-demand widgets. | Every island in `/showcase` |
+| `client:visible` | Below-the-fold components — hydrate when they scroll into view. Best default for most showcase and on-demand widgets. | Every island in `/gallery/` |
 | `client:media="(max-width: 768px)"` | Viewport-conditional — only hydrate on matching media. Good for mobile-only menus. | (Not in use yet) |
 | `client:only="react"` | SSR cannot render this component (e.g. it reads `window` at import time). Last resort — it sends no HTML to the browser at all. | (Not in use yet) |
 
@@ -358,7 +358,7 @@ is:
 This means: apply dark styles to any element that is a descendant of a `.dark`
 element (including the element itself). Adding `class="dark"` to `<html>` makes
 the whole page dark. Adding it to any inner `<div>` makes that subtree dark — as
-used in `/showcase`'s "Dark" preview column.
+used in the gallery's "Dark" preview column.
 
 ### Zero-flash initialization
 
@@ -475,7 +475,7 @@ rediscovered per-PR (closes the "still open" line in ROADMAP Epic 18's
 | API | Why a component needs it | Polyfill shape |
 |---|---|---|
 | `window.matchMedia` | Any component that reads a media query on mount (dark-mode/reduced-motion checks, responsive islands). | A no-op object matching the `MediaQueryList` shape — `matches: false`, inert `add/removeEventListener` and legacy `add/removeListener`. |
-| `Element.prototype.scrollIntoView` | Chat-style auto-scroll effects that call it on every render (e.g. `ChatThread` in `src/components/ui/ai/chat-message.tsx`). jsdom never implements it — no layout engine, so "scroll into view" is meaningless there. | A no-op function. |
+| `Element.prototype.scrollIntoView` | Chat-style auto-scroll effects that call it on every render (e.g. a chat thread that sticks to the bottom). jsdom never implements it — no layout engine, so "scroll into view" is meaningless there. | A no-op function. |
 | `window.ResizeObserver` | Anything that observes an element for size changes — e.g. `@zag-js/splitter`'s `trackRootResize` effect (Splitter), `DataTable`'s virtualizer re-measure effect. Without this, jsdom throws `ResizeObserver is not a constructor`. | A no-op class: `observe`/`unobserve`/`disconnect` do nothing. Tests that need real dimensions stub `getBoundingClientRect` explicitly instead of relying on this polyfill to report anything. |
 | `window.IntersectionObserver` | Visibility-triggered effects (lazy-mount patterns, scroll-fade utilities). Same rationale as `ResizeObserver` — jsdom has no layout engine to compute intersection. | A no-op class implementing the full interface shape (`root`, `rootMargin`, `thresholds`, `observe`/`unobserve`/`disconnect`/`takeRecords`). |
 | `@testing-library/jest-dom/vitest` | Custom matchers (`toBeInTheDocument`, `toHaveClass`, etc.) used across every RTL test. | Real import, not a hand-rolled stub — this one's just wiring up the library's global matchers once. |
@@ -768,9 +768,10 @@ const minsUntilReset = error.rateLimitReset !== undefined
 
 ### File pointers
 
-- Island: `src/components/islands/DashboardIsland.tsx`
-- Page: `src/pages/demos/dashboard.astro`
-- Tests: `src/tests/wave4-dashboard-states.test.ts`
+The template's dashboard demo (`DashboardIsland`, `/demos/dashboard/`) that
+first implemented this pattern was removed in Foodie roadmap Issue 046; the
+catalog islands (`useCatalog` + `src/components/ui/empty-state.tsx`) follow
+the same three states.
 
 ### Applying the pattern elsewhere
 
@@ -949,5 +950,5 @@ Use this before opening a PR:
 - [ ] Compound components are wrapped in one island file, not spread across an `.astro` page.
 - [ ] CSS classes use semantic tokens (`bg-background`, `text-foreground`) not literal palette values (`bg-gray-950`).
 - [ ] A `*.test.ts` file ships alongside the component, covering at minimum: export exists, no forbidden imports.
-- [ ] Component appears in `/showcase` (`src/pages/showcase.astro`).
+- [ ] Component appears in the gallery (`src/content/gallery.ts` → `/gallery/`).
 - [ ] `npm run build`, `npm run check`, `npm run test` all pass.

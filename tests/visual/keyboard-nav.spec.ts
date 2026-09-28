@@ -22,7 +22,7 @@ import { test, expect } from '@playwright/test';
  */
 
 // `/recipes/` + `/ingredients/` (roadmap Issue 023): the catalog browsers.
-const routes = ['/', '/gallery/', '/gallery/form-controls/', '/demos/dashboard/', '/recipes/', '/ingredients/'];
+const routes = ['/', '/gallery/', '/gallery/form-controls/', '/planner/', '/recipes/', '/ingredients/'];
 
 // Selector for elements we expect to be reachable + focus-styled.
 const INTERACTIVE_SELECTOR =

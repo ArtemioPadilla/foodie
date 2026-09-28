@@ -101,7 +101,8 @@ enforce most of these.
 ## Adding a UI component
 
 Look in the kit first: `docs/COMPONENTS.md` and the live gallery at `/gallery/`
-list what exists. New primitives go in `src/components/ui/` with a gallery
+(in `npm run dev` and local builds; the production deploy leaves it out —
+`PUBLIC_FLAG_EXPERIMENTAL_GALLERY`) list what exists. New primitives go in `src/components/ui/` with a gallery
 entry; Foodie-specific compositions go in `src/components/domain/`
 (guidelines in `docs/component-guidelines/foodie.md`).
 

@@ -17,9 +17,7 @@ export const es: typeof en = {
     tracking: 'Diario',
     contribute: 'Contribuir',
     gallery: 'Galería',
-    demos: 'Demos',
     docs: 'Documentación',
-    blog: 'Blog',
     github: 'GitHub',
     switchLanguage: 'English',
     main: 'Navegación principal',
@@ -189,14 +187,6 @@ export const es: typeof en = {
     body: 'La URL no coincide con ninguna página publicada — puede haberse movido mientras reconstruimos Foodie, o el enlace tiene un error. Si llegaste aquí desde un enlace del sitio, repórtalo con la burbuja de feedback de la esquina.',
     homeHeading: 'Ir al inicio en tu idioma',
     browseRecipes: 'Explorar recetas',
-  },
-  comingSoon: {
-    // components/pages/ComingSoon.astro — placeholder for sections not yet migrated
-    kicker: 'próximamente',
-    title: '{{section}} está en camino',
-    body: 'Foodie se está reconstruyendo página por página sobre un stack más rápido y offline-first. Esta sección aún no está disponible en el nuevo sitio.',
-    followProgress: 'Seguir el progreso en GitHub',
-    backHome: 'Volver al inicio',
   },
   // ── Legacy Foodie dictionary (public/locales/es/translation.json → roadmap Issue 015) ──
   app: {

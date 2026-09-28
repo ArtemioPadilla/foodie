@@ -47,12 +47,14 @@ describe('GlobalSearch island — source guards', () => {
   });
 
   // ── 4. Static nav commands ───────────────────────────────────────────────
-  it('defines 5 static nav commands (Home, Gallery, Demos, Docs, Blog)', () => {
-    expect(islandSrc).toContain("label: 'Home'");
-    expect(islandSrc).toContain("label: 'Gallery'");
-    expect(islandSrc).toContain("label: 'Demos'");
-    expect(islandSrc).toContain("label: 'Docs'");
-    expect(islandSrc).toContain("label: 'Blog'");
+  it('takes its nav commands from the header instead of hard-coding routes (roadmap Issue 046)', () => {
+    expect(islandSrc).toContain('commands: readonly NavCommand[]');
+    expect(islandSrc).not.toMatch(/label: '(Demos|Blog|Gallery)'/);
+    // SiteHeader passes the Foodie sections + docs, and the gallery only
+    // when the build ships it.
+    expect(headerSrc).toContain('<GlobalSearch client:idle commands={searchCommands} />');
+    expect(headerSrc).toMatch(/flags\.experimentalGallery\s*\?/);
+    expect(headerSrc).not.toMatch(/\/(demos|blog)\//);
   });
 
   // ── 5. ⌘K conflict avoidance with DocsSearch ────────────────────────────
@@ -96,6 +98,6 @@ describe('SiteHeader — GlobalSearch integration guards', () => {
 
   it('mounts GlobalSearch with client:idle', () => {
     // client:idle ensures the island does not block first paint
-    expect(headerSrc).toMatch(/<GlobalSearch\s+client:idle\s*\/>/);
+    expect(headerSrc).toMatch(/<GlobalSearch\s+client:idle\b[^>]*\/>/);
   });
 });

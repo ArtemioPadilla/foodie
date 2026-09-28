@@ -29,8 +29,8 @@ const TREE: TreeNode[] = [
 const TRAFFIC = [
   { name: '/gallery', value: 1840 },
   { name: '/docs', value: 1210 },
-  { name: '/demos', value: 760 },
-  { name: '/blog', value: 320 },
+  { name: '/planner', value: 760 },
+  { name: '/pantry', value: 320 },
 ];
 
 export default function ShowcaseExtras() {

@@ -190,7 +190,7 @@ contrast failures, accessibility-washed CTAs — see ETHICS.md "false hierarchy"
 | 3 | Lighthouse a11y + Best Practices | `@lhci/cli` mobile preset | ≥ 95 each |
 | 4 | `prefers-reduced-motion` respected | lint: every `motion/react animate=` is inside `LazyMotion` + `useReducedMotion()` branch (or `tailwindcss-motion`) | 0 unguarded |
 | 5 | WCAG AA contrast | build-time check on `:root` / `.dark` var pairs | 0 failures (≥ 4.5:1) |
-| 6 | Keyboard nav + visible focus | Playwright tab-walk on `/showcase` | 100% reachable + `:focus-visible` ring |
+| 6 | Keyboard nav + visible focus | Playwright tab-walk (`tests/visual/keyboard-nav.spec.ts`) | 100% reachable + `:focus-visible` ring |
 | 7 | Theme-toggle zero-flash on Slow 3G | Playwright with network throttling | 0 FOUC frames |
 
 Visual-regression CI (`tests/__screenshots__/`) and `ux:check` are **separate

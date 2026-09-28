@@ -5,7 +5,7 @@
 
 Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entry here is rendered live at `/gallery`.
 
-**Total:** 36 gallery entries across 16 categories.
+**Total:** 35 gallery entries across 15 categories.
 
 **Legend**
 
@@ -124,12 +124,6 @@ Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entr
 | **Recipe timer** | 🔵 beta | Per-step countdown in a Dialog: start / pause / reset, SVG progress ring, role="timer" live region and a Web Notification at zero. | [`src/components/domain/RecipeTimer.tsx`](../src/components/domain/RecipeTimer.tsx) |
 | **Favorite button** | 🔵 beta | Favourite toggle on $favorites (legacy favoriteRecipes key): aria-pressed, a toast per change, icon or full appearance, hydration-safe. | [`src/components/domain/FavoriteButton.tsx`](../src/components/domain/FavoriteButton.tsx) |
 | **Recipe detail view** | 🔵 beta | The static parts of a recipe page — header (eyebrow, title, badges, times/servings/calories/cuisine/rating grid, art) and tips/equipment — shared by /recipes/[id]/ and the contribute wizard preview. | [`src/components/domain/RecipeDetailView.tsx`](../src/components/domain/RecipeDetailView.tsx) |
-
-## 16. Generative AI
-
-| Component | Status | Summary | Source |
-|---|---|---|---|
-| **Generative AI** | ✅ stable | Chat thread (stick-to-bottom scroll), prompt input, streaming + thinking states, AI output label (disclosure), citations, and response feedback. | [`src/components/ui/ai/`](../src/components/ui/ai/) |
 
 ---
 

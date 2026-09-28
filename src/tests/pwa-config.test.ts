@@ -72,7 +72,7 @@ describe('Workbox caching (roadmap #028)', () => {
     expect(pwa).not.toContain('google-fonts-');
   });
 
-  it('keeps the template GitHub API cache for the dashboard demo', () => {
+  it("keeps the GitHub API cache (FeedbackFAB's duplicate-issue search)", () => {
     expect(cacheRule("cacheName: 'github-api'")).toMatch(/StaleWhileRevalidate/);
   });
 
@@ -84,20 +84,22 @@ describe('Workbox caching (roadmap #028)', () => {
   it('lets non-precached pages and plain files load from the network instead of the fallback', () => {
     const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     for (const base of ['/', '/foodie/']) {
-      const excluded = new RegExp(`^${escapeRegExp(base)}(?:(?:es|fr)/)?(?:gallery|demos|blocks|showcase)(?:/|$)`);
+      const excluded = new RegExp(`^${escapeRegExp(base)}(?:(?:es|fr)/)?gallery(?:/|$)`);
       expect(excluded.test(`${base}gallery/`)).toBe(true);
       expect(excluded.test(`${base}es/gallery/`)).toBe(true);
-      expect(excluded.test(`${base}demos/dashboard/`)).toBe(true);
+      expect(excluded.test(`${base}gallery/dialog/`)).toBe(true);
       expect(excluded.test(`${base}recipes/`)).toBe(false);
       expect(excluded.test(`${base}galleryx/`)).toBe(false);
     }
-    expect(pwa).toContain('(?:gallery|demos|blocks|showcase)(?:/|$)');
+    expect(pwa).toContain('(?:(?:es|fr)/)?gallery(?:/|$)');
     expect(pwa).toContain('/\\.(?:txt|xml|json|webmanifest)(?:\\?.*)?$/');
   });
 
-  it('precaches the app pages and leaves the template reference surfaces out', () => {
+  it('precaches the app pages and leaves the component gallery out', () => {
     expect(pwa).toContain("globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}']");
-    expect(pwa).toMatch(/globIgnores:\s*\['\*\*\/gallery\/\*\*', '\*\*\/demos\/\*\*'/);
+    // The demos/blocks/showcase surfaces were removed in roadmap Issue 046.
+    expect(pwa).toContain("globIgnores: ['**/gallery/**'],");
+    expect(pwa).not.toMatch(/demos|blocks|showcase/);
   });
 
   it('builds a data pattern that matches the catalog files with and without the /foodie base', () => {

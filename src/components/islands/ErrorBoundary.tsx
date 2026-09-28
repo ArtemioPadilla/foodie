@@ -37,8 +37,8 @@ interface ErrorBoundaryState {
  *   - The "Report on GitHub" link appears once `reportUrl` resolves.
  *
  * Usage:
- *   <ErrorBoundary name="IssuesList">
- *     <IssuesListInner />
+ *   <ErrorBoundary name="RecipeBrowser">
+ *     <RecipeBrowserInner />
  *   </ErrorBoundary>
  */
 export default class ErrorBoundary extends React.Component<

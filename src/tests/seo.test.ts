@@ -110,7 +110,7 @@ describe.runIf(runDist)('built site — dist/ (npm run test:seo, roadmap #022)',
   const pages = existsSync(DIST)
     ? htmlPages(DIST)
         .map((file) => ({ file, html: readFileSync(file, 'utf-8') }))
-        // Redirect stubs (/dashboard → /demos/dashboard, …) and the 404 are not indexable pages.
+        // Redirect stubs (/docs/guides/github-pages-setup → deployment) and the 404 are not indexable pages.
         .filter(({ file, html }) => !/http-equiv="refresh"/.test(html) && !file.endsWith(`${sep}404.html`))
         .map(({ file, html }) => {
           const rel = relative(DIST, file).split(sep).join('/');

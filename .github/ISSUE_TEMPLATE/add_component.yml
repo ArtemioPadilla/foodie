@@ -54,7 +54,7 @@ body:
       value: |
         - [ ] `src/components/ui/<name>.tsx` exports the component
         - [ ] No `@radix-ui`, no `framer-motion` imports
-        - [ ] Visible on `/showcase` in both light and dark
+        - [ ] Visible on `/gallery` in both light and dark
         - [ ] Has a `?raw` test in `src/components/ui/<name>.test.ts`
         - [ ] `npm run build && npm run test` pass
     validations:

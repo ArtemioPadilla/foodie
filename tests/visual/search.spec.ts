@@ -37,7 +37,7 @@ test('docs search also finds public recipes (data-pagefind-body, roadmap #043)',
 });
 
 test('global ⌘K palette opens and lists nav commands', async ({ page }) => {
-  await page.goto('/gallery/');
+  await page.goto('/es/recipes/');
   // GlobalSearch hydrates client:idle — Astro drops the `ssr` attribute once
   // the island is interactive. Pressing ⌘K before that is a silent no-op on
   // slow CI runners (the flake that shipped with the first version of this
@@ -49,5 +49,6 @@ test('global ⌘K palette opens and lists nav commands', async ({ page }) => {
   await page.keyboard.press('ControlOrMeta+k');
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible({ timeout: 10_000 });
-  await expect(dialog.getByText('Gallery', { exact: false }).first()).toBeVisible();
+  // The header passes Foodie's sections in the page locale (roadmap #046).
+  await expect(dialog.getByText('Despensa', { exact: false }).first()).toBeVisible();
 });

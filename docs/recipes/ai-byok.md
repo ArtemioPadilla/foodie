@@ -39,7 +39,7 @@ const res = await fetch(apiUrl('/api/extract'), {
   body,
 });
 ```
-(`apiUrl`/`apiEnabled` salen de `src/lib/api.ts` — backend opt-in vía `PUBLIC_API_BASE`.)
+(`apiUrl`/`apiEnabled` salen de `src/lib/api.ts` del template Inceptor — backend opt-in vía `PUBLIC_API_BASE`; Foodie no tiene backend y lo quitó en el roadmap #046.)
 
 ## 4. Backend stateless (Flask) — helper aislado y mockeable
 

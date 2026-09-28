@@ -3,7 +3,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 // Source-level guards for Wave 4 (docs surfaces) of docs/AUDIT-2026-06.md §4.5-4.6.
-// Covers issues #140 (edit-link), #145 (stub migration), #142 (real blog posts).
+// Covers issues #140 (edit-link), #145 (stub migration). The #142 blog
+// guards left with the blog (roadmap Issue 046).
 
 const repoRoot = new URL('../../', import.meta.url).pathname;
 const read = (p: string) => readFileSync(join(repoRoot, p), 'utf-8');
@@ -109,73 +110,3 @@ describe('docs content — no "being migrated" stubs (#145)', () => {
   });
 });
 
-// ── 3. Blog — ≥ 3 non-draft posts (#142) ──────────────────────────────────
-
-describe('blog collection — real posts (#142)', () => {
-  function collectBlogFiles(): string[] {
-    const blogDir = join(repoRoot, 'src/content/blog');
-    return readdirSync(blogDir).filter(
-      (f) => f.endsWith('.md') || f.endsWith('.mdx'),
-    );
-  }
-
-  function isDraft(content: string): boolean {
-    // Look for "draft: true" in frontmatter (between the first two ---)
-    const fm = content.match(/^---\n([\s\S]*?)\n---/);
-    if (!fm) return false;
-    // Non-null: the regex has one capture group; fm[1] is always present when fm is truthy.
-    return /^\s*draft:\s*true\s*$/m.test(fm[1]!);
-  }
-
-  it('has at least 3 blog files', () => {
-    const files = collectBlogFiles();
-    expect(files.length).toBeGreaterThanOrEqual(3);
-  });
-
-  it('has at least 3 non-draft posts', () => {
-    const blogDir = join(repoRoot, 'src/content/blog');
-    const files = collectBlogFiles();
-    const nonDraft = files.filter((f) => {
-      const content = readFileSync(join(blogDir, f), 'utf-8');
-      return !isDraft(content);
-    });
-    expect(nonDraft.length, `Only ${nonDraft.length} non-draft posts found`).toBeGreaterThanOrEqual(3);
-  });
-
-  it('the three changelog-digest posts exist', () => {
-    const blogDir = join(repoRoot, 'src/content/blog');
-    const files = readdirSync(blogDir);
-
-    // Verify by checking content keywords rather than filenames,
-    // since filenames may vary
-    const allContent = files
-      .filter((f) => f.endsWith('.md') || f.endsWith('.mdx'))
-      .map((f) => readFileSync(join(blogDir, f), 'utf-8'));
-
-    const hasComponentPost = allContent.some(
-      (c) => c.includes('44 component') || c.includes('component library'),
-    );
-    const hasBackendPost = allContent.some(
-      (c) => c.includes('backend archetype') || c.includes('server-node') || c.includes('Hono'),
-    );
-    const hasAuditPost = allContent.some(
-      (c) => c.includes('audit') && (c.includes('Wave') || c.includes('AUDIT-2026')),
-    );
-
-    expect(hasComponentPost, 'Missing component library post').toBe(true);
-    expect(hasBackendPost, 'Missing backend archetypes post').toBe(true);
-    expect(hasAuditPost, 'Missing June 2026 audit post').toBe(true);
-  });
-
-  it('all blog posts have required frontmatter fields', () => {
-    const blogDir = join(repoRoot, 'src/content/blog');
-    const files = collectBlogFiles();
-
-    for (const file of files) {
-      const content = readFileSync(join(blogDir, file), 'utf-8');
-      expect(content, `${file} is missing title`).toMatch(/^title:/m);
-      expect(content, `${file} is missing description`).toMatch(/^description:/m);
-      expect(content, `${file} is missing pubDate`).toMatch(/^pubDate:/m);
-    }
-  });
-});

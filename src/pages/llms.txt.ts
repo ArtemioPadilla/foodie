@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { SITE, REPO_URL, siteUrl } from '@/lib/site-meta';
+import { flags } from '@/lib/flags';
 
 /**
  * /llms.txt — the curated, agent-first index of this site
@@ -15,9 +16,6 @@ export const GET: APIRoute = async ({ site }) => {
   const url = (p: string) => `${base}${p.startsWith('/') ? p : `/${p}`}`;
 
   const docs = (await getCollection('docs')).sort((a: CollectionEntry<'docs'>, b: CollectionEntry<'docs'>) => a.id.localeCompare(b.id));
-  const blog = (await getCollection('blog'))
-    .filter((p: CollectionEntry<'blog'>) => !p.data.draft)
-    .sort((a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) => +new Date(b.data.pubDate) - +new Date(a.data.pubDate));
 
   const docLine = (e: CollectionEntry<'docs'>) =>
     `- [${e.data.title}](${url(`/docs/${e.id === 'index' ? '' : `${e.id}/`}`)})${
@@ -37,18 +35,20 @@ single file: [llms-full.txt](${url('/llms-full.txt')}).
 
 ## Start here
 
-- [Home](${url('/')}): Foodie in English (also [Español](${url('/es/')}))
+- [Home](${url('/')}): Foodie in English (also [Español](${url('/es/')}) and [Français](${url('/fr/')}))
 - [Docs](${url('/docs/')}): how the project is built and how to contribute
-- [Component gallery](${url('/gallery/')}): the UI kit Foodie's screens are built from, rendered live
-
+- [Recipes](${url('/recipes/')}) and [ingredients](${url('/ingredients/')}): the catalog, one static page per entry
+${
+  // The gallery is built only behind flags.experimentalGallery (roadmap
+  // Issue 046) — never advertise a URL the production site does not serve.
+  flags.experimentalGallery
+    ? `- [Component gallery](${url('/gallery/')}): the UI kit Foodie's screens are built from, rendered live\n`
+    : ''
+}
 ## Docs
 
 ${docs.map(docLine).join('\n')}
 - [Data model (schemas)](${url('/docs/reference/api/')}): every Zod schema in src/schemas, generated at build time
-
-## Blog
-
-${blog.map((p: CollectionEntry<'blog'>) => `- [${p.data.title}](${url(`/blog/${p.id}/`)})${p.data.description ? `: ${p.data.description}` : ''}`).join('\n')}
 `;
 
   return new Response(body, {

@@ -66,7 +66,9 @@ A page using the shell regions:
 
 ```astro
 ---
-// src/pages/showcase/app-layout.astro
+// Illustrative app-shell page. The template's /showcase/app-layout page and
+// its AppLayoutIsland were removed in Foodie roadmap Issue 046: Foodie pages
+// use BaseLayout's sticky header (SiteHeader) instead of a side-nav shell.
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import AppLayoutIsland from '@/components/islands/AppLayoutIsland';
 ---
@@ -102,5 +104,5 @@ Inside the island, the grid is wired up:
 ## See also
 
 - [`docs/foundation/density.md`](./density.md) — padding/gap per density mode
-- [`src/components/islands/AppLayoutIsland.tsx`](../../src/components/islands/AppLayoutIsland.tsx)
-- [`src/pages/showcase/app-layout.astro`](../../src/pages/showcase/app-layout.astro)
+- [`src/layouts/BaseLayout.astro`](../../src/layouts/BaseLayout.astro) and
+  [`src/components/common/SiteHeader.astro`](../../src/components/common/SiteHeader.astro) — Foodie's page shell

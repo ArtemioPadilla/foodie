@@ -96,7 +96,7 @@ at least 3 entries must yield at least one Props table.
 **Emitter:** `galleryManifest` from `src/content/gallery.ts` + the TypeScript
 AST extractor in `src/lib/component-docs.ts`.
 
-**Consumer:** The gallery detail page (`src/pages/gallery/[component].astro`)
+**Consumer:** The gallery detail page (`src/flagged-pages/gallery/[component].astro`)
 renders the Props table via `component-docs.ts`.
 
 **Files:**

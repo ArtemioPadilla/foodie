@@ -13,7 +13,8 @@ import { loadDistGraph, MARKERS, type DistGraph } from '../../scripts/dist-graph
  * *on demand* adds the dynamic `import()` edges (dialogs, lazy panels).
  *
  * - **Recharts** (~85 KB gz): initial JS only on the tracking progress/goals
- *   pages (every locale) and the template's chart galleries/demos; never
+ *   pages (every locale) and the component gallery (built outside the
+ *   production deploy — roadmap Issue 046); never
  *   reachable, not even on demand, from the landing, the catalog or the
  *   planner.
  * - **Firebase** (auth adapter, Issues 035/036): never initial JS on any page
@@ -26,7 +27,7 @@ const DIST = fileURLToPath(new URL('../../dist', import.meta.url));
 const runDist = import.meta.env.MODE === 'dist';
 
 /** Pages allowed to load Recharts up front: they draw charts on first paint. */
-const RECHARTS_ROUTES = [/^\/(?:(?:es|fr)\/)?tracking\/(?:goals|progress)\/$/, /^\/(?:gallery|demos)\//];
+const RECHARTS_ROUTES = [/^\/(?:(?:es|fr)\/)?tracking\/(?:goals|progress)\/$/, /^\/gallery\//];
 /** Foodie routes audited by Lighthouse that must stay chart-free. */
 const CHART_FREE_ROUTES = ['/', '/es/', '/fr/', '/recipes/', '/recipes/rec_001/', '/planner/', '/es/planner/', '/fr/planner/'];
 

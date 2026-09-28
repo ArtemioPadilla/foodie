@@ -28,20 +28,6 @@ const docs = defineCollection({
   }),
 });
 
-const blog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string(),
-    pubDate: z.coerce.date(),
-    updatedDate: z.coerce.date().optional(),
-    tags: z.array(z.string()).default([]),
-    draft: z.boolean().default(false),
-    /** Author handle (kept generic so the scaffold doesn't presume a single author). */
-    author: z.string().default('artemiopadilla'),
-  }),
-});
-
 // ── Foodie catalog (roadmap Issue 011, D6) ───────────────────────────────────
 // `public/data/*.json` stays the single source of truth (also fetched at
 // runtime by `useCatalog`). Loading it as content collections validates every
@@ -85,4 +71,4 @@ const prices = defineCollection({
   schema: toAstroSchema(CATALOG_COLLECTIONS.prices.schema),
 });
 
-export const collections = { docs, blog, recipes, ingredients, beverages, categories, prices };
+export const collections = { docs, recipes, ingredients, beverages, categories, prices };

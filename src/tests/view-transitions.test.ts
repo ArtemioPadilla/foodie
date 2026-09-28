@@ -14,10 +14,8 @@ import baseLayout from '../layouts/BaseLayout.astro?raw';
 // Roadmap Issue 005: the landing body (and its page-title marker) lives in the
 // shared Home component; pages/index.astro is a thin locale wrapper.
 import index from '../components/pages/Home.astro?raw';
-import gallery from '../pages/gallery/index.astro?raw';
-import demos from '../pages/demos/index.astro?raw';
-import data from '../pages/demos/data.astro?raw';
-import dashboard from '../pages/demos/dashboard.astro?raw';
+// The gallery ships only behind flags.experimentalGallery (roadmap Issue 046).
+import gallery from '../flagged-pages/gallery/index.astro?raw';
 
 describe('@view-transition setup', () => {
   it('declares @view-transition { navigation: auto; }', () => {
@@ -34,7 +32,7 @@ describe('@view-transition setup', () => {
   });
 
   it('uses a consistent page-title transition-name on each route', () => {
-    [index, gallery, demos, data, dashboard].forEach((src) => {
+    [index, gallery].forEach((src) => {
       expect(src).toMatch(/view-transition-name:\s*page-title/);
     });
   });

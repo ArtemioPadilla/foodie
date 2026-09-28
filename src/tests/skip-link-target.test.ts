@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { join, relative } from 'node:path';
 
 // Regression guard for the Epic 12 a11y-debt pass (ground-truth Lighthouse
-// scan found `skip-link` failures on /gallery/, /demos/dashboard/, /docs/ —
+// scan found `skip-link` failures on /gallery/, the dashboard demo, /docs/ —
 // BaseLayout's "Skip to content" link (see wave2-fixes.test.ts) points at
 // `#main-content`, but most pages' <main> never carried that id, so the
 // skip link went nowhere for keyboard/screen-reader users on those routes.

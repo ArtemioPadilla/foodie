@@ -5,7 +5,7 @@ import type { GalleryEntry } from '@/content/gallery';
  * used in `docs/component-catalog.md` (ROADMAP Epic 16 — "extend the
  * existing stability glyphs ... onto each component's /gallery detail
  * page"). Single-sourced here so `scripts/gen-component-catalog.ts` and
- * `src/pages/gallery/[component].astro` never drift on the mapping.
+ * `src/flagged-pages/gallery/[component].astro` never drift on the mapping.
  */
 export function stabilityGlyph(status: GalleryEntry['status']): string {
   if (status === 'stable') return '✅';

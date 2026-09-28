@@ -18,12 +18,6 @@
 
 // ── Template forms ────────────────────────────────────────────────────────────
 export { LoginSchema, type LoginValues } from './login';
-export {
-  ContactSchema,
-  type ContactValues,
-  NewsletterSchema,
-  type NewsletterValues,
-} from './contact';
 export { FeedbackSchema, type FeedbackValues } from './feedback';
 
 // ── Foodie domain ─────────────────────────────────────────────────────────────

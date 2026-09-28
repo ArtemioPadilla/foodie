@@ -64,8 +64,7 @@ They accept `true/false`, `1/0`, `on/off` and `yes/no`.
 | `PUBLIC_FLAG_DOCS_SEARCH` | on | The Pagefind search box in these docs |
 | `PUBLIC_FLAG_PWA_PROMPTS` | on | Install and update prompts |
 | `PUBLIC_FLAG_PRIVACY_TOAST` | on | The first-visit privacy notice |
-| `PUBLIC_FLAG_BLOG` | on | The template blog (to be trimmed, roadmap Issue 046) |
-| `PUBLIC_FLAG_EXPERIMENTAL_GALLERY` | off | Experimental entries of the component gallery |
+| `PUBLIC_FLAG_EXPERIMENTAL_GALLERY` | off in the deploy, on elsewhere | The component gallery pages (see below) |
 | `PUBLIC_FLAG_ANALYTICS` | off | Privacy-friendly analytics script (`PUBLIC_ANALYTICS_*`) |
 | `PUBLIC_FLAG_SENTRY` | off | Error reporting (`PUBLIC_SENTRY_DSN`, needs `@sentry/browser`) |
 
@@ -91,8 +90,10 @@ Fraunces, Hanken Grotesk and JetBrains Mono are self-hosted in `public/fonts/`
 and declared in `src/styles/global.css`. No request goes to a font CDN, which
 keeps the CSP short and screenshot baselines stable.
 
-## Optional backend
+## Component gallery
 
-`PUBLIC_API_BASE`, `PUBLIC_CONTACT_ENDPOINT` and `PUBLIC_NEWSLETTER_ENDPOINT`
-come from the template's optional self-hosted backend (ADR 0006). Foodie does
-not use one today; leave them empty.
+`PUBLIC_FLAG_EXPERIMENTAL_GALLERY` controls the template's component gallery
+(`/gallery/`, `/es/gallery/`, `/fr/gallery/`). Unset, it is on in `npm run dev`
+and in local/CI builds (the visual suite screenshots it) and off in the
+production deploy (`FOODIE_DEPLOY=1`). When it is off, `astro.config.mjs` does
+not build those pages at all (roadmap Issue 046).

@@ -213,39 +213,4 @@ describe('audit wave 2 — trust & polish', () => {
       expect(home.match(/home\.feature\dTitle/g)).toHaveLength(6);
     });
   });
-
-  // ── 8. DashboardIsland — Skeleton usage ──────────────────────────────────
-  describe('DashboardIsland', () => {
-    it('imports Skeleton from the ui library', () => {
-      const island = read('src/components/islands/DashboardIsland.tsx');
-      expect(island).toContain("from '@/components/ui/skeleton'");
-    });
-
-    it('does not render the DataTable while loading', () => {
-      const island = read('src/components/islands/DashboardIsland.tsx');
-      // The loading guard must come before DataTable render — we assert
-      // that 'loading' check precedes the DataTable component usage.
-      const loadingIdx = island.indexOf('loading ? (');
-      const tableIdx = island.indexOf('<DataTable');
-      expect(loadingIdx).toBeLessThan(tableIdx);
-    });
-
-    it('shows a friendly empty state for open vs closed when both are 0', () => {
-      const island = read('src/components/islands/DashboardIsland.tsx');
-      // After a successful load with no issues, a friendly message shows
-      expect(island).toContain('bothEmpty');
-    });
-
-    it('no longer uses bare "…" string for metric loading placeholder', () => {
-      const island = read('src/components/islands/DashboardIsland.tsx');
-      // The old code used: value={loading ? '…' : someCount}
-      expect(island).not.toContain("'…'");
-    });
-
-    it('no longer uses bare "Loading…" paragraph placeholders', () => {
-      const island = read('src/components/islands/DashboardIsland.tsx');
-      expect(island).not.toContain('>Loading…<');
-    });
-  });
 });
-

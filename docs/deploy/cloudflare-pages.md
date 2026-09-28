@@ -13,7 +13,6 @@ Best fit when you want a CDN-backed static site without a GitHub Pages subpath.
    - **Build output directory:** `dist`
    - **Node version:** `22` (set as env var `NODE_VERSION=22`)
 4. Optional environment variables (Settings → Environment variables):
-   - `PUBLIC_FLAG_BLOG=false` — hide the blog if you don't have content yet
    - `PUBLIC_FLAG_DOCS_SEARCH=true` — enable Pagefind on /docs
    - `ANTHROPIC_API_KEY=…` — only if you also wire the Claude triage workflow
 

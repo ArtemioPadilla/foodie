@@ -134,7 +134,9 @@ started by hand needs it too (or `npx astro preview stop`).
 Playwright snapshots the catalog (`/recipes/`, a recipe detail, an ingredient
 detail), the planning pages (`/planner/`, `/shopping/`, `/pantry/`, seeded from
 `tests/fixtures/planning.ts` with a frozen clock — roadmap Issue 029) and the
-template's `/gallery` and `/demos/dashboard`, in both light and dark.
+template's component `/gallery`, in both light and dark. The gallery is built
+by `npm run build` and in CI but left out of the production deploy
+(`FOODIE_DEPLOY=1`, `flagged-pages.config.mjs` — roadmap Issue 046).
 Baselines live under `tests/__screenshots__/{chromium-light,chromium-dark}/`.
 
 The CI workflow at `.github/workflows/visual.yml` runs `npx playwright test`
@@ -154,7 +156,7 @@ the e2e journeys, including `tests/e2e/csp.spec.ts` — runs under the real
 policy.
 
 > The console-error smoke (`tests/visual/smoke.spec.ts`) is hermetic: it
-> answers `api.github.com` (the `/demos/dashboard/` issue lists) with
+> answers `api.github.com` (FeedbackFAB's duplicate-issue search) with
 > fixtures, so a TLS-intercepting proxy or a GitHub rate limit cannot fail
 > it. It runs under the production CSP, so a "Refused to …" console error
 > fails it too.

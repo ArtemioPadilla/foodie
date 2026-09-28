@@ -82,9 +82,10 @@ npm run preview   # serves dist/ on http://localhost:4321
 Open Chrome → DevTools → Performance panel. Use an incognito window so
 extensions don't influence the trace.
 
-## Probe 1 — 60 fps scroll on `/demos/data/large`
+## Probe 1 — 60 fps scroll on `/ingredients/`
 
-1. Open `http://localhost:4321/demos/data/large`
+1. Open `http://localhost:4321/ingredients/` (105 cards; the template's
+   `/demos/data/large` table left in roadmap Issue 046)
 2. DevTools → Performance → ⚙️ → CPU throttling: 4× slowdown
 3. Click Record, scroll the table top → bottom for ~5 seconds, stop recording
 4. Read the **FPS meter** (top of the trace). Median should be ≥ 60 with no
@@ -94,7 +95,8 @@ extensions don't influence the trace.
 
 If you see sustained low fps, the typical culprits are:
 
-- A non-virtualized list — check `LargeTable.tsx` is using `useVirtualizer`
+- A long list rendered at once — `DataTable` (`src/components/ui/data-table.tsx`)
+  virtualizes with `useVirtualizer`; card grids should paginate or virtualize
 - Recharts re-renders during scroll — they shouldn't be on this page
 - Heavy `useMemo` recomputation — re-check dependency arrays
 

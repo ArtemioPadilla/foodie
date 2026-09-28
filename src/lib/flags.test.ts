@@ -31,7 +31,6 @@ describe('feature flags', () => {
     expect(keys).toEqual(
       [
         'analytics',
-        'blog',
         'channel',
         'docsSearch',
         'experimentalGallery',

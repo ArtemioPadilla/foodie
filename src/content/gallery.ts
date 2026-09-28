@@ -24,7 +24,7 @@ export interface GalleryEntry {
   /**
    * Category bucket on the index page.
    */
-  category: 'primitives' | 'forms' | 'advanced' | 'compound' | 'overlays' | 'disclosure' | 'feedback' | 'data' | 'charts' | 'motion' | 'pwa' | 'navmenu' | 'extras' | 'gen-ai' | 'reporting' | 'domain';
+  category: 'primitives' | 'forms' | 'advanced' | 'compound' | 'overlays' | 'disclosure' | 'feedback' | 'data' | 'charts' | 'motion' | 'pwa' | 'navmenu' | 'extras' | 'reporting' | 'domain';
   /**
    * Optional install command for shadcn-style components.
    * If omitted, the gallery omits the install section.
@@ -263,17 +263,6 @@ export const galleryManifest: GalleryEntry[] = [
     category: 'extras',
     island: 'ShowcaseExtras',
   },
-  // Generative AI — agent-native UI primitives (#204)
-  {
-    slug: 'gen-ai',
-    name: 'Generative AI',
-    summary:
-      'Chat thread (stick-to-bottom scroll), prompt input, streaming + thinking states, AI output label (disclosure), citations, and response feedback.',
-    source: 'src/components/ui/ai/',
-    status: 'stable',
-    category: 'gen-ai',
-    island: 'ShowcaseAI',
-  },
   // Issue reporting
   {
     slug: 'error-boundary',
@@ -456,7 +445,6 @@ export const categoryLabels: Record<GalleryEntry['category'], string> = {
   motion: 'Motion',
   pwa: 'PWA',
   extras: 'Extras & data-viz',
-  'gen-ai': 'Generative AI',
   reporting: 'Issue reporting',
   domain: 'Foodie domain',
 };

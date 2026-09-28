@@ -36,10 +36,10 @@ describe('buildIssueUrl', () => {
 describe('buildErrorReportBody', () => {
   it('includes the error name + message + stack', () => {
     const e = new Error('Boom');
-    const body = buildErrorReportBody({ error: e, componentPath: 'IssuesList › ul' });
+    const body = buildErrorReportBody({ error: e, componentPath: 'RecipeBrowser › ul' });
     expect(body).toMatch(/Boom/);
     expect(body).toMatch(/Component path/);
-    expect(body).toMatch(/IssuesList/);
+    expect(body).toMatch(/RecipeBrowser/);
   });
 
   it('marks hydration mismatches explicitly', () => {

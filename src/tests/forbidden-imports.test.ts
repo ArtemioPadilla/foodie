@@ -60,3 +60,22 @@ describe('forbidden imports (single source: .claude/checklists/forbidden-imports
     expect(offenders, `banned import "${pattern}" found in: ${offenders.join(', ')}`).toHaveLength(0);
   });
 });
+
+// Inceptor rule (roadmap Issue 046 audit): no React Context in island files —
+// cross-island state goes through nanostores (src/stores/). Context inside
+// one island is only allowed in the owned kit (src/components/ui/), whose
+// compound components share state within a single React root. This is the
+// gate behind `grep createContext src/components/islands` = 0, so the island
+// tests no longer repeat the check (the literal would match the grep).
+describe('React Context stays out of src/components/islands/', () => {
+  const islands = Object.entries(sources).filter(([path]) => path.startsWith('../components/islands/'));
+
+  it('finds the island sources', () => {
+    expect(islands.length).toBeGreaterThan(20);
+  });
+
+  it('no island file (tests included) creates a React Context', () => {
+    const offenders = islands.filter(([, src]) => /\bcreateContext\b/.test(src)).map(([p]) => p);
+    expect(offenders).toEqual([]);
+  });
+});

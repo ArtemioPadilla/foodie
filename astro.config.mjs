@@ -11,6 +11,8 @@ import { SITE_ORIGIN } from './site.config.mjs';
 import { loadEnv } from 'vite';
 // Content-Security-Policy (roadmap Issue 035, ADR 0012) — see csp.config.mjs.
 import { buildCsp, cspInlineScriptHashes } from './csp.config.mjs';
+// Flag-gated template pages (roadmap Issue 046) — see flagged-pages.config.mjs.
+import { flaggedPages, galleryEnabled } from './flagged-pages.config.mjs';
 
 // Subpath the site is served under. GitHub *project* pages live at
 // `<domain>/<repo>/`, so the Pages build sets ASTRO_BASE=/foodie
@@ -44,6 +46,13 @@ const PUBLIC_ENV = loadEnv('production', process.cwd(), 'PUBLIC_');
     );
   }
 }
+// The component gallery ships only behind flags.experimentalGallery: on in dev
+// and in local/CI builds (the visual suite screenshots it), off in the
+// production deploy. Export the decision as the PUBLIC_ env var so the
+// browser-side `flags.experimentalGallery` (src/lib/flags.ts) agrees with the
+// routes that were actually built.
+const GALLERY = galleryEnabled({ ...PUBLIC_ENV, FOODIE_DEPLOY: process.env.FOODIE_DEPLOY });
+process.env.PUBLIC_FLAG_EXPERIMENTAL_GALLERY = GALLERY ? 'true' : 'false';
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({
@@ -63,21 +72,17 @@ export default defineConfig({
       redirectToDefaultLocale: false,
     },
   },
-  // 301 redirects from the old top-level demo routes to their new /demos/*
-  // locations. Targets are base-prefixed via asset() — Astro does NOT add the
-  // base to redirect targets automatically, so without this they'd 404 on a
-  // subpath deploy. Old URLs survive; visual baselines re-anchor automatically.
   // Code blocks in the docs: GitHub's high-contrast dark theme — the default
   // `github-dark` greys comments to 3.0:1 on its background, which axe flags
   // (roadmap #043 added docs pages with commented shell snippets).
   markdown: {
     shikiConfig: { theme: 'github-dark-high-contrast' },
   },
+  // Redirect targets are base-prefixed via asset() — Astro does NOT add the
+  // base to redirect targets, so without it they'd 404 on a subpath deploy.
+  // (The template's /dashboard, /data and /showcase redirects left with the
+  // demos in roadmap Issue 046.)
   redirects: {
-    '/dashboard': asset('demos/dashboard'),
-    '/data': asset('demos/data'),
-    '/data/large': asset('demos/data/large'),
-    '/showcase': asset('gallery'),
     // MkDocs-era page folded into the deployment guide (roadmap Issue 043);
     // the other legacy docs URLs kept their slugs.
     '/docs/guides/github-pages-setup': asset('docs/guides/deployment'),
@@ -93,6 +98,9 @@ export default defineConfig({
     // Must precede AstroPWA: rewrites the built HTML (adds is:inline script
     // hashes to the CSP meta) before the service-worker precache is hashed.
     cspInlineScriptHashes(),
+    // Injects src/flagged-pages/** (today: the component gallery) only when
+    // its flag is on — a production build has no /gallery/ pages at all.
+    flaggedPages({ gallery: GALLERY }),
     // MDX for the /docs/* content collection — lets pages embed React components
     mdx(),
     sitemap({
@@ -150,10 +158,10 @@ export default defineConfig({
         // CSS, icons and the self-hosted woff2 fonts (public/fonts/), so the
         // catalog pages, planner, shopping list and pantry open offline once the SW is installed (roadmap Issue 028).
         globPatterns: ['**/*.{js,css,html,svg,png,ico,webp,woff2}'],
-        // The template's reference surfaces (component gallery, demos, blocks,
-        // showcase) are not part of the app — leave them out of the install
-        // payload (~5 MB of HTML). Online they load as usual.
-        globIgnores: ['**/gallery/**', '**/demos/**', '**/blocks/**', '**/showcase/**'],
+        // The component gallery (built only when flags.experimentalGallery is
+        // on) is not part of the app — leave it out of the install payload
+        // (~5 MB of HTML). Online it loads as usual.
+        globIgnores: ['**/gallery/**'],
         // Navigations that match no precached page fall back to the site root.
         navigateFallback: BASE,
         navigateFallbackDenylist: [
@@ -163,7 +171,7 @@ export default defineConfig({
           ...(BASE_PATH === '/' ? [] : [new RegExp(`^${escapeRegExp(BASE_PATH)}api/`)]),
           // The pages left out of the precache above load from the network
           // instead of turning into the home page…
-          new RegExp(`^${escapeRegExp(BASE_PATH)}(?:(?:es|fr)/)?(?:gallery|demos|blocks|showcase)(?:/|$)`),
+          new RegExp(`^${escapeRegExp(BASE_PATH)}(?:(?:es|fr)/)?gallery(?:/|$)`),
           // …and so do plain files opened directly (llms.txt, sitemaps, JSON).
           /\.(?:txt|xml|json|webmanifest)(?:\?.*)?$/,
         ],
@@ -186,7 +194,7 @@ export default defineConfig({
             },
           },
           {
-            // GitHub REST API (template dashboard demo) — stale-while-revalidate so it works offline
+            // GitHub REST API (FeedbackFAB's duplicate-issue search) — stale-while-revalidate so it works offline
             urlPattern: /^https:\/\/api\.github\.com\/.*$/,
             handler: 'StaleWhileRevalidate',
             options: {
@@ -201,7 +209,7 @@ export default defineConfig({
         ],
       },
       experimental: {
-        // Ensures that directory URLs (e.g. /showcase/) are handled correctly
+        // Ensures that directory URLs (e.g. /recipes/) are handled correctly
         // by the SW without 404-ing on trailing-slash variants
         directoryAndTrailingSlashHandler: true,
       },

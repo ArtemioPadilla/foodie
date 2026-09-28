@@ -10,10 +10,15 @@
  * other, so a page translated into one locale is translated into both.
  *
  * ## What this does NOT enforce
- * It is intentional that many EN routes have NO localized equivalent. The
- * site ships only the top-level localized pages (index, gallery, docs) as
- * translated landing pages. All deeper routes (/demos, /blog, /contact, etc.)
- * are English-only by design. Those are listed in EN_ONLY_ALLOWLIST below.
+ * Foodie's app routes all exist in EN, ES and FR. A few routes are
+ * English-only by design (the 404, the docs, the component gallery's
+ * per-component pages); ES/FR carry translated bridge landings for /docs and
+ * /gallery. Those are listed in EN_ONLY_ALLOWLIST below.
+ *
+ * Flag-gated pages (roadmap Issue 046) live in `src/flagged-pages/`, laid out
+ * like `src/pages/`, and are injected by `flagged-pages.config.mjs` only when
+ * their flag is on. They count as routes here, and the injected route list
+ * must match the files one to one.
  *
  * ## Methodology: build-time data emitter vs runtime consumer
  * This file is a *build-time data emitter* test: it reads the file system
@@ -23,15 +28,26 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import { GALLERY_ROUTES } from '../../flagged-pages.config.mjs';
 
 // ── File-system page discovery ─────────────────────────────────────────────
 // import.meta.glob is resolved by Vite at transform time; the glob runs in the
 // test runner's module context so paths are relative to this file's location.
 
-const allEnPages = import.meta.glob('../pages/**/*.{astro,md,mdx}', { eager: false });
+const flaggedPages = import.meta.glob('../flagged-pages/**/*.astro', { eager: false });
+const allEnPages = {
+  ...import.meta.glob('../pages/**/*.{astro,md,mdx}', { eager: false }),
+  ...flaggedPages,
+};
 const localizedPages = {
-  es: import.meta.glob('../pages/es/**/*.{astro,md,mdx}', { eager: false }),
-  fr: import.meta.glob('../pages/fr/**/*.{astro,md,mdx}', { eager: false }),
+  es: {
+    ...import.meta.glob('../pages/es/**/*.{astro,md,mdx}', { eager: false }),
+    ...import.meta.glob('../flagged-pages/es/**/*.astro', { eager: false }),
+  },
+  fr: {
+    ...import.meta.glob('../pages/fr/**/*.{astro,md,mdx}', { eager: false }),
+    ...import.meta.glob('../flagged-pages/fr/**/*.astro', { eager: false }),
+  },
 } as const;
 const NON_DEFAULT_LOCALES = Object.keys(localizedPages) as (keyof typeof localizedPages)[];
 
@@ -47,27 +63,11 @@ const NON_DEFAULT_LOCALES = Object.keys(localizedPages) as (keyof typeof localiz
  * add it here so the parity test does not block CI.
  */
 const EN_ONLY_ALLOWLIST = new Set([
-  // Deep app routes — interactive demos, not marketing copy
-  '/demos',
-  '/demos/api',
-  '/demos/dashboard',
-  '/demos/data',
-  '/demos/data/large',
-  '/demos/settings',
-  // Blog — placeholder content, out of scope for i18n
-  '/blog',
-  // Dynamic blog posts (dynamic segment — won't appear as a static glob key)
-  '/blog/[...slug]',
-  // Utility / reference pages
-  '/contact',
+  // Utility page
   '/404',
-  // Installable page blocks (ROADMAP Epic 27) — English-only, like /demos
-  '/login',
-  '/blocks',
-  '/blocks/login',
-  '/blocks/settings',
-  '/blocks/app-layout',
-  // Gallery — shared across locales; individual component pages are EN-only
+  // Component gallery (flag-gated, src/flagged-pages/) — /es/gallery/ and
+  // /fr/gallery/ are translated bridge landings; the per-component pages are
+  // EN-only.
   '/gallery',
   '/gallery/[component]',
   // Docs (roadmap Issue 043) — the Foodie docs are written in English only.
@@ -85,7 +85,7 @@ const EN_ONLY_ALLOWLIST = new Set([
 function toRoute(globKey: string): string {
   // globKey example: "../pages/es/gallery.astro"
   // Strip leading "../pages" and extension → "/es/gallery"
-  const rel = globKey.replace(/^\.\.\/pages/, '').replace(/\.(astro|mdx?|tsx?)$/, '');
+  const rel = globKey.replace(/^\.\.\/(?:flagged-)?pages/, '').replace(/\.(astro|mdx?|tsx?)$/, '');
   // Normalize "/index" → "/"
   return rel.endsWith('/index') ? rel.slice(0, -'/index'.length) || '/' : rel;
 }
@@ -167,5 +167,28 @@ describe('route parity — localized pages must map to real EN routes', () => {
       nonExistentAllowlist,
       `Allowlist entries with no matching file (stale — remove them):\n${nonExistentAllowlist.join('\n')}`,
     ).toEqual([]);
+  });
+});
+
+describe('flag-gated pages (roadmap Issue 046)', () => {
+  it('flagged-pages.config.mjs injects exactly the files in src/flagged-pages/', () => {
+    const files = Object.keys(flaggedPages)
+      .map((k) => k.replace(/^\.\.\//, './src/'))
+      .sort();
+    const entrypoints = GALLERY_ROUTES.map(([, entrypoint]) => entrypoint).sort();
+    expect(entrypoints).toEqual(files);
+  });
+
+  it('each injected pattern is the route its file path implies', () => {
+    for (const [pattern, entrypoint] of GALLERY_ROUTES) {
+      expect(toRoute(entrypoint.replace(/^\.\/src\//, '../'))).toBe(pattern);
+    }
+  });
+
+  it('no flag-gated route also exists under src/pages', () => {
+    const pageRoutes = new Set(
+      Object.keys(import.meta.glob('../pages/**/*.{astro,md,mdx}', { eager: false })).map(toRoute),
+    );
+    for (const [pattern] of GALLERY_ROUTES) expect(pageRoutes.has(pattern)).toBe(false);
   });
 });

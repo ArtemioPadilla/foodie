@@ -18,6 +18,7 @@ import MobileNav from '@/components/islands/MobileNav';
 import AccountMenu from '@/components/islands/AccountMenu';
 import LangSwitcher from './LangSwitcher.astro';
 import { detectLocale, localizedPath, localizedRoute, stripBase, t } from '@/i18n';
+import { flags } from '@/lib/flags';
 
 const SECTIONS = [
   { route: '/', key: 'home' },
@@ -42,6 +43,16 @@ const nav = SECTIONS.map((s) => ({
   label: t(locale, `nav.${s.key}`),
   active: isActive(s.route),
 }));
+
+// ⌘K palette commands: the sections above plus the docs and — only in builds
+// that ship it (flags.experimentalGallery, roadmap Issue 046) — the gallery.
+const searchCommands = [
+  ...nav.map(({ href, label }) => ({ href, label })),
+  { href: withBase(localizedRoute('/docs/', locale)), label: t(locale, 'nav.docs') },
+  ...(flags.experimentalGallery
+    ? [{ href: withBase(localizedRoute('/gallery/', locale)), label: t(locale, 'nav.gallery') }]
+    : []),
+];
 
 const menuLabels = {
   open: t(locale, 'nav.openMenu'),
@@ -96,7 +107,7 @@ const menuLabels = {
       {/* GlobalSearch — mounted client:idle so it's available site-wide without
           blocking first paint. Renders a magnifier trigger button + the ⌘K
           dialog in one island (compound-component constraint). */}
-      <GlobalSearch client:idle />
+      <GlobalSearch client:idle commands={searchCommands} />
       <span class="ml-1"><ThemeToggle /></span>
       {/* Account slot (reserved in Issue 005, filled in Issue 036): "Sign in"
           or the avatar menu. One island holds the menu AND the AuthDialog

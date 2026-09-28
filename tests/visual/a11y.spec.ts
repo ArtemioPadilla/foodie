@@ -19,7 +19,8 @@ test.use({ bypassCSP: true });
  * meant to teach principled UX (see docs/ETHICS.md item #7).
  */
 
-// Include at least one form-bearing route (/login, /contact) so a regression
+// Include form-bearing routes (/contribute/, the goals form, the
+// IngredientActions form) so a regression
 // in the shared <Form> a11y wiring (label htmlFor ↔ control id) is caught.
 // Without form coverage a broken FormItemContext would ship green — exactly
 // the blind spot that let a downstream instantiation ship unlabelled inputs.
@@ -40,13 +41,13 @@ test.use({ bypassCSP: true });
 const routes = [
   '/',
   '/gallery/',
-  '/demos/dashboard/',
   '/docs/',
   // Roadmap Issue 043: a prose docs page and the schema tables generated from src/schemas.
   '/docs/guides/development/',
   '/docs/reference/api/',
-  '/login/',
-  '/contact/',
+  // Replaces /login/ + /contact/ (removed in roadmap Issue 046) as the
+  // react-hook-form + <Form> coverage: the recipe contribution wizard.
+  '/contribute/',
   '/recipes/rec_001/',
   '/fr/recipes/rec_001/',
   '/recipes/',

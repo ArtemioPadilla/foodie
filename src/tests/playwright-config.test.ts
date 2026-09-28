@@ -50,9 +50,9 @@ describe('Playwright setup', () => {
     expect(cfg).toMatch(/testDir:\s*'\.\/tests\/e2e'/);
   });
 
-  it('has visual specs for /gallery and /demos/dashboard', () => {
+  it('has a visual spec for /gallery (the dashboard demo left in roadmap Issue 046)', () => {
     expect(existsSync(rel('tests/visual/gallery.spec.ts'))).toBe(true);
-    expect(existsSync(rel('tests/visual/dashboard.spec.ts'))).toBe(true);
+    expect(existsSync(rel('tests/visual/dashboard.spec.ts'))).toBe(false);
   });
 
   it('CONTRIBUTING.md documents the baseline-update flow', () => {

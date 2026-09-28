@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import index from '../pages/gallery/index.astro?raw';
-import component from '../pages/gallery/[component].astro?raw';
+import index from '../flagged-pages/gallery/index.astro?raw';
+import component from '../flagged-pages/gallery/[component].astro?raw';
 import manifestSrc from '../content/gallery.ts?raw';
 
 // These tests verify that the /gallery routes are wired correctly by

@@ -24,8 +24,4 @@ describe('UpdateToast', () => {
   it('does not import from framer-motion', () => {
     expect(source).not.toMatch(/from ['"]framer-motion['"]/);
   });
-
-  it('does not use React Context', () => {
-    expect(source).not.toMatch(/createContext/);
-  });
 });
