@@ -31,13 +31,12 @@ eslint + pragmas + build — the gate before every commit) · `npm run test` ·
 roadmap id, e.g. `feat(pages): landing Foodie (roadmap #005)`.
 
 **Playwright under an agent (Astro 7).** When `astro preview` detects an AI
-agent it starts in the background and returns at once, so a Playwright
-`webServer` launched by an agent reports "exited early" (CI and humans are
-unaffected). Start the server first, and Playwright reuses it: for the
-visual suite `npm run build && npm run preview -- --port 4321`, then
-`npx playwright test`; for the journeys `npm run build && npm run preview --
---port 4322`, then `npx playwright test --config playwright.e2e.config.ts`.
-Stop it afterwards with `npx astro preview stop`. If `npm run lighthouse`
+agent (`CLAUDECODE`, `AI_AGENT`, …) it moves itself to the background and
+exits. Both Playwright configs therefore start it with `--ignore-lock`, which
+keeps it in the foreground under Playwright's control, so `npm run test:e2e`
+and `npm run build && npx playwright test` work as-is and leave no daemon. A
+preview you start by hand as an agent still backgrounds itself: add
+`--ignore-lock` or stop it with `npx astro preview stop`. If `npm run lighthouse`
 reports "Chrome installation not found", point `CHROME_PATH` at Playwright's
 Chromium (for example `/opt/pw-browsers/chromium-*/chrome-linux/chrome`).
 

@@ -19,6 +19,15 @@ describe('Playwright setup', () => {
     expect(cfg).toMatch(/npm run preview/);
   });
 
+  it('keeps astro preview in the foreground under agent env (Astro 7 auto-background)', () => {
+    // Without --ignore-lock, Astro 7 backgrounds `astro preview` when it
+    // detects an AI agent and Playwright reports "webServer exited early".
+    for (const file of ['playwright.config.ts', 'playwright.e2e.config.ts']) {
+      const cfg = readFileSync(rel(file), 'utf-8');
+      expect(cfg, file).toMatch(/npm run preview -- --port \$\{PORT\} --ignore-lock/);
+    }
+  });
+
   it('snapshots both chromium-light and chromium-dark projects', () => {
     const cfg = readFileSync(rel('playwright.config.ts'), 'utf-8');
     expect(cfg).toMatch(/chromium-light/);

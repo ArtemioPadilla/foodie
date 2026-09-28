@@ -43,7 +43,15 @@ export default defineConfig({
     // behind by this run used to break tests/visual/search.spec.ts when the
     // visual suite ran next without rebuilding. ASTRO_BASE, when set, flows
     // into both build and preview through the inherited environment.
-    command: `npm run build && npm run preview -- --port ${PORT}`,
+    // `--ignore-lock` keeps `astro preview` in the foreground. Since Astro 7
+    // the CLI auto-backgrounds itself (and exits 0) when it detects an agent
+    // environment (CLAUDECODE, AI_AGENT, … via am-i-vibing), which Playwright
+    // reports as "Process from config.webServer exited early" and which left
+    // an orphaned daemon behind. `--ignore-lock` disables that auto-background
+    // path and skips the .astro lock file, so Playwright owns (and kills) the
+    // server process in every environment — and the visual (4321) and e2e
+    // (4322) servers can run side by side from the same root.
+    command: `npm run build && npm run preview -- --port ${PORT} --ignore-lock`,
     url: `http://localhost:${PORT}${BASE_PATH}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,

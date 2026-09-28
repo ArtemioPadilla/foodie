@@ -82,8 +82,10 @@ Alternatives we rejected:
   Astro 5).
 - When Astro 7's `astro preview` detects an AI agent, it moves itself to the
   background. A Playwright `webServer` started by an agent then fails with
-  "exited early". CI and humans are not affected. The workaround, which is to
-  start the preview first and let Playwright reuse it, is in `CLAUDE.md`.
+  "exited early". CI and humans are not affected. Fixed as a roadmap #029
+  follow-up: both Playwright `webServer` commands pass `--ignore-lock`, which
+  disables the auto-background path (and the lock file), so the server stays
+  in the foreground and Playwright stops it at the end of the run.
 
 **Neutral**
 
