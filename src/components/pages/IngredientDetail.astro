@@ -13,10 +13,12 @@
  * with this ingredient" (computed at build). The only island is
  * `IngredientActions` (`client:visible`): add to pantry / shopping list.
  */
-import { ArrowLeftIcon, CalendarIcon, ChefHatIcon, ClockIcon, InfoIcon, LayersIcon, LeafIcon, MapPinIcon, ScaleIcon } from 'lucide-react';
+import { ArrowLeftIcon, CalendarIcon, ChefHatIcon, InfoIcon, LayersIcon, LeafIcon, MapPinIcon, ScaleIcon } from 'lucide-react';
 import IngredientActions from '@/components/islands/IngredientActions';
-import { CategoryDot, IngredientTagBadges, categoryClasses } from '@/components/domain/IngredientCard';
-import { DifficultyBadge } from '@/components/domain/RecipeCard';
+import { CategoryChip, categoryClasses } from '@/components/domain/CategoryChip';
+import { DifficultyBadge } from '@/components/domain/DifficultyBadge';
+import { IngredientTagBadges } from '@/components/domain/IngredientCard';
+import { TimeBadge } from '@/components/domain/TimeBadge';
 import { getTranslated, localizedRoute, t, type Locale } from '@/i18n';
 import { withBase } from '@/lib/href';
 import { activeIngredientTags } from '@/lib/domain/ingredient-browser';
@@ -82,7 +84,7 @@ const headingClass = 'flex items-center gap-2 font-display text-xl font-semibold
     </div>
     {description && <p class="mt-4 max-w-3xl text-lg text-muted-foreground">{description}</p>}
     <ul class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted-foreground" data-testid="ingredient-meta">
-      <li><CategoryDot category={ingredient.category} label={categoryName} /></li>
+      <li><CategoryChip category={ingredient.category} label={categoryName} /></li>
       <li class="inline-flex items-center gap-1.5"><MapPinIcon className="size-4" aria-hidden="true" />{ingredient.region}</li>
       <li class="tabular-nums">
         <span class="sr-only">{t(lang, 'ingredient.avgPrice')}: </span>{formatUnitPrice(ingredient, lang)}
@@ -218,10 +220,7 @@ const headingClass = 'flex items-center gap-2 font-display text-xl font-semibold
                   >
                     <span class="block font-medium text-foreground">{getTranslated(recipe.name, lang)}</span>
                     <span class="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-                      <span class="inline-flex items-center gap-1">
-                        <ClockIcon className="size-3.5" aria-hidden="true" />
-                        {recipe.totalTime} {t(lang, 'common.minutesAbbr')}
-                      </span>
+                      <TimeBadge minutes={recipe.totalTime} lang={lang} iconClassName="size-3.5" />
                       <DifficultyBadge difficulty={recipe.difficulty} lang={lang} />
                     </span>
                   </a>

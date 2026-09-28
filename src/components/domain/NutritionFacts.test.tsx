@@ -31,4 +31,24 @@ describe('NutritionFacts', () => {
     expect(screen.getByTestId('nutrition-facts')).toHaveAttribute('data-servings', '4');
     expect(screen.getByRole('table').textContent).toMatch(/4/);
   });
+
+  it('rounds scaled values: kcal/mg to integers, grams to one decimal', () => {
+    const odd = makeNutrition({ calories: 333, protein: 12.35, carbs: 41.2, fat: 7.05, sodium: 415, cholesterol: 33 });
+    // 3 → 2 servings: factor 2/3.
+    render(<NutritionFacts nutrition={odd} baseServings={3} servings={2} lang="en" />);
+    const cell = (key: string) => document.querySelector(`[data-nutrient="${key}"] td`)!.firstChild!.textContent;
+    expect(cell('calories')).toBe('222');
+    expect(cell('protein')).toBe('8.2');
+    expect(cell('carbs')).toBe('27.5');
+    expect(cell('fat')).toBe('4.7');
+    expect(cell('sodium')).toBe('277');
+    expect(cell('cholesterol')).toBe('22');
+  });
+
+  it('keeps the stored values when baseServings is 0 (no division by zero)', () => {
+    render(<NutritionFacts nutrition={nutrition} baseServings={0} servings={4} lang="fr" />);
+    const cell = document.querySelector('[data-nutrient="calories"] td')!.firstChild!.textContent;
+    expect(cell).toBe(String(nutrition.calories));
+    expect(screen.getByRole('rowheader', { name: 'Protéines' })).toBeInTheDocument();
+  });
 });

@@ -1,13 +1,14 @@
 import * as React from 'react';
-import { CakeIcon, ClockIcon, CookieIcon, HeartIcon, MoonIcon, StarIcon, SunIcon, SunriseIcon, UsersIcon } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { CakeIcon, CookieIcon, HeartIcon, MoonIcon, StarIcon, SunIcon, SunriseIcon, UsersIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { getTranslated, t, type Locale } from '@/i18n';
 import { cn } from '@/lib/utils';
-import type { Difficulty, MealType, Recipe, RecipeView } from '@/schemas';
+import type { MealType, Recipe, RecipeView } from '@/schemas';
 import { DietaryBadges } from './DietaryBadges';
+import { DifficultyBadge } from './DifficultyBadge';
 import { FavoriteButton } from './FavoriteButton';
+import { TimeBadge } from './TimeBadge';
 
 /**
  * RecipeCard — the catalog card of the Foodie domain (roadmap Issue 017; port
@@ -52,12 +53,6 @@ const MEAL_TYPE_ART: Record<MealType, { Icon: React.ComponentType<{ className?: 
   dessert: { Icon: CakeIcon, tint: 'bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300' },
 };
 
-const DIFFICULTY_CLASS: Record<Difficulty, string> = {
-  easy: 'border-transparent bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200',
-  medium: 'border-transparent bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200',
-  hard: 'border-transparent bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200',
-};
-
 /** Recipe art: the image when present, otherwise the per-meal-type placeholder. */
 export function RecipeArt({
   recipe,
@@ -94,14 +89,6 @@ export function RecipeArt({
   );
 }
 
-export function DifficultyBadge({ difficulty, lang = 'en', className }: { difficulty: Difficulty; lang?: Locale; className?: string }) {
-  return (
-    <Badge className={cn(DIFFICULTY_CLASS[difficulty], className)} data-difficulty={difficulty}>
-      {t(lang, `recipe.difficulty_${difficulty}`)}
-    </Badge>
-  );
-}
-
 export function RecipeCard({
   recipe,
   lang = 'en',
@@ -130,12 +117,7 @@ export function RecipeCard({
 
   const meta = (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
-      <span className="inline-flex items-center gap-1" title={t(lang, 'recipe.totalTime')}>
-        <ClockIcon className="size-4" aria-hidden="true" />
-        <span>
-          {recipe.totalTime} {t(lang, 'common.minutesAbbr')}
-        </span>
-      </span>
+      <TimeBadge minutes={recipe.totalTime} lang={lang} label={t(lang, 'recipe.totalTime')} />
       <span className="inline-flex items-center gap-1">
         <UsersIcon className="size-4" aria-hidden="true" />
         <span>{recipe.servings}</span>
@@ -173,8 +155,8 @@ export function RecipeCard({
       data-recipe-id={recipe.id}
       data-view={view}
       className={cn(
-        'relative overflow-hidden transition-all',
-        interactive && 'cursor-pointer hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10',
+        'relative overflow-hidden motion-safe:transition-all',
+        interactive && 'cursor-pointer motion-safe:hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10',
         href && 'focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
         isList ? 'flex items-stretch gap-4 p-3' : 'flex flex-col',
         className,

@@ -318,27 +318,113 @@ export const galleryManifest: GalleryEntry[] = [
     category: 'data',
     island: 'ShowcaseDownloadTrigger',
   },
-  // Foodie domain components (roadmap Issue 017) — src/components/domain/
+  // Foodie domain components (roadmap Issues 017–021) — src/components/domain/.
+  // One island (ShowcaseFoodie) renders the demo keyed by `slug`; guidelines
+  // live in docs/component-guidelines/foodie.md.
   {
     slug: 'recipe-card',
     name: 'Recipe card',
     summary:
-      'Catalog card of the Foodie domain: meal-type placeholder art (or lazy image), dietary badges, time, servings, difficulty and rating — grid and list views, plus its skeleton.',
+      'Catalog card of a recipe: meal-type placeholder art (or lazy image), dietary badges, time, servings, difficulty and rating — grid and list views, plus its skeleton.',
     source: 'src/components/domain/RecipeCard.tsx',
     status: 'beta',
     category: 'domain',
-    island: 'ShowcaseRecipeCard',
+    island: 'ShowcaseFoodie',
     hydration: 'client:visible',
+  },
+  {
+    slug: 'ingredient-card',
+    name: 'Ingredient card',
+    summary:
+      'Catalog card of an ingredient: food-category stripe and dot, dietary tags, unit price, optional action slot and selected state, plus its skeleton.',
+    source: 'src/components/domain/IngredientCard.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+    hydration: 'client:visible',
+  },
+  {
+    slug: 'nutrition-facts',
+    name: 'Nutrition facts',
+    summary:
+      'A recipe’s eight macros as an accessible table (caption, column and row headers), scaled by servings / baseServings with kcal·mg rounded to integers and grams to 0.1.',
+    source: 'src/components/domain/NutritionFacts.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
   },
   {
     slug: 'dietary-badges',
     name: 'Dietary badges',
     summary:
-      'The true flags of a recipe’s dietaryLabels as localised badges with a "+N" overflow — used by RecipeCard and the recipe detail.',
+      'The true flags of a recipe’s dietaryLabels as localised badges in a fixed order with a "+N" overflow — used by RecipeCard and the recipe detail.',
     source: 'src/components/domain/DietaryBadges.tsx',
     status: 'beta',
     category: 'domain',
-    island: 'ShowcaseRecipeCard',
+    island: 'ShowcaseFoodie',
+  },
+  {
+    slug: 'difficulty-badge',
+    name: 'Difficulty badge',
+    summary:
+      'Easy / medium / hard as a tinted, localised Badge (≥ 4.5:1 text in both themes).',
+    source: 'src/components/domain/DifficultyBadge.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+  },
+  {
+    slug: 'time-badge',
+    name: 'Time badge',
+    summary:
+      'A duration in minutes with a clock icon — inline for meta rows or as an outline Badge — with a visually hidden label for context.',
+    source: 'src/components/domain/TimeBadge.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+  },
+  {
+    slug: 'category-chip',
+    name: 'Category chip',
+    summary:
+      'A food category’s identity colour (--color-food-* tokens, ≥ 3:1 non-text contrast) next to its always-visible name — dot or bordered chip.',
+    source: 'src/components/domain/CategoryChip.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+  },
+  {
+    slug: 'servings-adjuster',
+    name: 'Servings adjuster',
+    summary:
+      'The −/＋ servings stepper of the recipe detail: an output bound to the group, the ×factor once it differs from the recipe yield, and Reset.',
+    source: 'src/components/domain/ServingsAdjuster.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+    hydration: 'client:visible',
+  },
+  {
+    slug: 'recipe-timer',
+    name: 'Recipe timer',
+    summary:
+      'Per-step countdown in a Dialog: start / pause / reset, SVG progress ring, role="timer" live region and a Web Notification at zero.',
+    source: 'src/components/domain/RecipeTimer.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+    hydration: 'client:visible',
+  },
+  {
+    slug: 'favorite-button',
+    name: 'Favorite button',
+    summary:
+      'Favourite toggle on $favorites (legacy favoriteRecipes key): aria-pressed, a toast per change, icon or full appearance, hydration-safe.',
+    source: 'src/components/domain/FavoriteButton.tsx',
+    status: 'beta',
+    category: 'domain',
+    island: 'ShowcaseFoodie',
+    hydration: 'client:visible',
   },
 ];
 

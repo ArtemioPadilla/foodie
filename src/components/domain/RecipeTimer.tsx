@@ -118,7 +118,7 @@ export function RecipeTimer({ open, onOpenChange, minutes, stepLabel, lang = 'en
                 strokeLinecap="round"
                 strokeDasharray={CIRCUMFERENCE}
                 strokeDashoffset={CIRCUMFERENCE * (1 - progress)}
-                className={cn('transition-[stroke-dashoffset] duration-1000 ease-linear', complete ? 'text-emerald-500' : 'text-primary')}
+                className={cn('motion-safe:transition-[stroke-dashoffset] motion-safe:duration-1000 motion-safe:ease-linear', complete ? 'text-emerald-500' : 'text-primary')}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">

@@ -3,7 +3,8 @@ import * as React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen, within } from '@testing-library/react';
 import { makeIngredient } from '@/tests/fixtures/foodie-domain';
-import { CategoryDot, IngredientCard, IngredientCardSkeleton, categoryClasses } from './IngredientCard';
+import { categoryClasses } from './CategoryChip';
+import { IngredientCard, IngredientCardSkeleton } from './IngredientCard';
 
 /** IngredientCard (roadmap Issue 019; port of legacy `IngredientCard`). */
 const pesto = makeIngredient({
@@ -49,10 +50,9 @@ describe('IngredientCard', () => {
     expect(screen.getByTestId('ingredient-card')).toHaveAttribute('data-selected', 'true');
   });
 
-  it('falls back to neutral colours for unknown categories and renders a skeleton', () => {
-    expect(categoryClasses('nope').dot).toBe('bg-muted-foreground');
-    const { container } = render(<CategoryDot category="dairy" label="Dairy" />);
-    expect(container.querySelector('.bg-food-dairy')).not.toBeNull();
+  it('renders the category through CategoryChip and a skeleton', () => {
+    const { container } = render(<IngredientCard ingredient={pesto} categoryName="Pantry" />);
+    expect(container.querySelector('[data-category="pantry"] .bg-food-pantry')).not.toBeNull();
     render(<IngredientCardSkeleton />);
     expect(screen.getByTestId('ingredient-card-skeleton')).toBeInTheDocument();
   });

@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { CheckIcon, ChefHatIcon, ClockIcon, PlusIcon, RefreshCwIcon, SearchIcon, SearchXIcon, StarIcon, WheatIcon, XIcon } from 'lucide-react';
+import { CheckIcon, ChefHatIcon, PlusIcon, RefreshCwIcon, SearchIcon, SearchXIcon, StarIcon, WheatIcon, XIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorState } from '@/components/ui/error-state';
 import { Input } from '@/components/ui/input';
-import { CategoryDot, IngredientCard, IngredientCardSkeleton } from '@/components/domain/IngredientCard';
+import { CategoryChip } from '@/components/domain/CategoryChip';
+import { IngredientCard, IngredientCardSkeleton } from '@/components/domain/IngredientCard';
+import { TimeBadge } from '@/components/domain/TimeBadge';
 import { getTranslated, localizedRoute, t, type Locale } from '@/i18n';
 import { useCatalog } from '@/lib/catalog/use-catalog';
 import {
@@ -120,7 +122,7 @@ export function IngredientBrowserView({ lang, initialState }: IngredientBrowserP
               onClick={() => setState((prev) => ({ ...prev, categories: toggleListValue(prev.categories, option.id) }))}
               data-category={option.id}
             >
-              <CategoryDot category={option.id} label={option.label} />
+              <CategoryChip category={option.id} label={option.label} />
               <span className="text-xs tabular-nums text-muted-foreground" aria-hidden="true">
                 {option.count}
               </span>
@@ -229,7 +231,7 @@ export function IngredientBrowserView({ lang, initialState }: IngredientBrowserP
               {groups.map((group) => (
                 <section key={group.category} aria-labelledby={`ingredient-group-${group.category}`} data-testid="ingredient-group" data-category={group.category}>
                   <h2 id={`ingredient-group-${group.category}`} className="mb-3 flex items-center gap-2 font-display text-lg font-semibold text-foreground">
-                    <CategoryDot category={group.category} label={group.label} />
+                    <CategoryChip category={group.category} label={group.label} />
                     <span className="text-sm font-normal tabular-nums text-muted-foreground">({group.items.length})</span>
                   </h2>
                   <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -296,10 +298,7 @@ export function IngredientBrowserView({ lang, initialState }: IngredientBrowserP
                         <Badge variant={matchPercentage >= 80 ? 'default' : matchPercentage >= 50 ? 'secondary' : 'outline'} className="tabular-nums">
                           {t(lang, 'ingredients.matchCount', { matched: matchedIngredients, total: totalIngredients })}
                         </Badge>
-                        <span className="inline-flex items-center gap-1">
-                          <ClockIcon className="size-3" aria-hidden="true" />
-                          {recipe.totalTime} {t(lang, 'common.minutesAbbr')}
-                        </span>
+                        <TimeBadge minutes={recipe.totalTime} lang={lang} iconClassName="size-3" />
                         <span className="inline-flex items-center gap-1">
                           <StarIcon className="size-3 fill-amber-400 text-amber-400" aria-hidden="true" />
                           {recipe.rating.toFixed(1)}

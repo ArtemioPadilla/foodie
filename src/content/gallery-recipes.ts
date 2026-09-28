@@ -41,11 +41,115 @@ export function RecipeGrid({ recipes, lang }: { recipes: Recipe[]; lang: Locale 
   );
 }`,
   },
+  'ingredient-card': {
+    lang: 'tsx',
+    code: `import { IngredientCard } from '@/components/domain/IngredientCard';
+import { withBase } from '@/lib/href';
+import { localizedRoute, type Locale } from '@/i18n';
+import type { Ingredient } from '@/schemas';
+
+// categoryName comes from categories.ingredientCategories (localised).
+export function IngredientTile({ ingredient, categoryName, lang }: { ingredient: Ingredient; categoryName: string; lang: Locale }) {
+  return (
+    <IngredientCard
+      ingredient={ingredient}
+      categoryName={categoryName}
+      lang={lang}
+      href={withBase(localizedRoute(\`/ingredients/\${ingredient.id}/\`, lang))}
+    />
+  );
+}`,
+  },
+  'nutrition-facts': {
+    lang: 'tsx',
+    code: `import { NutritionFacts } from '@/components/domain/NutritionFacts';
+
+// Values are per serving; servings / baseServings scales them
+// (kcal and mg rounded to integers, grams to one decimal).
+<NutritionFacts nutrition={recipe.nutrition} baseServings={recipe.servings} servings={servings} lang={lang} />`,
+  },
   'dietary-badges': {
     lang: 'tsx',
     code: `import { DietaryBadges } from '@/components/domain/DietaryBadges';
 
+// Order is fixed by DIETARY_LABEL_KEYS; flags past \`max\` collapse into "+N".
 <DietaryBadges labels={recipe.dietaryLabels} lang="es" max={3} />`,
+  },
+  'difficulty-badge': {
+    lang: 'tsx',
+    code: `import { DifficultyBadge } from '@/components/domain/DifficultyBadge';
+
+<DifficultyBadge difficulty={recipe.difficulty} lang={lang} />`,
+  },
+  'time-badge': {
+    lang: 'tsx',
+    code: `import { TimeBadge } from '@/components/domain/TimeBadge';
+import { t } from '@/i18n';
+
+<p className="flex gap-4 text-sm text-muted-foreground">
+  <TimeBadge minutes={recipe.totalTime} lang={lang} label={t(lang, 'recipe.totalTime')} />
+  <TimeBadge minutes={recipe.prepTime} lang={lang} appearance="badge" iconClassName="size-3" />
+</p>`,
+  },
+  'category-chip': {
+    lang: 'tsx',
+    code: `import { CategoryChip, categoryClasses } from '@/components/domain/CategoryChip';
+
+// Dot + label in a meta row, or a bordered chip in a filter bar.
+<CategoryChip category={ingredient.category} label={categoryName} />
+<CategoryChip category="spices" label="Especias" appearance="chip" />
+
+// The same token as a card stripe:
+<div className={cn('border-l-4', categoryClasses(ingredient.category).stripe)} />`,
+  },
+  'servings-adjuster': {
+    lang: 'tsx',
+    code: `import { useState } from 'react';
+import { ServingsAdjuster } from '@/components/domain/ServingsAdjuster';
+import { NutritionFacts } from '@/components/domain/NutritionFacts';
+
+export function Servings({ recipe, lang }: { recipe: Recipe; lang: Locale }) {
+  const [servings, setServings] = useState(recipe.servings);
+  return (
+    <>
+      <ServingsAdjuster servings={servings} originalServings={recipe.servings} onChange={setServings} lang={lang} />
+      <NutritionFacts nutrition={recipe.nutrition} baseServings={recipe.servings} servings={servings} lang={lang} />
+    </>
+  );
+}`,
+  },
+  'recipe-timer': {
+    lang: 'tsx',
+    code: `import { useState } from 'react';
+import { RecipeTimer } from '@/components/domain/RecipeTimer';
+import { Button } from '@/components/ui/button';
+
+// Trigger and Dialog must live in the same island (one React root).
+export function StepTimer({ step, lang }: { step: RecipeInstruction; lang: Locale }) {
+  const [open, setOpen] = useState(false);
+  const [run, setRun] = useState(0); // new key = fresh countdown
+  return (
+    <>
+      <Button onClick={() => { setRun((r) => r + 1); setOpen(true); }}>Timer</Button>
+      <RecipeTimer key={run} open={open} onOpenChange={setOpen} minutes={step.time ?? 0} stepLabel={\`Step \${step.step}\`} lang={lang} />
+    </>
+  );
+}`,
+  },
+  'favorite-button': {
+    lang: 'tsx',
+    code: `import { FavoriteButton } from '@/components/domain/FavoriteButton';
+import { Toaster } from '@/components/ui/toast';
+
+// One <Toaster /> per island that toasts (toastManager is a module singleton).
+export function RecipeActions({ recipe, name, lang }: { recipe: Recipe; name: string; lang: Locale }) {
+  return (
+    <>
+      <FavoriteButton recipeId={recipe.id} recipeName={name} lang={lang} />
+      <Toaster />
+    </>
+  );
+}`,
   },
   primitives: {
     lang: 'tsx',

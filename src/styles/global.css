@@ -151,17 +151,21 @@
   --color-accent-500: #f59e0b;
   --color-accent-600: #d97706;
   --color-accent-700: #b45309;
-  /* Food-category colors (legacy/tailwind.config.js). Used for ingredient and
-     recipe category badges: `bg-food-protein`, `text-food-dairy`, … Constant
-     across light/dark — they are identity hues, not surfaces; pair them with
-     white text (or use them as borders/dots) on dark backgrounds. */
+  /* Food-category colors (legacy/tailwind.config.js). Identity hues for the
+     category dot/stripe of `CategoryChip` (`bg-food-protein`,
+     `border-l-food-dairy`, …) — non-text indicators, always next to the
+     category name, never used as text colour. WCAG 1.4.11 asks ≥ 3:1 against
+     the surface: `npm run ux:check` (src/tests/ux-contrast.test.ts) checks
+     every token against --background/--card/--muted in both themes. Legacy
+     grains (amber-600) and spices (lime-500) fall below 3:1 on white, so they
+     take the -700 shade in light and keep the legacy hue in dark. */
   --color-food-protein: #dc2626;
   --color-food-vegetables: #16a34a;
   --color-food-fruits: #ea580c;
-  --color-food-grains: #d97706;
+  --color-food-grains: light-dark(#b45309, #d97706);
   --color-food-dairy: #3b82f6;
   --color-food-pantry: #8b5cf6;
-  --color-food-spices: #84cc16;
+  --color-food-spices: light-dark(#4d7c0f, #84cc16);
 
   /* Type system — editorial serif display + grotesque body + mono for code.
      Loaded in BaseLayout via Google Fonts (preconnect + display=swap). */

@@ -5,7 +5,7 @@
 
 Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entry here is rendered live at `/gallery`.
 
-**Total:** 27 gallery entries across 16 categories.
+**Total:** 35 gallery entries across 16 categories.
 
 **Legend**
 
@@ -113,8 +113,16 @@ Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entr
 
 | Component | Status | Summary | Source |
 |---|---|---|---|
-| **Recipe card** | 🔵 beta | Catalog card of the Foodie domain: meal-type placeholder art (or lazy image), dietary badges, time, servings, difficulty and rating — grid and list views, plus its skeleton. | [`src/components/domain/RecipeCard.tsx`](../src/components/domain/RecipeCard.tsx) |
-| **Dietary badges** | 🔵 beta | The true flags of a recipe’s dietaryLabels as localised badges with a "+N" overflow — used by RecipeCard and the recipe detail. | [`src/components/domain/DietaryBadges.tsx`](../src/components/domain/DietaryBadges.tsx) |
+| **Recipe card** | 🔵 beta | Catalog card of a recipe: meal-type placeholder art (or lazy image), dietary badges, time, servings, difficulty and rating — grid and list views, plus its skeleton. | [`src/components/domain/RecipeCard.tsx`](../src/components/domain/RecipeCard.tsx) |
+| **Ingredient card** | 🔵 beta | Catalog card of an ingredient: food-category stripe and dot, dietary tags, unit price, optional action slot and selected state, plus its skeleton. | [`src/components/domain/IngredientCard.tsx`](../src/components/domain/IngredientCard.tsx) |
+| **Nutrition facts** | 🔵 beta | A recipe’s eight macros as an accessible table (caption, column and row headers), scaled by servings / baseServings with kcal·mg rounded to integers and grams to 0.1. | [`src/components/domain/NutritionFacts.tsx`](../src/components/domain/NutritionFacts.tsx) |
+| **Dietary badges** | 🔵 beta | The true flags of a recipe’s dietaryLabels as localised badges in a fixed order with a "+N" overflow — used by RecipeCard and the recipe detail. | [`src/components/domain/DietaryBadges.tsx`](../src/components/domain/DietaryBadges.tsx) |
+| **Difficulty badge** | 🔵 beta | Easy / medium / hard as a tinted, localised Badge (≥ 4.5:1 text in both themes). | [`src/components/domain/DifficultyBadge.tsx`](../src/components/domain/DifficultyBadge.tsx) |
+| **Time badge** | 🔵 beta | A duration in minutes with a clock icon — inline for meta rows or as an outline Badge — with a visually hidden label for context. | [`src/components/domain/TimeBadge.tsx`](../src/components/domain/TimeBadge.tsx) |
+| **Category chip** | 🔵 beta | A food category’s identity colour (--color-food-* tokens, ≥ 3:1 non-text contrast) next to its always-visible name — dot or bordered chip. | [`src/components/domain/CategoryChip.tsx`](../src/components/domain/CategoryChip.tsx) |
+| **Servings adjuster** | 🔵 beta | The −/＋ servings stepper of the recipe detail: an output bound to the group, the ×factor once it differs from the recipe yield, and Reset. | [`src/components/domain/ServingsAdjuster.tsx`](../src/components/domain/ServingsAdjuster.tsx) |
+| **Recipe timer** | 🔵 beta | Per-step countdown in a Dialog: start / pause / reset, SVG progress ring, role="timer" live region and a Web Notification at zero. | [`src/components/domain/RecipeTimer.tsx`](../src/components/domain/RecipeTimer.tsx) |
+| **Favorite button** | 🔵 beta | Favourite toggle on $favorites (legacy favoriteRecipes key): aria-pressed, a toast per change, icon or full appearance, hydration-safe. | [`src/components/domain/FavoriteButton.tsx`](../src/components/domain/FavoriteButton.tsx) |
 
 ## 16. Generative AI
 
@@ -124,4 +132,4 @@ Generated from [`src/content/gallery.ts`](../src/content/gallery.ts). Every entr
 
 ---
 
-_Last generated: 2026-09-27. Run `npm run gen:catalog` to refresh._
+_Last generated: 2026-09-28. Run `npm run gen:catalog` to refresh._

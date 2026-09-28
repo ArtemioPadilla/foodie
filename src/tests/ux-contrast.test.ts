@@ -149,3 +149,62 @@ describe('WCAG AA contrast (Epic 12 criterion #5)', () => {
     });
   });
 });
+
+/**
+ * Food-category identity colours (roadmap Issue 021, D13).
+ *
+ * `--color-food-*` (in `@theme`) paint the dot/stripe of `CategoryChip` and
+ * `IngredientCard` — non-text graphics that sit next to the category name, so
+ * the applicable rule is WCAG 2.1 SC 1.4.11 (non-text contrast ≥ 3:1 against
+ * adjacent colours). Each token is either a constant hex or a
+ * `light-dark(<hex>, <hex>)` pair; both branches are checked against every
+ * surface the chips render on (--background, --card, --muted).
+ */
+function hexToSrgb(value: string): [number, number, number] | null {
+  const m = value.trim().match(/^#([0-9a-f]{6})$/i);
+  if (!m) return null;
+  const n = parseInt(m[1]!, 16);
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
+function extractFoodTokens(): Array<{ name: string; light: string; dark: string }> {
+  const out: Array<{ name: string; light: string; dark: string }> = [];
+  const re = /(--color-food-[a-z]+):\s*([^;]+);/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(css))) {
+    const [, name, raw] = m;
+    const pair = raw!.match(/^light-dark\(\s*([^,]+?)\s*,\s*([^)]+?)\s*\)$/);
+    out.push({ name: name!, light: pair ? pair[1]! : raw!.trim(), dark: pair ? pair[2]! : raw!.trim() });
+  }
+  return out;
+}
+
+const foodTokens = extractFoodTokens();
+const FOOD_CATEGORIES = ['protein', 'vegetables', 'fruits', 'grains', 'dairy', 'pantry', 'spices'];
+const surfaces = ['--background', '--card', '--muted'];
+
+describe('food-category colours — WCAG 1.4.11 non-text contrast (roadmap Issue 021)', () => {
+  it('declares one --color-food-* token per ingredient category', () => {
+    expect(foodTokens.map((tk) => tk.name.replace('--color-food-', '')).sort()).toEqual([...FOOD_CATEGORIES].sort());
+  });
+
+  const cases = foodTokens.flatMap((tk) =>
+    surfaces.flatMap((surface) => [
+      [tk.name, surface, 'light', tk.light] as const,
+      [tk.name, surface, 'dark', tk.dark] as const,
+    ]),
+  );
+
+  it.each(cases)('%s on %s (%s) ≥ 3:1', (_name, surface, theme, value) => {
+    const fg = hexToSrgb(value);
+    expect(fg, `${value} parses as #rrggbb`).not.toBeNull();
+    const bgVal = (theme === 'light' ? lightVars : darkVars)[surface];
+    expect(bgVal, `${surface} declared`).toBeTruthy();
+    const bg = oklchToSrgb(bgVal!);
+    expect(bg).not.toBeNull();
+    if (fg && bg) {
+      const ratio = contrast(fg, bg);
+      expect(ratio, `${value} on ${surface} (${theme}) = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(3);
+    }
+  });
+});

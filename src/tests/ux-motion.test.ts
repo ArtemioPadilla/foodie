@@ -54,3 +54,41 @@ describe('prefers-reduced-motion guard', () => {
     expect(offenders, `Motion animate= outside <LazyMotion>: ${offenders.join(', ')}`).toEqual([]);
   });
 });
+
+/**
+ * Foodie domain components (roadmap Issue 021): movement utilities — hover
+ * lifts (`-translate-*`, `scale-*`, `rotate-*`), `transition-all` /
+ * `transition-transform` / animated SVG strokes and `animate-*` — must be
+ * gated behind `motion-safe:` so `prefers-reduced-motion: reduce` gets a
+ * static UI. Colour-only transitions (`transition-colors`) are exempt.
+ */
+describe('domain components respect reduced motion', () => {
+  // Static transforms (e.g. the timer ring's `-rotate-90`) don't move; they
+  // only count when a state variant (hover:, focus:, …) animates them.
+  const TRANSFORM = /^-?(translate-[xy]?|scale-|rotate-)/;
+  const STATE_VARIANT = /(^|:)(hover|focus|focus-visible|focus-within|active|group-hover|peer-hover|data-\[[^\]]+\]):/;
+  const ANIMATION = /^animate-(?!none)|^transition-(all|transform|\[stroke-dashoffset\])$|^duration-|^ease-/;
+
+  it('every movement utility in src/components/domain is motion-safe:', () => {
+    const files = execSync("find src/components/domain -type f -name '*.tsx' ! -name '*.test.tsx'", { encoding: 'utf-8' })
+      .trim()
+      .split('\n')
+      .filter(Boolean);
+    expect(files.length).toBeGreaterThan(0);
+    const offenders: string[] = [];
+    for (const path of files) {
+      const src = readFileSync(path, 'utf-8');
+      // Class tokens live in string literals: split every literal on whitespace.
+      for (const literal of src.match(/(['"`])(?:(?!\1).)*\1/g) ?? []) {
+        for (const token of literal.slice(1, -1).split(/\s+/)) {
+          const utility = token.split(':').pop() ?? '';
+          const moves = ANIMATION.test(utility) || (TRANSFORM.test(utility) && STATE_VARIANT.test(token));
+          if (moves && !token.includes('motion-safe:') && !token.includes('motion-reduce:')) {
+            offenders.push(`${path}: ${token}`);
+          }
+        }
+      }
+    }
+    expect(offenders, `ungated movement: ${offenders.join(', ')}`).toEqual([]);
+  });
+});

@@ -7,6 +7,7 @@ import { getTranslated, t, type Locale } from '@/i18n';
 import { activeIngredientTags } from '@/lib/domain/ingredient-browser';
 import { formatUnitPrice } from '@/lib/domain/ingredient-detail';
 import { cn } from '@/lib/utils';
+import { CategoryChip, categoryClasses } from './CategoryChip';
 import type { Ingredient, IngredientTagKey } from '@/schemas';
 
 /**
@@ -14,39 +15,14 @@ import type { Ingredient, IngredientTagKey } from '@/schemas';
  * of legacy `IngredientCard` + the inline tile of `IngredientsPage`).
  *
  * - The category is an identity colour from the `--color-food-*` tokens
- *   (`global.css`, D13): a stripe on the card edge and a dot next to the
- *   category name — never text colour, so contrast stays with the kit.
+ *   (`global.css`, D13) via `CategoryChip`: a stripe on the card edge and a
+ *   dot next to the category name — never text colour, so contrast stays with
+ *   the kit.
  * - `href` makes the whole card a link (stretched-link pattern, same as
  *   `RecipeCard`: the title is the only anchor). `action` renders above the
  *   stretched link (e.g. the browser's "I have it" toggle).
  * - Strings come from the dictionaries via `lang` (never `navigator.language`).
  */
-
-/** Tailwind classes per `categories.ingredientCategories` id (literal so v4 generates them). */
-export const INGREDIENT_CATEGORY_CLASSES: Record<string, { dot: string; stripe: string }> = {
-  protein: { dot: 'bg-food-protein', stripe: 'border-l-food-protein' },
-  vegetables: { dot: 'bg-food-vegetables', stripe: 'border-l-food-vegetables' },
-  fruits: { dot: 'bg-food-fruits', stripe: 'border-l-food-fruits' },
-  grains: { dot: 'bg-food-grains', stripe: 'border-l-food-grains' },
-  dairy: { dot: 'bg-food-dairy', stripe: 'border-l-food-dairy' },
-  pantry: { dot: 'bg-food-pantry', stripe: 'border-l-food-pantry' },
-  spices: { dot: 'bg-food-spices', stripe: 'border-l-food-spices' },
-};
-const FALLBACK_CATEGORY_CLASSES = { dot: 'bg-muted-foreground', stripe: 'border-l-border' };
-
-export function categoryClasses(category: string) {
-  return INGREDIENT_CATEGORY_CLASSES[category] ?? FALLBACK_CATEGORY_CLASSES;
-}
-
-/** Category name preceded by its colour dot. */
-export function CategoryDot({ category, label, className }: { category: string; label: string; className?: string }) {
-  return (
-    <span className={cn('inline-flex items-center gap-1.5', className)} data-category={category}>
-      <span className={cn('size-2.5 shrink-0 rounded-full', categoryClasses(category).dot)} aria-hidden="true" />
-      {label}
-    </span>
-  );
-}
 
 /** Dietary flags of an ingredient as localised badges (`dietary.*`). */
 export function IngredientTagBadges({
@@ -120,9 +96,9 @@ export function IngredientCard({
       data-category={ingredient.category}
       data-selected={selected ? 'true' : undefined}
       className={cn(
-        'relative flex flex-col gap-2 border-l-4 border-border p-4 transition-all',
+        'relative flex flex-col gap-2 border-l-4 border-border p-4 motion-safe:transition-all',
         categoryClasses(ingredient.category).stripe,
-        href && 'hover:-translate-y-0.5 hover:shadow-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
+        href && 'motion-safe:hover:-translate-y-0.5 hover:shadow-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2',
         selected && 'bg-primary/5 ring-2 ring-primary',
         className,
       )}
@@ -142,7 +118,7 @@ export function IngredientCard({
       </div>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-        {categoryName && <CategoryDot category={ingredient.category} label={categoryName} />}
+        {categoryName && <CategoryChip category={ingredient.category} label={categoryName} />}
         {ingredient.isComposite && (
           <span className="inline-flex items-center gap-1" data-testid="ingredient-composite">
             <LayersIcon className="size-3.5" aria-hidden="true" />
