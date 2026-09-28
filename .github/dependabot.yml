@@ -7,10 +7,11 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     ignore:
-      # Astro 6 is peer-capped out by @vite-pwa/astro@1.2.0 (supports astro
-      # ^1–^5 only). Ignore the astro/@astrojs/* major bumps until the PWA plugin
-      # ships Astro 6 support — otherwise dependabot re-proposes a CI-failing
-      # group PR every release (see closed #74, #80, #87, ADR 0004).
+      # Foodie runs Astro 7 although @vite-pwa/astro@1.2.0 caps its astro peer
+      # at ^5: package.json `overrides` bridges the cap (ADR 0011). A future
+      # astro/@astrojs/* major needs the same deliberate check (build, PWA,
+      # e2e, visual), so dependabot must not propose it as a routine group
+      # bump (see closed #74, #80, #87, ADR 0004).
       # Wildcard entry covers all current and future @astrojs/* packages in one rule.
       - dependency-name: "astro"
         update-types: ["version-update:semver-major"]

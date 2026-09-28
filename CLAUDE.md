@@ -2,7 +2,7 @@
 
 Foodie is an offline-first meal-planning web app (trilingual EN/ES/FR recipe and
 ingredient catalog, weekly planner, consolidated shopping list, pantry, food
-diary) being rebuilt **template-first on Inceptor**: the Astro 5 + React 19
+diary) being rebuilt **template-first on Inceptor**: the Astro 7 + React 19
 islands template now lives at the repo root, the legacy React 18 + Vite SPA is
 frozen on `main` (which keeps deploying it until the cutover; read it with
 `git show main:src/<path>` — the `legacy/` working copy was removed in roadmap
@@ -16,7 +16,7 @@ rewritten for the finished stack in roadmap Issue 044.
 
 ## Until Issue 044 — the essentials
 
-**Stack (installed).** Astro 5.x (`^5.18`) islands, zero JS by default + `@astrojs/react`
+**Stack (installed).** Astro 7.x (`^7.3`, ADR 0011) islands, zero JS by default + `@astrojs/react`
 (React 19) + Tailwind v4 via `@tailwindcss/vite` + shadcn-style primitives on
 `@base-ui-components/react` (`src/components/ui/`, owned) + nanostores +
 TanStack Query/Table/Virtual + react-hook-form/zod + lucide + recharts +
@@ -29,6 +29,17 @@ eslint + pragmas + build — the gate before every commit) · `npm run test` ·
 `npm run lighthouse`. Branches `phase-N/issue-NNN-slug` → PR to `inceptor`
 (to `main` after roadmap #030); commits are Conventional Commits with the
 roadmap id, e.g. `feat(pages): landing Foodie (roadmap #005)`.
+
+**Playwright under an agent (Astro 7).** When `astro preview` detects an AI
+agent it starts in the background and returns at once, so a Playwright
+`webServer` launched by an agent reports "exited early" (CI and humans are
+unaffected). Start the server first, and Playwright reuses it: for the
+visual suite `npm run build && npm run preview -- --port 4321`, then
+`npx playwright test`; for the journeys `npm run build && npm run preview --
+--port 4322`, then `npx playwright test --config playwright.e2e.config.ts`.
+Stop it afterwards with `npx astro preview stop`. If `npm run lighthouse`
+reports "Chrome installation not found", point `CHROME_PATH` at Playwright's
+Chromium (for example `/opt/pw-browsers/chromium-*/chrome-linux/chrome`).
 
 **Orchestration.** The main Claude Code session is the orchestrator; three
 sub-agents under `.claude/agents/` do the work: **prometeo** plans (reads the

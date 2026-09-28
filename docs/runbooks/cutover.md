@@ -70,12 +70,12 @@ npm audit --omit=dev --audit-level=high     # must report no high/critical
   `/pantry/` baselines and the a11y scans from Issue 029.
 - [ ] Lighthouse passes.
 - [ ] `npm audit --omit=dev` reports no high or critical advisories.
-  **Known blocker (2026-09-28):** `astro <= 7.2.7` is critical and `sharp` is
-  high, and the only fix is the Astro 7 major. Before merging, either upgrade
-  in a dedicated PR, or record an explicit, dated risk acceptance in the PR.
-  The site is fully static (no SSR, no server islands, no image service at
-  runtime), which rules out most of these advisories. Do not merge with this
-  box silently unchecked.
+  On 2026-09-28 the blocker (critical `astro <= 7.2.7`, high `sharp`) was
+  cleared by the Astro 7 upgrade
+  ([ADR 0011](../decisions/0011-astro-7-upgrade.md)), and the command printed
+  `found 0 vulnerabilities`. Re-run it on the day. A new high or critical
+  advisory needs a fix or an explicit, dated risk acceptance in the PR. Do not
+  merge with this box silently unchecked.
 - [ ] ADRs [0001](../decisions/0001-foodie-inceptor-migration.md) and
   [0002](../decisions/0002-local-first-user-data.md) are in the branch
   (`docs/decisions/`).

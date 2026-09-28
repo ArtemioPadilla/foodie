@@ -17,7 +17,7 @@ The date is set when the maintainer tags the cutover
 ([`docs/runbooks/cutover.md`](docs/runbooks/cutover.md)).
 
 Foodie v2 is a rebuild on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
-template: Astro 5 islands with React 19, Tailwind v4, Base UI primitives,
+template: Astro 7 islands with React 19, Tailwind v4, Base UI primitives,
 nanostores and TanStack Query. Every route is a static page in English,
 Spanish and French, and it is still served at
 `https://artemiopadilla.github.io/foodie/` (roadmap Phases 0–3, issues
@@ -77,7 +77,7 @@ Spanish and French, and it is still served at
 
 ### Changed
 
-- The stack moved from React 18 + Vite (a single-page app) to Astro 5
+- The stack moved from React 18 + Vite (a single-page app) to Astro 7
   islands. Pages ship without JavaScript unless they need it (D1–D4).
 - State moved from React Context providers to nanostores. Stores that must
   persist use `persistentAtom`, which validates values with Zod and syncs
@@ -88,6 +88,15 @@ Spanish and French, and it is still served at
   content collections and at runtime with Zod (#010, #011).
 - Deployment now uses GitHub Actions with Node 22 and `ASTRO_BASE`. The
   MkDocs and Python steps are gone (D12, #006).
+
+### Security
+
+- Astro 5.18 → 7.3 (`@astrojs/react` 7, `@astrojs/mdx` 8, Vite 8, sharp
+  0.35). This clears every production advisory `npm audit --omit=dev`
+  reported (critical `astro <= 7.2.7`, high `sharp <= 0.35.4-rc.0`, low
+  `esbuild`). `@vite-pwa/astro` 1.2.0 still caps its `astro` peer at `^5`, so
+  an npm `overrides` entry lets it run on Astro 7. See
+  [ADR 0011](docs/decisions/0011-astro-7-upgrade.md) (#030).
 
 ### Removed
 

@@ -3,7 +3,7 @@
 > **Foodie v2 is built on Inceptor.** Foodie is an offline-first meal-planning
 > app with a trilingual (EN/ES/FR) catalog of recipes and ingredients, a weekly
 > planner, a shopping list and a pantry. It has been rebuilt from a React 18 +
-> Vite single-page app on the Inceptor template (Astro 5 islands + React 19).
+> Vite single-page app on the Inceptor template (Astro 7 islands + React 19).
 >
 > - **Live:** <https://artemiopadilla.github.io/foodie/>
 > - **What's new:** [`CHANGELOG.md`](./CHANGELOG.md) (`2.0.0-beta.1`)

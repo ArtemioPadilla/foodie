@@ -43,8 +43,8 @@
     "hooks:install": "git config core.hooksPath scripts/hooks && echo 'Pre-commit hooks installed. Run: git config --unset core.hooksPath to remove.'"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.14",
-    "@astrojs/react": "^5.0.7",
+    "@astrojs/mdx": "^8.0.2",
+    "@astrojs/react": "^7.0.0",
     "@base-ui-components/react": "^1.0.0-rc.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/utilities": "^3.2.2",
@@ -58,7 +58,7 @@
     "@zag-js/editable": "^1.43.0",
     "@zag-js/react": "^1.43.0",
     "@zag-js/splitter": "^1.43.0",
-    "astro": "^5.18.2",
+    "astro": "^7.3.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "idb-keyval": "^6.2.5",
@@ -79,7 +79,7 @@
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.117.1",
     "@astrojs/check": "^0.9.10",
-    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/sitemap": "^3.7.4",
     "@axe-core/playwright": "^4.11.3",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.62.1",
@@ -103,5 +103,10 @@
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "@vite-pwa/astro": {
+      "astro": "$astro"
+    }
   }
 }

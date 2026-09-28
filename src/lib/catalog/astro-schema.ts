@@ -2,10 +2,11 @@
  * Zod 4 → Astro bridge for content collections.
  *
  * Foodie's Spec-DD schemas (`src/schemas/`) are written with the project's
- * `zod` (v4). Astro 5's `defineCollection({ schema })` is typed against the
- * Zod 3 it bundles (`astro/zod`), so handing it a v4 schema is a type error
- * even though it validates at runtime. `toAstroSchema()` wraps the v4 schema
- * in a Zod 3 `transform` that
+ * `zod` (v4). Astro 5's `defineCollection({ schema })` was typed against the
+ * Zod 3 it bundled (`astro/zod`), so handing it a v4 schema was a type error
+ * even though it validated at runtime. Astro 7 bundles Zod 4, but the bridge
+ * stays: it keeps one issue format and one code path. `toAstroSchema()` wraps
+ * the project schema in an `astro/zod` `transform` that
  *
  * - runs the real v4 `safeParse` (same rules as `catalog-schema.test.ts`),
  * - forwards every issue with its path so `astro build` names the exact

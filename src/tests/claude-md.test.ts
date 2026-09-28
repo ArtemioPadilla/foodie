@@ -10,8 +10,10 @@ const md = readFileSync(
 );
 
 describe('CLAUDE.md', () => {
+  // Foodie moved to Astro 7 to clear the npm-audit advisories before the
+  // cutover (ADR 0011, roadmap #030); the template pinned 5.x here.
   it('lists installed Astro version', () => {
-    expect(md).toMatch(/astro.*5\./i);
+    expect(md).toMatch(/astro.*7\./i);
   });
 
   it('documents the Claude Code orchestration workflow', () => {
