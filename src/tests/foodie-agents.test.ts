@@ -44,8 +44,13 @@ describe('.claude/agents — canonical plan is the migration roadmap', () => {
 // owner's repository any more — .env.example leaves it empty and the
 // production deploy does not set it.
 describe('repo slug — opt-in, single-sourced (ADR 0015)', () => {
-  it('.env.example leaves PUBLIC_REPO_SLUG empty', () => {
+  it('.env.example leaves PUBLIC_REPO_SLUG empty and deploy.yml does not set it', () => {
     expect(read('.env.example')).toMatch(/^PUBLIC_REPO_SLUG=$/m);
+    const deploySteps = read('.github/workflows/deploy.yml')
+      .split('\n')
+      .filter((l) => !/^\s*#/.test(l))
+      .join('\n');
+    expect(deploySteps).not.toContain('PUBLIC_REPO_SLUG');
   });
 
   it('FeedbackFAB and report-issue read the slug from site-meta (single source)', () => {

@@ -17,10 +17,19 @@ describe('deploy-failure-issue.yml — auto-file issue on deploy failure (#184)'
   // -------------------------------------------------------------------------
   // Trigger
   // -------------------------------------------------------------------------
+  // Renamed from "Deploy to GitHub Pages" with the move to Cloudflare Pages
+  // (ADR 0015); pull-request previews run in the same workflow and must not
+  // be reported as production outages.
   it('triggers on workflow_run for the Deploy workflow', () => {
     expect(workflow).toContain('workflow_run');
-    expect(workflow).toContain('Deploy to GitHub Pages');
+    expect(workflow).toContain("workflows: ['Deploy']");
+    expect(workflow).not.toContain('Deploy to GitHub Pages');
     expect(workflow).toContain('completed');
+  });
+
+  it('ignores pull-request preview runs (production deploys only)', () => {
+    expect(workflow).toMatch(/branches:\s*\[main\]/);
+    expect(workflow).toContain("github.event.workflow_run.event != 'pull_request'");
   });
 
   // -------------------------------------------------------------------------

@@ -82,9 +82,12 @@ describe('visual.yml + deploy-failure-issue.yml', () => {
     expect(visual).not.toMatch(/continue-on-error/);
   });
 
+  // The deploy workflow was renamed "Deploy" when production moved to
+  // Cloudflare Pages (ADR 0015); the chain follows the new name.
   it('deploy-failure-issue.yml is present and chained to the deploy workflow', () => {
     const dfi = workflow('deploy-failure-issue.yml');
-    expect(dfi).toContain("workflows: ['Deploy to GitHub Pages']");
+    expect(dfi).toContain("workflows: ['Deploy']");
+    expect(workflow('deploy.yml')).toMatch(/^name: Deploy$/m);
   });
 });
 
