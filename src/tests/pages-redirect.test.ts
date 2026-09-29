@@ -87,4 +87,12 @@ describe('buildRedirectHtml', () => {
     expect(sw).toContain('client.navigate(client.url)');
     expect(sw).not.toContain('localStorage');
   });
+
+  it("the kill-switch worker deletes only Foodie's caches, not other apps' on the shared origin", () => {
+    const sw = buildKillSwitchSw();
+    expect(sw).toContain('self.registration.scope');
+    expect(sw).toContain("'foodie-data'");
+    expect(sw).not.toContain("'github-api'");
+    expect(sw).not.toMatch(/keys\.map\(function \(key\) \{ return caches\.delete\(key\); \}\)\)/);
+  });
 });

@@ -78,7 +78,7 @@ describe('deploy.yml — cloudflare (production)', () => {
   const cf = job('cloudflare');
 
   it('skips pull requests', () => {
-    expect(cf).toContain("if: github.event_name != 'pull_request'");
+    expect(cf).toContain("if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'");
   });
 
   it('builds with Node 22 at the root, with the new origin, versions, Firebase secrets and FOODIE_DEPLOY', () => {

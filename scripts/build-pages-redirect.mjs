@@ -192,7 +192,16 @@ self.addEventListener('activate', function (event) {
     caches
       .keys()
       .then(function (keys) {
-        return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+        // Cache Storage is per origin and the old origin hosts other apps too:
+        // delete only Foodie's caches (the Workbox precache names embed this
+        // worker's scope; the runtime caches are Foodie's v1 and v2 names).
+        var scope = self.registration.scope;
+        var foodie = ['foodie-data', 'data-cache', 'google-fonts-cache', 'firebase-images-cache'];
+        return Promise.all(
+          keys
+            .filter(function (key) { return key.indexOf(scope) !== -1 || foodie.indexOf(key) !== -1; })
+            .map(function (key) { return caches.delete(key); }),
+        );
       })
       .then(function () { return self.registration.unregister(); })
       .then(function () { return self.clients.matchAll({ type: 'window' }); })

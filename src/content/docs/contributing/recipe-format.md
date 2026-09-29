@@ -17,16 +17,17 @@ reaches production.
    steps collect the basics, times and servings, ingredients from the catalog,
    instructions, nutrition and dietary labels, with a live preview that uses
    the same components as the recipe page. Your draft is saved in this browser.
-2. On the last step, **Submit** opens a prefilled GitHub issue (the
-   *Recipe submission* form) in a new tab and downloads `recipe-<id>.json`.
-3. Sign in to GitHub, tick the checklist (your own recipe or one you may share,
-   all three languages, ingredient ids, nutrition) and create the issue.
+2. On the last step, **Download** saves `recipe-<id>.json`. That file is the
+   whole submission: every field the catalog needs, validated by the same
+   schema the build uses.
+3. Share the file with the project maintainers (the site does not collect it
+   for you). A maintainer adds it to the catalog, fills any missing Spanish or
+   French text, and assigns the next catalog id.
 
-Foodie never holds a GitHub token: you create the issue yourself, with your own
-account. If the recipe is too long to fit in the issue URL (8 KB), the wizard
-tells you to attach the downloaded file instead. A maintainer turns the issue
-into a pull request, fills any missing Spanish or French text, and assigns the
-next catalog id.
+Foodie never holds a token or a secret for this: nothing leaves your browser
+until you choose to share the file. Deployments that configure a public
+repository (`PUBLIC_REPO_SLUG`) also show a **Submit** button that opens a
+prefilled *Recipe submission* issue; the public site at eat.cybere.co does not.
 
 ### With git: a pull request
 

@@ -57,8 +57,8 @@ const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 export default defineConfig({
   // Production origin — single-sourced from site.config.mjs.
-  // Foodie is a GitHub project page served at
-  // https://artemiop.com/foodie/ (origin + ASTRO_BASE).
+  // Production is Cloudflare Pages at the root of https://eat.cybere.co
+  // (ADR 0015); the origin comes from SITE_ORIGIN at build time.
   site: SITE_ORIGIN,
   base: BASE,
   // i18n routing — English at root (no prefix), Spanish under /es/, French

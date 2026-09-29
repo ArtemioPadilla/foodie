@@ -38,7 +38,9 @@ env:
 jobs:
   cloudflare:
     name: Cloudflare Pages (production)
-    if: github.event_name != 'pull_request'
+    # Production only ships main: a manual dispatch from another ref must not
+    # publish that ref to eat.cybere.co (PR previews have their own job).
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       deployed: ${{ steps.done.outputs.deployed }}

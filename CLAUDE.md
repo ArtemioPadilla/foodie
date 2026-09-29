@@ -229,7 +229,7 @@ props or query params.
   `FOODIE_DEPLOY=1`. No Firestore.
 - **Sharing** (D11, ADR 0013): the plan is compressed with `fflate` into the
   URL fragment → `/plan/shared/`. **Contribution** (D10): the wizard downloads
-  JSON and opens a prefilled `recipe-submission.yml` issue — no token, no secret.
+  JSON; only when `PUBLIC_REPO_SLUG` is set does it also open a prefilled `recipe-submission.yml` issue (production leaves it unset, ADR 0015) — no token, no secret.
 - Changing a schema: edit `src/schemas/`, run
   `npm run test -- src/tests/catalog-schema.test.ts`; the data model docs page
   regenerates itself.
