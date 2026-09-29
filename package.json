@@ -16,7 +16,7 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:seo": "vitest run --mode dist src/tests/seo.test.ts",
-    "test:dist": "vitest run --mode dist src/tests/seo.test.ts src/tests/auth-chunk.test.ts src/tests/bundle-split.test.ts src/tests/csp.test.ts src/tests/privacy.test.ts",
+    "test:dist": "vitest run --mode dist src/tests/seo.test.ts src/tests/auth-chunk.test.ts src/tests/bundle-split.test.ts src/tests/csp.test.ts src/tests/privacy.test.ts src/tests/headers.test.ts",
     "test:watch": "vitest --watch",
     "tdd": "vitest --watch",
     "test:visual": "playwright test",

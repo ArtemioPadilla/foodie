@@ -1,0 +1,32 @@
+# Cloudflare Pages response headers (ADR 0015). Served at the site root, so
+# the paths below assume the production build's base `/`.
+#
+# The per-page hashed <meta http-equiv="content-security-policy">
+# (csp.config.mjs, ADR 0012) stays the source of truth for scripts, styles
+# and connections. The header CSP only adds `frame-ancestors`, which a meta
+# policy cannot express; browsers enforce every policy they receive, so the
+# two combine without loosening either.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'none'
+
+# Content-hashed build output: cache for a year.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Self-hosted fonts (public/fonts/): renamed if they ever change.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The service worker and the manifest must be revalidated on every load so a
+# new deploy is picked up.
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Cache-Control: no-cache
