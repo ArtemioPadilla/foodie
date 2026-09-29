@@ -50,6 +50,12 @@ const {
 } = Astro.props;
 
 const OG_LOCALES: Record<Locale, string> = { en: 'en_US', es: 'es_ES', fr: 'fr_FR' };
+// Release version on <html data-app-version> — the deploy workflow's
+// pages-redirect job polls for it before it retires the old host.
+const appVersion = import.meta.env.PUBLIC_VERSION || 'dev';
+// Issue reporting (FeedbackFAB + HydrationCanary) needs a repository to file
+// into: opt-in through PUBLIC_REPO_SLUG (ADR 0015), off by default.
+const issueReporting = SITE.repoSlug !== null && flags.feedbackFab;
 const ogImageUrl = ogImage ?? new URL(withBase('/og-image.png'), Astro.site ?? SITE_ORIGIN).toString();
 
 // Canonical URL — derived from Astro.site + Astro.url.pathname so it always
@@ -75,7 +81,7 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-app-version={appVersion}>
   <head>
     {/* charset first (must sit in the first 1024 bytes). The build moves the
         Content-Security-Policy meta Astro emits (astro.config.mjs
@@ -227,7 +233,7 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
     <SiteHeader><slot name="account" slot="account" /></SiteHeader>
     <slot />
     <SiteFooter />
-    <FeedbackFAB lang={lang} />
+    {issueReporting && <FeedbackFAB lang={lang} />}
     <!--
       PWA UI (roadmap Issue 028) — OfflineBanner, InstallButton and UpdateToast
       are all gated by `flags.pwaPrompts` (PUBLIC_FLAG_PWA_PROMPTS, on by
@@ -244,9 +250,9 @@ const redirectLocales = LOCALES.filter((l) => l !== 'en');
       HydrationCanary: listens for React hydration-mismatch error signatures
       and writes a pre-filled GitHub issue URL to sessionStorage so the FAB
       can surface it. Renders nothing; mounted with client:idle to avoid
-      blocking first paint.
+      blocking first paint. Only with issue reporting on (see above).
     -->
-    <HydrationCanary client:idle />
+    {issueReporting && <HydrationCanary client:idle />}
     <!--
       InstallButton: appears when `beforeinstallprompt` fires (Chromium only).
       Stays invisible on Safari/Firefox — no extra conditional needed.

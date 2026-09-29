@@ -31,7 +31,8 @@ export interface MobileNavItem {
 export interface MobileNavProps {
   lang: Locale;
   items: MobileNavItem[];
-  repoUrl: string;
+  /** Repository URL, or `null` when the build names no repo (ADR 0015): no link then. */
+  repoUrl: string | null;
   labels: {
     open: string;
     close: string;

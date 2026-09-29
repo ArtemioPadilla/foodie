@@ -8,7 +8,7 @@ description: Run Foodie locally in three commands, then take a five-minute tour 
 You need Node.js 22 (the version in `.nvmrc`) and npm.
 
 ```bash
-git clone https://github.com/ArtemioPadilla/foodie.git
+git clone <repository-url> foodie   # the Foodie source repository
 cd foodie
 npm ci
 npm run dev

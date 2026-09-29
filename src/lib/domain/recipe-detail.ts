@@ -291,7 +291,7 @@ export function buildRecipeDetailPaths(catalog: RecipeDetailCatalog, lang: Local
 
 export interface RecipeDetailMetaOptions {
   lang: Locale;
-  /** Site origin, e.g. `https://artemiop.com`. */
+  /** Site origin, e.g. `https://eat.cybere.co`. */
   origin: string;
   /** `import.meta.env.BASE_URL`, e.g. `/foodie/`. */
   base: string;

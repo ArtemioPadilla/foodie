@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CheckCircle2Icon, ExternalLinkIcon, PaperclipIcon, SendIcon } from 'lucide-react';
+import { CheckCircle2Icon, ExternalLinkIcon, InfoIcon, PaperclipIcon, SendIcon } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DownloadTrigger } from '@/components/ui/download-trigger';
@@ -19,6 +19,11 @@ import { openIssueUrl } from '@/lib/report-issue';
  * front. Nothing is sent from the browser and no token is involved: the
  * contributor files the issue on github.com with their own account.
  * `onSubmitted` (clears the saved draft) runs once the issue tab is opened.
+ *
+ * Without a configured repository (PUBLIC_REPO_SLUG unset — the default and
+ * the production build, ADR 0015) there is no issue to open: the step keeps
+ * the JSON download, says in neutral words that submissions by link are not
+ * open yet, and shows no Submit button (`data-submit-mode="download"`).
  */
 export interface SubmitStepProps {
   lang: Locale;
@@ -32,19 +37,65 @@ export type SubmitStepComponent = React.ComponentType<SubmitStepProps>;
 export function SubmitStep({ lang, payload, onSubmitted }: SubmitStepProps) {
   const issue = React.useMemo(() => buildRecipeSubmissionIssue(payload), [payload]);
   const [sent, setSent] = React.useState(false);
+  const issueUrl = issue.url;
 
   const submit = () => {
+    if (issueUrl === null) return;
     // Open first: the new tab must come straight from the click (popup blockers).
-    openIssueUrl(issue.url);
+    openIssueUrl(issueUrl);
     downloadFile(issue.filename, payload.recipeJson);
     setSent(true);
     onSubmitted();
   };
 
+  const download = (
+    <DownloadTrigger
+      filename={issue.filename}
+      label={t(lang, 'contribute.downloadJson')}
+      onExport={async () => new Blob([payload.recipeJson], { type: 'application/json' })}
+      data-testid="contribute-download-json"
+    />
+  );
+
+  const recipeJson = (
+    <details className="rounded-md border border-border p-3">
+      <summary className="cursor-pointer text-sm font-medium text-foreground">{t(lang, 'contribute.recipeJson')}</summary>
+      <pre className="mt-3 max-h-96 overflow-auto rounded bg-muted p-3 text-xs" data-testid="contribute-recipe-json">
+        {payload.recipeJson}
+      </pre>
+    </details>
+  );
+
+  if (issueUrl === null) {
+    return (
+      <div
+        className="grid gap-6"
+        data-testid="contribute-step-submit"
+        data-submit-mode="download"
+        data-recipe-id={payload.recipeId}
+        data-json-in-url="false"
+        data-sent="false"
+      >
+        <Alert data-testid="contribute-submit-unavailable">
+          <InfoIcon className="size-4" aria-hidden="true" />
+          <AlertTitle>{t(lang, 'contribute.submitUnavailableTitle')}</AlertTitle>
+          <AlertDescription>{t(lang, 'contribute.submitUnavailable', { file: issue.filename })}</AlertDescription>
+        </Alert>
+        <ol className="grid list-decimal gap-1 pl-5 text-sm text-foreground" data-testid="contribute-submit-steps">
+          <li>{t(lang, 'contribute.submitStepDownload', { file: issue.filename })}</li>
+          <li>{t(lang, 'contribute.submitStepKeep')}</li>
+        </ol>
+        {recipeJson}
+        <div className="flex flex-wrap items-center gap-3">{download}</div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="grid gap-6"
       data-testid="contribute-step-submit"
+      data-submit-mode="issue"
       data-recipe-id={payload.recipeId}
       data-json-in-url={issue.jsonInUrl ? 'true' : 'false'}
       data-sent={sent ? 'true' : 'false'}
@@ -64,12 +115,7 @@ export function SubmitStep({ lang, payload, onSubmitted }: SubmitStepProps) {
         </Alert>
       )}
 
-      <details className="rounded-md border border-border p-3">
-        <summary className="cursor-pointer text-sm font-medium text-foreground">{t(lang, 'contribute.recipeJson')}</summary>
-        <pre className="mt-3 max-h-96 overflow-auto rounded bg-muted p-3 text-xs" data-testid="contribute-recipe-json">
-          {payload.recipeJson}
-        </pre>
-      </details>
+      {recipeJson}
 
       {sent && (
         <Alert variant="success" data-testid="contribute-submit-sent">
@@ -79,7 +125,7 @@ export function SubmitStep({ lang, payload, onSubmitted }: SubmitStepProps) {
             <span>{t(lang, 'contribute.submitSuccessDescription', { file: issue.filename })}</span>
             <span className="flex flex-wrap gap-x-4 gap-y-1">
               <a
-                href={issue.url}
+                href={issueUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-medium underline underline-offset-4"
@@ -101,12 +147,7 @@ export function SubmitStep({ lang, payload, onSubmitted }: SubmitStepProps) {
           <SendIcon aria-hidden="true" />
           {t(lang, 'contribute.submitRecipe')}
         </Button>
-        <DownloadTrigger
-          filename={issue.filename}
-          label={t(lang, 'contribute.downloadJson')}
-          onExport={async () => new Blob([payload.recipeJson], { type: 'application/json' })}
-          data-testid="contribute-download-json"
-        />
+        {download}
       </div>
     </div>
   );

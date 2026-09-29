@@ -1,7 +1,10 @@
 import { SITE } from '@/lib/site-meta';
-// Repo where issues are filed. Reads PUBLIC_REPO_SLUG so a fork reports to its
-// own repo (not the template's). Falls back to the template slug for dev.
-const REPO = SITE.repoSlug;
+/**
+ * Repo where issues are filed: SITE.repoSlug, i.e. PUBLIC_REPO_SLUG. `null`
+ * (the default and the production build, ADR 0015) turns issue reporting off:
+ * `buildIssueUrl` returns `null` and every caller drops its "report" link.
+ */
+export const ISSUE_REPO: string | null = SITE.repoSlug;
 
 export interface ReportIssueInput {
   title: string;
@@ -32,9 +35,15 @@ export const ISSUE_URL_MAX_LENGTH = 8 * 1024;
  * Build a GitHub "new issue" URL pre-filled with the given fields. The
  * page running this code MUST be able to handle redirect navigation; we
  * return the URL string and let the caller decide window.open vs
- * location.assign.
+ * location.assign. Returns `null` when no repository is configured (`repo`
+ * defaults to ISSUE_REPO).
  */
-export function buildIssueUrl({ title, body = '', labels = [], template, fields = {} }: ReportIssueInput): string {
+export function buildIssueUrl(input: ReportIssueInput, repo: string | null = ISSUE_REPO): string | null {
+  return repo ? issueUrlFor(repo, input) : null;
+}
+
+/** The "new issue" URL on a known `owner/repo`. */
+export function issueUrlFor(repo: string, { title, body = '', labels = [], template, fields = {} }: ReportIssueInput): string {
   const params = new URLSearchParams();
   if (template) params.set('template', template);
   params.set('title', title);
@@ -43,7 +52,7 @@ export function buildIssueUrl({ title, body = '', labels = [], template, fields 
   for (const [id, value] of Object.entries(fields)) {
     if (value) params.set(id, value);
   }
-  return `https://github.com/${REPO}/issues/new?${params.toString()}`;
+  return `https://github.com/${repo}/issues/new?${params.toString()}`;
 }
 
 /** Whether `url` stays under `ISSUE_URL_MAX_LENGTH` (8 KB). */
@@ -52,7 +61,8 @@ export function issueUrlFits(url: string): boolean {
 }
 
 export function openIssue(input: ReportIssueInput): void {
-  openIssueUrl(buildIssueUrl(input));
+  const url = buildIssueUrl(input);
+  if (url) openIssueUrl(url);
 }
 
 /** Open an already-built issue URL in a new tab (no opener, no referrer). */

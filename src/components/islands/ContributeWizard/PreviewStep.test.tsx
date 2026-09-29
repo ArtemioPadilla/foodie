@@ -77,7 +77,10 @@ describe('ContributeWizard · preview step', () => {
     const json = JSON.parse(screen.getByTestId('contribute-recipe-json').textContent ?? '{}');
     expect(json).toMatchObject({ id: RECIPE_ID, cuisine: ['mexican'], servings: 2, author: 'Community Contributor' });
     expect(json.ingredients[1]).toEqual({ ingredientId: 'ing_002', quantity: 1, unit: 'cup', preparation: 'washed', optional: true });
-    expect(screen.getByTestId('contribute-submit')).toBeEnabled();
+    // The default build names no repository (ADR 0015): the submit step
+    // offers the download instead of a Submit button.
+    expect(screen.getByTestId('contribute-step-submit')).toHaveAttribute('data-submit-mode', 'download');
+    expect(screen.getByTestId('contribute-download-json')).toBeEnabled();
     expect(screen.queryByTestId('contribute-next')).toBeNull();
   });
 

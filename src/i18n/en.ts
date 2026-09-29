@@ -67,6 +67,7 @@ export const en = {
     feature6Description: 'Log meals, set nutrition goals and follow your progress over time.',
     readyToStart: 'Ready to start planning?',
     joinUsers: 'Foodie is open source. Add your own recipes, translate the catalog or report what is missing — every contribution lands as a GitHub issue or pull request.',
+    joinUsersLocal: 'Add your own recipes with the contribution wizard: it checks every step and prepares the recipe in the catalog format, saved on this device as you type.',
     contributeRecipe: 'Contribute a recipe',
     viewSource: 'View the source',
     // Legacy translation.json keys (roadmap Issue 015)
@@ -1251,6 +1252,10 @@ export const en = {
     submitStepReview: "A maintainer reviews it and adds it to the catalog in a pull request; it appears in the app on the next deploy.",
     submitAttachTitle: "Attach the downloaded file",
     submitAttach: "This recipe is too long to fit in a link, so the issue asks for the file instead: drag {{file}} into the \"Recipe JSON\" field before creating the issue.",
+    // No repository configured (ADR 0015): download only
+    submitUnavailableTitle: "Sending by link is not available yet",
+    submitUnavailable: "Submitting recipes by link is not open on this site yet. Download {{file}} — your recipe in the catalog format — and keep it: it is all a reviewer will need once submissions open.",
+    submitStepKeep: "Keep the file: your draft also stays on this device until you start over.",
     openIssueAgain: "Open the issue again",
     downloadJson: "Download JSON",
   },

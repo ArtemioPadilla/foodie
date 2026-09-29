@@ -131,7 +131,7 @@ export function persistentAtom<T>(
       labels: ['type:bug', 'area:persist'],
     });
     console.warn(
-      `[persist] localStorage["${key}"] failed validation; using fallback. Issues: ${issues}. Report: ${url}`,
+      `[persist] localStorage["${key}"] failed validation; using fallback. Issues: ${issues}.${url ? ` Report: ${url}` : ''}`,
     );
     options.onInvalid?.({ key, raw, issues });
   };

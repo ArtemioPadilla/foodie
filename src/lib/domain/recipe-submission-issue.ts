@@ -14,7 +14,7 @@
  * file. Everything written into the issue is English (maintainer-facing).
  */
 import type { RecipeSubmission, RecipeSubmissionPayload } from '@/schemas';
-import { buildIssueUrl, issueUrlFits } from '@/lib/report-issue';
+import { ISSUE_REPO, issueUrlFits, issueUrlFor } from '@/lib/report-issue';
 
 /** The issue form the URL opens (`.github/ISSUE_TEMPLATE/<file>`). */
 export const RECIPE_SUBMISSION_TEMPLATE = 'recipe-submission.yml';
@@ -29,8 +29,12 @@ export const RECIPE_SUBMISSION_FIELDS = {
 } as const;
 
 export type RecipeSubmissionIssue = {
-  /** The prefilled `issues/new?template=recipe-submission.yml&…` URL (≤ 8 KB). */
-  url: string;
+  /**
+   * The prefilled `issues/new?template=recipe-submission.yml&…` URL (≤ 8 KB),
+   * or `null` when the build names no repository (PUBLIC_REPO_SLUG unset, ADR
+   * 0015): the wizard then only offers the JSON download.
+   */
+  url: string | null;
   /** `recipe-<id>.json`, the file the wizard downloads. */
   filename: string;
   /** False when the JSON was too long for the URL and must be attached by hand. */
@@ -70,11 +74,15 @@ function attachNote(filename: string): string {
   return `The recipe JSON is too long for a prefilled link. Drag the file \`${filename}\` that the wizard downloaded into this field (or paste its contents) before submitting.`;
 }
 
-export function buildRecipeSubmissionIssue(payload: RecipeSubmissionPayload): RecipeSubmissionIssue {
+export function buildRecipeSubmissionIssue(
+  payload: RecipeSubmissionPayload,
+  repo: string | null = ISSUE_REPO,
+): RecipeSubmissionIssue {
   const { recipe } = payload;
   const filename = recipeSubmissionFilename(payload.recipeId);
+  if (!repo) return { url: null, filename, jsonInUrl: false };
   const build = (json: string, jsonInUrl: boolean) =>
-    buildIssueUrl({
+    issueUrlFor(repo, {
       template: RECIPE_SUBMISSION_TEMPLATE,
       title: `[recipe] ${recipe.name.en}`,
       fields: {

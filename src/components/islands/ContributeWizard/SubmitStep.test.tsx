@@ -4,6 +4,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { $contributeDraft, clearContributeDraft } from '@/stores/contribute-draft';
 import { NOW, installCatalogFetch, onStep, renderWizard, seedDraft, validSubmission } from '@/tests/fixtures/contribute-wizard';
 
+// Issue links are opt-in (ADR 0015): this file covers a build that sets
+// PUBLIC_REPO_SLUG, with a neutral placeholder repo. The default build (no
+// repo, download only) is covered by SubmitStep.download.test.tsx.
+vi.mock('@/lib/report-issue', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/report-issue')>()),
+  ISSUE_REPO: 'example-org/foodie',
+}));
+
 /** Step 7 — sending without secrets: JSON download + prefilled issue (roadmap Issue 039). */
 const RECIPE_ID = `green-chicken-skillet-${NOW.getTime().toString(36)}`;
 
@@ -44,7 +52,8 @@ describe('ContributeWizard · submit step', () => {
     const [url, target, features] = open.mock.calls[0] as [string, string, string];
     expect(target).toBe('_blank');
     expect(features).toContain('noopener');
-    expect(url).toMatch(/^https:\/\/github\.com\/ArtemioPadilla\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
+    expect(screen.getByTestId('contribute-step-submit')).toHaveAttribute('data-submit-mode', 'issue');
+    expect(url).toMatch(/^https:\/\/github\.com\/example-org\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
     const params = new URL(url).searchParams;
     expect(params.get('recipe-name')).toBe('Green Chicken Skillet');
     expect(JSON.parse(params.get('recipe-json') ?? '{}')).toMatchObject({ id: RECIPE_ID, type: 'dinner' });

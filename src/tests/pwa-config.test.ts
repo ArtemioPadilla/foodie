@@ -107,9 +107,9 @@ describe('Workbox caching (roadmap #028)', () => {
     const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     for (const base of ['/', '/foodie/']) {
       const pattern = new RegExp(`${escapeRegExp(base)}data/[^/?#]+\\.json(?:\\?.*)?$`);
-      expect(pattern.test(`https://artemiopadilla.github.io${base}data/recipes.json`)).toBe(true);
-      expect(pattern.test(`https://artemiopadilla.github.io${base}data/ingredients.json?v=2`)).toBe(true);
-      expect(pattern.test(`https://artemiopadilla.github.io${base}recipes/`)).toBe(false);
+      expect(pattern.test(`https://eat.cybere.co${base}data/recipes.json`)).toBe(true);
+      expect(pattern.test(`https://eat.cybere.co${base}data/ingredients.json?v=2`)).toBe(true);
+      expect(pattern.test(`https://eat.cybere.co${base}recipes/`)).toBe(false);
     }
   });
 });

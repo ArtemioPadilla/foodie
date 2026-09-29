@@ -65,6 +65,7 @@ export const es: typeof en = {
     feature6Description: 'Registra comidas, fija objetivos nutricionales y sigue tu progreso.',
     readyToStart: '¿Listo para empezar a planificar?',
     joinUsers: 'Foodie es código abierto. Añade tus recetas, traduce el catálogo o reporta lo que falta — cada contribución llega como issue o pull request en GitHub.',
+    joinUsersLocal: 'Añade tus propias recetas con el asistente de contribución: revisa cada paso y prepara la receta en el formato del catálogo, guardada en este dispositivo mientras escribes.',
     contributeRecipe: 'Contribuir una receta',
     viewSource: 'Ver el código',
     // Legacy translation.json keys (roadmap Issue 015)
@@ -1244,6 +1245,10 @@ export const es: typeof en = {
     submitStepReview: "Una persona mantenedora la revisa y la añade al catálogo en un pull request; aparece en la app en el siguiente despliegue.",
     submitAttachTitle: "Adjunta el archivo descargado",
     submitAttach: "Esta receta es demasiado larga para caber en un enlace, así que el issue pide el archivo: arrastra {{file}} al campo \"Recipe JSON\" antes de crear el issue.",
+    // Sin repositorio configurado (ADR 0015): solo descarga
+    submitUnavailableTitle: "El envío por enlace aún no está disponible",
+    submitUnavailable: "Este sitio todavía no acepta recetas por enlace. Descarga {{file}} — tu receta en el formato del catálogo — y consérvala: es todo lo que necesitará quien la revise cuando se abran los envíos.",
+    submitStepKeep: "Conserva el archivo: tu borrador también se queda en este dispositivo hasta que empieces de nuevo.",
     openIssueAgain: "Abrir el issue de nuevo",
     downloadJson: "Descargar JSON",
   },

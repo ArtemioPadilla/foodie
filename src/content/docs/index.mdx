@@ -45,8 +45,8 @@ ingredient), and **React 19** runs only in islands, the interactive parts such
 as the planner or the recipe browser. Styling is Tailwind v4 with Base UI
 primitives. Shared state lives in Nano Stores persisted to `localStorage` and
 validated with Zod. The catalog is plain JSON in `public/data/`, validated at
-build time. The site is deployed to GitHub Pages under `/foodie/` and works
-offline as a PWA.
+build time. The site is deployed to Cloudflare Pages at the root of its own host and
+works offline as a PWA.
 
 v1 was a React 18 + Vite single-page app; it is frozen at the git tag
 `legacy-vite-1.0.0`. The migration plan and every decision behind v2 are in the

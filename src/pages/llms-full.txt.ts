@@ -21,7 +21,7 @@ export const GET: APIRoute = async () => {
 
 > ${SITE.description}
 
-Source: ${REPO_URL} (${SITE.license}).
+${REPO_URL ? `Source: ${REPO_URL} (${SITE.license}).` : `License: ${SITE.license}.`}
 ${sections.join('\n')}
 `;
 

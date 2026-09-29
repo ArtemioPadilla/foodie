@@ -19,7 +19,7 @@ with MkDocs).
 ## Install
 
 ```bash
-git clone https://github.com/ArtemioPadilla/foodie.git
+git clone <repository-url> foodie   # the Foodie source repository
 cd foodie
 nvm use            # or install Node 22 another way
 npm ci

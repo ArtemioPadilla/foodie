@@ -69,6 +69,7 @@ export const fr: typeof en = {
     feature6Description: 'Enregistrez vos repas, fixez des objectifs nutritionnels et suivez vos progrès.',
     readyToStart: 'Prêt à commencer à planifier ?',
     joinUsers: 'Foodie est open source. Ajoutez vos recettes, traduisez le catalogue ou signalez ce qui manque — chaque contribution arrive sous forme d’issue ou de pull request GitHub.',
+    joinUsersLocal: 'Ajoutez vos propres recettes avec l’assistant de contribution : il vérifie chaque étape et prépare la recette au format du catalogue, enregistrée sur cet appareil au fil de la saisie.',
     contributeRecipe: 'Contribuer une recette',
     viewSource: 'Voir le code source',
     // Legacy translation.json keys (roadmap Issue 015)
@@ -1247,6 +1248,10 @@ export const fr: typeof en = {
     submitStepReview: "Une personne mainteneuse la relit et l'ajoute au catalogue dans une pull request ; elle apparaît dans l'application au prochain déploiement.",
     submitAttachTitle: "Joignez le fichier téléchargé",
     submitAttach: "Cette recette est trop longue pour tenir dans un lien, le ticket demande donc le fichier : glissez {{file}} dans le champ « Recipe JSON » avant de créer le ticket.",
+    // Aucun dépôt configuré (ADR 0015) : téléchargement seulement
+    submitUnavailableTitle: "L’envoi par lien n’est pas encore disponible",
+    submitUnavailable: "Ce site n’accepte pas encore les recettes par lien. Téléchargez {{file}} — votre recette au format du catalogue — et conservez-le : c’est tout ce dont la relecture aura besoin quand les envois ouvriront.",
+    submitStepKeep: "Conservez le fichier : votre brouillon reste aussi sur cet appareil jusqu’à ce que vous recommenciez.",
     openIssueAgain: "Rouvrir le ticket",
     downloadJson: "Télécharger le JSON",
   },

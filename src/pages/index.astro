@@ -7,7 +7,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Home from '@/components/pages/Home.astro';
-import { SITE, REPO_URL, SITE_ORIGIN } from '@/lib/site-meta';
+import { SITE, REPO_URL, SITE_ORIGIN, SITE_PUBLISHER } from '@/lib/site-meta';
 import { hreflangAlternates, t } from '@/i18n';
 
 const lang = 'en' as const;
@@ -22,17 +22,25 @@ const jsonLd = [
     description: SITE.description,
     inLanguage: lang,
     url: new URL(import.meta.env.BASE_URL, Astro.site ?? SITE_ORIGIN).toString(),
+    // The site publishes itself — never a person (ADR 0015).
+    publisher: SITE_PUBLISHER,
   },
-  {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareSourceCode',
-    name: SITE.name,
-    description: SITE.longDescription,
-    codeRepository: REPO_URL,
-    license: `https://spdx.org/licenses/${SITE.license}`,
-    programmingLanguage: [...SITE.programmingLanguages],
-    runtimePlatform: 'Astro 7 / React 19',
-  },
+  // Source-code identity only when the build opts into repo links
+  // (PUBLIC_REPO_SLUG, ADR 0015); otherwise no repository is named at all.
+  ...(REPO_URL
+    ? [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareSourceCode',
+          name: SITE.name,
+          description: SITE.longDescription,
+          codeRepository: REPO_URL,
+          license: `https://spdx.org/licenses/${SITE.license}`,
+          programmingLanguage: [...SITE.programmingLanguages],
+          runtimePlatform: 'Astro 7 / React 19',
+        },
+      ]
+    : []),
 ];
 ---
 

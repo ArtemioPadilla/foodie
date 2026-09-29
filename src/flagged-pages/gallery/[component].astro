@@ -51,7 +51,9 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const repoBlob = `${REPO_URL}/blob/main/${entry.source}`;
+// Link the source on GitHub only when PUBLIC_REPO_SLUG is set (opt-in, ADR 0015);
+// otherwise the path is shown as plain text.
+const repoBlob = REPO_URL ? `${REPO_URL}/blob/main/${entry.source}` : null;
 const recipe = galleryRecipes[entry.slug];
 const playground = galleryPlaygrounds[entry.slug];
 // The live Playground compiles user-typed code with `new Function`. The
@@ -116,10 +118,14 @@ const propsTables = extractPropsForSource(entry.source, repoRoot);
       <div class="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
         <span>
           Source:
-          <a href={repoBlob} target="_blank" rel="noopener noreferrer"
-             class="font-mono text-foreground hover:underline">
-            {entry.source}
-          </a>
+          {repoBlob ? (
+            <a href={repoBlob} target="_blank" rel="noopener noreferrer"
+               class="font-mono text-foreground hover:underline">
+              {entry.source}
+            </a>
+          ) : (
+            <code class="font-mono text-foreground">{entry.source}</code>
+          )}
         </span>
         {entry.install && (
           <span>
@@ -202,9 +208,13 @@ const propsTables = extractPropsForSource(entry.source, repoRoot);
         A realistic usage snippet for this component. Imports come from
         <code class="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground border border-border">@/components/ui/…</code>.
         See the
-        <a href={repoBlob} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
-          source
-        </a>
+        {repoBlob ? (
+          <a href={repoBlob} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+            source
+          </a>
+        ) : (
+          'source'
+        )}
         for the full API.
       </p>
 
@@ -212,11 +222,15 @@ const propsTables = extractPropsForSource(entry.source, repoRoot);
         <CodeSnippet code={recipe.code} lang={recipe.lang} />
       ) : (
         <p class="text-sm text-muted-foreground">
-          No snippet yet for this component — open the
-          <a href={repoBlob} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
-            source link
-          </a>
-          above, or read the
+          No snippet yet for this component — {repoBlob ? (
+            <>open the
+            <a href={repoBlob} target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">
+              source link
+            </a>
+            above, or read the</>
+          ) : (
+            'read the source file named above, or the'
+          )}
           <a href={withBase('/docs/guides/development/#adding-a-ui-component')} class="text-primary hover:underline">
             contribution guide
           </a>.

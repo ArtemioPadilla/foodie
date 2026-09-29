@@ -14,13 +14,14 @@ for local work; CI sets the same variables in the workflow.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `ASTRO_BASE` | `/` | Subpath the site is served under. The GitHub Pages build uses `/foodie`. Every link and asset goes through `withBase()` so the same code works at `/` and at `/foodie/`. |
+| `ASTRO_BASE` | `/` | Subpath the site is served under. Production (Cloudflare Pages) serves at the root, `/`. Every link and asset goes through `withBase()` so the same code also works under a subpath such as `/foodie/`. |
+| `SITE_ORIGIN` | `https://eat.cybere.co` | Canonical origin (not `PUBLIC_`): canonical URLs, hreflang, the sitemap, `robots.txt`, Open Graph and JSON-LD. Must be an `https` URL; PR previews leave it unset. |
 | `FOODIE_DEPLOY` | unset | Set to `1` by `deploy.yml`. The build then refuses to include the mock sign-in adapter. |
 | `PUBLIC_CHANNEL` | `development` | `production`, `preview` or `development`; exposed as `flags.channel`. |
-| `PUBLIC_BUILD_SHA`, `PUBLIC_VERSION` | unset | Shown in the feedback button's diagnostics. CI fills them. |
-| `PUBLIC_REPO_SLUG` | `ArtemioPadilla/foodie` | The repository where feedback issues and recipe submissions are opened. A name, not a credential. |
+| `PUBLIC_BUILD_SHA`, `PUBLIC_VERSION` | unset | Shown in the feedback button's diagnostics; the version is also on `<html data-app-version>`. CI fills them. |
+| `PUBLIC_REPO_SLUG` | unset | Opt-in `<owner>/<repo>`. When set, the site links that repository (header, footer, docs "edit this page"), shows the feedback button and the contribute wizard opens a prefilled issue. Unset — the default and the production build — the site names no repository and the wizard offers the JSON download only. A name, not a credential. |
 
-The production origin (`https://artemiop.com`) lives in
+The fallback production origin (`https://eat.cybere.co`) lives in
 `site.config.mjs`; the site name, description and license shown to search
 engines and to agents (`/llms.txt`) live in `src/lib/site-meta.ts`.
 

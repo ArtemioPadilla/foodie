@@ -39,16 +39,29 @@ describe('.claude/agents — canonical plan is the migration roadmap', () => {
   });
 });
 
-describe('repo slug — FeedbackFAB files issues in ArtemioPadilla/foodie', () => {
-  it('.env.example and deploy.yml set PUBLIC_REPO_SLUG=ArtemioPadilla/foodie', () => {
-    expect(read('.env.example')).toMatch(/^PUBLIC_REPO_SLUG=ArtemioPadilla\/foodie$/m);
-    expect(read('.github/workflows/deploy.yml')).toMatch(/PUBLIC_REPO_SLUG: .*ArtemioPadilla\/foodie/);
+// Adapted deliberately with ADR 0015: repository links became opt-in. The
+// slug is still single-sourced in site-meta.ts, but nothing defaults it to the
+// owner's repository any more — .env.example leaves it empty and the
+// production deploy does not set it.
+describe('repo slug — opt-in, single-sourced (ADR 0015)', () => {
+  it('.env.example leaves PUBLIC_REPO_SLUG empty', () => {
+    expect(read('.env.example')).toMatch(/^PUBLIC_REPO_SLUG=$/m);
   });
 
   it('FeedbackFAB and report-issue read the slug from site-meta (single source)', () => {
     expect(read('src/components/common/FeedbackFAB.astro')).toContain('SITE.repoSlug');
     expect(read('src/lib/report-issue.ts')).toContain('SITE.repoSlug');
-    expect(read('src/lib/site-meta.ts')).toContain("?? 'ArtemioPadilla/foodie'");
+    expect(read('src/lib/site-meta.ts')).toContain('repoSlug: parseRepoSlug(import.meta.env.PUBLIC_REPO_SLUG)');
+  });
+
+  it('every repository surface is gated on the slug', () => {
+    expect(read('src/layouts/BaseLayout.astro')).toMatch(/issueReporting = SITE\.repoSlug !== null/);
+    expect(read('src/layouts/BaseLayout.astro')).toContain('{issueReporting && <FeedbackFAB');
+    expect(read('src/components/common/SiteHeader.astro')).toContain('{REPO_URL && (');
+    expect(read('src/components/common/SiteFooter.astro')).toContain('...(REPO_URL');
+    expect(read('src/components/pages/Home.astro')).toContain('{REPO_URL && (');
+    expect(read('src/layouts/DocsLayout.astro')).toContain('{editUrl && (');
+    expect(read('src/components/islands/MobileNavSheet.tsx')).toContain('{repoUrl ? (');
   });
 });
 

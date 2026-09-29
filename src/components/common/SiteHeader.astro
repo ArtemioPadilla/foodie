@@ -5,6 +5,7 @@
  * (roadmap Issue 005): Home · Recipes · Ingredients · Planner · Shopping ·
  * Pantry · Tracking · Contribute, plus ThemeToggle, LangSwitcher, GlobalSearch
  * and the account slot, filled with the `AccountMenu` island (Issue 036).
+ * The GitHub link renders only when PUBLIC_REPO_SLUG is set (ADR 0015).
  *
  * Labels and hrefs follow the page locale (detected from the route, never from
  * the browser), so `/es/recipes/` links stay inside `/es/`. Below `md` the
@@ -93,14 +94,17 @@ const menuLabels = {
     </div>
 
     <div class="ml-auto flex items-center gap-0.5 md:ml-0 md:gap-1">
-      <a
-        href={REPO_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="hidden rounded-md px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-primary lg:inline lg:text-sm"
-      >
-        {t(locale, 'nav.github')} ↗
-      </a>
+      {/* Repository link only when PUBLIC_REPO_SLUG is set (opt-in, ADR 0015). */}
+      {REPO_URL && (
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hidden rounded-md px-2 py-1 font-mono text-xs text-muted-foreground transition-colors hover:text-primary lg:inline lg:text-sm"
+        >
+          {t(locale, 'nav.github')} ↗
+        </a>
+      )}
       {/* EN/ES/FR switcher — keeps the current route via localizedPath().
           The footer has a more prominent version. */}
       <LangSwitcher class="hidden sm:inline-flex" />
