@@ -13,6 +13,11 @@ integration branch now carries every phase, the cutover merge ships
 **v2.0.0** directly. The `2.0.0-beta.1` this runbook first planned was never
 tagged.
 
+> **Hosting moved (ADR 0015).** After this cutover, production moved from
+> GitHub Pages (`$SITE` below) to Cloudflare Pages at
+> <https://eat.cybere.co/>, and `$SITE` became a redirect to it. The steps
+> below are the record of the v1 → v2 cutover; §9 covers the move.
+
 Conventions used below:
 
 ```bash
@@ -166,8 +171,9 @@ git push origin main
 
 ## 4. Deploy
 
-The push to `main` triggers `deploy.yml`, "Deploy to GitHub Pages" (Node 22,
-`ASTRO_BASE=/foodie`):
+The push to `main` triggers `deploy.yml` (at the cutover it was "Deploy to
+GitHub Pages" with `ASTRO_BASE=/foodie`; it is now "Deploy", to Cloudflare
+Pages — see §9):
 
 ```bash
 gh run list --repo "$REPO" --workflow deploy.yml --branch main --limit 1
@@ -248,3 +254,29 @@ curl -sI "$SITE/" | head -1
   create: custom shopping and pantry lines (`custom-…` ids with a `name`)
   show their raw id in v1, and v1 ignores fields it does not know.
 - Re-running `deploy.yml` on `main` goes back to v2.
+
+## 9. After the cutover: production on Cloudflare Pages (ADR 0015)
+
+The GitHub Pages address carries the owner's name, so production moved to
+<https://eat.cybere.co/> (Cloudflare Pages, site at the root, base `/`). The
+setup steps are [`github-actions-pending.md`](github-actions-pending.md)
+step 20 and [`../deploy/cloudflare-pages.md`](../deploy/cloudflare-pages.md).
+
+- **`$SITE` becomes a redirect.** Once the new host answers with the new
+  build, the `pages-redirect` job of `deploy.yml` replaces the GitHub Pages
+  site with a page that sends `/foodie/<path>?<query>#<hash>` to
+  `https://eat.cybere.co/<path>?<query>#<hash>` (v1's `?/…` links are decoded
+  on the new root), plus a `sw.js` that retires the old service worker.
+- **User data does not move by itself.** `localStorage` is per origin. A
+  browser that still holds Foodie data on the old address sees the redirect
+  page with a **Download my data** button (the `/profile` export format)
+  before it continues; importing that file on the new site is a follow-up
+  (ADR 0015).
+- **Firebase:** `eat.cybere.co` in the authorised domains and
+  `https://eat.cybere.co/*` in the web key's referrers, before the first
+  Cloudflare deploy.
+- **Rollback of the move:** roll back a bad build from the Cloudflare
+  dashboard (*Deployments → Rollback*). To go back to GitHub Pages, revert the
+  hosting commit so `deploy.yml` builds with `ASTRO_BASE=/foodie` for the old
+  host again and run it; that overwrites the redirect page. v1 (§8) is still
+  the last resort.

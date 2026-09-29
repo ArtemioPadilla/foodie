@@ -19,7 +19,8 @@ SPA) is frozen at the tag `legacy-vite-1.0.0`; read it with
 - **Docs site:** `/docs/` (content in `src/content/docs/`, sidebar in
   `src/content/docs-sidebar.ts`; `/docs/reference/api/` is generated from
   `src/schemas` at build time).
-- **Live:** <https://artemiop.com/foodie/> (GitHub Pages, base `/foodie`).
+- **Live:** <https://eat.cybere.co/> (Cloudflare Pages, site at the root,
+  base `/`; ADR 0015). The old GitHub Pages address only redirects there.
 
 **Stack (installed).** Astro 7 + `@astrojs/react` (React 19) + `@astrojs/mdx`
 · Tailwind v4 via `@tailwindcss/vite` · shadcn-style primitives on
@@ -162,7 +163,12 @@ Foodie rules on top:
   URL payloads, `public/data/*.json`) are Zod schemas in `src/schemas/`; types
   come from `z.infer`, not `interface`.
 - **`withBase()` for every href and asset** (`src/lib/href.ts`); locale-aware
-  links through `withBase(localizedRoute(path, lang))`. Never hardcode `/foodie/`.
+  links through `withBase(localizedRoute(path, lang))`. Never hardcode a base.
+- **Privacy (ADR 0015).** Nothing served may name the owner or his GitHub
+  account: repository links are opt-in via `PUBLIC_REPO_SLUG` (unset in
+  production — gate any new repo link on `REPO_URL`/`SITE.repoSlug`), the
+  origin comes from `SITE_ORIGIN`, JSON-LD names `Organization "Foodie"`.
+  `src/tests/privacy.test.ts` scans `src/content`, `public/` and all of `dist/`.
 - **`lang` is a prop.** Islands receive `lang: Locale` and never read
   `navigator.language` during render; stores and pure functions take `lang`
   as an argument. Every ES page has an FR twin (`route-parity` test).
@@ -258,24 +264,32 @@ New page = body in `components/pages/` + EN page + ES/FR wrappers.
 
 ## Deploy
 
-`.github/workflows/deploy.yml` on push to `main`: Node 22, `npm ci`,
-`npm run build` with `ASTRO_BASE=/foodie`, `FOODIE_DEPLOY=1`,
-`PUBLIC_REPO_SLUG`, `PUBLIC_BUILD_SHA` and the `PUBLIC_FIREBASE_*` secrets,
-then GitHub Pages. No Python/MkDocs step (D12). Other workflows: `ci.yml`
-(check + actionlint), `visual.yml` (Playwright, hard gate), `lighthouse.yml`,
-`security.yml` (CodeQL + dependency review, weekly), `validate-recipe-pr.yml`,
-`deploy-failure-issue.yml`. Origin in `site.config.mjs`; rollback to v1 and the
-cutover steps in `docs/runbooks/cutover.md`. Only `PUBLIC_*` variables reach the
-bundle — never put a secret in one.
+`.github/workflows/deploy.yml` (workflow **Deploy**, ADR 0015) on push to
+`main`: Node 22, `npm ci`, `npm run build` with `ASTRO_BASE=/`,
+`SITE_ORIGIN=https://eat.cybere.co`, `FOODIE_DEPLOY=1`, `PUBLIC_BUILD_SHA`,
+`PUBLIC_VERSION` and the `PUBLIC_FIREBASE_*` secrets — **no**
+`PUBLIC_REPO_SLUG` — then Cloudflare Pages (project `foodie`, SHA-pinned
+`wrangler-action`, custom domain `eat.cybere.co`, DNS with
+`CLOUDFLARE_ZONE_ID`). Without `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`
+it builds and skips with a notice. `pages-redirect` turns the old GitHub Pages
+site into a redirect once the new host answers; same-repo PRs get preview
+aliases. `public/_headers` sets HSTS, `frame-ancestors 'none'` & co. Guide:
+`docs/deploy/cloudflare-pages.md`. No Python/MkDocs step (D12). Other
+workflows: `ci.yml` (check + actionlint), `visual.yml` (Playwright, hard
+gate), `lighthouse.yml`, `security.yml` (CodeQL + dependency review, weekly),
+`validate-recipe-pr.yml`, `deploy-failure-issue.yml`. Origin from
+`SITE_ORIGIN` (fallback in `site.config.mjs`); rollback and the cutover steps
+in `docs/runbooks/cutover.md`. Only `PUBLIC_*` variables reach the bundle —
+never put a secret in one; Cloudflare credentials live in repository secrets.
 
 ## Agent-readable surface — ⚠️ re-brand when instantiating
 
 `/llms.txt`, `/llms-full.txt`, the JSON-LD blocks and the default meta
 description are all single-sourced from `src/lib/site-meta.ts` (name,
-description, `repoSlug` honouring `PUBLIC_REPO_SLUG=ArtemioPadilla/foodie`,
+description, `repoSlug` from `PUBLIC_REPO_SLUG` — opt-in, no fallback —
 license). If this repo is ever used as the seed of another project, update that
-file (plus `site.config.mjs`, `public/robots.txt` and `PUBLIC_REPO_SLUG`)
-first, or the new site will introduce itself as Foodie.
+file (plus `SITE_ORIGIN`/`site.config.mjs` and `PUBLIC_REPO_SLUG`) first, or
+the new site will introduce itself as Foodie.
 
 ## Roadmap status
 
@@ -297,7 +311,8 @@ maintainer's; the runbooks in `docs/runbooks/` list them.
 Foodie: **0001** migration strategy (D1–D14) · **0002** local-first user data
 (keys, stakeholders, export/clear) · **0010** `@dnd-kit` for the planner ·
 **0011** Astro 7 upgrade · **0012** Firebase Auth adapter + CSP · **0013** plan
-sharing with `fflate` · **0014** ingredient prices. The other numbers
+sharing with `fflate` · **0014** ingredient prices · **0015** Cloudflare Pages
+at `eat.cybere.co`, repository links opt-in. The other numbers
 (0001–0009 with other slugs) are Inceptor's inherited ADRs. New decision →
 copy `docs/decisions/TEMPLATE.md`.
 

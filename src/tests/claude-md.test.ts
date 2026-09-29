@@ -65,7 +65,7 @@ describe('CLAUDE.md', () => {
   });
 
   it('indexes the Foodie ADRs and documents the preview-under-agent note', () => {
-    for (const adr of ['0001', '0002', '0010', '0011', '0012', '0013', '0014']) {
+    for (const adr of ['0001', '0002', '0010', '0011', '0012', '0013', '0014', '0015']) {
       expect(md).toContain(`**${adr}**`);
     }
     expect(md).toContain('--ignore-lock');

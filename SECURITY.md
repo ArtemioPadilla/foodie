@@ -1,9 +1,9 @@
 # Security policy
 
-Foodie is a static site (Astro + React islands on GitHub Pages) with
-local-first user data. There is no Foodie backend and no server-side secret.
-Only the `main` branch (what <https://artemiop.com/foodie/> serves)
-is supported. The `legacy-vite-1.0.0` tag (the v1 SPA) gets no fixes.
+Foodie is a static site (Astro + React islands on Cloudflare Pages, ADR 0015)
+with local-first user data. There is no Foodie backend and no server-side
+secret. Only the `main` branch (what <https://eat.cybere.co/> serves) is
+supported. The `legacy-vite-1.0.0` tag (the v1 SPA) gets no fixes.
 
 ## Reporting a vulnerability
 
@@ -35,8 +35,9 @@ Out of scope (open a regular issue):
 
 - Findings in upstream dependencies that Foodie does not expose. Report them
   to the dependency.
-- Missing hardening that a static host cannot provide (for example
-  `frame-ancestors` or other response headers on GitHub Pages; see ADR 0012).
+- Response headers beyond those in `public/_headers` (HSTS, `nosniff`,
+  `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options: DENY` and a
+  header CSP limited to `frame-ancestors 'none'`; see ADR 0012 and ADR 0015).
 - Tooling preferences and forbidden-import scan misses.
 
 ## Secrets policy
@@ -45,14 +46,24 @@ Out of scope (open a regular issue):
   bundle, so a `PUBLIC_*` value is public by definition. Never put a secret in
   one. `.env.example` lists every variable the site reads.
 - **Foodie holds no secret in the client.** Recipe contributions download a
-  JSON file and open a prefilled GitHub issue (roadmap D10). There is no GitHub
-  token or OAuth client secret in the app, and the v1 `github-access-token`
-  `localStorage` key is purged on load.
+  JSON file and, only in builds that set `PUBLIC_REPO_SLUG`, open a prefilled
+  GitHub issue (roadmap D10; the production build sets none, ADR 0015). There
+  is no GitHub token or OAuth client secret in the app, and the v1
+  `github-access-token` `localStorage` key is purged on load.
+- **Deploy credentials.** `CLOUDFLARE_API_TOKEN` (scopes: *Account ›
+  Cloudflare Pages › Edit*, optionally *Zone › DNS › Edit* on `cybere.co`),
+  `CLOUDFLARE_ACCOUNT_ID` and the optional `CLOUDFLARE_ZONE_ID` live only in
+  repository secrets. The deploy workflow passes them to shell steps through
+  `env`, never inline, and pull requests from forks get no deploy job.
+- **Privacy of the public site.** The served site names no person and no
+  GitHub account (`src/tests/privacy.test.ts` scans every built file);
+  repository links are opt-in through `PUBLIC_REPO_SLUG`.
 - **Firebase web config** (`PUBLIC_FIREBASE_API_KEY`, `_AUTH_DOMAIN`,
   `_PROJECT_ID`, `_APP_ID`, ADR 0012) identifies the Firebase project; it is not
   a secret. The deploy workflow injects it from repository secrets so forks do
   not sign in to Foodie's project. The owner restricts the API key to the
-  deployed origins (HTTP referrers) in the Google Cloud console and rotates any
+  deployed origins (HTTP referrers, `https://eat.cybere.co/*`) in the Google
+  Cloud console and rotates any
   key that was ever committed. `src/lib/auth/bundle-boundary.test.ts` fails if
   a Firebase key literal appears in `src/`. The GitHub OAuth app's client secret
   lives only in the Firebase console.

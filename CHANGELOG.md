@@ -13,12 +13,36 @@ Canonical plan for v2:
 
 The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
 
-### Fixed
+### Changed
 
-- Canonical URLs, hreflang, the sitemap, `robots.txt` and OG tags now use `https://artemiop.com`, the origin the site is actually served from. `artemiopadilla.github.io/foodie/` answers with a 301 to it (the account's Pages custom domain), so the old values pointed search engines at a redirect.
+- Production moves to **Cloudflare Pages at <https://eat.cybere.co/>**, served
+  from the root of the host (base `/`; ADR 0015). The deploy workflow is now
+  **Deploy**: it builds with `SITE_ORIGIN=https://eat.cybere.co`, deploys with
+  a SHA-pinned `wrangler-action`, attaches the custom domain and (optionally)
+  the DNS record, skips with a notice when the Cloudflare secrets are missing,
+  and deploys same-repo pull requests as previews. Once the new host answers,
+  the old GitHub Pages address becomes a redirect to the same path, offering
+  a download of any Foodie data the browser still holds there
+  (`localStorage` is per address).
+- The canonical origin comes from the `SITE_ORIGIN` build variable (default
+  `https://eat.cybere.co`); `robots.txt` is generated from origin + base.
+- Repository links are opt-in: without `PUBLIC_REPO_SLUG` (the new default)
+  the site shows no GitHub links, no feedback button and no "edit this page";
+  the contribute wizard keeps the JSON download and explains, in EN/ES/FR,
+  that submissions by link are not open yet; the error fallback offers
+  *Reload page*.
+- JSON-LD names the site (`Organization "Foodie"`) as publisher; the OG
+  image shows `eat.cybere.co`; `<html>` carries `data-app-version`.
 
 ### Security
 
+- `public/_headers` for Cloudflare Pages: HSTS, `X-Content-Type-Options`,
+  `Referrer-Policy`, `Permissions-Policy`, `X-Frame-Options: DENY` and a
+  header CSP limited to `frame-ancestors 'none'` (the hashed meta CSP stays
+  the source of truth), with immutable caching for hashed assets and fonts.
+- Privacy gate: `npm run check` fails if any served file (every page, script,
+  style, feed and manifest in `dist/`, plus the docs and `public/` sources)
+  names the owner or his GitHub account.
 - CodeQL findings on the v2 code (#047): custom shopping-item ids use the
   CSPRNG (`crypto.getRandomValues`) where `crypto.randomUUID` is unavailable,
   never `Math.random`; the ⌘K search hint turns Pagefind's HTML excerpt into
@@ -26,6 +50,12 @@ The post-migration backlog is in [`ROADMAP.md`](ROADMAP.md).
   tag-stripping regex; the CSP hash pass recognises `</script >`-style end
   tags; `npm run perf` no longer prints `CHROME_PATH`. The unused template
   `examples/` scripts and workflows were removed.
+
+### Fixed
+
+- Canonical URLs, hreflang, the sitemap, `robots.txt` and OG tags use the
+  origin the site is actually served from (now `SITE_ORIGIN`), not a host that
+  answers with a redirect.
 
 ## [2.0.0] - 2026-09-28
 

@@ -65,15 +65,18 @@ Smaller items the migration recorded but did not do:
 - **Held-back majors.** `dependabot.yml` ignores some majors with the reason
   inline (for example `@tanstack/react-table` 9, `motion` 13, `eslint` 10,
   `typescript` 7). Revisit them one PR at a time.
-- **CSP as a response header.** The policy is a `<meta>` tag because GitHub
-  Pages cannot set headers. On a host that can, send the same policy as a
-  header and add `frame-ancestors` and a report endpoint (ADR 0012).
+- **CSP as a response header.** Cloudflare Pages now sends
+  `frame-ancestors 'none'` from `public/_headers` (ADR 0015); the rest of the
+  policy is still the hashed `<meta>` tag. Moving the whole policy to the
+  header (hashes generated per page) and adding a report endpoint remain
+  open (ADR 0012).
+- **Import user data (ADR 0015).** `/profile` exports `foodie-user-data`
+  files, and the old GitHub Pages address offers the same file before it
+  redirects, but nothing imports one yet: add "Import data" to `/profile`
+  (Zod-validated, per-key merge) so data moves to `eat.cybere.co`.
 - **Template sync.** Pull improvements from Inceptor's `src/components/ui/`
   kit by hand, about once a quarter (roadmap risk table).
 
 ## Out of scope (unchanged from the migration plan)
 
-- Moving the hosting away from GitHub Pages at `/foodie/`. Serving under a
-  custom domain is only `SITE_ORIGIN` plus `ASTRO_BASE`
-  (`src/content/docs/guides/deployment.md`).
 - A visual redesign of the product.
