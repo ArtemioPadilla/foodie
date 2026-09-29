@@ -34,9 +34,11 @@ const next = idx >= 0 && idx < docsOrder.length - 1 ? docsOrder[idx + 1] : null;
 // The index doc uses an empty slug and lives at src/content/docs/index.mdx.
 const editFileExt = slug === '' ? 'mdx' : 'md';
 const editFilePath = slug === '' ? 'index' : slug;
-const editUrl = source
-  ? `${REPO_URL}/tree/main/${source}`
-  : `${REPO_URL}/edit/main/src/content/docs/${editFilePath}.${editFileExt}`;
+const editUrl = !REPO_URL
+  ? null
+  : source
+    ? `${REPO_URL}/tree/main/${source}`
+    : `${REPO_URL}/edit/main/src/content/docs/${editFilePath}.${editFileExt}`;
 const editLabel = source ? `View the source of this page (${source}) on GitHub` : 'Edit this page on GitHub';
 // Breadcrumb structured data: Home → Docs → page (agents/search engines).
 const docsBase = new URL(`${import.meta.env.BASE_URL.replace(/\/$/, '')}/docs/`, Astro.site ?? SITE_ORIGIN).toString();
@@ -84,7 +86,9 @@ const jsonLd = [
           <slot />
         </div>
 
-        <!-- Edit this page — discreet footer link so contributors can fix docs fast -->
+        <!-- Edit this page — discreet footer link so contributors can fix docs fast.
+             Only when PUBLIC_REPO_SLUG is set (repo links are opt-in, ADR 0015). -->
+        {editUrl && (
         <div class="mt-10 flex items-center gap-1.5 text-xs text-muted-foreground">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -112,6 +116,7 @@ const jsonLd = [
             {editLabel}
           </a>
         </div>
+        )}
 
         {(prev || next) && (
           <nav class="mt-12 grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-2">

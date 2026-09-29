@@ -56,7 +56,10 @@ export default defineConfig({
     // adapter (`src/lib/auth/mock.ts`): no Firebase project, no network, no
     // credentials in CI. Playwright merges this over process.env. NOTE: the
     // resulting dist/ has the mock enabled — rebuild before the visual suite.
-    env: { PUBLIC_AUTH_MOCK: '1' },
+    // PUBLIC_REPO_SLUG turns on the opt-in GitHub wiring (ADR 0015) so the
+    // journeys can check the prefilled recipe-submission issue URL. A neutral
+    // placeholder — never the owner's repository; the shipped build sets none.
+    env: { PUBLIC_AUTH_MOCK: '1', PUBLIC_REPO_SLUG: 'example-org/foodie' },
     url: `http://localhost:${PORT}${BASE_PATH}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,

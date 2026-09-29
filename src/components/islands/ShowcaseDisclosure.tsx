@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import ErrorBoundary from './ErrorBoundary';
+import { withBase } from '@/lib/href';
 
 export default function ShowcaseDisclosure() {
   return (
@@ -58,8 +59,8 @@ export default function ShowcaseDisclosure() {
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Avatar</p>
           <div className="flex items-center gap-3">
             <Avatar>
-              <AvatarImage src="https://github.com/ArtemioPadilla.png" alt="Artemio" />
-              <AvatarFallback>AP</AvatarFallback>
+              <AvatarImage src={withBase('/icons/pwa-192.png')} alt="Foodie" />
+              <AvatarFallback>FO</AvatarFallback>
             </Avatar>
             <Avatar>
               <AvatarFallback>IN</AvatarFallback>

@@ -8,10 +8,17 @@ import { readFileSync } from 'node:fs';
 const read = (p: string) => readFileSync(new URL(`../../${p}`, import.meta.url), 'utf-8');
 
 describe('audit wave 1 — production fixes', () => {
-  it('robots.txt points at the real sitemap, not the placeholder domain', () => {
-    const robots = read('public/robots.txt');
+  // ADR 0015: the static public/robots.txt became a build-time endpoint so the
+  // Sitemap URL follows SITE_ORIGIN + ASTRO_BASE (it pointed at the old host
+  // after every move). The same guard, now over the generator.
+  it('robots.txt points at the real sitemap, not the placeholder domain', async () => {
+    const { robotsTxt } = await import('../lib/robots');
+    const robots = robotsTxt('https://eat.cybere.co', '/');
     expect(robots).not.toContain('.example');
-    expect(robots).toContain('https://artemiop.com/foodie/sitemap-index.xml');
+    expect(robots).toContain('Sitemap: https://eat.cybere.co/sitemap-index.xml');
+    expect(robotsTxt('https://eat.cybere.co', '/foodie/')).toContain('Sitemap: https://eat.cybere.co/foodie/sitemap-index.xml');
+    expect(robotsTxt('https://eat.cybere.co', '/foodie')).toContain('Sitemap: https://eat.cybere.co/foodie/sitemap-index.xml');
+    expect(read('src/pages/robots.txt.ts')).toContain('robotsTxt(');
   });
 
   it('PWA navigateFallback stays inside the configured base scope', () => {

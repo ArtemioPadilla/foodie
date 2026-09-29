@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://artemiop.com/foodie/sitemap-index.xml

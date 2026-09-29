@@ -41,14 +41,24 @@ describe('recipe-submission.yml wiring', () => {
   });
 });
 
+// Repo links are opt-in (ADR 0015): a neutral placeholder repo stands in for
+// PUBLIC_REPO_SLUG, which the unit run leaves unset.
+const REPO = 'example-org/foodie';
+
 describe('buildRecipeSubmissionIssue', () => {
-  it('opens the recipe-submission form on the Foodie repo with every field prefilled', () => {
+  it('without a configured repository: no URL, only the file to download', () => {
     const data = payload();
-    const issue = buildRecipeSubmissionIssue(data);
-    expect(issue.url).toMatch(/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/issues\/new\?template=recipe-submission\.yml&/);
+    expect(buildRecipeSubmissionIssue(data)).toEqual({ url: null, filename: `recipe-${data.recipeId}.json`, jsonInUrl: false });
+    expect(buildRecipeSubmissionIssue(data, null).url).toBeNull();
+  });
+
+  it('opens the recipe-submission form on the configured repo with every field prefilled', () => {
+    const data = payload();
+    const issue = buildRecipeSubmissionIssue(data, REPO);
+    expect(issue.url).toMatch(/^https:\/\/github\.com\/example-org\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
     expect(issue.jsonInUrl).toBe(true);
     expect(issue.filename).toBe(`recipe-${data.recipeId}.json`);
-    const params = new URL(issue.url).searchParams;
+    const params = new URL(issue.url!).searchParams;
     expect(params.get('title')).toBe('[recipe] Green Chicken Skillet');
     expect(params.get('recipe-name')).toBe('Green Chicken Skillet');
     expect(params.get('meal-type')).toBe('dinner');
@@ -66,10 +76,10 @@ describe('buildRecipeSubmissionIssue', () => {
     const long = 'Stir slowly and keep tasting as you go, adjusting salt and acidity. '.repeat(20);
     const data = payload({ instructions: Array.from({ length: 12 }, () => long) });
     expect(encodeURIComponent(data.recipeJson).length).toBeGreaterThan(ISSUE_URL_MAX_LENGTH);
-    const issue = buildRecipeSubmissionIssue(data);
+    const issue = buildRecipeSubmissionIssue(data, REPO);
     expect(issue.jsonInUrl).toBe(false);
-    expect(issue.url.length).toBeLessThanOrEqual(ISSUE_URL_MAX_LENGTH);
-    const params = new URL(issue.url).searchParams;
+    expect(issue.url!.length).toBeLessThanOrEqual(ISSUE_URL_MAX_LENGTH);
+    const params = new URL(issue.url!).searchParams;
     expect(params.get('recipe-json')).toContain(recipeSubmissionFilename(data.recipeId));
     expect(params.get('notes')).toMatch(/must be attached/);
   });

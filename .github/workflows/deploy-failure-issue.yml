@@ -4,12 +4,14 @@ name: Deploy failure — auto-file issue
 # Context (#184):
 # Inceptor's FeedbackFAB lets users file issues from the running app when
 # something is broken. This workflow closes the same loop from the CI side:
-# if the deploy to GitHub Pages fails, CI files (or comments on) a tracking
-# issue automatically, so the failure is visible without anyone having to
+# if the production deploy (Cloudflare Pages, ADR 0015) fails, CI files (or
+# comments on) a tracking issue automatically, so the failure is visible without anyone having to
 # monitor the Actions UI.
 #
-# Triggered by the "Deploy to GitHub Pages" workflow completing, so it runs
-# AFTER the deploy job finishes — not on the same runner.
+# Triggered by the "Deploy" workflow completing, so it runs AFTER the deploy
+# jobs finish — not on the same runner. Only production runs count (pushes to
+# main, manual dispatches): a failing pull-request preview is reported on the
+# pull request itself, not as an outage.
 #
 # Deduplication: we search for an existing open issue with the label
 # `deploy-failure`. If one exists we add a comment so there's a single
@@ -21,8 +23,9 @@ name: Deploy failure — auto-file issue
 
 on:
   workflow_run:
-    workflows: ['Deploy to GitHub Pages']
+    workflows: ['Deploy']
     types: [completed]
+    branches: [main]
 
 # Minimal permissions — issues only. Contents: read is not needed here
 # because we are not checking out code.
@@ -33,6 +36,7 @@ jobs:
   handle-deploy-result:
     name: Handle deploy result
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.event != 'pull_request'
     env:
       GH_REPO: ${{ github.repository }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
@@ -65,12 +69,12 @@ jobs:
         run: |
           gh issue create \
             --repo "$GH_REPO" \
-            --title "Deploy to GitHub Pages failed" \
+            --title "Deploy failed" \
             --label "$DEPLOY_LABEL,bug,type:chore" \
             --body "$(cat <<'BODY'
           ## Deploy failure detected
 
-          The **Deploy to GitHub Pages** workflow completed with conclusion **failure**.
+          The **Deploy** workflow completed with conclusion **failure**.
 
           **Run:** ${{ env.RUN_URL }}
           **Triggered by:** push to `${{ github.event.workflow_run.head_branch }}` (${{ github.event.workflow_run.head_sha }})

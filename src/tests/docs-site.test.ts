@@ -95,8 +95,11 @@ describe('README and CONTRIBUTING (roadmap #044)', () => {
     for (const img of images) expect(existsSync(join(root, img)), img).toBe(true);
   });
 
+  // The public host moved to Cloudflare Pages (ADR 0015): the README's "use
+  // it" links follow it and none points at the old address any more.
   it('README links the docs site and the legacy tag', () => {
-    expect(readme).toContain('https://artemiop.com/foodie/docs/');
+    expect(readme).toContain('https://eat.cybere.co/docs/');
+    expect(readme).not.toContain('artemiop.com');
     expect(readme).toContain('tree/legacy-vite-1.0.0');
   });
 

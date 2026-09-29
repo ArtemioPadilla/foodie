@@ -33,6 +33,12 @@ describe('ErrorBoundary', () => {
     expect(source).toMatch(/\{reportUrl && /);
   });
 
+  // ADR 0015: without PUBLIC_REPO_SLUG there is no repository to report to.
+  it('keeps a reload action and drops the report link when no repository is configured', () => {
+    expect(source).toMatch(/if \(url === null\) return;/);
+    expect(source).toContain('window.location.reload()');
+  });
+
   it('imports from @/lib/report-issue (not a third-party tracker)', () => {
     expect(source).toMatch(/from ['"]@\/lib\/report-issue['"]/);
   });

@@ -38,14 +38,16 @@ export default function MobileNavSheet({ lang, items, repoUrl, labels, open, onO
               {item.label}
             </a>
           ))}
-          <a
-            href={repoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 rounded-md border-t border-border px-3 pt-3 pb-2 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
-          >
-            {labels.github} ↗
-          </a>
+          {repoUrl ? (
+            <a
+              href={repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 rounded-md border-t border-border px-3 pt-3 pb-2 font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
+            >
+              {labels.github} ↗
+            </a>
+          ) : null}
         </nav>
         <SheetClose render={<Button variant="outline" className="mt-auto" />}>{labels.close}</SheetClose>
       </SheetContent>

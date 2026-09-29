@@ -178,7 +178,9 @@ describe.runIf(runDist)('built site — dist/ (npm run test:seo, roadmap #022)',
   it('robots.txt ships and points at the production sitemap index', () => {
     const robots = readFileSync(join(DIST, 'robots.txt'), 'utf-8');
     expect(robots).toMatch(/^User-agent: \*$/m);
-    expect(robots).toContain(`Sitemap: ${SITE_ORIGIN}/foodie/sitemap-index.xml`);
+    // Generated from origin + base (src/pages/robots.txt.ts, ADR 0015), so it
+    // points at this build's own sitemap index whatever the base.
+    expect(robots).toContain(`Sitemap: ${prefix}sitemap-index.xml`);
   });
 
   it('catalog URLs carry xhtml:link alternates for en, es and fr', () => {

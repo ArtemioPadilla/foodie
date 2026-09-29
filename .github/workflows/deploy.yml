@@ -1,27 +1,53 @@
-name: Deploy to GitHub Pages
+name: Deploy
 
-# Node 22 + ASTRO_BASE only — no MkDocs/Python step (roadmap D12, Issue 006).
-# Deploys on push to `main`. Until the cutover (Issue 030) `main` still holds
-# the legacy SPA with its own deploy.yml; this file lives on `inceptor` and
-# becomes the live deploy when `inceptor` is merged into `main`.
+# Foodie is served from Cloudflare Pages at https://eat.cybere.co/ — the site
+# root, base '/' (ADR 0015). Node 22 + ASTRO_BASE only, no MkDocs/Python step
+# (roadmap D12, Issue 006); the cutover to v2 on `main` (Issue 030) is done.
+#
+#   cloudflare      push to main / manual: production build → Pages project
+#                   `foodie` (branch main), custom domain, optional DNS record.
+#   pages-redirect  after a real Cloudflare deploy: once eat.cybere.co serves
+#                   the new build, replace the old GitHub Pages site with a
+#                   redirect page (old /foodie/<path> → new /<path>).
+#   preview         pull requests from this repository: same build on a
+#                   branch alias of the Pages project.
+#
+# Without the CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets every job
+# builds, prints a ::notice:: and skips the deploy steps WITHOUT failing, and
+# the old GitHub Pages site is left untouched. Setup: docs/deploy/cloudflare-pages.md.
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
-# Single concurrent deployment — newer pushes cancel older runs in progress
+# One production deploy at a time (newer pushes cancel older runs); previews
+# are grouped per pull request.
 concurrency:
-  group: pages
+  group: deploy-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.number) || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+
+env:
+  # Cloudflare Pages project and the public host (ADR 0015).
+  CF_PROJECT: foodie
+  CF_DOMAIN: eat.cybere.co
 
 jobs:
-  build:
+  cloudflare:
+    name: Cloudflare Pages (production)
+    # Production only ships main: a manual dispatch from another ref must not
+    # publish that ref to eat.cybere.co (PR previews have their own job).
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    outputs:
+      deployed: ${{ steps.done.outputs.deployed }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
@@ -30,22 +56,20 @@ jobs:
           cache: 'npm'
       - run: npm ci
       # The release version (package.json, bumped per CHANGELOG release;
-      # roadmap Issue 048) is inlined as PUBLIC_VERSION and shown in the
-      # FeedbackFAB diagnostics next to PUBLIC_BUILD_SHA.
+      # roadmap Issue 048) is inlined as PUBLIC_VERSION: FeedbackFAB
+      # diagnostics (when enabled) and <html data-app-version>.
       - name: Read version
         id: version
         run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - name: Build
         run: npm run build
         env:
-          # GitHub *project* pages serve at `<domain>/<repo>/`, so the build
-          # needs the repo name as its base path. Defaults to this repo's slug;
-          # override with an ASTRO_BASE repo secret (e.g. set it to `/` if you
-          # later move to a root/custom-domain user-pages deploy).
-          ASTRO_BASE: ${{ secrets.ASTRO_BASE || '/foodie' }}
-          # Where the FeedbackFAB / report-issue links file issues (roadmap
-          # Issue 007). Inlined at build; forks override with a repo variable.
-          PUBLIC_REPO_SLUG: ${{ vars.PUBLIC_REPO_SLUG || 'ArtemioPadilla/foodie' }}
+          # Served at the root of its own host: no subpath.
+          ASTRO_BASE: /
+          # Canonical, hreflang, sitemap, robots.txt, OG and JSON-LD origin.
+          SITE_ORIGIN: https://eat.cybere.co
+          # No PUBLIC_REPO_SLUG on purpose: repository links are opt-in and
+          # the public site names no repository (ADR 0015).
           PUBLIC_BUILD_SHA: ${{ github.sha }}
           PUBLIC_VERSION: ${{ steps.version.outputs.version }}
           # Marks the production build: astro.config.mjs refuses to build
@@ -59,18 +83,227 @@ jobs:
           PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.PUBLIC_FIREBASE_AUTH_DOMAIN }}
           PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.PUBLIC_FIREBASE_PROJECT_ID }}
           PUBLIC_FIREBASE_APP_ID: ${{ secrets.PUBLIC_FIREBASE_APP_ID }}
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
-        with:
-          path: ./dist
 
-  deploy:
-    needs: build
+      - name: Check Cloudflare configuration
+        id: cf
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice title=Cloudflare Pages not configured::Built OK, deploy skipped. Add the CLOUDFLARE_API_TOKEN (Account › Cloudflare Pages › Edit; optionally Zone › DNS › Edit) and CLOUDFLARE_ACCOUNT_ID repository secrets, plus CLOUDFLARE_ZONE_ID to manage DNS — see docs/deploy/cloudflare-pages.md."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Idempotent: GET the project, create it (production branch main) only
+      # on a 404. Its *.pages.dev host is the DNS target below.
+      - name: Ensure the Pages project exists
+        id: project
+        if: steps.cf.outputs.configured == 'true'
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          status=$(curl -sS -o project.json -w '%{http_code}' "${auth[@]}" "${api}/${CF_PROJECT}")
+          if [ "$status" = "404" ]; then
+            echo "Creating Pages project ${CF_PROJECT}"
+            curl -sS --fail-with-body -o project.json "${auth[@]}" -X POST "$api" \
+              --data "$(jq -n --arg name "$CF_PROJECT" '{name: $name, production_branch: "main"}')"
+          elif [ "$status" != "200" ]; then
+            echo "::error::Cloudflare API answered ${status} for project ${CF_PROJECT}"
+            jq -c '.errors' project.json || true
+            exit 1
+          fi
+          subdomain=$(jq -r '.result.subdomain // empty' project.json)
+          echo "subdomain=${subdomain:-${CF_PROJECT}.pages.dev}" >> "$GITHUB_OUTPUT"
+          rm -f project.json
+
+      - name: Deploy dist/ to Cloudflare Pages
+        id: deploy
+        if: steps.cf.outputs.configured == 'true'
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=foodie --branch=main
+
+      # Idempotent: an existing domain (or Cloudflare's "already added" error)
+      # counts as success.
+      - name: Attach the custom domain
+        if: steps.cf.outputs.configured == 'true'
+        run: |
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${CF_PROJECT}/domains"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          if [ "$(curl -sS -o /dev/null -w '%{http_code}' "${auth[@]}" "${api}/${CF_DOMAIN}")" = "200" ]; then
+            echo "${CF_DOMAIN} is already attached to ${CF_PROJECT}"
+            exit 0
+          fi
+          status=$(curl -sS -o domain.json -w '%{http_code}' "${auth[@]}" -X POST "$api" \
+            --data "$(jq -n --arg name "$CF_DOMAIN" '{name: $name}')")
+          if [ "$status" = "200" ] || jq -e '[.errors[]?.message] | any(test("already"; "i"))' domain.json > /dev/null; then
+            echo "${CF_DOMAIN} attached to ${CF_PROJECT}"
+          else
+            echo "::error::Could not attach ${CF_DOMAIN} (HTTP ${status})"
+            jq -c '.errors' domain.json || true
+            exit 1
+          fi
+          rm -f domain.json
+
+      # With a zone id: create or update a proxied CNAME eat → <project>.pages.dev.
+      # Without one: the record is a manual step, spelled out in the notice.
+      - name: Point DNS at the Pages project
+        if: steps.cf.outputs.configured == 'true'
+        env:
+          CF_TARGET: ${{ steps.project.outputs.subdomain }}
+        run: |
+          if [ -z "$CLOUDFLARE_ZONE_ID" ]; then
+            echo "::notice title=DNS is a manual step::Create a proxied CNAME ${CF_DOMAIN} → ${CF_TARGET} in the zone, or add the CLOUDFLARE_ZONE_ID secret (token scope Zone › DNS › Edit) and the workflow will manage it."
+            exit 0
+          fi
+          api="https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          record=$(jq -n --arg name "$CF_DOMAIN" --arg content "$CF_TARGET" \
+            '{type: "CNAME", name: $name, content: $content, proxied: true, ttl: 1}')
+          id=$(curl -sS --fail-with-body "${auth[@]}" "${api}?type=CNAME&name=${CF_DOMAIN}" | jq -r '.result[0].id // empty')
+          if [ -n "$id" ]; then
+            curl -sS --fail-with-body -o /dev/null "${auth[@]}" -X PUT "${api}/${id}" --data "$record"
+            echo "Updated CNAME ${CF_DOMAIN} → ${CF_TARGET}"
+          else
+            curl -sS --fail-with-body -o /dev/null "${auth[@]}" -X POST "$api" --data "$record"
+            echo "Created CNAME ${CF_DOMAIN} → ${CF_TARGET}"
+          fi
+
+      - name: Record the deploy
+        id: done
+        if: steps.cf.outputs.configured == 'true'
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+        run: |
+          echo "deployed=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Cloudflare Pages"
+            echo "- Production: https://${CF_DOMAIN}/"
+            echo "- This deployment: ${DEPLOYMENT_URL:-n/a}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # The old GitHub Pages site becomes a redirect — but only once the new host
+  # demonstrably serves this build, so a DNS or certificate delay never takes
+  # the site offline. If the check times out, the job skips (the old site
+  # stays up) and the next deploy tries again.
+  pages-redirect:
+    name: Old GitHub Pages → redirect
+    needs: cloudflare
+    if: needs.cloudflare.outputs.deployed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.pages.outputs.page_url }}
     steps:
+      - name: Wait for https://eat.cybere.co/ to serve the new build
+        id: live
+        run: |
+          for attempt in $(seq 1 30); do
+            if curl -fsSL --max-time 15 "https://${CF_DOMAIN}/" -o home.html && grep -q 'data-app-version' home.html; then
+              echo "live=true" >> "$GITHUB_OUTPUT"
+              echo "https://${CF_DOMAIN}/ is live (attempt ${attempt})"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::notice title=Redirect postponed::https://${CF_DOMAIN}/ did not serve the new build within 5 minutes; the old GitHub Pages site stays as it is."
+          echo "live=false" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        if: steps.live.outputs.live == 'true'
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        if: steps.live.outputs.live == 'true'
+        with:
+          node-version: '22'
+      # index.html + 404.html (+ a kill-switch sw.js for the old service
+      # worker): /foodie/<path>?<q>#<h> → https://eat.cybere.co/<path>?<q>#<h>.
+      - name: Build the redirect site
+        if: steps.live.outputs.live == 'true'
+        run: node scripts/build-pages-redirect.mjs --target "https://${CF_DOMAIN}" --base /foodie --out redirect-site
+      - name: Upload Pages artifact
+        if: steps.live.outputs.live == 'true'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: ./redirect-site
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: pages
+        if: steps.live.outputs.live == 'true'
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+
+  preview:
+    name: Cloudflare Pages (preview)
+    # Same-repository pull requests only: forks get no secrets.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      # Like production, but SITE_ORIGIN stays at its default: a preview must
+      # never claim its own *.pages.dev URL as canonical.
+      - name: Build
+        run: npm run build
+        env:
+          ASTRO_BASE: /
+          PUBLIC_BUILD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUBLIC_VERSION: ${{ steps.version.outputs.version }}
+          FOODIE_DEPLOY: '1'
+          PUBLIC_FIREBASE_API_KEY: ${{ secrets.PUBLIC_FIREBASE_API_KEY }}
+          PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.PUBLIC_FIREBASE_PROJECT_ID }}
+          PUBLIC_FIREBASE_APP_ID: ${{ secrets.PUBLIC_FIREBASE_APP_ID }}
+      # Branch names are untrusted input: pass them through env and keep only
+      # [a-z0-9-] (Cloudflare's alias alphabet) before they reach a command.
+      # A head branch named `main` would deploy to production, so it gets a
+      # pr-<number> alias instead.
+      - name: Preview branch alias
+        id: branch
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          alias=$(printf '%s' "$HEAD_REF" | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9-' '-' | sed -E 's/-+/-/g; s/^-+//; s/-+$//' | cut -c1-28)
+          if [ -z "$alias" ] || [ "$alias" = "main" ]; then alias="pr-${PR_NUMBER}"; fi
+          echo "name=${alias}" >> "$GITHUB_OUTPUT"
+      - name: Check Cloudflare configuration
+        id: cf
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice title=Preview skipped::Cloudflare secrets are not configured (see docs/deploy/cloudflare-pages.md); the build above still ran."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Deploy the preview
+        id: deploy
+        if: steps.cf.outputs.configured == 'true'
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=foodie --branch=${{ steps.branch.outputs.name }}
+      - name: Preview URL
+        if: steps.cf.outputs.configured == 'true'
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.deployment-url }}
+          ALIAS_URL: ${{ steps.deploy.outputs.pages-deployment-alias-url }}
+        run: |
+          {
+            echo "### Cloudflare Pages preview"
+            echo "- Branch alias: ${ALIAS_URL:-n/a}"
+            echo "- This deployment: ${DEPLOYMENT_URL:-n/a}"
+          } >> "$GITHUB_STEP_SUMMARY"

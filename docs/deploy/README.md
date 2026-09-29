@@ -2,25 +2,27 @@
 
 This scaffold ships static HTML + a service worker. Any free static host works.
 
-The default is **GitHub Pages** via the workflow at
-`.github/workflows/deploy.yml`. To enable: go to your repo's Settings → Pages
-→ Source: "GitHub Actions". Pushes to `main` deploy automatically.
+Foodie deploys to **Cloudflare Pages** at <https://eat.cybere.co/> via the
+workflow at `.github/workflows/deploy.yml` (ADR 0015) — see
+[Cloudflare Pages](./cloudflare-pages.md) for the secrets, DNS and Firebase
+steps. The old GitHub Pages site only serves a redirect.
 
-For other targets:
+Other targets (not used by Foodie):
 
-- [Cloudflare Pages](./cloudflare-pages.md) — fastest CDN; custom domain free
 - [Netlify](./netlify.md) — best PR-preview UX; free contact form
 - [Vercel](./vercel.md) — best Astro detection; hobby tier non-commercial
 
 ## Things you must change before going live
 
-1. **`astro.config.mjs` `site:`** — replace the placeholder URL with your
-   actual deployed domain. The sitemap and OG meta tags use it.
+1. **`SITE_ORIGIN`** — set it in the build env (or change
+   `DEFAULT_SITE_ORIGIN` in `site.config.mjs`). Canonical URLs, the sitemap,
+   `robots.txt`, OG tags and JSON-LD use it.
 2. **`SECURITY.md`** — update the contact line with your email or kept-private channel.
-3. **`public/og-source.svg` footer text** — change the GitHub URL if you forked.
-4. **PWA icon brand** — `public/icons/logo-source.svg` is a generic 3-node
-   loop in emerald. Replace with your real artwork, then run
-   `node scripts/generate-og.mjs` to regenerate the OG image to match.
+3. **`public/og-source.svg` footer text** — the host printed on the OG image;
+   change `SITE` in `scripts/generate-brand-assets.mjs` and run it with
+   `--og-only`.
+4. **`PUBLIC_REPO_SLUG`** — leave it unset unless the site should link its
+   repository (ADR 0015).
 
 ## Things you can change later
 

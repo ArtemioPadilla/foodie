@@ -40,12 +40,12 @@
     </g>
   </g></g>
   <g transform="translate(72, 78)">
-    <rect rx="999" width="236" height="40" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1"/>
+    <rect rx="999" width="284" height="40" fill="#ffffff" fill-opacity="0.16" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1"/>
     <circle cx="22" cy="20" r="6" fill="#fbbf24"/>
     <text x="40" y="26" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#ffffff" font-weight="600">EN · ES · FR · offline-first</text>
   </g>
   <text x="72" y="300" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="132" font-weight="800" fill="#ffffff" letter-spacing="-4">Foodie</text>
   <text x="76" y="372" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="34" font-weight="500" fill="#ecfdf5">Your Personal Meal Planning Assistant</text>
   <text x="76" y="440" font-family="'DejaVu Sans', 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif" font-size="22" fill="#d1fae5">Recipes · Meal planner · Shopping list · Pantry · Nutrition</text>
-  <text x="76" y="570" font-family="'DejaVu Sans Mono', ui-monospace, monospace" font-size="18" fill="#a7f3d0">artemiopadilla.github.io/foodie</text>
+  <text x="76" y="570" font-family="'DejaVu Sans Mono', ui-monospace, monospace" font-size="18" fill="#a7f3d0">eat.cybere.co</text>
 </svg>

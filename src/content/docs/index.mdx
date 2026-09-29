@@ -20,7 +20,7 @@ site. The search box on the left covers the docs and every recipe.
 | Planning | `/planner/`, `/shopping/`, `/pantry/`, `/plan/shared/` | A 7-day plan (drag recipes between slots), saved templates, a shopping list generated from the plan and grouped by aisle, pantry stock with expiry dates, sharing a plan by link |
 | Tracking | `/tracking/`, `/tracking/goals/`, `/tracking/progress/` | A food diary, daily nutrition goals and progress charts |
 | Account | `/profile/` | Optional sign-in (email, Google, GitHub) that keeps preferences and favourites per account; export or clear your data |
-| Contributing | `/contribute/` | A wizard that turns your recipe into catalog JSON and a prefilled GitHub issue, with no token or secret |
+| Contributing | `/contribute/` | A wizard that turns your recipe into catalog JSON you can download, with no account, token or secret |
 
 Each page exists at `/`, `/es/` and `/fr/`.
 
@@ -45,8 +45,8 @@ ingredient), and **React 19** runs only in islands, the interactive parts such
 as the planner or the recipe browser. Styling is Tailwind v4 with Base UI
 primitives. Shared state lives in Nano Stores persisted to `localStorage` and
 validated with Zod. The catalog is plain JSON in `public/data/`, validated at
-build time. The site is deployed to GitHub Pages under `/foodie/` and works
-offline as a PWA.
+build time. The site is deployed to Cloudflare Pages at the root of its own host and
+works offline as a PWA.
 
 v1 was a React 18 + Vite single-page app; it is frozen at the git tag
 `legacy-vite-1.0.0`. The migration plan and every decision behind v2 are in the

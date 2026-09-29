@@ -259,6 +259,26 @@ test('on a phone the menu opens in a sheet and navigates', async ({ page }) => {
   await expect(page.locator('main[data-page="planner"] h1')).toHaveText('Meal Planner');
 });
 
+// Repository links are opt-in (ADR 0015): the e2e build sets PUBLIC_REPO_SLUG
+// to a neutral placeholder, the visual build (like production) sets none. The
+// same journey checks whichever build it runs against.
+test('repository links, the feedback button and the app version follow PUBLIC_REPO_SLUG', async ({ page }) => {
+  await page.goto('./');
+  await expect(page.locator('html')).toHaveAttribute('data-app-version', /.+/);
+  const fab = page.locator('#foodie-report-modal');
+  const githubLinks = page.locator('header a[href*="github.com"], footer a[href*="github.com"], main a[href*="github.com"]');
+  if ((await fab.count()) > 0) {
+    await expect(fab).toHaveAttribute('data-repo', 'example-org/foodie');
+    await expect(page.locator('footer a[href="https://github.com/example-org/foodie"]')).toHaveCount(1);
+  } else {
+    await expect(githubLinks).toHaveCount(0);
+    const html = await page.content();
+    expect(html).not.toMatch(/data-repo=|github\.com\/[\w.-]+\/foodie/i);
+    await page.goto('./docs/getting-started/quick-start/');
+    await expect(page.getByText(/Edit this page on GitHub/)).toHaveCount(0);
+  }
+});
+
 test('unknown paths render the Foodie 404 with a way home per language', async ({ page }) => {
   const response = await page.goto('./this-page-does-not-exist/');
   // `astro preview` answers 404 with dist/404.html; GitHub Pages does the same.
@@ -1479,8 +1499,12 @@ test.describe('contribute wizard (roadmap #038, #039)', () => {
     await expect(wizard).toHaveAttribute('data-step', 'preview');
     await expect(page.getByTestId('contribute-draft-restored')).toBeVisible();
 
-    // 7 · submit without secrets (roadmap #039): "Enviar" opens the prefilled
-    // recipe-submission issue (window.open intercepted) and downloads the JSON.
+    // 7 · submit without secrets (roadmap #039). Two builds reach this
+    // journey (ADR 0015): the e2e config sets PUBLIC_REPO_SLUG to a neutral
+    // placeholder, so "Enviar" opens the prefilled recipe-submission issue
+    // (window.open intercepted) and downloads the JSON; the visual build sets
+    // none — like production — so the step only offers the download and says
+    // that submissions by link are not open yet, with no Submit button.
     await page.evaluate(() => {
       const w = window as unknown as { __opened: unknown[][] };
       w.__opened = [];
@@ -1493,9 +1517,33 @@ test.describe('contribute wizard (roadmap #038, #039)', () => {
     await expect(wizard).toHaveAttribute('data-step', 'submit');
     const submitStep = page.getByTestId('contribute-step-submit');
     await expect(submitStep).toHaveAttribute('data-recipe-id', /^weeknight-green-skillet-/);
-    await expect(submitStep).toHaveAttribute('data-json-in-url', 'true');
     const recipeId = await submitStep.getAttribute('data-recipe-id');
+    const mode = await submitStep.getAttribute('data-submit-mode');
+    expect(['issue', 'download']).toContain(mode);
 
+    if (mode === 'download') {
+      await expect(page.getByTestId('contribute-submit-unavailable')).toContainText('El envío por enlace aún no está disponible');
+      await expect(page.getByTestId('contribute-submit')).toHaveCount(0);
+      // No link to GitHub in the step: compare every URL's hostname exactly.
+      const hosts = await submitStep.evaluate((el) =>
+        Array.from(el.querySelectorAll('[href], [src], [action]')).map(
+          (node) => new URL(node.getAttribute('href') ?? node.getAttribute('src') ?? node.getAttribute('action') ?? '', document.baseURI).hostname,
+        ),
+      );
+      expect(hosts.filter((host) => host === 'github.com' || host.endsWith('.github.com'))).toEqual([]);
+      expect(((await submitStep.textContent()) ?? '').toLowerCase()).not.toContain('github');
+      const download = page.waitForEvent('download');
+      await page.getByTestId('contribute-download-json').click();
+      expect((await download).suggestedFilename()).toBe(`recipe-${recipeId}.json`);
+      expect(await page.evaluate(() => (window as unknown as { __opened: unknown[][] }).__opened)).toHaveLength(0);
+      const storage = await page.evaluate(() => ({ draft: localStorage.getItem('foodie:contribute-draft'), keys: Object.keys(localStorage) }));
+      // Nothing was sent: the draft stays on the device.
+      expect(storage.draft).not.toBeNull();
+      expect(storage.keys.filter((key) => /github|token/i.test(key))).toEqual([]);
+      return;
+    }
+
+    await expect(submitStep).toHaveAttribute('data-json-in-url', 'true');
     const download = page.waitForEvent('download');
     await page.getByTestId('contribute-submit').click();
     expect((await download).suggestedFilename()).toBe(`recipe-${recipeId}.json`);
@@ -1503,7 +1551,7 @@ test.describe('contribute wizard (roadmap #038, #039)', () => {
     expect(opened).toHaveLength(1);
     const [url, target] = opened[0] as [string, string];
     expect(target).toBe('_blank');
-    expect(url).toMatch(/^https:\/\/github\.com\/ArtemioPadilla\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
+    expect(url).toMatch(/^https:\/\/github\.com\/example-org\/foodie\/issues\/new\?template=recipe-submission\.yml&/);
     const params = new URL(url).searchParams;
     expect(params.get('title')).toBe('[recipe] Weeknight Green Skillet');
     expect(params.get('meal-type')).toBe('dinner');

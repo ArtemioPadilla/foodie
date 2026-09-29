@@ -48,7 +48,8 @@ export default function HydrationCanary() {
           }),
           labels: ['bug'],
         });
-        sessionStorage.setItem('feedbackfab.pending-report', url);
+        // No repository configured (ADR 0015): nothing to offer.
+        if (url) sessionStorage.setItem('feedbackfab.pending-report', url);
       }
     };
 

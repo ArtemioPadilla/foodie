@@ -14,11 +14,15 @@ shopping list generated from the plan, a pantry with expiry dates, and a food
 diary with nutrition goals. Everything you enter stays in your browser;
 signing in is optional.
 
-- **Use it:** <https://artemiop.com/foodie/> (also [`/es/`](https://artemiop.com/foodie/es/) and [`/fr/`](https://artemiop.com/foodie/fr/))
-- **Docs:** <https://artemiop.com/foodie/docs/> — getting started, guides, the data model and how to contribute, with search
+- **Use it:** <https://eat.cybere.co/> (also [`/es/`](https://eat.cybere.co/es/) and [`/fr/`](https://eat.cybere.co/fr/))
+- **Docs:** <https://eat.cybere.co/docs/> — getting started, guides, the data model and how to contribute, with search
 - **v1:** the React 18 + Vite app is frozen at the tag
   [`legacy-vite-1.0.0`](https://github.com/ArtemioPadilla/foodie/tree/legacy-vite-1.0.0).
   Data saved by v1 in your browser carries over to v2, and old links redirect.
+- **Moved:** browser storage is per address, so plans and lists saved on the
+  old GitHub Pages address do not follow you to <https://eat.cybere.co/>; the
+  old address offers a download of them before redirecting
+  ([ADR 0015](docs/decisions/0015-cloudflare-pages-hosting.md)).
 
 | Landing | Recipe detail |
 |---|---|
@@ -55,7 +59,9 @@ primitives, Nano Stores, TanStack Query, react-hook-form + Zod, Recharts,
 Motion, `@vite-pwa/astro` and Pagefind. Foodie adds `@dnd-kit` (planner),
 `firebase` (optional sign-in, loaded on demand) and `fflate` (plan sharing).
 The catalog is plain JSON in `public/data/`, validated with Zod at build time.
-Deployed to GitHub Pages.
+Deployed to Cloudflare Pages at <https://eat.cybere.co/> (see
+[`docs/deploy/cloudflare-pages.md`](docs/deploy/cloudflare-pages.md); the
+old GitHub Pages address redirects there).
 
 ## Quick start
 
@@ -75,23 +81,25 @@ npm run dev          # http://localhost:4321/
 | `npm run docs:screenshots` | Regenerate the images above from a running preview |
 
 Configuration (base path, Firebase, feature flags) is documented in
-[Configuration](https://artemiop.com/foodie/docs/getting-started/configuration/)
+[Configuration](https://eat.cybere.co/docs/getting-started/configuration/)
 and `.env.example`.
 
 ## Contributing
 
 Recipes and code are both welcome — see [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
-- **A recipe:** use the in-app [Contribute](https://artemiop.com/foodie/contribute/)
-  wizard, or open a PR that edits `public/data/recipes.json`
-  ([format](https://artemiop.com/foodie/docs/contributing/recipe-format/)).
+- **A recipe:** prepare it with the in-app [Contribute](https://eat.cybere.co/contribute/)
+  wizard (it downloads the recipe JSON; the public site opens no GitHub issue),
+  then file it here with the `recipe-submission` issue form, or open a PR that
+  edits `public/data/recipes.json`
+  ([format](https://eat.cybere.co/docs/contributing/recipe-format/)).
 - **Code:** every change starts as an issue and lands as a PR against `main`
   (issue → plan → implement → validate → PR). Read [`CLAUDE.md`](./CLAUDE.md)
   for the rules the codebase follows.
 
 ## Documentation map
 
-- [Docs site](https://artemiop.com/foodie/docs/) — sources in `src/content/docs/`
+- [Docs site](https://eat.cybere.co/docs/) — sources in `src/content/docs/`
 - [Migration roadmap](./docs/superpowers/specs/2026-09-27-foodie-inceptor-migration-roadmap.md) — the plan behind v2 (48 issues, decisions D1–D14)
 - [Architecture decisions](./docs/decisions/) — Foodie ADRs 0001, 0002, 0010–0014
 - [`CLAUDE.md`](./CLAUDE.md) — conventions, stack and workflow for contributors and Claude Code

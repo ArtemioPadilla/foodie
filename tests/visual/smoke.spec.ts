@@ -29,7 +29,7 @@ for (const route of ROUTES) {
       const { pathname } = new URL(r.request().url());
       const body = /\/issues$/.test(pathname)
         ? []
-        : { full_name: 'ArtemioPadilla/foodie', stargazers_count: 0, forks_count: 0, open_issues_count: 0 };
+        : { full_name: 'example-org/foodie', stargazers_count: 0, forks_count: 0, open_issues_count: 0 };
       return r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
     });
     await page.goto(route);

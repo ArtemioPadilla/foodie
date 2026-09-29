@@ -112,7 +112,7 @@ if [ "$PKG_NAME" = "inceptor" ] || [ "$PKG_NAME" = "" ]; then
   ok "package name is '$PKG_NAME' — skipping re-brand check (running in template repo)"
 else
   # Derived project: flag leftover template defaults in key files
-  PLACEHOLDER_FILES="src/lib/site-meta.ts site.config.mjs public/robots.txt"
+  PLACEHOLDER_FILES="src/lib/site-meta.ts site.config.mjs"
   TEMPLATE_ORIGINS="artemiop.com ArtemioPadilla/inceptor"
   found_placeholder=0
   for f in $PLACEHOLDER_FILES; do

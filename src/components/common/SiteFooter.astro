@@ -7,7 +7,8 @@
  * Sections, all localised from the route locale:
  *   - brand + tagline
  *   - Quick links (Recipes / Planner / Contribute)
- *   - Resources (Documentation / Report an issue / Contributing / GitHub)
+ *   - Resources (Documentation, plus Report an issue / Contributing / GitHub
+ *     only when PUBLIC_REPO_SLUG is set — repo links are opt-in, ADR 0015)
  *   - EN / ES / FR language switcher (LangSwitcher)
  *   - MIT license + llms.txt (agent-readable surface)
  */
@@ -28,8 +29,12 @@ const quickLinks = [
 
 const resources = [
   { href: withBase('/docs/'), label: t(locale, 'footer.documentation'), external: false },
-  { href: `${REPO_URL}/issues`, label: t(locale, 'footer.reportIssue'), external: true },
-  { href: `${REPO_URL}/blob/main/CONTRIBUTING.md`, label: t(locale, 'footer.contributing'), external: true },
+  ...(REPO_URL
+    ? [
+        { href: `${REPO_URL}/issues`, label: t(locale, 'footer.reportIssue'), external: true },
+        { href: `${REPO_URL}/blob/main/CONTRIBUTING.md`, label: t(locale, 'footer.contributing'), external: true },
+      ]
+    : []),
 ];
 
 const year = new Date().getFullYear();
@@ -101,14 +106,16 @@ const year = new Date().getFullYear();
         &copy; {year} {SITE.name} · {t(locale, 'footer.license')}
       </p>
       <div class="flex items-center gap-4 font-mono text-[0.68rem] text-muted-foreground">
-        <a
-          href={REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="transition-colors hover:text-primary"
-        >
-          GitHub ↗
-        </a>
+        {REPO_URL && (
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="transition-colors hover:text-primary"
+          >
+            GitHub ↗
+          </a>
+        )}
         {/* Agent-first index (llmstxt.org) — humans rarely click it, but
             surfacing it advertises that the site is machine-readable. */}
         <a href={withBase('/llms.txt')} class="transition-colors hover:text-primary">

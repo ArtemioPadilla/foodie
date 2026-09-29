@@ -8,7 +8,9 @@ interface ErrorBoundaryProps {
    * Render-prop fallback. Receives the caught error + pre-filled GitHub issue
    * URL so callers can customise the recovery UI.
    *
-   * NOTE: `reportUrl` may be null on the very first render after a throw, because
+   * NOTE: `reportUrl` stays null when the build has no repository
+   * (PUBLIC_REPO_SLUG unset — the production default, ADR 0015). It is also
+   * null on the very first render after a throw, because
    * `getDerivedStateFromError` (synchronous) sets `error` but `componentDidCatch`
    * (async-safe) sets `reportUrl` in a subsequent setState. The caller's fallback
    * is invoked once with `null` first, then again once the URL resolves. Handle
@@ -68,6 +70,9 @@ export default class ErrorBoundary extends React.Component<
       body: buildErrorReportBody({ error, componentPath, hydrationMismatch: false }),
       labels: ['bug'],
     });
+    // No repository configured (PUBLIC_REPO_SLUG unset, ADR 0015): the
+    // fallback keeps only the reload action — never a dead report link.
+    if (url === null) return;
     // This second setState triggers a re-render, adding the GitHub link.
     this.setState({ reportUrl: url });
   }
@@ -97,6 +102,13 @@ export default class ErrorBoundary extends React.Component<
               {error.name}: {error.message}
             </code>
           </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-3 mr-2 inline-flex items-center rounded-md border border-destructive/40 bg-destructive/20 px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/30"
+          >
+            Reload page
+          </button>
           {reportUrl && (
             <a
               href={reportUrl}

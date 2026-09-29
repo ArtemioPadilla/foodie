@@ -3,32 +3,34 @@
 Thanks for helping. There are two ways in: **add a recipe** (no code needed)
 or **change the code**. Both end in a pull request against `main`, checked by
 CI and reviewed by a maintainer; merging deploys to
-<https://artemiop.com/foodie/>.
+<https://eat.cybere.co/>.
 
 Foodie v2 runs on the [Inceptor](https://github.com/ArtemioPadilla/inceptor)
 template (Astro 7 islands + React 19 + Tailwind v4 + Base UI). Before touching
 code, read [`CLAUDE.md`](CLAUDE.md): it lists the stack, the rules and the
 roadmap status. The docs site has the long versions:
-[development](https://artemiop.com/foodie/docs/guides/development/),
-[testing](https://artemiop.com/foodie/docs/guides/testing/) and the
-[data model](https://artemiop.com/foodie/docs/reference/api/).
+[development](https://eat.cybere.co/docs/guides/development/),
+[testing](https://eat.cybere.co/docs/guides/testing/) and the
+[data model](https://eat.cybere.co/docs/reference/api/).
 
 ## Contributing a recipe
 
 Every recipe is one record in `public/data/recipes.json`, in English, Spanish
 and French, validated with `RecipeSchema` (`src/schemas/recipe.ts`). The full
 format is in the docs:
-[Contributing recipes](https://artemiop.com/foodie/docs/contributing/recipe-format/).
+[Contributing recipes](https://eat.cybere.co/docs/contributing/recipe-format/).
 
 ### Without git — the Contribute wizard
 
-1. Open [`/contribute/`](https://artemiop.com/foodie/contribute/)
+1. Open [`/contribute/`](https://eat.cybere.co/contribute/)
    (or `/es/contribute/`, `/fr/contribute/`) and fill the seven steps; your
    draft is saved in your browser.
-2. **Submit** opens a prefilled *Recipe submission* issue on GitHub and
-   downloads `recipe-<id>.json`. Foodie never holds a GitHub token: you create
-   the issue with your own account. If the recipe is too long for the issue
-   URL, attach the downloaded file instead.
+2. The last step downloads `recipe-<id>.json`. The public site links no
+   repository (ADR 0015), so it does not open the issue for you: open a
+   *Recipe submission* issue in this repository and attach the file (or paste
+   it into the *Recipe JSON* field). Builds that set `PUBLIC_REPO_SLUG` open
+   that issue prefilled instead. Foodie never holds a GitHub token: you create
+   the issue with your own account.
 3. Tick the checklist and create the issue. It is labelled
    `recipe-submission`.
 4. A maintainer copies the JSON into `public/data/recipes.json`, assigns the

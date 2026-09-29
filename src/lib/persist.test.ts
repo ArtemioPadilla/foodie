@@ -83,7 +83,10 @@ describe('persistentAtom — invalid data', () => {
     expect($store.get()).toEqual(FALLBACK);
     expect(warn).toHaveBeenCalledTimes(1);
     expect(String(warn.mock.calls[0]?.[0])).toContain(KEY);
-    expect(String(warn.mock.calls[0]?.[0])).toContain('/issues/new?');
+    // The prefilled report link needs a repository: opt-in via
+    // PUBLIC_REPO_SLUG (ADR 0015), so the default build warns without one.
+    if (import.meta.env.PUBLIC_REPO_SLUG) expect(String(warn.mock.calls[0]?.[0])).toContain('/issues/new?');
+    else expect(String(warn.mock.calls[0]?.[0])).not.toContain('Report:');
     expect(onInvalid).toHaveBeenCalledWith(
       expect.objectContaining({ key: KEY, raw: '{not json' }),
     );

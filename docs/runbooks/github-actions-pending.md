@@ -19,7 +19,7 @@ some steps, and this list points into them instead of repeating them:
 REPO=ArtemioPadilla/foodie
 WORK=claude/foodie-status-next-steps-qvkt0l   # the branch that holds v2 today
 INTEGRATION=inceptor
-SITE=https://artemiop.com/foodie
+SITE=https://artemiop.com/foodie                # the v2.0.0 host; production moved to https://eat.cybere.co (step 20)
 FIREBASE_PROJECT=foodie-cc553                 # confirm in the Firebase console
 gh auth status                                # every gh command needs an owner token
 ```
@@ -36,6 +36,7 @@ gh auth status                                # every gh command needs an owner 
 | 042 | Close PR #28, close Dependabot PRs #29–#35, delete dead branches | 15 |
 | 045 | Lighthouse on production, archived | 13 |
 | 048 | Tag `v2.0.0`, GitHub Release, close every roadmap issue and milestone | 14, 16, 19 |
+| (hosting) ADR 0015 | Move production to Cloudflare Pages at `eat.cybere.co`: API token and secrets, DNS, Firebase domain and key referrer | 20 |
 | (config) | Discussions (linked from `.github/ISSUE_TEMPLATE/config.yml`), private vulnerability reporting (`SECURITY.md`), extra labels used by templates and workflows | 4, 5 |
 
 ## 1. Push the v2 work
@@ -166,8 +167,10 @@ gh secret list --repo "$REPO"
 
 - If any of the four is missing, the site still deploys, with sign-in turned
   off.
-- Leave `ASTRO_BASE` (default `/foodie`), the `PUBLIC_REPO_SLUG` variable
-  (default `ArtemioPadilla/foodie`) and `CHECK_SKIP_ASTRO` unset.
+- Leave `CHECK_SKIP_ASTRO` unset. Since ADR 0015 the deploy workflow no
+  longer reads an `ASTRO_BASE` secret or a `PUBLIC_REPO_SLUG` variable
+  (production builds at `/` and names no repository); delete them if they
+  exist.
 - `ANTHROPIC_API_KEY` is only needed if you want `claude.yml`'s AI triage.
   Otherwise, disable that workflow after the cutover:
   `gh workflow disable claude.yml --repo "$REPO"`.
@@ -385,3 +388,52 @@ gh issue list --repo "$REPO" --state open --search 'in:title "roadmap #"' | wc -
 gh api "repos/$REPO/milestones?state=open" -q 'length'                   # 0
 gh pr list --repo "$REPO" --state open | wc -l                           # 0, or only new work
 ```
+
+## 20. Move production to Cloudflare Pages at `eat.cybere.co` (ADR 0015)
+
+The public site moves off the GitHub Pages address, which carries the owner's
+name, to <https://eat.cybere.co/> at the root of the host. `deploy.yml`
+(workflow **Deploy**) does everything once these exist; until then it builds,
+prints a `::notice::` and skips without failing. Full guide:
+[`docs/deploy/cloudflare-pages.md`](../deploy/cloudflare-pages.md).
+
+1. Cloudflare dashboard → My Profile → API Tokens → **Create Token → Custom
+   token**: *Account › Cloudflare Pages › Edit*; optionally *Zone › DNS ›
+   Edit* on the `cybere.co` zone only.
+2. Repository secrets (paste each value at the prompt — never in a file):
+
+   ```bash
+   gh secret set CLOUDFLARE_API_TOKEN  --repo "$REPO"
+   gh secret set CLOUDFLARE_ACCOUNT_ID --repo "$REPO"
+   gh secret set CLOUDFLARE_ZONE_ID    --repo "$REPO"      # optional: lets the workflow manage DNS
+   gh secret delete ASTRO_BASE --repo "$REPO" 2>/dev/null; gh variable delete PUBLIC_REPO_SLUG --repo "$REPO" 2>/dev/null
+   ```
+
+3. DNS, only without `CLOUDFLARE_ZONE_ID`: a proxied `CNAME` `eat` →
+   `<project>.pages.dev` (the deploy log prints the exact target).
+4. Firebase console → Authentication → Settings → **Authorised domains**: add
+   `eat.cybere.co`. Allow the new referrer on the web key from step 6:
+
+   ```bash
+   gcloud services api-keys update NEW_KEY_ID --project="$FIREBASE_PROJECT" \
+     --allowed-referrers="https://eat.cybere.co/*,https://artemiop.com/*,http://localhost:4321/*"
+   ```
+
+5. Deploy and check:
+
+   ```bash
+   gh workflow run deploy.yml --repo "$REPO" --ref main
+   gh run watch --repo "$REPO" "$(gh run list --repo "$REPO" --workflow deploy.yml --limit 1 --json databaseId -q '.[0].databaseId')"
+   curl -s https://eat.cybere.co/ | grep -o 'data-app-version="[^"]*"'
+   curl -sI https://eat.cybere.co/ | grep -i -E 'strict-transport-security|x-frame-options'
+   curl -s https://eat.cybere.co/robots.txt                           # Sitemap: https://eat.cybere.co/sitemap-index.xml
+   curl -s "$SITE/recipes/rec_001/" | grep -o 'eat.cybere.co'          # the old address now serves the redirect page
+   ```
+
+6. After a few weeks, once the old address only redirects: remove
+   `https://artemiop.com/*` from the key's referrers and `artemiop.com` from
+   the authorised domains.
+
+- [ ] `https://eat.cybere.co/` serves the build, the `pages-redirect` job ran
+  and the old address redirects (with the data download offered to browsers
+  that still hold Foodie data there).

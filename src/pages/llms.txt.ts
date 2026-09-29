@@ -28,10 +28,15 @@ export const GET: APIRoute = async ({ site }) => {
 
 ${SITE.longDescription}
 
-Source: ${REPO_URL} (${SITE.license}). Agent/contributor context lives in
+${
+  // The repository is named only when the build opts in (PUBLIC_REPO_SLUG,
+  // ADR 0015); the default build names none.
+  REPO_URL
+    ? `Source: ${REPO_URL} (${SITE.license}). Agent/contributor context lives in
 [CLAUDE.md](${REPO_URL}/blob/main/CLAUDE.md) — the sub-agent loop
-(prometeo → forja → centinela), conventions and guardrails. Full docs as a
-single file: [llms-full.txt](${url('/llms-full.txt')}).
+(prometeo → forja → centinela), conventions and guardrails. `
+    : `License: ${SITE.license}. `
+}Full docs as a single file: [llms-full.txt](${url('/llms-full.txt')}).
 
 ## Start here
 
