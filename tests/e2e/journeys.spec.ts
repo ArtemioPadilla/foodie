@@ -1524,7 +1524,14 @@ test.describe('contribute wizard (roadmap #038, #039)', () => {
     if (mode === 'download') {
       await expect(page.getByTestId('contribute-submit-unavailable')).toContainText('El envío por enlace aún no está disponible');
       await expect(page.getByTestId('contribute-submit')).toHaveCount(0);
-      expect(await submitStep.innerHTML()).not.toMatch(/github\.com/i);
+      // No link to GitHub in the step: compare every URL's hostname exactly.
+      const hosts = await submitStep.evaluate((el) =>
+        Array.from(el.querySelectorAll('[href], [src], [action]')).map(
+          (node) => new URL(node.getAttribute('href') ?? node.getAttribute('src') ?? node.getAttribute('action') ?? '', document.baseURI).hostname,
+        ),
+      );
+      expect(hosts.filter((host) => host === 'github.com' || host.endsWith('.github.com'))).toEqual([]);
+      expect(((await submitStep.textContent()) ?? '').toLowerCase()).not.toContain('github');
       const download = page.waitForEvent('download');
       await page.getByTestId('contribute-download-json').click();
       expect((await download).suggestedFilename()).toBe(`recipe-${recipeId}.json`);

@@ -47,7 +47,12 @@ describe.runIf(!import.meta.env.PUBLIC_REPO_SLUG)('ContributeWizard · submit st
     expect(screen.getByTestId('contribute-submit-unavailable')).toHaveTextContent(title);
     expect(screen.getByTestId('contribute-submit-unavailable')).toHaveTextContent(`recipe-${RECIPE_ID}.json`);
     expect(screen.queryByTestId('contribute-submit')).toBeNull();
-    expect(step.innerHTML).not.toMatch(/github\.com/i);
+    // No link to GitHub anywhere in the step: compare every URL's hostname exactly.
+    const hosts = Array.from(step.querySelectorAll('[href], [src], [action]')).map(
+      (el) => new URL(el.getAttribute('href') ?? el.getAttribute('src') ?? el.getAttribute('action') ?? '', 'https://eat.cybere.co').hostname,
+    );
+    expect(hosts.filter((host) => host === 'github.com' || host.endsWith('.github.com'))).toEqual([]);
+    expect((step.textContent ?? '').toLowerCase()).not.toContain('github');
 
     await user.click(screen.getByTestId('contribute-download-json'));
     await waitFor(() => expect(downloads).toEqual([`recipe-${RECIPE_ID}.json`]));
